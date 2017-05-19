@@ -2,19 +2,14 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="d9eded80-2ffc-47db-9dac-719548bf2f58" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/filter/fes-2.0.2/src/main/java/org/orbisgis/orbisdata/filter/fes_2_0_2/JaxbContainer.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/filter/fes-2.0.2/src/test/resources/org/orbisgis/orbisdata/filter/fes_2_0_2/filter_PropertyIsBetween.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/filter/fes-2.0.2/src/test/resources/org/orbisgis/orbisdata/filter/fes_2_0_2/filter_PropertyIsGreaterThan.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/filter/fes-2.0.2/src/test/resources/org/orbisgis/orbisdata/filter/fes_2_0_2/filter_PropertyIsLike.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/filter/fes-2.0.2/src/test/resources/org/orbisgis/orbisdata/filter/fes_2_0_2/filter_Sorting.xml" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_orbisgis_ogc_custom_model_5_1_0_SNAPSHOT.xml" afterPath="" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.gitignore" afterPath="$PROJECT_DIR$/.gitignore" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/filter/fes-2.0.2/src/main/java/org/orbisgis/orbisdata/filter/fes_2_0_2/FesToSql.java" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/filter/fes-2.0.2/src/main/java/org/orbisgis/orbisdata/filter/fes_2_0_2/ParserWriterFesXmlToSql.java" afterPath="" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/filter/fes-2.0.2/fes-2.0.2.iml" afterPath="$PROJECT_DIR$/filter/fes-2.0.2/fes-2.0.2.iml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/filter/fes-2.0.2/pom.xml" afterPath="$PROJECT_DIR$/filter/fes-2.0.2/pom.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/filter/fes-2.0.2/src/main/java/org/orbisgis/orbisdata/filter/fes_2_0_2/ParserWriterFesSqlToXml.java" afterPath="$PROJECT_DIR$/filter/fes-2.0.2/src/main/java/org/orbisgis/orbisdata/filter/fes_2_0_2/ParserWriterFesSqlToXml.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/filter/fes-2.0.2/src/main/java/org/orbisgis/orbisdata/filter/fes_2_0_2/ParserWriterFesXmlToSql.java" afterPath="$PROJECT_DIR$/filter/fes-2.0.2/src/main/java/org/orbisgis/orbisdata/filter/fes_2_0_2/ParserWriterFesXmlToSql.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/filter/fes-2.0.2/src/test/java/org/orbisgis/orbisdata/filter/fes_2_0_2/TestParserWriterFes2_0_2.java" afterPath="$PROJECT_DIR$/filter/fes-2.0.2/src/test/java/org/orbisgis/orbisdata/filter/fes_2_0_2/TestParserWriterFes2_0_2.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/pom.xml" afterPath="$PROJECT_DIR$/pom.xml" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/filter/fes-2.0.2/src/main/java/org/orbisgis/orbisdata/filter/fes_2_0_2/JaxbContainer.java" afterPath="$PROJECT_DIR$/filter/fes-2.0.2/src/test/java/org/orbisgis/orbisdata/filter/fes_2_0_2/JaxbContainer.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/filter/fes-2.0.2/src/main/java/org/orbisgis/orbisdata/filter/fes_2_0_2/ParserWriterFesSqlToXml.java" afterPath="$PROJECT_DIR$/filter/fes-2.0.2/src/main/java/org/orbisgis/orbisdata/filter/fes_2_0_2/FesToXml.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/filter/fes-2.0.2/src/test/java/org/orbisgis/orbisdata/filter/fes_2_0_2/TestParserWriterFes2_0_2.java" afterPath="$PROJECT_DIR$/filter/fes-2.0.2/src/test/java/org/orbisgis/orbisdata/filter/fes_2_0_2/TestFes2_0_2.java" />
     </list>
     <ignored path="$PROJECT_DIR$/filter/fes-2.0.2/target/" />
     <ignored path="$PROJECT_DIR$/filter/target/" />
@@ -29,33 +24,11 @@
   <component name="ExecutionTargetManager" SELECTED_TARGET="default_target" />
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="ParserWriterFesXmlToSql.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/filter/fes-2.0.2/src/main/java/org/orbisgis/orbisdata/filter/fes_2_0_2/ParserWriterFesXmlToSql.java">
+      <file leaf-file-name="FesToSql.java" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/filter/fes-2.0.2/src/main/java/org/orbisgis/orbisdata/filter/fes_2_0_2/FesToSql.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="450">
-              <caret line="136" column="33" lean-forward="false" selection-start-line="136" selection-start-column="33" selection-end-line="136" selection-end-column="33" />
-              <folding>
-                <element signature="imports" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name=".gitignore" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/.gitignore">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="51">
-              <caret line="3" column="7" lean-forward="true" selection-start-line="1" selection-start-column="0" selection-end-line="3" selection-end-column="7" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="TestParserWriterFes2_0_2.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/filter/fes-2.0.2/src/test/java/org/orbisgis/orbisdata/filter/fes_2_0_2/TestParserWriterFes2_0_2.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="510">
-              <caret line="30" column="94" lean-forward="false" selection-start-line="30" selection-start-column="94" selection-end-line="30" selection-end-column="94" />
+            <state relative-caret-position="263">
+              <caret line="51" column="32" lean-forward="false" selection-start-line="51" selection-start-column="32" selection-end-line="51" selection-end-column="32" />
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -64,10 +37,30 @@
         </entry>
       </file>
       <file leaf-file-name="JaxbContainer.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/filter/fes-2.0.2/src/main/java/org/orbisgis/orbisdata/filter/fes_2_0_2/JaxbContainer.java">
+        <entry file="file://$PROJECT_DIR$/filter/fes-2.0.2/src/test/java/org/orbisgis/orbisdata/filter/fes_2_0_2/JaxbContainer.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="246">
-              <caret line="51" column="47" lean-forward="false" selection-start-line="51" selection-start-column="36" selection-end-line="51" selection-end-column="47" />
+            <state relative-caret-position="0">
+              <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="34" selection-end-column="3" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="FesToXml.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/filter/fes-2.0.2/src/main/java/org/orbisgis/orbisdata/filter/fes_2_0_2/FesToXml.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="102">
+              <caret line="40" column="24" lean-forward="true" selection-start-line="40" selection-start-column="24" selection-end-line="40" selection-end-column="24" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="TestFes2_0_2.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/filter/fes-2.0.2/src/test/java/org/orbisgis/orbisdata/filter/fes_2_0_2/TestFes2_0_2.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="561">
+              <caret line="67" column="48" lean-forward="true" selection-start-line="67" selection-start-column="48" selection-end-line="67" selection-end-column="48" />
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -113,7 +106,56 @@
     </option>
   </component>
   <component name="MavenProjectNavigator">
-    <treeState />
+    <treeState>
+      <PATH>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="" />
+          <option name="myItemType" value="org.jetbrains.idea.maven.navigator.MavenProjectsStructure$RootNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="Filter module" />
+          <option name="myItemType" value="org.jetbrains.idea.maven.navigator.MavenProjectsStructure$ProjectNode" />
+        </PATH_ELEMENT>
+      </PATH>
+      <PATH>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="" />
+          <option name="myItemType" value="org.jetbrains.idea.maven.navigator.MavenProjectsStructure$RootNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="Filter module" />
+          <option name="myItemType" value="org.jetbrains.idea.maven.navigator.MavenProjectsStructure$ProjectNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="Lifecycle" />
+          <option name="myItemType" value="org.jetbrains.idea.maven.navigator.MavenProjectsStructure$LifecycleNode" />
+        </PATH_ELEMENT>
+      </PATH>
+      <PATH>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="" />
+          <option name="myItemType" value="org.jetbrains.idea.maven.navigator.MavenProjectsStructure$RootNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="Filter module" />
+          <option name="myItemType" value="org.jetbrains.idea.maven.navigator.MavenProjectsStructure$ProjectNode" />
+        </PATH_ELEMENT>
+      </PATH>
+      <PATH>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="" />
+          <option name="myItemType" value="org.jetbrains.idea.maven.navigator.MavenProjectsStructure$RootNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="Filter module" />
+          <option name="myItemType" value="org.jetbrains.idea.maven.navigator.MavenProjectsStructure$ProjectNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="Lifecycle" />
+          <option name="myItemType" value="org.jetbrains.idea.maven.navigator.MavenProjectsStructure$LifecycleNode" />
+        </PATH_ELEMENT>
+      </PATH>
+    </treeState>
   </component>
   <component name="ProjectFrameBounds">
     <option name="x" value="-8" />
@@ -137,8 +179,9 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="Scope" />
       <pane id="PackagesPane" />
+      <pane id="Scope" />
+      <pane id="Scratches" />
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -313,7 +356,6 @@
           </PATH>
         </subPane>
       </pane>
-      <pane id="Scratches" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -323,20 +365,20 @@
     <property name="project.structure.side.proportion" value="0.0" />
   </component>
   <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="D:\users\quillien\Documents\GitHub\orbisdata\filter\fes-2.0.2\src\test\resources\org\orbisgis\orbisdata\filter\fes_2_0_2" />
+      <recent name="D:\users\quillien\Documents\GitHub\orbisdata\filter\fes-2.0.2\src\test" />
+      <recent name="D:\users\quillien\Documents\GitHub\orbisdata\filter\fes-2.0.2\src\main\resources" />
+    </key>
+    <key name="CopyClassDialog.RECENTS_KEY">
+      <recent name="org.orbisgis.orbisdata.filter.fes_2_0_2" />
+    </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="D:\users\quillien\Documents\GitHub\orbisdata\filter\fes-2.0.2\src\main" />
       <recent name="D:\users\quillien\Documents\GitHub\orbisdata\filter\fes-2.0.2\src\main\java\org\orbisgis\orbisdata\filter" />
       <recent name="D:\users\quillien\Documents\GitHub\orbisdata\filter\fes-2.0.2\src\main\java" />
       <recent name="D:\users\quillien\Documents\GitHub\orbisdata\filter\fes-2.0.2\src" />
       <recent name="D:\users\quillien\Documents\GitHub\orbisdata\filter\fes-2.0.2" />
-    </key>
-    <key name="CopyClassDialog.RECENTS_KEY">
-      <recent name="org.orbisgis.orbisdata.filter.fes_2_0_2" />
-    </key>
-    <key name="CopyFile.RECENT_KEYS">
-      <recent name="D:\users\quillien\Documents\GitHub\orbisdata\filter\fes-2.0.2\src\test\resources\org\orbisgis\orbisdata\filter\fes_2_0_2" />
-      <recent name="D:\users\quillien\Documents\GitHub\orbisdata\filter\fes-2.0.2\src\test" />
-      <recent name="D:\users\quillien\Documents\GitHub\orbisdata\filter\fes-2.0.2\src\main\resources" />
     </key>
   </component>
   <component name="RunDashboard">
@@ -698,14 +740,14 @@
       <window_info id="Image Layers" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Capture Analysis" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
-      <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.08422175" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.17537314" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.32900432" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Properties" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Capture Tool" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.19829424" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.21002132" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="UI Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
@@ -713,11 +755,33 @@
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.39935064" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
+      <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Nl-Palette" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
+      <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.08422175" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Properties" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Capture Tool" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
+      <window_info id="Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="UI Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.39935064" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
+      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Palette&#9;" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Image Layers" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Capture Analysis" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.32900432" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.19829424" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Theme Preview" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
     </layout>
   </component>
   <component name="UnknownFeatures">
@@ -737,7 +801,43 @@
     <option name="FILTER_TARGETS" value="false" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/filter/fes-2.0.2/src/main/java/org/orbisgis/orbisdata/filter/fes_2_0_2/ParserWriterFesXmlToSql.java">
+    <entry file="file://$PROJECT_DIR$/filter/fes-2.0.2/src/main/java/org/orbisgis/orbisdata/filter/fes_2_0_2/FesToSql.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/filter/fes-2.0.2/pom.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="816">
+          <caret line="48" column="58" lean-forward="false" selection-start-line="48" selection-start-column="58" selection-end-line="48" selection-end-column="58" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/.gitignore">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="51">
+          <caret line="3" column="7" lean-forward="false" selection-start-line="1" selection-start-column="0" selection-end-line="3" selection-end-column="7" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/filter/fes-2.0.2/src/test/java/org/orbisgis/orbisdata/filter/fes_2_0_2/TestFes2_0_2.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="442">
+          <caret line="29" column="82" lean-forward="false" selection-start-line="29" selection-start-column="82" selection-end-line="29" selection-end-column="82" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/filter/fes-2.0.2/src/main/java/org/orbisgis/orbisdata/filter/fes_2_0_2/FesToSql.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
@@ -755,7 +855,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/filter/fes-2.0.2/src/main/java/org/orbisgis/orbisdata/filter/fes_2_0_2/ParserWriterFesSqlToXml.java">
+    <entry file="file://$PROJECT_DIR$/filter/fes-2.0.2/src/main/java/org/orbisgis/orbisdata/filter/fes_2_0_2/FesToXml.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="119">
           <caret line="7" column="0" lean-forward="false" selection-start-line="7" selection-start-column="0" selection-end-line="7" selection-end-column="0" />
@@ -771,15 +871,17 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/filter/fes-2.0.2/src/test/java/org/orbisgis/orbisdata/filter/fes_2_0_2/TestParserWriterFes2_0_2.java">
+    <entry file="file://$PROJECT_DIR$/filter/fes-2.0.2/src/test/java/org/orbisgis/orbisdata/filter/fes_2_0_2/TestFes2_0_2.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="85">
           <caret line="5" column="13" lean-forward="false" selection-start-line="5" selection-start-column="13" selection-end-line="5" selection-end-column="13" />
-          <folding />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/filter/fes-2.0.2/src/main/java/org/orbisgis/orbisdata/filter/fes_2_0_2/ParserWriterFesXmlToSql.java">
+    <entry file="file://$PROJECT_DIR$/filter/fes-2.0.2/src/main/java/org/orbisgis/orbisdata/filter/fes_2_0_2/FesToSql.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="136">
           <caret line="8" column="0" lean-forward="false" selection-start-line="8" selection-start-column="0" selection-end-line="8" selection-end-column="0" />
@@ -813,19 +915,123 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/filter/fes-2.0.2/src/main/java/org/orbisgis/orbisdata/filter/fes_2_0_2/ParserWriterFesSqlToXml.java">
+    <entry file="file://$PROJECT_DIR$/filter/fes-2.0.2/src/test/resources/org/orbisgis/orbisdata/filter/fes_2_0_2/filter_PropertyIsBetween.xml">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="68">
-          <caret line="4" column="3" lean-forward="false" selection-start-line="2" selection-start-column="0" selection-end-line="4" selection-end-column="3" />
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding />
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/filter/fes-2.0.2/src/test/resources/org/orbisgis/orbisdata/filter/fes_2_0_2/PropertyIsLikeType.java" />
+    <entry file="file://$PROJECT_DIR$/filter/fes-2.0.2/src/test/resources/org/orbisgis/orbisdata/filter/fes_2_0_2/filter_PropertyIsLike.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/filter/fes-2.0.2/src/test/resources/org/orbisgis/orbisdata/filter/fes_2_0_2/filter_PropertyIsGreaterThan.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/filter/fes-2.0.2/src/main/java/org/orbisgis/orbisdata/filter/fes_2_0_2/JaxbContainer.java" />
+    <entry file="file://$PROJECT_DIR$/pom.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="300">
+          <caret line="44" column="33" lean-forward="false" selection-start-line="44" selection-start-column="9" selection-end-line="44" selection-end-column="33" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/.gitignore">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="51">
+          <caret line="3" column="7" lean-forward="false" selection-start-line="1" selection-start-column="0" selection-end-line="3" selection-end-column="7" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/filter/fes-2.0.2/pom.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="816">
+          <caret line="48" column="58" lean-forward="false" selection-start-line="48" selection-start-column="58" selection-end-line="48" selection-end-column="58" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/filter/fes-2.0.2/src/test/resources/org/orbisgis/orbisdata/filter/fes_2_0_2/filter_Sorting.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="153">
+          <caret line="9" column="28" lean-forward="false" selection-start-line="9" selection-start-column="24" selection-end-line="9" selection-end-column="28" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/filter/fes-2.0.2/src/test/java/org/orbisgis/orbisdata/filter/fes_2_0_2/TestFes2_0_2.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="561">
+          <caret line="67" column="48" lean-forward="true" selection-start-line="67" selection-start-column="48" selection-end-line="67" selection-end-column="48" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/filter/fes-2.0.2/src/main/java/org/orbisgis/orbisdata/filter/fes_2_0_2/ParserWriterFesXmlToSql.java" />
+    <entry file="file://$PROJECT_DIR$/filter/fes-2.0.2/pom.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="187">
+          <caret line="11" column="37" lean-forward="false" selection-start-line="11" selection-start-column="37" selection-end-line="11" selection-end-column="37" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/filter/fes-2.0.2/src/main/java/org/orbisgis/orbisdata/filter/fes_2_0_2/ParserWriterFesSqlToXml.java" />
+    <entry file="file://$PROJECT_DIR$/filter/fes-2.0.2/pom.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/filter/fes-2.0.2/src/test/java/org/orbisgis/orbisdata/filter/fes_2_0_2/TestParserWriterFes2_0_2.java" />
+    <entry file="file://$PROJECT_DIR$/filter/fes-2.0.2/src/main/java/org/orbisgis/orbisdata/filter/fes_2_0_2/ParserWriterFesXmlToSql.java" />
+    <entry file="file://$PROJECT_DIR$/filter/fes-2.0.2/pom.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="816">
+          <caret line="48" column="28" lean-forward="false" selection-start-line="48" selection-start-column="28" selection-end-line="48" selection-end-column="28" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/filter/pom.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/filter/pom.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="448">
+          <caret line="36" column="62" lean-forward="true" selection-start-line="36" selection-start-column="62" selection-end-line="36" selection-end-column="62" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/filter/fes-2.0.2/src/main/java/org/orbisgis/orbisdata/filter/fes_2_0_2/ParserWriterFesSqlToXml.java" />
     <entry file="file://$PROJECT_DIR$/pom.xml">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="-110">
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -853,14 +1059,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/filter/fes-2.0.2/src/test/resources/org/orbisgis/orbisdata/filter/fes_2_0_2/PropertyIsLikeType.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://$PROJECT_DIR$/filter/fes-2.0.2/src/test/resources/org/orbisgis/orbisdata/filter/fes_2_0_2/PropertyIsLikeType.java" />
     <entry file="file://$PROJECT_DIR$/filter/fes-2.0.2/src/test/resources/org/orbisgis/orbisdata/filter/fes_2_0_2/filter_PropertyIsLike.xml">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
@@ -877,41 +1076,39 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/filter/fes-2.0.2/src/main/java/org/orbisgis/orbisdata/filter/fes_2_0_2/JaxbContainer.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="246">
-          <caret line="51" column="47" lean-forward="false" selection-start-line="51" selection-start-column="36" selection-end-line="51" selection-end-column="47" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/filter/fes-2.0.2/src/test/java/org/orbisgis/orbisdata/filter/fes_2_0_2/TestParserWriterFes2_0_2.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="510">
-          <caret line="30" column="94" lean-forward="false" selection-start-line="30" selection-start-column="94" selection-end-line="30" selection-end-column="94" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/filter/fes-2.0.2/src/main/java/org/orbisgis/orbisdata/filter/fes_2_0_2/ParserWriterFesXmlToSql.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="450">
-          <caret line="136" column="33" lean-forward="false" selection-start-line="136" selection-start-column="33" selection-end-line="136" selection-end-column="33" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://$PROJECT_DIR$/filter/fes-2.0.2/src/main/java/org/orbisgis/orbisdata/filter/fes_2_0_2/JaxbContainer.java" />
+    <entry file="file://$PROJECT_DIR$/filter/fes-2.0.2/src/test/java/org/orbisgis/orbisdata/filter/fes_2_0_2/TestParserWriterFes2_0_2.java" />
+    <entry file="file://$PROJECT_DIR$/filter/fes-2.0.2/src/main/java/org/orbisgis/orbisdata/filter/fes_2_0_2/ParserWriterFesXmlToSql.java" />
     <entry file="file://$PROJECT_DIR$/.gitignore">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="51">
           <caret line="3" column="7" lean-forward="true" selection-start-line="1" selection-start-column="0" selection-end-line="3" selection-end-column="7" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/filter/fes-2.0.2/src/main/java/org/orbisgis/orbisdata/filter/fes_2_0_2/FesToXml.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="102">
+          <caret line="40" column="24" lean-forward="true" selection-start-line="40" selection-start-column="24" selection-end-line="40" selection-end-column="24" />
           <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/filter/fes-2.0.2/src/test/java/org/orbisgis/orbisdata/filter/fes_2_0_2/JaxbContainer.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="34" selection-end-column="3" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/filter/fes-2.0.2/src/main/java/org/orbisgis/orbisdata/filter/fes_2_0_2/FesToSql.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="263">
+          <caret line="51" column="32" lean-forward="false" selection-start-line="51" selection-start-column="32" selection-end-line="51" selection-end-column="32" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>

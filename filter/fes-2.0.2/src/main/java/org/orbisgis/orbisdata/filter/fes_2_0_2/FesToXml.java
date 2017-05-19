@@ -1,6 +1,6 @@
 /**
  * OrbisGIS is a java GIS application dedicated to research in GIScience.
- * OrbisGIS is developed by the GIS group of the DECIDE team of the 
+ * OrbisGIS is developed by the GIS group of the DECIDE team of the
  * Lab-STICC CNRS laboratory, see <http://www.lab-sticc.fr/>.
  *
  * The GIS group of the DECIDE team is located at :
@@ -10,7 +10,7 @@
  * UNIVERSITÉ DE BRETAGNE-SUD
  * Institut Universitaire de Technologie de Vannes
  * 8, Rue Montaigne - BP 561 56017 Vannes Cedex
- * 
+ *
  * OrbisGIS is distributed under GPL 3 license.
  *
  * Copyright (C) 2015-2017 CNRS (Lab-STICC UMR CNRS 6285)
@@ -33,32 +33,9 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-
 package org.orbisgis.orbisdata.filter.fes_2_0_2;
 
-
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-
 /**
- * Container class with the JAXB contexts
- *
- * @author Vincent QUILLIEN
+ * @Author Vincent QUILLIEN
  */
-public class JaxbContainer {
-    //Make the JaxbContainer constructor private to avoid its instantiation.
-    private JaxbContainer() {}
-    //The JaxbContext
-    public static final JAXBContext JAXBCONTEXT;
-    static {
-        try {
-            JAXBCONTEXT = JAXBContext.newInstance(
-                    net.opengis.wms.ObjectFactory.class,
-                    net.opengis.se._2_0.core.ObjectFactory.class,
-                    oasis.names.tc.ciq.xsdschema.xal._2.ObjectFactory.class,
-                    net.opengis.fes._2_0_2.ObjectFactory.class);
-        } catch (JAXBException ex) {
-            throw new ExceptionInInitializerError(ex);
-        }
-    }
-}
+public class FesToXml {}

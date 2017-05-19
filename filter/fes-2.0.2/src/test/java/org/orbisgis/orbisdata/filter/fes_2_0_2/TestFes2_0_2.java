@@ -45,10 +45,11 @@ import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import java.io.InputStream;
 
-import static org.orbisgis.orbisdata.filter.fes_2_0_2.FesToSql.XmlToSql;
+import static org.orbisgis.orbisdata.filter.fes_2_0_2.FesToSql.*;
 import static org.orbisgis.orbisdata.filter.fes_2_0_2.JaxbContainer.JAXBCONTEXT;
 
 /**
+ * Test of the classFesToSql
  * @author Vincent QUILLIEN
  */
 public class TestFes2_0_2 {
@@ -77,7 +78,7 @@ public class TestFes2_0_2 {
 
 
     /**
-     * Test of the static methode
+     * Test of the static method
      * @throws JAXBException
      */
     @Test

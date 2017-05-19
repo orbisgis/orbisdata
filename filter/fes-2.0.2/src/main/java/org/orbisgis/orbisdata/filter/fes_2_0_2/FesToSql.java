@@ -35,13 +35,13 @@
  */
 package org.orbisgis.orbisdata.filter.fes_2_0_2;
 
-import net.opengis.fes._2_0_2.*;
+import net.opengis.fes._2_0_2.SortByType;
+import net.opengis.fes._2_0_2.SortPropertyType;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import java.util.Iterator;
 import java.util.List;
-
 
 
 /**

@@ -36,6 +36,7 @@
 package org.orbisgis.orbisdata.filter.fes_2_0_2;
 
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -55,22 +56,29 @@ import static org.orbisgis.orbisdata.filter.fes_2_0_2.JaxbContainer.JAXBCONTEXT;
 public class TestFes2_0_2 {
 
 
-    /**Object for the process of deserializing XML data into newly created Java content trees.*/
+    /**
+     * Object for the process of deserializing XML data into newly created Java content trees.
+     */
     Unmarshaller unmarshaller;
 
-    /**Object for the process of serializing Java content trees back into XML data.*/
+    /**
+     * Object for the process of serializing Java content trees back into XML data.
+     */
     Marshaller marshaller;
 
-    /**Object used for save the data from a file of resources.*/
+    /**
+     * Object used for save the data from a file of resources.
+     */
     InputStream xml;
 
 
     /**
      * Initialised the attributes from the class
+     *
      * @throws JAXBException
      */
     @Before
-    public void initialize() throws JAXBException{
+    public void initialize() throws JAXBException {
         unmarshaller = JAXBCONTEXT.createUnmarshaller();
         marshaller = JAXBCONTEXT.createMarshaller();
         marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
@@ -78,7 +86,8 @@ public class TestFes2_0_2 {
 
 
     /**
-     * Test of the static method
+     * Test of the static method for a SortBy
+     *
      * @throws JAXBException
      */
     @Test
@@ -86,7 +95,42 @@ public class TestFes2_0_2 {
         //Branch SortBy
         xml = TestFes2_0_2.class.getResourceAsStream("filter_Sorting.xml");
         JAXBElement element = (JAXBElement) unmarshaller.unmarshal(xml);
+
+        Assert.assertEquals(XmlToSql(element).toString() ,"depth, temperature DESC");
+    }
+
+    @Test
+    public void testXmlToSqlFilter ()throws JAXBException {
+
+        //Branch Between
+        xml = TestFes2_0_2.class.getResourceAsStream("filter_PropertyIsBetween.xml");
+        JAXBElement element = (JAXBElement) unmarshaller.unmarshal(xml);
+
+        Assert.assertEquals(XmlToSql(element).toString() ,"depth BETWEEN 100  200 ");
+
+        //Branch Like
+        xml = TestFes2_0_2.class.getResourceAsStream("filter_PropertyIsLike.xml");
+        element = (JAXBElement) unmarshaller.unmarshal(xml);
+
+        Assert.assertEquals(XmlToSql(element).toString() ,"LAST_NAME LIKE JOHN* ");
+
+        //Branch Nil
+        xml = TestFes2_0_2.class.getResourceAsStream("filter_PropertyIsNil.xml");
+        element = (JAXBElement) unmarshaller.unmarshal(xml);
+
+        Assert.assertEquals(XmlToSql(element).toString() ,"value IS NIL");
+
+        //Branch Null
+        xml = TestFes2_0_2.class.getResourceAsStream("filter_PropertyIsNull.xml");
+        element = (JAXBElement) unmarshaller.unmarshal(xml);
+
+        Assert.assertEquals(XmlToSql(element).toString() ,"ValueRef IS NULL");
+
+        //Branch PropertyIsGreaterThan
+        xml = TestFes2_0_2.class.getResourceAsStream("filter_PropertyIsGreaterThan.xml");
+        element = (JAXBElement) unmarshaller.unmarshal(xml);
         System.out.println(XmlToSql(element));
 
     }
+
 }

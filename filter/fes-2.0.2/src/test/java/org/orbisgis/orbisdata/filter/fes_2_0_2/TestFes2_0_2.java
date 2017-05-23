@@ -79,7 +79,7 @@ public class TestFes2_0_2 {
 
 
     /**
-     * Test of the static method
+     * Test of the static method for a SortBy
      * @throws JAXBException
      */
     @Test
@@ -92,4 +92,5 @@ public class TestFes2_0_2 {
         Assert.assertEquals(XmlToSql(element).toString(),"depth, temperature DESC");
 
     }
+    
 }

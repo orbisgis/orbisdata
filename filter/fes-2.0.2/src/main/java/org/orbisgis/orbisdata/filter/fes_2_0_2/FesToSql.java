@@ -61,32 +61,30 @@ public class FesToSql {
             switch (((JAXBElement) objectFromFilterXml).getName().getLocalPart()){
 
                 case "Filter":
-                    //not Implement yet
+                    //not implement yet
                 case "SortBy":
-
                     SortByType sortByType = (SortByType) ((JAXBElement) objectFromFilterXml).getValue();
+
                     if (sortByType.isSetSortProperty()) {
                         List<SortPropertyType> listProperty = sortByType.getSortProperty();
                         Iterator<SortPropertyType> listPropertyIterator = listProperty.iterator();
+
                         while (listPropertyIterator.hasNext()) {
                             SortPropertyType property = listPropertyIterator.next();
 
-                            if(listPropertyIterator.hasNext() && property.isSetSortOrder()) {
+                            if (listPropertyIterator.hasNext() && property.isSetSortOrder()) {
+                                returnSQL.append(property.getValueReference());
+                                returnSQL.append(property.getSortOrder().value() + ", ");
 
-                                returnSQL.append(" " + property.getValueReference() + " ");
-                                returnSQL.append(" "+property.getSortOrder().value()+",");
+                            } else if (listPropertyIterator.hasNext() && !(property.isSetSortOrder())) {
+                                returnSQL.append(property.getValueReference() + ", ");
 
-                            }else if(listPropertyIterator.hasNext() && !(property.isSetSortOrder())){
+                            } else if (!(listPropertyIterator.hasNext()) && (property.isSetSortOrder())) {
+                                returnSQL.append(property.getValueReference() + " ");
+                                returnSQL.append(property.getSortOrder());
 
-                                returnSQL.append(" " + property.getValueReference() + ",");
-
-                            }else if(!(listPropertyIterator.hasNext()) && (property.isSetSortOrder())){
-
-                                returnSQL.append(" " + property.getValueReference() + " ");
-                                returnSQL.append(" " + property.getSortOrder());
-                            }
-                            else{
-                                returnSQL.append(" " + property.getValueReference());
+                            } else {
+                                returnSQL.append(property.getValueReference());
                             }
                         }
                     }

@@ -36,6 +36,7 @@
 package org.orbisgis.orbisdata.filter.fes_2_0_2;
 
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -86,7 +87,9 @@ public class TestFes2_0_2 {
         //Branch SortBy
         xml = TestFes2_0_2.class.getResourceAsStream("filter_Sorting.xml");
         JAXBElement element = (JAXBElement) unmarshaller.unmarshal(xml);
-        System.out.println(XmlToSql(element));
+
+
+        Assert.assertEquals(XmlToSql(element).toString(),"depth, temperature DESC");
 
     }
 }

@@ -91,6 +91,20 @@ public class TestFes2_0_2 {
 
         Assert.assertEquals(XmlToSql(element).toString(),"depth, temperature DESC");
 
+        //Error : Without Property
+        xml = TestFes2_0_2.class.getResourceAsStream("filter_SortingWithoutProperty.xml");
+        element = (JAXBElement) unmarshaller.unmarshal(xml);
+
+        Assert.assertEquals(XmlToSql(element).toString(),"");
+
+        //Error : objectFromFilterXml isn't an instance of JAXBElement
+        xml = TestFes2_0_2.class.getResourceAsStream("filter_Sorting.xml");
+        Object elementObject = "filter_Sorting";
+
+        XmlToSql(elementObject).toString();
+
+        //Error : objectFromFilterXml is null
+        XmlToSql(null).toString();
     }
     
 }

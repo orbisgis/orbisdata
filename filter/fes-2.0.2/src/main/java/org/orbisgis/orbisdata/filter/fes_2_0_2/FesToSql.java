@@ -96,12 +96,16 @@ public class FesToSql {
                                 }
                             }
                         } else {
-                            LOGGER.warn("Warning : There aren't any property between the tag SortBy from the xml file ");}
+                            LOGGER.warn("Warning : There aren't any property between the tag SortBy from the xml file ");
+                        }
                         break;
                 }
-            } else {LOGGER.error("Error : Parameter objectFromFilterXml isn't an instance of JAXBElement");}
+            } else {
+                LOGGER.error("Error : Parameter objectFromFilterXml isn't an instance of JAXBElement");
+            }
+        } else {
+            LOGGER.error("Error : Parameter objectFromFilterXml is null");
         }
-        else {LOGGER.error("Error : Parameter objectFromFilterXml is null");}
         return returnSQL;
     }
 }

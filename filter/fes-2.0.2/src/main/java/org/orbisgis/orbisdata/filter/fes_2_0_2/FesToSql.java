@@ -70,7 +70,36 @@ public class FesToSql {
                 switch (((JAXBElement) objectFromFilterXml).getName().getLocalPart()) {
 
                     case "Filter":
-                        //not implemented yet
+                        FilterType filterType = (FilterType) ((JAXBElement) objectFromFilterXml).getValue();
+
+                        if (filterType.isSetComparisonOps()) {
+                            JAXBElement<ComparisonOpsType> comparisonElement = (JAXBElement<ComparisonOpsType>) filterType.getComparisonOps();
+                            returnSQL.append(operatorComparison(comparisonElement));
+
+                        } else if (filterType.isSetSpatialOps()) {
+                            JAXBElement<SpatialOpsType> spatialElement = (JAXBElement<SpatialOpsType>) filterType.getSpatialOps();
+                            returnSQL.append(operatorSpatial(spatialElement));
+
+                        } else if (filterType.isSetLogicOps()) {
+                            JAXBElement<LogicOpsType> logicalElement = (JAXBElement<LogicOpsType>) filterType.getLogicOps();
+                            returnSQL.append(operatorLogical(logicalElement));
+
+                        } else if (filterType.isSetFunction()) {
+                            ObjectFactory factory = new ObjectFactory();
+                            JAXBElement<FunctionType> functionElement = factory.createFunction(filterType.getFunction());
+                            returnSQL.append(operatorFunction(functionElement));
+
+                        } else if (filterType.isSetId()) {
+                            // Not required at this time
+
+                        } else if (filterType.isSetExtensionOps()) {
+                            // Not required at this time
+
+                        } else if (filterType.isSetTemporalOps()) {
+                            // Not required at this time
+
+                        }
+                        break;
                     case "SortBy":
                         SortByType sortByType = (SortByType) ((JAXBElement) objectFromFilterXml).getValue();
 
@@ -109,4 +138,257 @@ public class FesToSql {
         }
         return returnSQL;
     }
+
+
+//------------------------------------------------Operator Comparison-------------------------------------------------
+
+    /**
+     * Method separate the comparison object for each comparison operator
+     * @param comparisonElement
+     * @return
+     */
+    private static StringBuilder operatorComparison(JAXBElement<ComparisonOpsType> comparisonElement){
+        StringBuilder returnSQL = new StringBuilder();
+
+        if (comparisonElement.getName().getLocalPart().equals("PropertyIsBetween")) {
+            returnSQL.append(operatorPropertyIsBetween(comparisonElement));
+
+        } else if (comparisonElement.getName().getLocalPart().equals("PropertyIsLike")) {
+            returnSQL.append(operatorPropertyIsLike(comparisonElement));
+
+        } else if (comparisonElement.getName().getLocalPart().equals("PropertyIsNil")) {
+            returnSQL.append(operatorPropertyIsNil(comparisonElement));
+
+        } else if (comparisonElement.getName().getLocalPart().equals("PropertyIsNull")) {
+            returnSQL.append(operatorPropertyIsNull(comparisonElement));
+
+        } else {
+            returnSQL.append(operatorBinaryComparison(comparisonElement));
+        }
+        return returnSQL;
+    }
+
+    /**
+     * Method create the String returned for the object of type PropertyIsBetween
+     * @param comparisonElement
+     * @return
+     */
+    private static StringBuilder operatorPropertyIsBetween(JAXBElement<ComparisonOpsType> comparisonElement){
+        StringBuilder returnSQL = new StringBuilder();
+        PropertyIsBetweenType propertyIsBetweenType = (PropertyIsBetweenType) comparisonElement.getValue();
+        JAXBElement lowerBoundary = propertyIsBetweenType.getLowerBoundary().getExpression();
+        JAXBElement upperBoundary = propertyIsBetweenType.getUpperBoundary().getExpression();
+
+        if (propertyIsBetweenType.isSetExpression()) {
+            returnSQL.append(getExpressionRecursive(propertyIsBetweenType.getExpression()));
+            returnSQL.append("BETWEEN ");
+
+            if (propertyIsBetweenType.isSetLowerBoundary()) {
+                returnSQL.append(getExpressionRecursive(lowerBoundary));
+            }else {
+                returnSQL.append("   ");
+            }
+            if (propertyIsBetweenType.isSetUpperBoundary()) {
+                returnSQL.append(getExpressionRecursive(upperBoundary));
+            }else {
+                returnSQL.append("   ");
+            }
+
+        } else {
+            LOGGER.warn("Warning: Input expression is not set");
+        }
+        return  returnSQL;
+    }
+
+    /**
+     * Method create the String returned for the object of type PropertyIsLike
+     * @param comparisonElement
+     * @return
+     */
+    private static StringBuilder operatorPropertyIsLike(JAXBElement<ComparisonOpsType> comparisonElement){
+        StringBuilder returnSQL = new StringBuilder();
+        PropertyIsLikeType propertyIsLikeType = (PropertyIsLikeType) comparisonElement.getValue();
+        if (propertyIsLikeType.isSetExpression()) {
+            List<JAXBElement<?>> list = propertyIsLikeType.getExpression();
+
+            for (JAXBElement element : list) {
+                returnSQL.append(getExpressionRecursive(element));
+
+                if (list.get(0) == element) {
+                    returnSQL.append("LIKE ");
+                }
+            }
+        }else {
+            LOGGER.warn("Warning: Input expression is not set");
+        }
+        return  returnSQL;
+    }
+
+    /**
+     * Method create the String returned for the object of type PropertyIsNil
+     * @param comparisonElement
+     * @return
+     */
+    private static StringBuilder operatorPropertyIsNil(JAXBElement<ComparisonOpsType> comparisonElement){
+        StringBuilder returnSQL = new StringBuilder();
+        PropertyIsNilType propertyIsNilType = (PropertyIsNilType) comparisonElement.getValue();
+
+        if (propertyIsNilType.isSetExpression()) {
+            returnSQL.append(getExpressionRecursive(propertyIsNilType.getExpression()));
+            returnSQL.append("IS NIL");
+        }else {
+            LOGGER.warn("Warning: Input expression is not set");
+        }
+        return  returnSQL;
+    }
+
+    /**
+     * Method create the String returned for the object of type PropertyIsNull
+     * @param comparisonElement
+     * @return
+     */
+    private static StringBuilder operatorPropertyIsNull(JAXBElement<ComparisonOpsType> comparisonElement){
+        StringBuilder returnSQL = new StringBuilder();
+        PropertyIsNullType propertyIsNullType = (PropertyIsNullType) comparisonElement.getValue();
+
+        if (propertyIsNullType.isSetExpression()) {
+            returnSQL.append(getExpressionRecursive(propertyIsNullType.getExpression()));
+            returnSQL.append("IS NULL");
+        }else {
+            LOGGER.warn("Warning: Input expression is not set");
+        }
+        return  returnSQL;
+    }
+
+    /**
+     * Method create the String returned for the object of type BinaryComparison
+     * @param comparisonElement
+     * @return
+     */
+    private static StringBuilder operatorBinaryComparison(JAXBElement<ComparisonOpsType> comparisonElement){
+        StringBuilder returnSQL = new StringBuilder();
+        //type BinaryComparisonOpType
+        BinaryComparisonOpType binaryComparisonOpType = (BinaryComparisonOpType) comparisonElement.getValue();
+
+        if (binaryComparisonOpType.isSetExpression()) {
+            List<JAXBElement<?>> list = binaryComparisonOpType.getExpression();
+
+            for (JAXBElement element : list) {
+                returnSQL.append(getExpressionRecursive(element));
+
+                if (list.get(0) == element) {
+
+                    switch (comparisonElement.getName().getLocalPart()) {
+                        case "PropertyIsGreaterThan":
+                            returnSQL.append("> ");
+                            break;
+                        case "PropertyIsLessThan":
+                            returnSQL.append("< ");
+                            break;
+                        case "PropertyEqualTo":
+                            returnSQL.append("= ");
+                            break;
+                        case "PropertyIsNotEqualTo":
+                            returnSQL.append("!= ");
+                            break;
+                        case "PropertyIsLessThanOrEqualTo":
+                            returnSQL.append("<= ");
+                            break;
+                        case "PropertyIsGreaterThanOrEqualTo":
+                            returnSQL.append(">= ");
+                            break;
+                    }
+                }
+            }
+        }else {
+            LOGGER.warn("Warning: Input expression is not set");
+        }
+        return  returnSQL;
+    }
+
+
+//-----------------------------------------------Operator Spatial-------------------------------------------------------
+
+    /**
+     * Method separate the Spatial object for each Spatial Operator
+     * @param spatialElement
+     * @return
+     */
+    private static StringBuilder operatorSpatial(JAXBElement<SpatialOpsType> spatialElement){
+        StringBuilder returnSQL = new StringBuilder();
+        // not implemented yet
+        return  returnSQL;
+    }
+
+//------------------------------------------------Operator Logical------------------------------------------------------
+
+    /**
+     * Method separate the Logical object for each Spatial Logical
+     * @param logicalElement
+     * @return
+     */
+    private static StringBuilder operatorLogical(JAXBElement<LogicOpsType> logicalElement){
+        StringBuilder returnSQL = new StringBuilder();
+        // not implemented yet
+        return  returnSQL;
+    }
+
+//-----------------------------------------------Operator Function------------------------------------------------------
+
+    /**
+     * Method create the String returned for the object of type Function. Used the Method getExpressionRecursive
+     * because an expression can be a function.
+     * @param functionElement
+     * @return
+     */
+    private static StringBuilder operatorFunction(JAXBElement<FunctionType> functionElement){
+        StringBuilder returnSQL = new StringBuilder();
+        returnSQL.append(getExpressionRecursive(functionElement));
+        returnSQL.append(")");
+        return  returnSQL;
+    }
+
+//----------------------------------------------------Expression--------------------------------------------------------
+
+    /**
+     * Method create the String returned for the expression : Function, ValueReference, Literal and Object.
+     * @param element
+     * @return
+     */
+    private static StringBuilder getExpressionRecursive(JAXBElement element){
+        StringBuilder stringBuilder = new StringBuilder();
+
+        if(element.getName().getLocalPart().equals("Function")){
+            FunctionType functionType = (FunctionType) element.getValue();
+            stringBuilder.append(functionType.getName()+"( ");
+
+            List<JAXBElement<?>> listExpression = functionType.getExpression();
+            for(JAXBElement exp : listExpression){
+
+                stringBuilder.append(getExpressionRecursive(exp));
+
+                if (listExpression.get((listExpression.size()-1)) != exp) {
+                    stringBuilder.append(", ");
+                }
+            }
+
+        }else if(element.getName().getLocalPart().equals("ValueReference")) {
+            stringBuilder.append(element.getValue().toString()+" ");
+
+        }else if(element.getName().getLocalPart().equals("Literal")) {
+            element = (JAXBElement<LiteralType>) element;
+            LiteralType literalType = (LiteralType) element.getValue();
+            List list = literalType.getContent();
+
+            for(Object obj : list){
+                stringBuilder.append(obj.toString()+" ");
+            }
+
+        }else{//if there are other type of object to define.
+            stringBuilder.append(" "+element.getValue().toString()+" ");
+        }
+
+        return stringBuilder;
+    }
+
 }

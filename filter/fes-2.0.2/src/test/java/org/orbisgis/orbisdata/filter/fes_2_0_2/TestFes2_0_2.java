@@ -106,5 +106,60 @@ public class TestFes2_0_2 {
         //Error : objectFromFilterXml is null
         XmlToSql(null).toString();
     }
+
+    /**
+     * Test of the static method for the comparison operator
+     *
+     * @throws JAXBException
+     */
+    @Test
+    public void testXmlToSqlFilterComparison() throws JAXBException {
+
+        //Branch Between
+        xml = TestFes2_0_2.class.getResourceAsStream("filter_PropertyIsBetween.xml");
+        JAXBElement element = (JAXBElement) unmarshaller.unmarshal(xml);
+
+        Assert.assertEquals(XmlToSql(element).toString(), "depth BETWEEN 100 200 ");
+
+        //Branch Like
+        xml = TestFes2_0_2.class.getResourceAsStream("filter_PropertyIsLike.xml");
+        element = (JAXBElement) unmarshaller.unmarshal(xml);
+
+        Assert.assertEquals(XmlToSql(element).toString(), "LAST_NAME LIKE JOHN* ");
+
+        //Branch Nil
+        xml = TestFes2_0_2.class.getResourceAsStream("filter_PropertyIsNil.xml");
+        element = (JAXBElement) unmarshaller.unmarshal(xml);
+
+        Assert.assertEquals(XmlToSql(element).toString(), "value IS NIL");
+
+        //Branch Null
+        xml = TestFes2_0_2.class.getResourceAsStream("filter_PropertyIsNull.xml");
+        element = (JAXBElement) unmarshaller.unmarshal(xml);
+
+        Assert.assertEquals(XmlToSql(element).toString(), "ValueRef IS NULL");
+
+        //Branch PropertyIsGreaterThan
+        xml = TestFes2_0_2.class.getResourceAsStream("filter_PropertyIsGreaterThan.xml");
+        element = (JAXBElement) unmarshaller.unmarshal(xml);
+
+        Assert.assertEquals(XmlToSql(element).toString(), "DEPTH > 30 ");
+
+    }
+
+    /**
+     * Test of the static method for the type Function
+     *
+     * @throws JAXBException
+     */
+    @Test
+    public void testXmlToSalFilterFunction() throws JAXBException {
+
+        //Branch Equals
+        xml = TestFes2_0_2.class.getResourceAsStream("filter_Function.xml");
+        JAXBElement element = (JAXBElement) unmarshaller.unmarshal(xml);
+
+        Assert.assertEquals(XmlToSql(element).toString(), "TheFunction( 1Parameter , 2Parameter )");
+    }
     
 }

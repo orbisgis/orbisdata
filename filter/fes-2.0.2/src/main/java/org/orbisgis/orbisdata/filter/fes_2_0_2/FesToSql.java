@@ -376,15 +376,14 @@ public class FesToSql {
             stringBuilder.append(element.getValue().toString()+" ");
 
         }else if(element.getName().getLocalPart().equals("Literal")) {
-            element = (JAXBElement<LiteralType>) element;
-            LiteralType literalType = (LiteralType) element.getValue();
+            LiteralType literalType = ((JAXBElement<LiteralType>)element).getValue();
             List list = literalType.getContent();
 
             for(Object obj : list){
                 stringBuilder.append(obj.toString()+" ");
             }
 
-        }else{//if there are other type of object to define.
+        }else{
             stringBuilder.append(" "+element.getValue().toString()+" ");
         }
 

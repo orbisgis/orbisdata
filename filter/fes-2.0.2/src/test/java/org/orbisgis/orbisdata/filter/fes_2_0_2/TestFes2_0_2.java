@@ -145,6 +145,12 @@ public class TestFes2_0_2 {
 
         Assert.assertEquals(XmlToSql(element).toString(), "DEPTH > 30 ");
 
+        //Error : Property Without expression
+        xml = TestFes2_0_2.class.getResourceAsStream("filter_PropertyIsLikeWithoutExpression.xml");
+        element = (JAXBElement) unmarshaller.unmarshal(xml);
+
+        Assert.assertEquals(XmlToSql(element).toString(), "");
+
     }
 
     /**

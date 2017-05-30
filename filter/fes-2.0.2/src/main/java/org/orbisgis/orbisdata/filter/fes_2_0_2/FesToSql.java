@@ -51,6 +51,7 @@ import org.slf4j.LoggerFactory;
  */
 public class FesToSql {
 
+    /** Logger instance. */
     private static Logger LOGGER = LoggerFactory.getLogger(FesToSql.class);
 
     /**

@@ -145,6 +145,30 @@ public class TestFes2_0_2 {
 
         Assert.assertEquals(XmlToSql(element).toString(), "DEPTH > 30 ");
 
+        //Branch PropertyIsLessThan
+        xml = TestFes2_0_2.class.getResourceAsStream("filter_PropertyIsLessThan.xml");
+        element = (JAXBElement) unmarshaller.unmarshal(xml);
+
+        Assert.assertEquals(XmlToSql(element).toString(), "DEPTH < 30 ");
+
+        //Branch PropertyIsGreaterThanOrEqualTo
+        xml = TestFes2_0_2.class.getResourceAsStream("filter_PropertyIsGreaterThanOrEqualTo.xml");
+        element = (JAXBElement) unmarshaller.unmarshal(xml);
+
+        Assert.assertEquals(XmlToSql(element).toString(), "DEPTH >= 30 ");
+
+        //Branch PropertyIsEqualTo
+        xml = TestFes2_0_2.class.getResourceAsStream("filter_PropertyIsEqualTo.xml");
+        element = (JAXBElement) unmarshaller.unmarshal(xml);
+
+        Assert.assertEquals(XmlToSql(element).toString(), "DEPTH = 30 ");
+
+        //Branch PropertyIsNotEqualTo
+        xml = TestFes2_0_2.class.getResourceAsStream("filter_PropertyIsNotEqualTo.xml");
+        element = (JAXBElement) unmarshaller.unmarshal(xml);
+
+        Assert.assertEquals(XmlToSql(element).toString(), "DEPTH != 30 ");
+
         //Error : Property Without expression
         xml = TestFes2_0_2.class.getResourceAsStream("filter_PropertyIsLikeWithoutExpression.xml");
         element = (JAXBElement) unmarshaller.unmarshal(xml);

@@ -5,5 +5,6 @@
         xsi:schemaLocation="http://www.opengis.net/fes/2.0 http://schemas.opengis.net/filter/2.0/filterAll.xsd">
     <fes:PropertyIsLike wildCard="*" singleChar="#" escapeChar="!">
         <fes:ValueReference>LAST_NAME</fes:ValueReference>
-        <fes:Literal>JOHN*</fes:Literal></fes:PropertyIsLike>
+        <fes:Literal>JOHN*</fes:Literal>
+    </fes:PropertyIsLike>
 </fes:Filter>

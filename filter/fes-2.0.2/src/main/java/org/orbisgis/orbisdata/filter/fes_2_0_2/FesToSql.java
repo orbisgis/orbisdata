@@ -391,10 +391,9 @@ public class FesToSql {
                 }
                 break;
             default:
-                stringBuilder.append(" "+element.getValue().toString()+" ");
+                LOGGER.error("Error : Unrecognized object in the expression");
         }
 
         return stringBuilder;
     }
-
 }

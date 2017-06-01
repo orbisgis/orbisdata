@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<fes:Filter
+        xmlns:fes="http://www.opengis.net/fes/2.0"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.opengis.net/fes/2.0 http://schemas.opengis.net/filter/2.0/filterAll.xsd">
+    <fes:Or>
+        <fes:And>
+            <fes:PropertyIsGreaterThan>
+            <fes:ValueReference>depth</fes:ValueReference>
+            <fes:Literal>80</fes:Literal>
+            </fes:PropertyIsGreaterThan>
+            <fes:PropertyIsLessThan>
+                <fes:ValueReference>depth</fes:ValueReference>
+                <fes:Literal>200</fes:Literal>
+            </fes:PropertyIsLessThan>
+        </fes:And>
+        <fes:PropertyIsBetween>
+            <fes:ValueReference>depth</fes:ValueReference>
+            <fes:LowerBoundary>
+                <fes:Literal>100</fes:Literal>
+            </fes:LowerBoundary>
+            <fes:UpperBoundary>
+                <fes:Literal>200</fes:Literal>
+            </fes:UpperBoundary>
+        </fes:PropertyIsBetween>
+    </fes:Or>
+</fes:Filter>

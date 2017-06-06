@@ -362,7 +362,7 @@ public class FesToSql {
      */
     private static StringBuilder operatorBBOX( BBOXType bboxType) {
         StringBuilder returnSQL = new StringBuilder();
-        returnSQL.append("!( ST_Disjoint( ");
+        returnSQL.append("NOT ST_Disjoint( ");
         List<Object> list = bboxType.getExpressionOrAny();
         for (Object obj : list) {
             if (obj instanceof JAXBElement) {

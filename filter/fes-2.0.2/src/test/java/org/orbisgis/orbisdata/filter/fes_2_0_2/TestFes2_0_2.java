@@ -251,7 +251,7 @@ public class TestFes2_0_2 {
         xml = TestFes2_0_2.class.getResourceAsStream("filter_BBOX.xml");
         element = (JAXBElement) unmarshaller.unmarshal(xml);
 
-        Assert.assertEquals(XmlToSql(element).toString(), "!( ST_Disjoint( element , 100 , 200 )");
+        Assert.assertEquals(XmlToSql(element).toString(), "NOT ST_Disjoint( element , 100 , 200 )");
 
         //error : the object is not an instance of JaxBElement
         xml = TestFes2_0_2.class.getResourceAsStream("filter_UnrecognizedObject.xml");

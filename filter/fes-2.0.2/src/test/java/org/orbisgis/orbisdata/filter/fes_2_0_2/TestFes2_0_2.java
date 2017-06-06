@@ -103,7 +103,7 @@ public class TestFes2_0_2 {
         XmlToSql(elementObject);
 
         //Error : objectFromFilterXml is null
-        XmlToSql(null);
+        Assert.assertTrue(XmlToSql(null).toString().isEmpty());
     }
 
     /**
@@ -166,13 +166,13 @@ public class TestFes2_0_2 {
         xml = TestFes2_0_2.class.getResourceAsStream("filter_PropertyIsNotEqualTo.xml");
         element = (JAXBElement) unmarshaller.unmarshal(xml);
 
-        Assert.assertEquals(XmlToSql(element).toString(), "DEPTH != 30 ");
+        Assert.assertEquals(XmlToSql(element).toString(), "NOT DEPTH = 30 ");
 
         //Error : Property Without expression
         xml = TestFes2_0_2.class.getResourceAsStream("filter_PropertyIsLikeWithoutExpression.xml");
         element = (JAXBElement) unmarshaller.unmarshal(xml);
 
-        XmlToSql(element);
+        Assert.assertTrue(XmlToSql(element).toString().isEmpty());
     }
 
     /**
@@ -246,7 +246,6 @@ public class TestFes2_0_2 {
 
         Assert.assertEquals(XmlToSql(element).toString(), "ST_DWithin( London , Paris , 344.0 )");
 
-
         //Branch BBOX
         xml = TestFes2_0_2.class.getResourceAsStream("filter_BBOX.xml");
         element = (JAXBElement) unmarshaller.unmarshal(xml);
@@ -257,7 +256,7 @@ public class TestFes2_0_2 {
         xml = TestFes2_0_2.class.getResourceAsStream("filter_UnrecognizedObject.xml");
         element = (JAXBElement) unmarshaller.unmarshal(xml);
 
-        XmlToSql(element);
+        Assert.assertEquals(XmlToSql(element).toString(), "ST_Within( WKB_GEOM , )");
 
 
     }
@@ -279,15 +278,12 @@ public class TestFes2_0_2 {
         xml = TestFes2_0_2.class.getResourceAsStream("filter_Not.xml");
         element = (JAXBElement) unmarshaller.unmarshal(xml);
 
-        Assert.assertEquals(XmlToSql(element).toString(), "!( ( depth > 80 And !( depth < 200 ) ) ) ");
+        Assert.assertEquals(XmlToSql(element).toString(), "NOT ( ( depth > 80 And NOT ( depth < 200 ) ) ) ");
 
         //Branch Not recursive
         xml = TestFes2_0_2.class.getResourceAsStream("filter_NotRecur.xml");
         element = (JAXBElement) unmarshaller.unmarshal(xml);
 
-        Assert.assertEquals(XmlToSql(element).toString(), "!( !( depth < 200 ) ) ");
-
-
+        Assert.assertEquals(XmlToSql(element).toString(), "NOT ( NOT ( depth < 200 ) ) ");
     }
-
 }

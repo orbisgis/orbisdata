@@ -53,7 +53,7 @@ import static org.orbisgis.orbisdata.filter.fes_2_0_2.JaxbContainer.JAXBCONTEXT;
  * Test of the classFesToSql
  * @author Vincent QUILLIEN
  */
-public class TestFes2_0_2 {
+public class TestFesToSql {
 
     /**Object for the process of deserializing XML data into newly created Java content trees.*/
     Unmarshaller unmarshaller;
@@ -84,20 +84,20 @@ public class TestFes2_0_2 {
     @Test
     public void testXmlToSqlSortBy() throws JAXBException {
         //Branch SortBy
-        xml = TestFes2_0_2.class.getResourceAsStream("filter_Sorting.xml");
+        xml = TestFesToSql.class.getResourceAsStream("filter_Sorting.xml");
         JAXBElement element = (JAXBElement) unmarshaller.unmarshal(xml);
 
 
         Assert.assertEquals(XmlToSql(element).toString(),"depth, temperature DESC");
 
         //Error : Without Property
-        xml = TestFes2_0_2.class.getResourceAsStream("filter_SortingWithoutProperty.xml");
+        xml = TestFesToSql.class.getResourceAsStream("filter_SortingWithoutProperty.xml");
         element = (JAXBElement) unmarshaller.unmarshal(xml);
 
         Assert.assertEquals(XmlToSql(element).toString(),"");
 
         //Error : objectFromFilterXml isn't an instance of JAXBElement
-        xml = TestFes2_0_2.class.getResourceAsStream("filter_Sorting.xml");
+        xml = TestFesToSql.class.getResourceAsStream("filter_Sorting.xml");
         Object elementObject = "filter_Sorting";
 
         XmlToSql(elementObject);
@@ -115,61 +115,61 @@ public class TestFes2_0_2 {
     public void testXmlToSqlFilterComparison() throws JAXBException {
 
         //Branch Between
-        xml = TestFes2_0_2.class.getResourceAsStream("filter_PropertyIsBetween.xml");
+        xml = TestFesToSql.class.getResourceAsStream("filter_PropertyIsBetween.xml");
         JAXBElement element = (JAXBElement) unmarshaller.unmarshal(xml);
 
         Assert.assertEquals(XmlToSql(element).toString(), "depth BETWEEN 100 200 ");
 
         //Branch Like
-        xml = TestFes2_0_2.class.getResourceAsStream("filter_PropertyIsLike.xml");
+        xml = TestFesToSql.class.getResourceAsStream("filter_PropertyIsLike.xml");
         element = (JAXBElement) unmarshaller.unmarshal(xml);
 
         Assert.assertEquals(XmlToSql(element).toString(), "LAST_NAME LIKE JOHN* ");
 
         //Branch Nil
-        xml = TestFes2_0_2.class.getResourceAsStream("filter_PropertyIsNil.xml");
+        xml = TestFesToSql.class.getResourceAsStream("filter_PropertyIsNil.xml");
         element = (JAXBElement) unmarshaller.unmarshal(xml);
 
         Assert.assertEquals(XmlToSql(element).toString(), "value IS NULL");
 
         //Branch Null
-        xml = TestFes2_0_2.class.getResourceAsStream("filter_PropertyIsNull.xml");
+        xml = TestFesToSql.class.getResourceAsStream("filter_PropertyIsNull.xml");
         element = (JAXBElement) unmarshaller.unmarshal(xml);
 
         Assert.assertEquals(XmlToSql(element).toString(), "ValueRef IS NULL");
 
         //Branch PropertyIsGreaterThan
-        xml = TestFes2_0_2.class.getResourceAsStream("filter_PropertyIsGreaterThan.xml");
+        xml = TestFesToSql.class.getResourceAsStream("filter_PropertyIsGreaterThan.xml");
         element = (JAXBElement) unmarshaller.unmarshal(xml);
 
         Assert.assertEquals(XmlToSql(element).toString(), "DEPTH > 30 ");
 
         //Branch PropertyIsLessThan
-        xml = TestFes2_0_2.class.getResourceAsStream("filter_PropertyIsLessThan.xml");
+        xml = TestFesToSql.class.getResourceAsStream("filter_PropertyIsLessThan.xml");
         element = (JAXBElement) unmarshaller.unmarshal(xml);
 
         Assert.assertEquals(XmlToSql(element).toString(), "DEPTH < 30 ");
 
         //Branch PropertyIsGreaterThanOrEqualTo
-        xml = TestFes2_0_2.class.getResourceAsStream("filter_PropertyIsGreaterThanOrEqualTo.xml");
+        xml = TestFesToSql.class.getResourceAsStream("filter_PropertyIsGreaterThanOrEqualTo.xml");
         element = (JAXBElement) unmarshaller.unmarshal(xml);
 
         Assert.assertEquals(XmlToSql(element).toString(), "DEPTH >= 30 ");
 
         //Branch PropertyIsEqualTo
-        xml = TestFes2_0_2.class.getResourceAsStream("filter_PropertyIsEqualTo.xml");
+        xml = TestFesToSql.class.getResourceAsStream("filter_PropertyIsEqualTo.xml");
         element = (JAXBElement) unmarshaller.unmarshal(xml);
 
         Assert.assertEquals(XmlToSql(element).toString(), "DEPTH = 30 ");
 
         //Branch PropertyIsNotEqualTo
-        xml = TestFes2_0_2.class.getResourceAsStream("filter_PropertyIsNotEqualTo.xml");
+        xml = TestFesToSql.class.getResourceAsStream("filter_PropertyIsNotEqualTo.xml");
         element = (JAXBElement) unmarshaller.unmarshal(xml);
 
         Assert.assertEquals(XmlToSql(element).toString(), "NOT DEPTH = 30 ");
 
         //Error : Property Without expression
-        xml = TestFes2_0_2.class.getResourceAsStream("filter_PropertyIsLikeWithoutExpression.xml");
+        xml = TestFesToSql.class.getResourceAsStream("filter_PropertyIsLikeWithoutExpression.xml");
         element = (JAXBElement) unmarshaller.unmarshal(xml);
 
         Assert.assertTrue(XmlToSql(element).toString().isEmpty());
@@ -184,7 +184,7 @@ public class TestFes2_0_2 {
     public void testXmlToSalFilterFunction() throws JAXBException {
 
         //Branch Equals
-        xml = TestFes2_0_2.class.getResourceAsStream("filter_Function.xml");
+        xml = TestFesToSql.class.getResourceAsStream("filter_Function.xml");
         JAXBElement element = (JAXBElement) unmarshaller.unmarshal(xml);
 
         Assert.assertEquals(XmlToSql(element).toString(), "TheFunction( 1Parameter , 2Parameter )");
@@ -199,61 +199,61 @@ public class TestFes2_0_2 {
     public void testXmlToSalFilterSpatial() throws JAXBException {
 
         //Branch Equals
-        xml = TestFes2_0_2.class.getResourceAsStream("filter_Equals.xml");
+        xml = TestFesToSql.class.getResourceAsStream("filter_Equals.xml");
         JAXBElement element = (JAXBElement) unmarshaller.unmarshal(xml);
 
         Assert.assertEquals(XmlToSql(element).toString(), "ST_Equals( 1Parameter , 2Parameter )");
 
         //Branch Disjoint
-        xml = TestFes2_0_2.class.getResourceAsStream("filter_Disjoint.xml");
+        xml = TestFesToSql.class.getResourceAsStream("filter_Disjoint.xml");
         element = (JAXBElement) unmarshaller.unmarshal(xml);
 
         Assert.assertEquals(XmlToSql(element).toString(), "ST_Disjoint( 1Parameter , 2Parameter )");
 
         //Branch Touches
-        xml = TestFes2_0_2.class.getResourceAsStream("filter_Touches.xml");
+        xml = TestFesToSql.class.getResourceAsStream("filter_Touches.xml");
         element = (JAXBElement) unmarshaller.unmarshal(xml);
 
         Assert.assertEquals(XmlToSql(element).toString(), "ST_Touches( 1Parameter , 2Parameter )");
 
         //Branch Crosses
-        xml = TestFes2_0_2.class.getResourceAsStream("filter_Crosses.xml");
+        xml = TestFesToSql.class.getResourceAsStream("filter_Crosses.xml");
         element = (JAXBElement) unmarshaller.unmarshal(xml);
 
         Assert.assertEquals(XmlToSql(element).toString(), "ST_Crosses( 1Parameter , 2Parameter )");
 
         //Branch Contains
-        xml = TestFes2_0_2.class.getResourceAsStream("filter_Contains.xml");
+        xml = TestFesToSql.class.getResourceAsStream("filter_Contains.xml");
         element = (JAXBElement) unmarshaller.unmarshal(xml);
 
         Assert.assertEquals(XmlToSql(element).toString(), "ST_Contains( 1Parameter , 2Parameter )");
 
         //Branch Within
-        xml = TestFes2_0_2.class.getResourceAsStream("filter_Within.xml");
+        xml = TestFesToSql.class.getResourceAsStream("filter_Within.xml");
         element = (JAXBElement) unmarshaller.unmarshal(xml);
 
         Assert.assertEquals(XmlToSql(element).toString(), "ST_Within( 1Parameter , 2Parameter )");
 
         //Branch Intersects
-        xml = TestFes2_0_2.class.getResourceAsStream("filter_Intersects.xml");
+        xml = TestFesToSql.class.getResourceAsStream("filter_Intersects.xml");
         element = (JAXBElement) unmarshaller.unmarshal(xml);
 
         Assert.assertEquals(XmlToSql(element).toString(), "ST_Intersects( 1Parameter , 2Parameter )");
 
         //Branch Dwithin
-        xml = TestFes2_0_2.class.getResourceAsStream("filter_DWithIn.xml");
+        xml = TestFesToSql.class.getResourceAsStream("filter_DWithIn.xml");
         element = (JAXBElement) unmarshaller.unmarshal(xml);
 
         Assert.assertEquals(XmlToSql(element).toString(), "ST_DWithin( London , Paris , 344.0 )");
 
         //Branch BBOX
-        xml = TestFes2_0_2.class.getResourceAsStream("filter_BBOX.xml");
+        xml = TestFesToSql.class.getResourceAsStream("filter_BBOX.xml");
         element = (JAXBElement) unmarshaller.unmarshal(xml);
 
         Assert.assertEquals(XmlToSql(element).toString(), "NOT ST_Disjoint( element , 100 , 200 )");
 
         //error : the object is not an instance of JaxBElement
-        xml = TestFes2_0_2.class.getResourceAsStream("filter_UnrecognizedObject.xml");
+        xml = TestFesToSql.class.getResourceAsStream("filter_UnrecognizedObject.xml");
         element = (JAXBElement) unmarshaller.unmarshal(xml);
 
         Assert.assertEquals(XmlToSql(element).toString(), "ST_Within( WKB_GEOM , )");
@@ -270,18 +270,18 @@ public class TestFes2_0_2 {
     public void testXmlToSalFilterLogical() throws JAXBException {
 
         //Branch AndOr
-        xml = TestFes2_0_2.class.getResourceAsStream("filter_OrAnd.xml");
+        xml = TestFesToSql.class.getResourceAsStream("filter_OrAnd.xml");
         JAXBElement element = (JAXBElement) unmarshaller.unmarshal(xml);
         Assert.assertEquals(XmlToSql(element).toString(), "( ( depth > 80 And depth < 200 ) Or depth BETWEEN 100 200 ) ");
 
         //Branch Not
-        xml = TestFes2_0_2.class.getResourceAsStream("filter_Not.xml");
+        xml = TestFesToSql.class.getResourceAsStream("filter_Not.xml");
         element = (JAXBElement) unmarshaller.unmarshal(xml);
 
         Assert.assertEquals(XmlToSql(element).toString(), "NOT ( ( depth > 80 And NOT ( depth < 200 ) ) ) ");
 
         //Branch Not recursive
-        xml = TestFes2_0_2.class.getResourceAsStream("filter_NotRecur.xml");
+        xml = TestFesToSql.class.getResourceAsStream("filter_NotRecur.xml");
         element = (JAXBElement) unmarshaller.unmarshal(xml);
 
         Assert.assertEquals(XmlToSql(element).toString(), "NOT ( NOT ( depth < 200 ) ) ");

@@ -58,12 +58,8 @@ public class TestFesToSql {
     /**Object for the process of deserializing XML data into newly created Java content trees.*/
     Unmarshaller unmarshaller;
 
-    /**Object for the process of serializing Java content trees back into XML data.*/
-    Marshaller marshaller;
-
     /**Object used for save the data from a file of resources.*/
     InputStream xml;
-
 
     /**
      * Initialised the attributes from the class
@@ -72,8 +68,6 @@ public class TestFesToSql {
     @Before
     public void initialize() throws JAXBException{
         unmarshaller = JAXBCONTEXT.createUnmarshaller();
-        marshaller = JAXBCONTEXT.createMarshaller();
-        marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
     }
 
 

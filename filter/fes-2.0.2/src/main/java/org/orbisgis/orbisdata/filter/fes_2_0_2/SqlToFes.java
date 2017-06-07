@@ -36,6 +36,8 @@
 package org.orbisgis.orbisdata.filter.fes_2_0_2;
 
 import net.opengis.fes._2_0_2.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.xml.bind.JAXBElement;
 import java.util.HashMap;
@@ -48,6 +50,9 @@ import java.util.regex.Pattern;
  * @Author Vincent QUILLIEN
  */
 public class SqlToFes {
+
+    /** Logger instance. */
+    private static Logger LOGGER = LoggerFactory.getLogger(FesToSql.class);
 
     /**
      * This method take an String object which has the form of a SQL request and return a list of jaxB object :
@@ -77,6 +82,9 @@ public class SqlToFes {
                     }
                 }
             }
+        }
+        else {
+            LOGGER.error("Error : Parameter sqlRequest is null");
         }
         return listCommandSql;
     }
@@ -123,6 +131,8 @@ public class SqlToFes {
                 returnXml = sortByElement;
             }
 
+        }else {
+            LOGGER.error("Error : sqlRequest doesn't have the required form");
         }
         return returnXml;
     }
@@ -156,8 +166,8 @@ public class SqlToFes {
         }else if(matcherLogical.matches()){
             filterElement = createFilterLogical(matcherLogical);
 
-        }else{
-            //LOGGER
+        }else {
+            LOGGER.error("Error : sqlRequest doesn't have the required form");
         }
         return filterElement ;
     }
@@ -384,6 +394,8 @@ public class SqlToFes {
                 JAXBElement<String> valueRefElement = factory.createValueReference(matcherFunctionOrValueRef.group(2));
                 jaxBElement = valueRefElement;
             }
+        }else {
+            LOGGER.error("Error : sqlRequest doesn't have the required form");
         }
         return jaxBElement;
     }

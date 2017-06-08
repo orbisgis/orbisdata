@@ -148,25 +148,33 @@ public class SqlToFes {
 
         Pattern filterComparison = Pattern.compile("([\\w,( )]+)(LIKE|BETWEEN|IS NULL|<|>|>=|<=|=)([\\w,( )\'%]*)");
 
-        Pattern filterSpatial = Pattern.compile("(!\\( ST_Disjoint\\(|ST_DWithin\\(|ST_Equals\\(|ST_Disjoint\\(|" +
-                "ST_Touches\\(|ST_Overlaps\\(|ST_Crosses\\(|ST_Intersects\\(|ST_Contains\\(|ST_Within\\()([\\w,( )]+)\\)");
+        Pattern filterSpatial = Pattern.compile("(ST_DWithin\\(|ST_Equals\\(|ST_Disjoint\\(|ST_Touches\\(|" +
+                "ST_Overlaps\\(|ST_Crosses\\(|ST_Intersects\\(|ST_Contains\\(|ST_Within\\()([\\w,( )]+)\\)");
 
-        Pattern filterLogical = Pattern.compile("(.*)(NOT|AND|OR)(.+)");
+        Pattern filterLogical = Pattern.compile("(.*)(NOT|AND|OR)(.*)");
+
+        Pattern filterFunction = Pattern.compile("([\\w ]*)\\(([\\w( ),']*)\\)");
+
 
         Matcher matcherComparison = filterComparison.matcher(requestWhere);
         Matcher matcherSpatial = filterSpatial.matcher(requestWhere);
         Matcher matcherLogical = filterLogical.matcher(requestWhere);
+        Matcher matcherFunction = filterFunction.matcher(requestWhere);
 
-        if(matcherComparison.matches()) {
-            filterElement = createFilterComparison(matcherComparison);
 
-        }else if(matcherSpatial.matches()){
-            filterElement = createFilterSpatial(matcherSpatial);
-
-        }else if(matcherLogical.matches()){
+        if(matcherLogical.matches()){
             filterElement = createFilterLogical(matcherLogical);
 
-        }else {
+        }else if(matcherComparison.matches()) {
+            filterElement = createFilterComparison(matcherComparison);
+
+        }  else if(matcherSpatial.matches()){
+            filterElement = createFilterSpatial(matcherSpatial);
+
+        }else if(matcherFunction.matches()){
+            filterElement = createFilterFunction(matcherFunction);
+
+        } else {
             LOGGER.error("Error : sqlRequest doesn't have the required form");
         }
         return filterElement ;
@@ -303,28 +311,84 @@ public class SqlToFes {
      */
     private static FilterType createFilterSpatial(Matcher matcherSpatial) {
         ObjectFactory factory = new ObjectFactory();
-        FilterType filterElement = null;
+        FilterType filterElement = factory.createFilterType();
+        String elements = matcherSpatial.group(2).replaceAll(",","");
+        String[] listElement = elements.trim().split(" ");
         //not implemented yet
         switch (matcherSpatial.group(1)){
             case "ST_DWithin(":
+                DistanceBufferType distanceBuffer = factory.createDistanceBufferType();
+                MeasureType measure = factory.createMeasureType();
+                measure.setValue(Double.parseDouble(listElement[2].trim()));
+                distanceBuffer.setDistance(measure);
+                distanceBuffer.getExpressionOrAny().add(getExpressionObject(listElement[0].trim(),false));
+                distanceBuffer.getExpressionOrAny().add(getExpressionObject(listElement[1].trim(),false));
+                JAXBElement<DistanceBufferType> distanceBufferElement = factory.createDWithin(distanceBuffer);
+                filterElement.setSpatialOps(distanceBufferElement);
                 break;
             case "NOT ST_Disjoint("://BBOX
+                BBOXType bbox = factory.createBBOXType();
+                bbox.getExpressionOrAny().add(getExpressionObject(listElement[0].trim(),false));
+                bbox.getExpressionOrAny().add(getExpressionObject(listElement[1].trim(),true));
+                bbox.getExpressionOrAny().add(getExpressionObject(listElement[2].trim(),true));
+                JAXBElement<BBOXType> bboxElement = factory.createBBOX(bbox);
+                filterElement.setSpatialOps(bboxElement);
                 break;
             case "ST_Equals(":
+                BinarySpatialOpType equals = factory.createBinarySpatialOpType();
+                equals.getExpressionOrAny().add(getExpressionObject(listElement[0].trim(),false));
+                equals.getExpressionOrAny().add(getExpressionObject(listElement[1].trim(),false));
+                JAXBElement<BinarySpatialOpType> equalsElement = factory.createEquals(equals);
+                filterElement.setSpatialOps(equalsElement);
                 break;
             case "ST_Disjoint(":
+                BinarySpatialOpType disjoint = factory.createBinarySpatialOpType();
+                disjoint.getExpressionOrAny().add(getExpressionObject(listElement[0].trim(),false));
+                disjoint.getExpressionOrAny().add(getExpressionObject(listElement[1].trim(),false));
+                JAXBElement<BinarySpatialOpType> disjointElement = factory.createDisjoint(disjoint);
+                filterElement.setSpatialOps(disjointElement);
                 break;
             case "ST_Touches(":
+                BinarySpatialOpType touches = factory.createBinarySpatialOpType();
+                touches.getExpressionOrAny().add(getExpressionObject(listElement[0].trim(),false));
+                touches.getExpressionOrAny().add(getExpressionObject(listElement[1].trim(),false));
+                JAXBElement<BinarySpatialOpType> touchesElement = factory.createTouches(touches);
+                filterElement.setSpatialOps(touchesElement);
                 break;
             case "ST_Overlaps(":
+                BinarySpatialOpType overlaps = factory.createBinarySpatialOpType();
+                overlaps.getExpressionOrAny().add(getExpressionObject(listElement[0].trim(),false));
+                overlaps.getExpressionOrAny().add(getExpressionObject(listElement[1].trim(),false));
+                JAXBElement<BinarySpatialOpType> overlapsElement = factory.createOverlaps(overlaps);
+                filterElement.setSpatialOps(overlapsElement);
                 break;
             case "ST_Crosses(":
+                BinarySpatialOpType crosses = factory.createBinarySpatialOpType();
+                crosses.getExpressionOrAny().add(getExpressionObject(listElement[0].trim(),false));
+                crosses.getExpressionOrAny().add(getExpressionObject(listElement[1].trim(),false));
+                JAXBElement<BinarySpatialOpType> crossesElement = factory.createCrosses(crosses);
+                filterElement.setSpatialOps(crossesElement);
                 break;
             case "ST_Intersects(":
+                BinarySpatialOpType intersects = factory.createBinarySpatialOpType();
+                intersects.getExpressionOrAny().add(getExpressionObject(listElement[0].trim(),false));
+                intersects.getExpressionOrAny().add(getExpressionObject(listElement[1].trim(),false));
+                JAXBElement<BinarySpatialOpType> intersectsElement = factory.createIntersects(intersects);
+                filterElement.setSpatialOps(intersectsElement);
                 break;
             case "ST_Contains(":
+                BinarySpatialOpType contains = factory.createBinarySpatialOpType();
+                contains.getExpressionOrAny().add(getExpressionObject(listElement[0].trim(),false));
+                contains.getExpressionOrAny().add(getExpressionObject(listElement[1].trim(),false));
+                JAXBElement<BinarySpatialOpType> containsElement = factory.createContains(contains);
+                filterElement.setSpatialOps(containsElement);
                 break;
             case "ST_Within(":
+                BinarySpatialOpType within = factory.createBinarySpatialOpType();
+                within.getExpressionOrAny().add(getExpressionObject(listElement[0].trim(),false));
+                within.getExpressionOrAny().add(getExpressionObject(listElement[1].trim(),false));
+                JAXBElement<BinarySpatialOpType> withinElement = factory.createWithin(within);
+                filterElement.setSpatialOps(withinElement);
                 break;
         }
         return filterElement;
@@ -333,21 +397,186 @@ public class SqlToFes {
 
     /**
      * This method create the jaxB object of the Logical operator and add it to a Filter Object.
-     * @param matcherSpatial An object which performed a match operations on the Pattern filterLogical.
+     * @param matcherLogical An object which performed a match operations on the Pattern filterLogical.
      * @return FilterType
      */
-    private static FilterType createFilterLogical(Matcher matcherSpatial) {
+    private static FilterType createFilterLogical(Matcher matcherLogical) {
         ObjectFactory factory = new ObjectFactory();
-        FilterType filterElement = null;
+        FilterType filterElement = factory.createFilterType();
+        JAXBElement<BBOXType> bboxElement = null;
         //not implemented yet
-        switch (matcherSpatial.group(1)) {
+        switch (matcherLogical.group(2)) {
             case "NOT":
+                UnaryLogicOpType unaryLogic = factory.createUnaryLogicOpType();
+                FilterType filterFirstParam = createFilter((matcherLogical.group(1).trim()+" "+
+                        matcherLogical.group(3).trim()).trim());
+
+                if (filterFirstParam.isSetComparisonOps()) {
+                    if(matcherLogical.group(3).trim().contains("=")){//case PropertyIsNotEquals
+                        filterElement.setComparisonOps(createObjectPropertyIsNotEqualsTo(matcherLogical));
+                    }else{
+                        unaryLogic.setComparisonOps(filterFirstParam.getComparisonOps());
+                    }
+
+                } else if (filterFirstParam.isSetSpatialOps()) {
+                    if(matcherLogical.group(3).trim().startsWith("ST_Disjoint")){//case BBOX
+                        filterElement.setSpatialOps(createObjectBBOX(matcherLogical));
+                    }else{
+                        unaryLogic.setSpatialOps(filterFirstParam.getSpatialOps());
+                    }
+
+                } else if (filterFirstParam.isSetLogicOps()) {
+                    unaryLogic.setLogicOps(filterFirstParam.getLogicOps());
+                } else if (filterFirstParam.isSetFunction()) {
+                    unaryLogic.setFunction(filterFirstParam.getFunction());
+                }
+
+                if(!filterElement.isSetComparisonOps() | !filterElement.isSetFunction() | !filterElement.isSetLogicOps() |
+                        !filterElement.isSetSpatialOps()){
+                    filterElement.setLogicOps(factory.createLogicOps(unaryLogic));
+                }
+
                 break;
             case "AND":
+                BinaryLogicOpType binaryLogicAnd = factory.createBinaryLogicOpType();
+                filterFirstParam = createFilter(matcherLogical.group(1).trim());
+                FilterType filterSecondParam = createFilter(matcherLogical.group(3).trim());
+
+                if (filterFirstParam.isSetComparisonOps()) {
+                    binaryLogicAnd.getComparisonOpsOrSpatialOpsOrTemporalOps().add(filterFirstParam.getComparisonOps());
+
+                } else if (filterFirstParam.isSetSpatialOps()) {
+                    binaryLogicAnd.getComparisonOpsOrSpatialOpsOrTemporalOps().add(filterFirstParam.getSpatialOps());
+
+                } else if (filterFirstParam.isSetLogicOps()) {
+                    binaryLogicAnd.getComparisonOpsOrSpatialOpsOrTemporalOps().add(filterFirstParam.getLogicOps());
+
+                } else if (filterFirstParam.isSetFunction()) {
+                    binaryLogicAnd.getComparisonOpsOrSpatialOpsOrTemporalOps().add(
+                            factory.createFunction(filterFirstParam.getFunction()));
+                }
+
+                if (filterSecondParam.isSetComparisonOps()) {
+                    binaryLogicAnd.getComparisonOpsOrSpatialOpsOrTemporalOps().add(filterSecondParam.getComparisonOps());
+
+                } else if (filterSecondParam.isSetSpatialOps()) {
+                    binaryLogicAnd.getComparisonOpsOrSpatialOpsOrTemporalOps().add(filterSecondParam.getSpatialOps());
+
+                } else if (filterSecondParam.isSetLogicOps()) {
+                    binaryLogicAnd.getComparisonOpsOrSpatialOpsOrTemporalOps().add(filterSecondParam.getLogicOps());
+
+                } else if (filterSecondParam.isSetFunction()) {
+                    binaryLogicAnd.getComparisonOpsOrSpatialOpsOrTemporalOps().add(
+                            factory.createFunction(filterSecondParam.getFunction()));
+                }
+
+                filterElement.setLogicOps(factory.createAnd(binaryLogicAnd));
                 break;
             case "OR":
+                BinaryLogicOpType binaryLogicOr = factory.createBinaryLogicOpType();
+                filterFirstParam = createFilter(matcherLogical.group(1).trim());
+                filterSecondParam = createFilter(matcherLogical.group(3).trim());
+
+                if (filterFirstParam.isSetComparisonOps()) {
+                    binaryLogicOr.getComparisonOpsOrSpatialOpsOrTemporalOps().add(filterFirstParam.getComparisonOps());
+
+                } else if (filterFirstParam.isSetSpatialOps()) {
+                    binaryLogicOr.getComparisonOpsOrSpatialOpsOrTemporalOps().add(filterFirstParam.getSpatialOps());
+
+                } else if (filterFirstParam.isSetLogicOps()) {
+                    binaryLogicOr.getComparisonOpsOrSpatialOpsOrTemporalOps().add(filterFirstParam.getLogicOps());
+
+                } else if (filterFirstParam.isSetFunction()) {
+                    binaryLogicOr.getComparisonOpsOrSpatialOpsOrTemporalOps().add(
+                            factory.createFunction(filterFirstParam.getFunction()));
+                }
+                if (filterSecondParam.isSetComparisonOps()) {
+                    binaryLogicOr.getComparisonOpsOrSpatialOpsOrTemporalOps().add(filterSecondParam.getComparisonOps());
+
+                } else if (filterSecondParam.isSetSpatialOps()) {
+                    binaryLogicOr.getComparisonOpsOrSpatialOpsOrTemporalOps().add(filterSecondParam.getSpatialOps());
+
+                } else if (filterSecondParam.isSetLogicOps()) {
+                    binaryLogicOr.getComparisonOpsOrSpatialOpsOrTemporalOps().add(filterSecondParam.getLogicOps());
+
+                } else if (filterSecondParam.isSetFunction()) {
+                    binaryLogicOr.getComparisonOpsOrSpatialOpsOrTemporalOps().add(
+                            factory.createFunction(filterSecondParam.getFunction()));
+                }
+                filterElement.setLogicOps(factory.createOr(binaryLogicOr));
                 break;
         }
+        return filterElement;
+    }
+
+
+    private static JAXBElement<BBOXType> createObjectBBOX(Matcher matcherLogical){
+        ObjectFactory factory = new ObjectFactory();
+        Pattern patternBBOX = Pattern.compile("(ST_Disjoint\\()([\\w,( )]+)\\)");
+        Matcher matcherBBOX = patternBBOX.matcher(matcherLogical.group(3).trim());
+        JAXBElement<BBOXType> bboxElement = null;
+        if(matcherBBOX.matches()) {
+            String elements = matcherBBOX.group(2).replaceAll(",","");
+            String[] listElement = elements.trim().split(" ");
+            BBOXType bbox = factory.createBBOXType();
+            bbox.getExpressionOrAny().add(getExpressionObject(listElement[0].trim(), false));
+            bbox.getExpressionOrAny().add(getExpressionObject(listElement[1].trim(), true));
+            bbox.getExpressionOrAny().add(getExpressionObject(listElement[2].trim(), true));
+            bboxElement = factory.createBBOX(bbox);
+        }
+        return bboxElement;
+    }
+
+    private static JAXBElement<BinaryComparisonOpType> createObjectPropertyIsNotEqualsTo(Matcher matcherLogical){
+        ObjectFactory factory = new ObjectFactory();
+        JAXBElement<BinaryComparisonOpType> propertyIsNotEqualToElement = null ;
+        Pattern patternNotEqualTo = Pattern.compile("([\\w,( )]+)(=)([\\w,( )\'%]*)");
+        Matcher matcherNotEqualTo = patternNotEqualTo.matcher(matcherLogical.group(3).trim());
+        if(matcherNotEqualTo.matches()) {
+            BinaryComparisonOpType propertyIsNotEqualTo = factory.createBinaryComparisonOpType();
+            propertyIsNotEqualTo.getExpression().add(
+                    getExpressionObject(matcherNotEqualTo.group(1).trim(), false));
+
+            propertyIsNotEqualTo.getExpression().add(
+                    getExpressionObject(matcherNotEqualTo.group(3).trim(), true));
+
+            propertyIsNotEqualToElement =
+                    factory.createPropertyIsNotEqualTo(propertyIsNotEqualTo);
+
+
+        }
+        return propertyIsNotEqualToElement;
+    }
+
+//-----------------------------------------------Operator Function------------------------------------------------------
+    /**
+     * This method create the jaxB object of the Logical operator and add it to a Filter Object.
+     * @param matcherFunction An object which performed a match operations on the Pattern filterLogical.
+     * @return FilterType
+     */
+    private static FilterType createFilterFunction(Matcher matcherFunction) {
+        ObjectFactory factory = new ObjectFactory();
+        FilterType filterElement = factory.createFilterType();
+        FunctionType function = factory.createFunctionType();
+
+        String elements = matcherFunction.group(2).replaceAll(",", "");
+        String expression = "";
+        String[] listElements = elements.split(" ");
+
+        function.setName(matcherFunction.group(1).trim());
+        if(matcherFunction.group(2).contains("(")){//if recursiviter
+            for(int i=0; i<listElements.length;i++) {
+                expression += listElements[i]+" ";
+            }
+            expression = expression.trim()+")";
+            function.getExpression().add(getExpressionObject(expression, false));
+
+        }else {
+            for (int i = 0; i < listElements.length; i++) {
+                function.getExpression().add(getExpressionObject(listElements[i].trim(), false));
+            }
+        }
+        filterElement.setFunction(function);
         return filterElement;
     }
 //----------------------------------------------------Expression--------------------------------------------------------
@@ -364,7 +593,7 @@ public class SqlToFes {
         JAXBElement jaxBElement = null;
 
         Pattern FilterDigit= Pattern.compile("[\\d,.]*");
-        Pattern FilterFunctionOrValueRef = Pattern.compile("([\\w ]*\\([\\w( )']*\\))|([\\w' ]*)");
+        Pattern FilterFunctionOrValueRef = Pattern.compile("([\\w ]*)\\(([\\w( ),']*)\\)|([\\w' ]*)");
 
         Matcher matcherFunctionOrValueRef = FilterFunctionOrValueRef.matcher(element);
         Matcher matcherDigit = FilterDigit.matcher(element);
@@ -384,18 +613,20 @@ public class SqlToFes {
 
             //Function Type
             if(matcherFunctionOrValueRef.group(1)!=null) {
-                JAXBElement expressionElement = getExpressionObject(matcherFunctionOrValueRef.group(1),false);
+                String[] listElements = matcherFunctionOrValueRef.group(2).split(" ");
                 FunctionType function = factory.createFunctionType();
-                function.getExpression().add(expressionElement);
+                JAXBElement expressionElement = null;
+                for(int i = 0; i<listElements.length;i++){
+                    expressionElement = getExpressionObject(listElements[i].trim(),false);
+                    function.getExpression().add(expressionElement);
+                }
                 JAXBElement<FunctionType> functionElement = factory.createFunction(function);
                 jaxBElement = functionElement;
 
             }else {//Value Reference
-                JAXBElement<String> valueRefElement = factory.createValueReference(matcherFunctionOrValueRef.group(2));
+                JAXBElement<String> valueRefElement = factory.createValueReference(matcherFunctionOrValueRef.group(3));
                 jaxBElement = valueRefElement;
             }
-        }else {
-            LOGGER.error("Error : sqlRequest doesn't have the required form");
         }
         return jaxBElement;
     }

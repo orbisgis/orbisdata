@@ -148,18 +148,18 @@ public class SqlToFes {
 
         Pattern filterComparison = Pattern.compile("([\\w,( )]+)(LIKE|BETWEEN|IS NULL|<|>|>=|<=|=)([\\w,( )\'%]*)");
 
-        Pattern filterSpatial = Pattern.compile("(ST_DWithin\\(|ST_Equals\\(|ST_Disjoint\\(|ST_Touches\\(|" +
-                "ST_Overlaps\\(|ST_Crosses\\(|ST_Intersects\\(|ST_Contains\\(|ST_Within\\()([\\w,( )]+)\\)");
+        Pattern filterSpatial = Pattern.compile("(ST_DWITHIN\\(|ST_EQUALS\\(|ST_DISJOINT\\(|ST_TOUCHES\\(|" +
+                "ST_OVERLAPS\\(|ST_CROSSES\\(|ST_INTERSECTS\\(|ST_CONTAINS\\(|ST_WITHIN\\()([\\w,( )]+)\\)");
 
         Pattern filterLogical = Pattern.compile("(.*)(NOT|AND|OR)(.*)");
 
         Pattern filterFunction = Pattern.compile("([\\w ]*)\\(([\\w( ),']*)\\)");
 
-
-        Matcher matcherComparison = filterComparison.matcher(requestWhere);
-        Matcher matcherSpatial = filterSpatial.matcher(requestWhere);
-        Matcher matcherLogical = filterLogical.matcher(requestWhere);
-        Matcher matcherFunction = filterFunction.matcher(requestWhere);
+        String requestWhereUpper = requestWhere.toUpperCase();
+        Matcher matcherComparison = filterComparison.matcher(requestWhereUpper);
+        Matcher matcherSpatial = filterSpatial.matcher(requestWhereUpper);
+        Matcher matcherLogical = filterLogical.matcher(requestWhereUpper);
+        Matcher matcherFunction = filterFunction.matcher(requestWhereUpper);
 
 
         if(matcherLogical.matches()){
@@ -316,7 +316,7 @@ public class SqlToFes {
         String[] listElement = elements.trim().split(" ");
         //not implemented yet
         switch (matcherSpatial.group(1)){
-            case "ST_DWithin(":
+            case "ST_DWITHIN(":
                 DistanceBufferType distanceBuffer = factory.createDistanceBufferType();
                 MeasureType measure = factory.createMeasureType();
                 measure.setValue(Double.parseDouble(listElement[2].trim()));
@@ -326,64 +326,56 @@ public class SqlToFes {
                 JAXBElement<DistanceBufferType> distanceBufferElement = factory.createDWithin(distanceBuffer);
                 filterElement.setSpatialOps(distanceBufferElement);
                 break;
-            case "NOT ST_Disjoint("://BBOX
-                BBOXType bbox = factory.createBBOXType();
-                bbox.getExpressionOrAny().add(getExpressionObject(listElement[0].trim(),false));
-                bbox.getExpressionOrAny().add(getExpressionObject(listElement[1].trim(),true));
-                bbox.getExpressionOrAny().add(getExpressionObject(listElement[2].trim(),true));
-                JAXBElement<BBOXType> bboxElement = factory.createBBOX(bbox);
-                filterElement.setSpatialOps(bboxElement);
-                break;
-            case "ST_Equals(":
+            case "ST_EQUALS(":
                 BinarySpatialOpType equals = factory.createBinarySpatialOpType();
                 equals.getExpressionOrAny().add(getExpressionObject(listElement[0].trim(),false));
                 equals.getExpressionOrAny().add(getExpressionObject(listElement[1].trim(),false));
                 JAXBElement<BinarySpatialOpType> equalsElement = factory.createEquals(equals);
                 filterElement.setSpatialOps(equalsElement);
                 break;
-            case "ST_Disjoint(":
+            case "ST_DISJOINT(":
                 BinarySpatialOpType disjoint = factory.createBinarySpatialOpType();
                 disjoint.getExpressionOrAny().add(getExpressionObject(listElement[0].trim(),false));
                 disjoint.getExpressionOrAny().add(getExpressionObject(listElement[1].trim(),false));
                 JAXBElement<BinarySpatialOpType> disjointElement = factory.createDisjoint(disjoint);
                 filterElement.setSpatialOps(disjointElement);
                 break;
-            case "ST_Touches(":
+            case "ST_TOUCHES(":
                 BinarySpatialOpType touches = factory.createBinarySpatialOpType();
                 touches.getExpressionOrAny().add(getExpressionObject(listElement[0].trim(),false));
                 touches.getExpressionOrAny().add(getExpressionObject(listElement[1].trim(),false));
                 JAXBElement<BinarySpatialOpType> touchesElement = factory.createTouches(touches);
                 filterElement.setSpatialOps(touchesElement);
                 break;
-            case "ST_Overlaps(":
+            case "ST_OVERLAPS(":
                 BinarySpatialOpType overlaps = factory.createBinarySpatialOpType();
                 overlaps.getExpressionOrAny().add(getExpressionObject(listElement[0].trim(),false));
                 overlaps.getExpressionOrAny().add(getExpressionObject(listElement[1].trim(),false));
                 JAXBElement<BinarySpatialOpType> overlapsElement = factory.createOverlaps(overlaps);
                 filterElement.setSpatialOps(overlapsElement);
                 break;
-            case "ST_Crosses(":
+            case "ST_CROSSES(":
                 BinarySpatialOpType crosses = factory.createBinarySpatialOpType();
                 crosses.getExpressionOrAny().add(getExpressionObject(listElement[0].trim(),false));
                 crosses.getExpressionOrAny().add(getExpressionObject(listElement[1].trim(),false));
                 JAXBElement<BinarySpatialOpType> crossesElement = factory.createCrosses(crosses);
                 filterElement.setSpatialOps(crossesElement);
                 break;
-            case "ST_Intersects(":
+            case "ST_INTERSECTS(":
                 BinarySpatialOpType intersects = factory.createBinarySpatialOpType();
                 intersects.getExpressionOrAny().add(getExpressionObject(listElement[0].trim(),false));
                 intersects.getExpressionOrAny().add(getExpressionObject(listElement[1].trim(),false));
                 JAXBElement<BinarySpatialOpType> intersectsElement = factory.createIntersects(intersects);
                 filterElement.setSpatialOps(intersectsElement);
                 break;
-            case "ST_Contains(":
+            case "ST_CONTAINS(":
                 BinarySpatialOpType contains = factory.createBinarySpatialOpType();
                 contains.getExpressionOrAny().add(getExpressionObject(listElement[0].trim(),false));
                 contains.getExpressionOrAny().add(getExpressionObject(listElement[1].trim(),false));
                 JAXBElement<BinarySpatialOpType> containsElement = factory.createContains(contains);
                 filterElement.setSpatialOps(containsElement);
                 break;
-            case "ST_Within(":
+            case "ST_WITHIN(":
                 BinarySpatialOpType within = factory.createBinarySpatialOpType();
                 within.getExpressionOrAny().add(getExpressionObject(listElement[0].trim(),false));
                 within.getExpressionOrAny().add(getExpressionObject(listElement[1].trim(),false));
@@ -403,8 +395,6 @@ public class SqlToFes {
     private static FilterType createFilterLogical(Matcher matcherLogical) {
         ObjectFactory factory = new ObjectFactory();
         FilterType filterElement = factory.createFilterType();
-        JAXBElement<BBOXType> bboxElement = null;
-        //not implemented yet
         switch (matcherLogical.group(2)) {
             case "NOT":
                 UnaryLogicOpType unaryLogic = factory.createUnaryLogicOpType();
@@ -419,7 +409,7 @@ public class SqlToFes {
                     }
 
                 } else if (filterFirstParam.isSetSpatialOps()) {
-                    if(matcherLogical.group(3).trim().startsWith("ST_Disjoint")){//case BBOX
+                    if(matcherLogical.group(3).trim().startsWith("ST_DISJOINT")){//case BBOX
                         filterElement.setSpatialOps(createObjectBBOX(matcherLogical));
                     }else{
                         unaryLogic.setSpatialOps(filterFirstParam.getSpatialOps());
@@ -431,7 +421,7 @@ public class SqlToFes {
                     unaryLogic.setFunction(filterFirstParam.getFunction());
                 }
 
-                if(!filterElement.isSetComparisonOps() | !filterElement.isSetFunction() | !filterElement.isSetLogicOps() |
+                if(!filterElement.isSetComparisonOps() && !filterElement.isSetFunction() && !filterElement.isSetLogicOps() &&
                         !filterElement.isSetSpatialOps()){
                     filterElement.setLogicOps(factory.createLogicOps(unaryLogic));
                 }
@@ -512,7 +502,7 @@ public class SqlToFes {
 
     private static JAXBElement<BBOXType> createObjectBBOX(Matcher matcherLogical){
         ObjectFactory factory = new ObjectFactory();
-        Pattern patternBBOX = Pattern.compile("(ST_Disjoint\\()([\\w,( )]+)\\)");
+        Pattern patternBBOX = Pattern.compile("(ST_DISJOINT\\()([\\w,( )]+)\\)");
         Matcher matcherBBOX = patternBBOX.matcher(matcherLogical.group(3).trim());
         JAXBElement<BBOXType> bboxElement = null;
         if(matcherBBOX.matches()) {
@@ -564,7 +554,7 @@ public class SqlToFes {
         String[] listElements = elements.split(" ");
 
         function.setName(matcherFunction.group(1).trim());
-        if(matcherFunction.group(2).contains("(")){//if recursiviter
+        if(matcherFunction.group(2).contains("(")){
             for(int i=0; i<listElements.length;i++) {
                 expression += listElements[i]+" ";
             }

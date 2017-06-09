@@ -123,6 +123,21 @@ public class TestSqlToFes {
         Assert.assertEquals(comparison.getExpression().get(0).getValue().toString(),"DEPTH");
         Assert.assertEquals(literal.getContent().get(0).toString(),"100");
 
+        //Branch PropertyIsNotEqualTo
+        request = "SELECT Column1 FROM table1 WHERE NOT DEPTH = 100";
+        list = sqlToXml(request);
+        filterElement = list.get("WHERE");
+        filter = filterElement.getValue();
+        comparison = (BinaryComparisonOpType) filter.getComparisonOps().getValue();
+        literal = (LiteralType) comparison.getExpression().get(1).getValue();
+
+
+        Assert.assertTrue(filterElement instanceof JAXBElement);
+        Assert.assertEquals(filterElement.getName().getLocalPart(),"Filter");
+        Assert.assertEquals(filter.getComparisonOps().getName().getLocalPart(),"PropertyIsNotEqualTo");
+        Assert.assertEquals(comparison.getExpression().get(0).getValue().toString(),"DEPTH");
+        Assert.assertEquals(literal.getContent().get(0).toString(),"100");
+
         //Branch PropertyIsBetween
         request = "SELECT Column1 FROM table1 WHERE DEPTH BETWEEN 100 200";
         list = sqlToXml(request);
@@ -164,7 +179,7 @@ public class TestSqlToFes {
         Assert.assertTrue(filterElement instanceof JAXBElement);
         Assert.assertEquals(filterElement.getName().getLocalPart(),"Filter");
         Assert.assertEquals(filter.getComparisonOps().getName().getLocalPart(),"PropertyIsLike");
-        Assert.assertEquals(propertyIsLike.getExpression().get(0).getValue().toString(),"name");
+        Assert.assertEquals(propertyIsLike.getExpression().get(0).getValue().toString(),"NAME");
 
         //Branch PropertyIsGreaterThan
         request = "SELECT Column1 FROM table1 WHERE DEPTH > 100";
@@ -238,10 +253,132 @@ public class TestSqlToFes {
         Assert.assertTrue(filterElement instanceof JAXBElement);
         Assert.assertEquals(filterElement.getName().getLocalPart(),"Filter");
         Assert.assertEquals(filter.getSpatialOps().getName().getLocalPart(),"DWithin");
-        Assert.assertEquals(((JAXBElement)distanceBuffer.getExpressionOrAny().get(0)).getValue().toString(),"Paris");
-        Assert.assertEquals(((JAXBElement)distanceBuffer.getExpressionOrAny().get(1)).getValue().toString(),"London");
+        Assert.assertEquals(((JAXBElement)distanceBuffer.getExpressionOrAny().get(0)).getValue().toString(),"PARIS");
+        Assert.assertEquals(((JAXBElement)distanceBuffer.getExpressionOrAny().get(1)).getValue().toString(),"LONDON");
         Assert.assertEquals(distanceBuffer.getDistance().getValue(),new Double(344.0), new Double(0));
 
+        //Branch Equals
+        request = "SELECT Column1 FROM table1 WHERE ST_Equals(element1, element2)";
+        list = sqlToXml(request);
+        filterElement = list.get("WHERE");
+        filter = filterElement.getValue();
+        BinarySpatialOpType equals = (BinarySpatialOpType) filter.getSpatialOps().getValue();
+
+        Assert.assertTrue(filterElement instanceof JAXBElement);
+        Assert.assertEquals(filterElement.getName().getLocalPart(),"Filter");
+        Assert.assertEquals(filter.getSpatialOps().getName().getLocalPart(),"Equals");
+        Assert.assertEquals(((JAXBElement)equals.getExpressionOrAny().get(0)).getValue().toString(),"ELEMENT1");
+        Assert.assertEquals(((JAXBElement)equals.getExpressionOrAny().get(1)).getValue().toString(),"ELEMENT2");
+
+        //Branch Disjoint
+        request = "SELECT Column1 FROM table1 WHERE ST_Disjoint(element1, element2)";
+        list = sqlToXml(request);
+        filterElement = list.get("WHERE");
+        filter = filterElement.getValue();
+        BinarySpatialOpType disjoint = (BinarySpatialOpType) filter.getSpatialOps().getValue();
+
+        Assert.assertTrue(filterElement instanceof JAXBElement);
+        Assert.assertEquals(filterElement.getName().getLocalPart(),"Filter");
+        Assert.assertEquals(filter.getSpatialOps().getName().getLocalPart(),"Disjoint");
+        Assert.assertEquals(((JAXBElement)disjoint.getExpressionOrAny().get(0)).getValue().toString(),"ELEMENT1");
+        Assert.assertEquals(((JAXBElement)disjoint.getExpressionOrAny().get(1)).getValue().toString(),"ELEMENT2");
+
+        //Branch Touches
+        request = "SELECT Column1 FROM table1 WHERE ST_Touches(element1, element2)";
+        list = sqlToXml(request);
+        filterElement = list.get("WHERE");
+        filter = filterElement.getValue();
+        BinarySpatialOpType touches = (BinarySpatialOpType) filter.getSpatialOps().getValue();
+
+        Assert.assertTrue(filterElement instanceof JAXBElement);
+        Assert.assertEquals(filterElement.getName().getLocalPart(),"Filter");
+        Assert.assertEquals(filter.getSpatialOps().getName().getLocalPart(),"Touches");
+        Assert.assertEquals(((JAXBElement)touches.getExpressionOrAny().get(0)).getValue().toString(),"ELEMENT1");
+        Assert.assertEquals(((JAXBElement)touches.getExpressionOrAny().get(1)).getValue().toString(),"ELEMENT2");
+
+        //Branch Overlaps
+        request = "SELECT Column1 FROM table1 WHERE ST_Overlaps(element1, element2)";
+        list = sqlToXml(request);
+        filterElement = list.get("WHERE");
+        filter = filterElement.getValue();
+        BinarySpatialOpType overlaps = (BinarySpatialOpType) filter.getSpatialOps().getValue();
+
+        Assert.assertTrue(filterElement instanceof JAXBElement);
+        Assert.assertEquals(filterElement.getName().getLocalPart(),"Filter");
+        Assert.assertEquals(filter.getSpatialOps().getName().getLocalPart(),"Overlaps");
+        Assert.assertEquals(((JAXBElement)overlaps.getExpressionOrAny().get(0)).getValue().toString(),"ELEMENT1");
+        Assert.assertEquals(((JAXBElement)overlaps.getExpressionOrAny().get(1)).getValue().toString(),"ELEMENT2");
+
+        //Branch Crosses
+        request = "SELECT Column1 FROM table1 WHERE ST_Crosses(element1, element2)";
+        list = sqlToXml(request);
+        filterElement = list.get("WHERE");
+        filter = filterElement.getValue();
+        BinarySpatialOpType crosses = (BinarySpatialOpType) filter.getSpatialOps().getValue();
+
+        Assert.assertTrue(filterElement instanceof JAXBElement);
+        Assert.assertEquals(filterElement.getName().getLocalPart(),"Filter");
+        Assert.assertEquals(filter.getSpatialOps().getName().getLocalPart(),"Crosses");
+        Assert.assertEquals(((JAXBElement)crosses.getExpressionOrAny().get(0)).getValue().toString(),"ELEMENT1");
+        Assert.assertEquals(((JAXBElement)crosses.getExpressionOrAny().get(1)).getValue().toString(),"ELEMENT2");
+
+        //Branch Intersects
+        request = "SELECT Column1 FROM table1 WHERE ST_Intersects(element1, element2)";
+        list = sqlToXml(request);
+        filterElement = list.get("WHERE");
+        filter = filterElement.getValue();
+        BinarySpatialOpType intersects = (BinarySpatialOpType) filter.getSpatialOps().getValue();
+
+        Assert.assertTrue(filterElement instanceof JAXBElement);
+        Assert.assertEquals(filterElement.getName().getLocalPart(),"Filter");
+        Assert.assertEquals(filter.getSpatialOps().getName().getLocalPart(),"Intersects");
+        Assert.assertEquals(((JAXBElement)intersects.getExpressionOrAny().get(0)).getValue().toString(),"ELEMENT1");
+        Assert.assertEquals(((JAXBElement)intersects.getExpressionOrAny().get(1)).getValue().toString(),"ELEMENT2");
+
+        //Branch Contains
+        request = "SELECT Column1 FROM table1 WHERE ST_Contains(element1, element2)";
+        list = sqlToXml(request);
+        filterElement = list.get("WHERE");
+        filter = filterElement.getValue();
+        BinarySpatialOpType contains = (BinarySpatialOpType) filter.getSpatialOps().getValue();
+
+        Assert.assertTrue(filterElement instanceof JAXBElement);
+        Assert.assertEquals(filterElement.getName().getLocalPart(),"Filter");
+        Assert.assertEquals(filter.getSpatialOps().getName().getLocalPart(),"Contains");
+        Assert.assertEquals(((JAXBElement)contains.getExpressionOrAny().get(0)).getValue().toString(),"ELEMENT1");
+        Assert.assertEquals(((JAXBElement)contains.getExpressionOrAny().get(1)).getValue().toString(),"ELEMENT2");
+
+        //Branch Within
+        request = "SELECT Column1 FROM table1 WHERE ST_Within(element1, element2)";
+        list = sqlToXml(request);
+        filterElement = list.get("WHERE");
+        filter = filterElement.getValue();
+        BinarySpatialOpType within = (BinarySpatialOpType) filter.getSpatialOps().getValue();
+
+        Assert.assertTrue(filterElement instanceof JAXBElement);
+        Assert.assertEquals(filterElement.getName().getLocalPart(),"Filter");
+        Assert.assertEquals(filter.getSpatialOps().getName().getLocalPart(),"Within");
+        Assert.assertEquals(((JAXBElement)within.getExpressionOrAny().get(0)).getValue().toString(),"ELEMENT1");
+        Assert.assertEquals(((JAXBElement)within.getExpressionOrAny().get(1)).getValue().toString(),"ELEMENT2");
+
+        //Branch Within Or Equals
+        request = "SELECT Column1 FROM table1 WHERE ST_Within(element1, element2) OR ST_Equals(element1, element2) ";
+        list = sqlToXml(request);
+        filterElement = list.get("WHERE");
+        filter = filterElement.getValue();
+        BinaryLogicOpType withinOrEquals = (BinaryLogicOpType) filter.getLogicOps().getValue();
+        JAXBElement<BinarySpatialOpType> element = (JAXBElement) withinOrEquals.getComparisonOpsOrSpatialOpsOrTemporalOps().get(0);
+        JAXBElement<BinarySpatialOpType> element2 = (JAXBElement) withinOrEquals.getComparisonOpsOrSpatialOpsOrTemporalOps().get(1);
+
+        Assert.assertTrue(filterElement instanceof JAXBElement);
+        Assert.assertEquals(filterElement.getName().getLocalPart(),"Filter");
+        Assert.assertEquals(filter.getLogicOps().getName().getLocalPart(),"Or");
+        Assert.assertEquals(element.getName().getLocalPart(),"Within");
+        Assert.assertEquals(element2.getName().getLocalPart(),"Equals");
+        Assert.assertEquals(((JAXBElement) element.getValue().getExpressionOrAny().get(0)).getValue().toString(),"ELEMENT1");
+        Assert.assertEquals(((JAXBElement) element.getValue().getExpressionOrAny().get(1)).getValue().toString(),"ELEMENT2");
+        Assert.assertEquals(((JAXBElement)element2.getValue().getExpressionOrAny().get(0)).getValue().toString(),"ELEMENT1");
+        Assert.assertEquals(((JAXBElement)element2.getValue().getExpressionOrAny().get(1)).getValue().toString(),"ELEMENT2");
 
         //Branch BBOX
         request = "SELECT Column1 FROM table1 WHERE NOT ST_Disjoint(element, 100, 200)";
@@ -255,113 +392,9 @@ public class TestSqlToFes {
         Assert.assertTrue(filterElement instanceof JAXBElement);
         Assert.assertEquals(filterElement.getName().getLocalPart(),"Filter");
         Assert.assertEquals(filter.getSpatialOps().getName().getLocalPart(),"BBOX");
-        Assert.assertEquals(((JAXBElement)bbox.getExpressionOrAny().get(0)).getValue().toString(),"element");
+        Assert.assertEquals(((JAXBElement)bbox.getExpressionOrAny().get(0)).getValue().toString(),"ELEMENT");
         Assert.assertEquals(((LiteralType)expression.getValue()).getContent().get(0).toString(),"100");
         Assert.assertEquals(((LiteralType)expression2.getValue()).getContent().get(0).toString(),"200");
-
-        //Branch Equals
-        request = "SELECT Column1 FROM table1 WHERE ST_Equals(element1, element2)";
-        list = sqlToXml(request);
-        filterElement = list.get("WHERE");
-        filter = filterElement.getValue();
-        BinarySpatialOpType equals = (BinarySpatialOpType) filter.getSpatialOps().getValue();
-
-        Assert.assertTrue(filterElement instanceof JAXBElement);
-        Assert.assertEquals(filterElement.getName().getLocalPart(),"Filter");
-        Assert.assertEquals(filter.getSpatialOps().getName().getLocalPart(),"Equals");
-        Assert.assertEquals(((JAXBElement)equals.getExpressionOrAny().get(0)).getValue().toString(),"element1");
-        Assert.assertEquals(((JAXBElement)equals.getExpressionOrAny().get(1)).getValue().toString(),"element2");
-
-        //Branch Disjoint
-        request = "SELECT Column1 FROM table1 WHERE ST_Disjoint(element1, element2)";
-        list = sqlToXml(request);
-        filterElement = list.get("WHERE");
-        filter = filterElement.getValue();
-        BinarySpatialOpType disjoint = (BinarySpatialOpType) filter.getSpatialOps().getValue();
-
-        Assert.assertTrue(filterElement instanceof JAXBElement);
-        Assert.assertEquals(filterElement.getName().getLocalPart(),"Filter");
-        Assert.assertEquals(filter.getSpatialOps().getName().getLocalPart(),"Disjoint");
-        Assert.assertEquals(((JAXBElement)disjoint.getExpressionOrAny().get(0)).getValue().toString(),"element1");
-        Assert.assertEquals(((JAXBElement)disjoint.getExpressionOrAny().get(1)).getValue().toString(),"element2");
-
-        //Branch Touches
-        request = "SELECT Column1 FROM table1 WHERE ST_Touches(element1, element2)";
-        list = sqlToXml(request);
-        filterElement = list.get("WHERE");
-        filter = filterElement.getValue();
-        BinarySpatialOpType touches = (BinarySpatialOpType) filter.getSpatialOps().getValue();
-
-        Assert.assertTrue(filterElement instanceof JAXBElement);
-        Assert.assertEquals(filterElement.getName().getLocalPart(),"Filter");
-        Assert.assertEquals(filter.getSpatialOps().getName().getLocalPart(),"Touches");
-        Assert.assertEquals(((JAXBElement)touches.getExpressionOrAny().get(0)).getValue().toString(),"element1");
-        Assert.assertEquals(((JAXBElement)touches.getExpressionOrAny().get(1)).getValue().toString(),"element2");
-
-        //Branch Overlaps
-        request = "SELECT Column1 FROM table1 WHERE ST_Overlaps(element1, element2)";
-        list = sqlToXml(request);
-        filterElement = list.get("WHERE");
-        filter = filterElement.getValue();
-        BinarySpatialOpType overlaps = (BinarySpatialOpType) filter.getSpatialOps().getValue();
-
-        Assert.assertTrue(filterElement instanceof JAXBElement);
-        Assert.assertEquals(filterElement.getName().getLocalPart(),"Filter");
-        Assert.assertEquals(filter.getSpatialOps().getName().getLocalPart(),"Overlaps");
-        Assert.assertEquals(((JAXBElement)overlaps.getExpressionOrAny().get(0)).getValue().toString(),"element1");
-        Assert.assertEquals(((JAXBElement)overlaps.getExpressionOrAny().get(1)).getValue().toString(),"element2");
-
-        //Branch Crosses
-        request = "SELECT Column1 FROM table1 WHERE ST_Crosses(element1, element2)";
-        list = sqlToXml(request);
-        filterElement = list.get("WHERE");
-        filter = filterElement.getValue();
-        BinarySpatialOpType crosses = (BinarySpatialOpType) filter.getSpatialOps().getValue();
-
-        Assert.assertTrue(filterElement instanceof JAXBElement);
-        Assert.assertEquals(filterElement.getName().getLocalPart(),"Filter");
-        Assert.assertEquals(filter.getSpatialOps().getName().getLocalPart(),"Crosses");
-        Assert.assertEquals(((JAXBElement)crosses.getExpressionOrAny().get(0)).getValue().toString(),"element1");
-        Assert.assertEquals(((JAXBElement)crosses.getExpressionOrAny().get(1)).getValue().toString(),"element2");
-
-        //Branch Intersects
-        request = "SELECT Column1 FROM table1 WHERE ST_Intersects(element1, element2)";
-        list = sqlToXml(request);
-        filterElement = list.get("WHERE");
-        filter = filterElement.getValue();
-        BinarySpatialOpType intersects = (BinarySpatialOpType) filter.getSpatialOps().getValue();
-
-        Assert.assertTrue(filterElement instanceof JAXBElement);
-        Assert.assertEquals(filterElement.getName().getLocalPart(),"Filter");
-        Assert.assertEquals(filter.getSpatialOps().getName().getLocalPart(),"Intersects");
-        Assert.assertEquals(((JAXBElement)intersects.getExpressionOrAny().get(0)).getValue().toString(),"element1");
-        Assert.assertEquals(((JAXBElement)intersects.getExpressionOrAny().get(1)).getValue().toString(),"element2");
-
-        //Branch Contains
-        request = "SELECT Column1 FROM table1 WHERE ST_Contains(element1, element2)";
-        list = sqlToXml(request);
-        filterElement = list.get("WHERE");
-        filter = filterElement.getValue();
-        BinarySpatialOpType contains = (BinarySpatialOpType) filter.getSpatialOps().getValue();
-
-        Assert.assertTrue(filterElement instanceof JAXBElement);
-        Assert.assertEquals(filterElement.getName().getLocalPart(),"Filter");
-        Assert.assertEquals(filter.getSpatialOps().getName().getLocalPart(),"Contains");
-        Assert.assertEquals(((JAXBElement)contains.getExpressionOrAny().get(0)).getValue().toString(),"element1");
-        Assert.assertEquals(((JAXBElement)contains.getExpressionOrAny().get(1)).getValue().toString(),"element2");
-
-        //Branch Within
-        request = "SELECT Column1 FROM table1 WHERE ST_Within(element1, element2)";
-        list = sqlToXml(request);
-        filterElement = list.get("WHERE");
-        filter = filterElement.getValue();
-        BinarySpatialOpType within = (BinarySpatialOpType) filter.getSpatialOps().getValue();
-
-        Assert.assertTrue(filterElement instanceof JAXBElement);
-        Assert.assertEquals(filterElement.getName().getLocalPart(),"Filter");
-        Assert.assertEquals(filter.getSpatialOps().getName().getLocalPart(),"Within");
-        Assert.assertEquals(((JAXBElement)within.getExpressionOrAny().get(0)).getValue().toString(),"element1");
-        Assert.assertEquals(((JAXBElement)within.getExpressionOrAny().get(1)).getValue().toString(),"element2");
     }
 
     /**
@@ -481,9 +514,9 @@ public class TestSqlToFes {
 
         Assert.assertTrue(filterElement instanceof JAXBElement);
         Assert.assertEquals(filterElement.getName().getLocalPart(),"Filter");
-        Assert.assertEquals(filter.getFunction().getName(),"function");
-        Assert.assertEquals(function.getExpression().get(0).getValue().toString(),"element1");
-        Assert.assertEquals(function.getExpression().get(1).getValue().toString(),"element2");
+        Assert.assertEquals(filter.getFunction().getName(),"FUNCTION");
+        Assert.assertEquals(function.getExpression().get(0).getValue().toString(),"ELEMENT1");
+        Assert.assertEquals(function.getExpression().get(1).getValue().toString(),"ELEMENT2");
 
         //Branch function
         request = "SELECT Column1 FROM table1 WHERE function( function(element1, element2)";
@@ -495,10 +528,10 @@ public class TestSqlToFes {
 
         Assert.assertTrue(filterElement instanceof JAXBElement);
         Assert.assertEquals(filterElement.getName().getLocalPart(),"Filter");
-        Assert.assertEquals(filter.getFunction().getName(),"function");
+        Assert.assertEquals(filter.getFunction().getName(),"FUNCTION");
         Assert.assertEquals(function1.getExpression().get(0).getName().getLocalPart(), "Function");
-        Assert.assertEquals(function2.getExpression().get(0).getValue().toString(),"element1");
-        Assert.assertEquals(function2.getExpression().get(1).getValue().toString(),"element2");
+        Assert.assertEquals(function2.getExpression().get(0).getValue().toString(),"ELEMENT1");
+        Assert.assertEquals(function2.getExpression().get(1).getValue().toString(),"ELEMENT2");
 
     }
 

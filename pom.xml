@@ -21,7 +21,7 @@
     <parent>
         <groupId>org.orbisgis</groupId>
         <artifactId>orbisgis-nexus</artifactId>
-        <version>2</version>
+        <version>5.1.0</version>
     </parent>
     <modules>
         <module>filter</module>

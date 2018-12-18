@@ -5,6 +5,7 @@ import org.h2gis.utilities.wrapper.ResultSetWrapper;
 import org.h2gis.utilities.wrapper.StatementWrapper;
 import org.orbisgis.datamanagerapi.dataset.ITable;
 
+
 import java.sql.ResultSet;
 
 public class Table extends ResultSetWrapper implements ITable {

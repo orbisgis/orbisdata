@@ -6,7 +6,7 @@ import org.h2gis.utilities.wrapper.StatementWrapper;
 import org.orbisgis.datamanagerapi.dataset.ISpatialTable;
 
 import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
+import java.util.Iterator;
 
 public class SpatialTable extends SpatialResultSetImpl implements ISpatialTable {
 
@@ -25,5 +25,10 @@ public class SpatialTable extends SpatialResultSetImpl implements ISpatialTable 
     @Override
     public String getName() {
         return tableLocation.getTable();
+    }
+
+    @Override
+    public Iterator iterator() {
+        return new ResultSetIterator(this);
     }
 }

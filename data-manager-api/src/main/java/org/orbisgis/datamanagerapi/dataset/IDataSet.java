@@ -6,5 +6,8 @@ package org.orbisgis.datamanagerapi.dataset;
  * @author Erwan Bocher (CNRS)
  * @author Sylvain PALOMINOS (UBS 2018)
  */
-public interface IDataSet extends Iterable {
+public interface IDataSet {
+
+    String getLocation();
+    String getName();
 }

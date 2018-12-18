@@ -1,6 +1,6 @@
 package org.orbisgis.datamanagerapi.datasource;
 
-import org.orbisgis.datamanagerapi.dataset.IFeatureTable;
+import org.orbisgis.datamanagerapi.dataset.ISpatialTable;
 import org.orbisgis.datamanagerapi.dataset.ITable;
 
 /**
@@ -9,11 +9,11 @@ import org.orbisgis.datamanagerapi.dataset.ITable;
  * @author Erwan Bocher (CNRS)
  * @author Sylvain PALOMINOS (UBS 2018)
  */
-public interface IJDBCDataSource extends IDataSource {
+public interface IJdbcDataSource extends IDataSource {
 
     void close();
 
     ITable getTable(String name);
 
-    IFeatureTable getFeatureTable(String name);
+    ISpatialTable getSpatialTable(String name);
 }

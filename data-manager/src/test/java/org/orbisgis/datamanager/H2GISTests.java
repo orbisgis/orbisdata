@@ -1,10 +1,8 @@
 package org.orbisgis.datamanager;
 
 import groovy.lang.Closure;
-import groovy.sql.GroovyResultSet;
 import org.h2gis.utilities.SpatialResultSet;
 import org.junit.jupiter.api.Test;
-import org.locationtech.jts.geom.Geometry;
 import org.osgi.service.jdbc.DataSourceFactory;
 
 import java.sql.SQLException;
@@ -75,6 +73,5 @@ public class H2GISTests {
         assertEquals(2,values.size());
         assertTrue(values.contains("POINT (10 10)]"));
         assertTrue(values.contains("POINT (1 1)]"));
-
     }
 }

@@ -1,6 +1,5 @@
 package org.orbisgis.datamanager;
 
-import groovy.sql.GroovyResultSet;
 import groovy.sql.Sql;
 import org.h2.Driver;
 import org.h2.util.OsgiDataSourceFactory;

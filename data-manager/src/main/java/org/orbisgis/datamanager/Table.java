@@ -7,6 +7,7 @@ import org.orbisgis.datamanagerapi.dataset.ITable;
 
 
 import java.sql.ResultSet;
+import java.util.Iterator;
 
 public class Table extends ResultSetWrapper implements ITable {
 
@@ -25,5 +26,10 @@ public class Table extends ResultSetWrapper implements ITable {
     @Override
     public String getName() {
         return tableLocation.getTable();
+    }
+
+    @Override
+    public Iterator iterator() {
+        return new ResultSetIterator(this);
     }
 }

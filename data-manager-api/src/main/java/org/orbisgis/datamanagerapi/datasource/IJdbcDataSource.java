@@ -15,19 +15,19 @@ import java.util.List;
 public interface IJdbcDataSource extends IDataSource {
 
     /**
-     * Close the datasource
+     * Close the underlying datasource
      */
     void close();
 
     /**
-     * Return a {@link ITable}
+     * Return a {@link ITable} by name
      * @param name of the table
      * @return
      */
     ITable getTable(String name);
 
     /**
-     * Return a {@link ISpatialTable}
+     * Return a {@link ISpatialTable} by name
      * @param name of the table
      * @return
      */

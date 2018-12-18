@@ -1,5 +1,6 @@
 package org.orbisgis.datamanager;
 
+import groovy.sql.GroovyResultSet;
 import groovy.sql.Sql;
 import org.h2.Driver;
 import org.h2.util.OsgiDataSourceFactory;
@@ -42,19 +43,48 @@ public class H2GIS extends Sql implements IJdbcDataSource {
         connectionWrapper = (ConnectionWrapper) connection;
     }
 
-    public static H2GIS open(Map<String, String> properties) throws SQLException {
+    public static H2GIS open(Map<String, String> properties) {
         Properties props = new Properties();
         properties.forEach(props::put);
         Connection connection;
         properties.put("DATABASE_EVENT_LISTENER","'org.orbisgis.h2triggers.H2DatabaseEventListener'");
         // Init spatial
-        connection = SFSUtilities.wrapConnection(dataSourceFactory.createDataSource(props).getConnection());
-        Statement st = connection.createStatement();
-        if (JDBCUtilities.isH2DataBase(connection.getMetaData()) &&
-                !JDBCUtilities.tableExists(connection, "PUBLIC.GEOMETRY_COLUMNS")) {
-        st.execute("CREATE ALIAS IF NOT EXISTS H2GIS_SPATIAL FOR\n" +
-                "    \"org.h2gis.functions.factory.H2GISFunctions.load\";\n" +
-                "CALL H2GIS_SPATIAL();");
+        try {
+            connection = SFSUtilities.wrapConnection(dataSourceFactory.createDataSource(props).getConnection());
+        } catch (SQLException e) {
+            LOGGER.error("Unable to create the DataSource.\n" + e.getLocalizedMessage());
+            return null;
+        }
+        Statement st;
+        try {
+            st = connection.createStatement();
+        } catch (SQLException e) {
+            LOGGER.error("Unable to create a Statement.\n" + e.getLocalizedMessage());
+            return null;
+        }
+        boolean isH2;
+        try {
+            isH2 = JDBCUtilities.isH2DataBase(connection.getMetaData());
+        } catch (SQLException e) {
+            LOGGER.error("Unable to get DataBase metadata.\n" + e.getLocalizedMessage());
+            return null;
+        }
+        boolean tableExists;
+        try {
+            tableExists = !JDBCUtilities.tableExists(connection, "PUBLIC.GEOMETRY_COLUMNS");
+        } catch (SQLException e) {
+            LOGGER.error("Unable to check if table 'PUBLIC.GEOMETRY_COLUMNS' exists.\n" + e.getLocalizedMessage());
+            return null;
+        }
+        if (isH2 && tableExists) {
+            try {
+                st.execute("CREATE ALIAS IF NOT EXISTS H2GIS_SPATIAL FOR\n" +
+                        "    \"org.h2gis.functions.factory.H2GISFunctions.load\";\n" +
+                        "CALL H2GIS_SPATIAL();");
+            } catch (SQLException e) {
+                LOGGER.error("Unable to initialize H2GIS.\n" + e.getLocalizedMessage());
+                return null;
+            }
         }
         return new H2GIS(connection);
     }

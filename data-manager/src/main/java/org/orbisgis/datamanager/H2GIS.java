@@ -1,6 +1,5 @@
 package org.orbisgis.datamanager;
 
-import groovy.sql.GroovyResultSet;
 import groovy.sql.Sql;
 import org.h2.Driver;
 import org.h2.util.OsgiDataSourceFactory;
@@ -98,38 +97,38 @@ public class H2GIS extends Sql implements IJdbcDataSource {
     public ITable getTable(String name) {
         StatementWrapper statement;
         try {
-            statement = (StatementWrapper)connectionWrapper.createStatement();
+            statement = (StatementWrapper)connectionWrapper.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);
         } catch (SQLException e) {
             LOGGER.error("Unable to create Statement.\n"+e.getLocalizedMessage());
             return null;
         }
         ResultSet rs;
         try {
-            rs = statement.executeQuery("SELECT * FROM " + name);
+            rs = statement.executeQuery(String.format("SELECT * FROM %s", name));
         } catch (SQLException e) {
             LOGGER.error("Unable execute query.\n"+e.getLocalizedMessage());
             return null;
         }
-        return new Table(new TableLocation(name), rs, statement);
+        return new Table(new TableLocation(name), rs, statement, DataBase.H2GIS);
     }
 
     @Override
     public ISpatialTable getSpatialTable(String name) {
         StatementWrapper statement;
         try {
-            statement = (StatementWrapper)connectionWrapper.createStatement();
+            statement = (StatementWrapper)connectionWrapper.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);
         } catch (SQLException e) {
             LOGGER.error("Unable to create Statement.\n"+e.getLocalizedMessage());
             return null;
         }
         ResultSet rs;
         try {
-            rs = statement.executeQuery("SELECT * FROM " + name);
+            rs = statement.executeQuery(String.format("SELECT * FROM %s", name));
         } catch (SQLException e) {
             LOGGER.error("Unable execute query.\n"+e.getLocalizedMessage());
             return null;
         }
-        return new SpatialTable(new TableLocation(name), rs, statement);
+        return new SpatialTable(new TableLocation(name), rs, statement, DataBase.H2GIS);
     }
 
     @Override

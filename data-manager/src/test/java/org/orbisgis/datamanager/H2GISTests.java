@@ -48,14 +48,14 @@ public class H2GISTests {
                 return argument;
             }
         });
-        assertTrue(values.size()==2);
+        assertEquals(2, values.size());
         assertTrue(values.contains("[THE_GEOM:POINT (10 10)]"));
         assertTrue(values.contains("[THE_GEOM:POINT (1 1)]"));
     }
 
     @Test
     public void querySpatialTable() throws SQLException {
-        Map<String, String> map = new HashMap<String, String>();
+        Map<String, String> map = new HashMap<>();
         map.put(DataSourceFactory.JDBC_DATABASE_NAME, "./target/loadH2GIS");
         H2GIS h2GIS = H2GIS.open(map);
         h2GIS.execute("DROP TABLE IF EXISTS h2gis; CREATE TABLE h2gis (id int, the_geom point);insert into h2gis values (1, 'POINT(10 10)'::GEOMETRY), (2, 'POINT(1 1)'::GEOMETRY);");
@@ -64,17 +64,13 @@ public class H2GISTests {
         h2GIS.getSpatialTable("h2gis").eachRow(new Closure(null){
             @Override
             public Object call(Object argument) {
-                try {
-                    values.add(((SpatialResultSet)argument).getGeometry().toString());
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
+                    values.add(((SpatialTable)argument).getGeometry().toString());
                 return argument;
             }
         });
         assertEquals(2,values.size());
-        assertTrue(values.contains("POINT (10 10)]"));
-        assertTrue(values.contains("POINT (1 1)]"));
+        assertEquals("POINT (10 10)", values.get(0));
+        assertEquals("POINT (1 1)", values.get(1));
 
     }
 }

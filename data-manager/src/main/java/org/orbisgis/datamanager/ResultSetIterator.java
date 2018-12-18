@@ -7,6 +7,12 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Iterator;
 
+/**
+ * Iterator dedicated to the iteration on a {@link ResultSet}.
+ *
+ * @author Erwan Bocher (CNRS)
+ * @author Sylvain PALOMINOS (UBS 2018)
+ */
 public class ResultSetIterator implements Iterator<Object> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ResultSetIterator.class);
@@ -49,7 +55,9 @@ public class ResultSetIterator implements Iterator<Object> {
     @Override
     public Object next() {
         try {
-            resultSet.next();
+            if(!resultSet.next()){
+                LOGGER.error("Unable to move to the next row.");
+            }
         } catch (SQLException e) {
             LOGGER.error("Unable to get next row.\n" + e.getLocalizedMessage());
         }

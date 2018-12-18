@@ -8,7 +8,6 @@ import org.orbisgis.datamanagerapi.dataset.ITable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Iterator;
@@ -17,9 +16,10 @@ public class Table extends ResultSetWrapper implements ITable {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Table.class);
 
+    private DataBase dataBase;
     private TableLocation tableLocation;
 
-    public Table(TableLocation tableLocation, ResultSet resultSet, StatementWrapper statement) {
+    public Table(TableLocation tableLocation, ResultSet resultSet, StatementWrapper statement, DataBase dataBase) {
         super(resultSet, statement);
         try {
             resultSet.beforeFirst();
@@ -27,11 +27,12 @@ public class Table extends ResultSetWrapper implements ITable {
             LOGGER.error("Unable to go before the first ResultSet row.\n" + e.getLocalizedMessage());
         }
         this.tableLocation = tableLocation;
+        this.dataBase = dataBase;
     }
 
     @Override
     public String getLocation() {
-        return tableLocation.toString();
+        return tableLocation.toString(dataBase.equals(DataBase.H2GIS));
     }
 
     @Override
@@ -40,17 +41,12 @@ public class Table extends ResultSetWrapper implements ITable {
     }
 
     @Override
-    public Iterator iterator() {
+    public Iterator<Object> iterator() {
         return new ResultSetIterator(this);
     }
 
     @Override
-    public void eachRow(Closure<? extends ResultSet> closure){
-        try {
-            this.next();
-        } catch (SQLException e) {
-            LOGGER.error(("Unable to get the next row.\n" + e.getLocalizedMessage()));
-        }
-        closure.call(this);
+    public void eachRow(Closure closure){
+        this.forEach(closure::call);
     }
 }

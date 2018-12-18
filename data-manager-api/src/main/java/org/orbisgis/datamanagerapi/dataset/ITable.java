@@ -12,5 +12,5 @@ import java.sql.ResultSet;
  */
 public interface ITable extends IDataSet, ResultSet {
 
-    void eachRow(Closure<? extends ResultSet> closure);
+    void eachRow(Closure closure);
 }

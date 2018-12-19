@@ -82,4 +82,43 @@ public class H2GISTests {
         assertTrue(values.contains("LOADH2GIS.PUBLIC.TABLE1"));
         assertTrue(values.contains("LOADH2GIS.PUBLIC.TABLE2"));
     }
+
+    @Test
+    public void updateSpatialTable() throws SQLException {
+        Map<String, String> map = new HashMap<>();
+        map.put(DataSourceFactory.JDBC_DATABASE_NAME, "./target/loadH2GIS");
+        H2GIS h2GIS = H2GIS.open(map);
+        h2GIS.execute("DROP TABLE IF EXISTS h2gis; CREATE TABLE h2gis (id int PRIMARY KEY, code int, the_geom point);insert into h2gis values (1,22, 'POINT(10 10)'::GEOMETRY), (2,56, 'POINT(1 1)'::GEOMETRY);");
+
+        h2GIS.getSpatialTable("h2gis").eachRow(new Closure(null){
+            @Override
+            public Object call(Object argument) {
+                SpatialTable sp = ((SpatialTable) argument);
+                try {
+                    sp.updateInt(2, 3);
+                    sp.updateRow();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+
+                return argument;
+            }
+        });
+
+        ArrayList<Integer> values = new ArrayList<>();
+        h2GIS.getSpatialTable("h2gis").eachRow(new Closure(null){
+            @Override
+            public Object call(Object argument) {
+                try {
+                    values.add(((SpatialTable)argument).getInt(2));
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+                return argument;
+            }
+        });
+        assertEquals(2,values.size());
+        assertTrue(3== values.get(0));
+        assertTrue(3==values.get(1));
+    }
 }

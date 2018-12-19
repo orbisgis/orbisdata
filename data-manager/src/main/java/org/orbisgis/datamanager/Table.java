@@ -2,6 +2,7 @@ package org.orbisgis.datamanager;
 
 import groovy.lang.Closure;
 import groovy.lang.MetaClass;
+import org.codehaus.groovy.runtime.InvokerHelper;
 import org.h2gis.utilities.TableLocation;
 import org.h2gis.utilities.wrapper.ResultSetWrapper;
 import org.h2gis.utilities.wrapper.StatementWrapper;
@@ -11,7 +12,9 @@ import org.slf4j.LoggerFactory;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 
 public class Table extends ResultSetWrapper implements ITable {
 
@@ -19,6 +22,8 @@ public class Table extends ResultSetWrapper implements ITable {
 
     private DataBase dataBase;
     private TableLocation tableLocation;
+    private MetaClass metaClass;
+    private Map<String, Object> propertyMap;
 
     public Table(TableLocation tableLocation, ResultSet resultSet, StatementWrapper statement, DataBase dataBase) {
         super(resultSet, statement);
@@ -29,6 +34,8 @@ public class Table extends ResultSetWrapper implements ITable {
         }
         this.tableLocation = tableLocation;
         this.dataBase = dataBase;
+        this.metaClass = InvokerHelper.getMetaClass(getClass());
+        this.propertyMap = new HashMap<>();
     }
 
     @Override
@@ -51,28 +58,30 @@ public class Table extends ResultSetWrapper implements ITable {
         this.forEach(closure::call);
     }
 
-    @Override
     public Object invokeMethod(String name, Object args) {
         return null;
     }
 
-    @Override
     public Object getProperty(String propertyName) {
-        return null;
+        try {
+            return getObject(propertyName);
+        } catch (SQLException e) {
+            LOGGER.error("Unable to find the column '" + propertyName + "'.\n" + e.getLocalizedMessage());
+        }
+        return propertyMap.get(propertyName);
     }
 
     @Override
     public void setProperty(String propertyName, Object newValue) {
-
+        propertyMap.put(propertyName, newValue);
     }
 
-    @Override
     public MetaClass getMetaClass() {
-        return null;
+        return metaClass;
     }
 
     @Override
     public void setMetaClass(MetaClass metaClass) {
-
+        this.metaClass = metaClass;
     }
 }

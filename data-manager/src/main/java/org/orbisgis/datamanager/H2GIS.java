@@ -19,10 +19,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
 
 /**
  * Implementation of the IJdbcDataSource interface dedicated to the usage of an H2/H2GIS database.
@@ -133,8 +130,13 @@ public class H2GIS extends Sql implements IJdbcDataSource {
     }
 
     @Override
-    public Collection<String> getTables() {
-        return null;
+    public Collection<String> getTableNames() {
+        try {
+            return JDBCUtilities.getTableNames(connectionWrapper.getMetaData(), null, null, null, null);
+        } catch (SQLException e) {
+            LOGGER.error("Unable to get the database metadata.\n" + e.getLocalizedMessage());
+            return new ArrayList<>();
+        }
     }
 
     @Override

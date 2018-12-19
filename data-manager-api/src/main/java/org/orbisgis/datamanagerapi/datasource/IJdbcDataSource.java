@@ -4,7 +4,6 @@ import org.orbisgis.datamanagerapi.dataset.ISpatialTable;
 import org.orbisgis.datamanagerapi.dataset.ITable;
 
 import java.util.Collection;
-import java.util.List;
 
 /**
  * Extension of the IDataSource interface dedicated to the usage of a JDBC database.
@@ -37,5 +36,5 @@ public interface IJdbcDataSource extends IDataSource {
      * Get all table names from the underlying datasource.
      * @return
      */
-    Collection<String> getTables();
+    Collection<String> getTableNames();
 }

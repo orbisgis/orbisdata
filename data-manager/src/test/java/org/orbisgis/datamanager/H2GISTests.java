@@ -1,3 +1,39 @@
+/*
+ * Bundle DataManager is part of the OrbisGIS platform
+ *
+ * OrbisGIS is a java GIS application dedicated to research in GIScience.
+ * OrbisGIS is developed by the GIS group of the DECIDE team of the
+ * Lab-STICC CNRS laboratory, see <http://www.lab-sticc.fr/>.
+ *
+ * The GIS group of the DECIDE team is located at :
+ *
+ * Laboratoire Lab-STICC – CNRS UMR 6285
+ * Equipe DECIDE
+ * UNIVERSITÉ DE BRETAGNE-SUD
+ * Institut Universitaire de Technologie de Vannes
+ * 8, Rue Montaigne - BP 561 56017 Vannes Cedex
+ *
+ * DataManager is distributed under GPL 3 license.
+ *
+ * Copyright (C) 2018 CNRS (Lab-STICC UMR CNRS 6285)
+ *
+ *
+ * DataManager is free software: you can redistribute it and/or modify it under the
+ * terms of the GNU General Public License as published by the Free Software
+ * Foundation, either version 3 of the License, or (at your option) any later
+ * version.
+ *
+ * DataManager is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+ * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * DataManager. If not, see <http://www.gnu.org/licenses/>.
+ *
+ * For more information, please consult: <http://www.orbisgis.org/>
+ * or contact directly:
+ * info_at_ orbisgis.org
+ */
 package org.orbisgis.datamanager;
 
 import groovy.lang.Closure;
@@ -81,5 +117,44 @@ public class H2GISTests {
         Collection<String> values = h2GIS.getTableNames();
         assertTrue(values.contains("LOADH2GIS.PUBLIC.TABLE1"));
         assertTrue(values.contains("LOADH2GIS.PUBLIC.TABLE2"));
+    }
+
+    @Test
+    public void updateSpatialTable() throws SQLException {
+        Map<String, String> map = new HashMap<>();
+        map.put(DataSourceFactory.JDBC_DATABASE_NAME, "./target/loadH2GIS");
+        H2GIS h2GIS = H2GIS.open(map);
+        h2GIS.execute("DROP TABLE IF EXISTS h2gis; CREATE TABLE h2gis (id int PRIMARY KEY, code int, the_geom point);insert into h2gis values (1,22, 'POINT(10 10)'::GEOMETRY), (2,56, 'POINT(1 1)'::GEOMETRY);");
+
+        h2GIS.getSpatialTable("h2gis").eachRow(new Closure(null){
+            @Override
+            public Object call(Object argument) {
+                SpatialTable sp = ((SpatialTable) argument);
+                try {
+                    sp.updateInt(2, 3);
+                    sp.updateRow();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+
+                return argument;
+            }
+        });
+
+        ArrayList<Integer> values = new ArrayList<>();
+        h2GIS.getSpatialTable("h2gis").eachRow(new Closure(null){
+            @Override
+            public Object call(Object argument) {
+                try {
+                    values.add(((SpatialTable)argument).getInt(2));
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+                return argument;
+            }
+        });
+        assertEquals(2,values.size());
+        assertTrue(3== values.get(0));
+        assertTrue(3==values.get(1));
     }
 }

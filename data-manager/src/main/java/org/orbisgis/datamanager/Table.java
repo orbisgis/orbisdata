@@ -57,12 +57,12 @@ public class Table extends ResultSetWrapper implements ITable {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Table.class);
 
-    private DataBase dataBase;
+    private Database dataBase;
     private TableLocation tableLocation;
     private MetaClass metaClass;
     private Map<String, Object> propertyMap;
 
-    public Table(TableLocation tableLocation, ResultSet resultSet, StatementWrapper statement, DataBase dataBase) {
+    public Table(TableLocation tableLocation, ResultSet resultSet, StatementWrapper statement, Database dataBase) {
         super(resultSet, statement);
         try {
             resultSet.beforeFirst();
@@ -77,7 +77,7 @@ public class Table extends ResultSetWrapper implements ITable {
 
     @Override
     public String getLocation() {
-        return tableLocation.toString(dataBase.equals(DataBase.H2GIS));
+        return tableLocation.toString(dataBase.equals(Database.H2GIS));
     }
 
     @Override

@@ -99,7 +99,7 @@ public class H2GIS extends Sql implements IJdbcDataSource {
         try {
             isH2 = JDBCUtilities.isH2DataBase(connection.getMetaData());
         } catch (SQLException e) {
-            LOGGER.error("Unable to get DataBase metadata.\n" + e.getLocalizedMessage());
+            LOGGER.error("Unable to get Database metadata.\n" + e.getLocalizedMessage());
             return null;
         }
         boolean tableExists;
@@ -128,7 +128,7 @@ public class H2GIS extends Sql implements IJdbcDataSource {
     }
 
     @Override
-    public ITable getTable(String name) {
+    public ITable getTable(String tableName) {
         StatementWrapper statement;
         try {
             statement = (StatementWrapper)connectionWrapper.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);
@@ -138,16 +138,16 @@ public class H2GIS extends Sql implements IJdbcDataSource {
         }
         ResultSet rs;
         try {
-            rs = statement.executeQuery(String.format("SELECT * FROM %s", name));
+            rs = statement.executeQuery(String.format("SELECT * FROM %s", tableName));
         } catch (SQLException e) {
             LOGGER.error("Unable execute query.\n"+e.getLocalizedMessage());
             return null;
         }
-        return new Table(new TableLocation(name), rs, statement, DataBase.H2GIS);
+        return new Table(new TableLocation(tableName), rs, statement, Database.H2GIS);
     }
 
     @Override
-    public ISpatialTable getSpatialTable(String name) {
+    public ISpatialTable getSpatialTable(String tableName) {
         StatementWrapper statement;
         try {
             statement = (StatementWrapper)connectionWrapper.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);
@@ -157,12 +157,12 @@ public class H2GIS extends Sql implements IJdbcDataSource {
         }
         ResultSet rs;
         try {
-            rs = statement.executeQuery(String.format("SELECT * FROM %s", name));
+            rs = statement.executeQuery(String.format("SELECT * FROM %s", tableName));
         } catch (SQLException e) {
             LOGGER.error("Unable execute query.\n"+e.getLocalizedMessage());
             return null;
         }
-        return new SpatialTable(new TableLocation(name), rs, statement, DataBase.H2GIS);
+        return new SpatialTable(new TableLocation(tableName), rs, statement, Database.H2GIS);
     }
 
     @Override
@@ -176,17 +176,17 @@ public class H2GIS extends Sql implements IJdbcDataSource {
     }
 
     @Override
-    public IDataSet getDataSet(String name) {
+    public IDataSet getDataSet(String dataSetName) {
         List<String> geomFields;
         try {
-            geomFields = SFSUtilities.getGeometryFields(connectionWrapper, new TableLocation(name));
+            geomFields = SFSUtilities.getGeometryFields(connectionWrapper, new TableLocation(dataSetName));
         } catch (SQLException e) {
 
-            return getTable(name);
+            return getTable(dataSetName);
         }
         if(geomFields.size() >= 1){
-            return getSpatialTable(name);
+            return getSpatialTable(dataSetName);
         }
-        return getTable(name);
+        return getTable(dataSetName);
     }
 }

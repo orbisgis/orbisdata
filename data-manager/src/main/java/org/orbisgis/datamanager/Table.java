@@ -1,6 +1,7 @@
 package org.orbisgis.datamanager;
 
 import groovy.lang.Closure;
+import groovy.lang.MetaClass;
 import org.h2gis.utilities.TableLocation;
 import org.h2gis.utilities.wrapper.ResultSetWrapper;
 import org.h2gis.utilities.wrapper.StatementWrapper;
@@ -48,5 +49,30 @@ public class Table extends ResultSetWrapper implements ITable {
     @Override
     public void eachRow(Closure closure){
         this.forEach(closure::call);
+    }
+
+    @Override
+    public Object invokeMethod(String name, Object args) {
+        return null;
+    }
+
+    @Override
+    public Object getProperty(String propertyName) {
+        return null;
+    }
+
+    @Override
+    public void setProperty(String propertyName, Object newValue) {
+
+    }
+
+    @Override
+    public MetaClass getMetaClass() {
+        return null;
+    }
+
+    @Override
+    public void setMetaClass(MetaClass metaClass) {
+
     }
 }

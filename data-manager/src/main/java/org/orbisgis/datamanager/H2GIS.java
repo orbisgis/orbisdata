@@ -19,6 +19,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -129,6 +130,11 @@ public class H2GIS extends Sql implements IJdbcDataSource {
             return null;
         }
         return new SpatialTable(new TableLocation(name), rs, statement, DataBase.H2GIS);
+    }
+
+    @Override
+    public Collection<String> getTables() {
+        return null;
     }
 
     @Override

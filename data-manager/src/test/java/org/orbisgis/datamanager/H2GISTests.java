@@ -7,7 +7,9 @@ import org.junit.jupiter.api.Test;
 import org.locationtech.jts.geom.Geometry;
 import org.osgi.service.jdbc.DataSourceFactory;
 
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -71,6 +73,5 @@ public class H2GISTests {
         assertEquals(2,values.size());
         assertEquals("POINT (10 10)", values.get(0));
         assertEquals("POINT (1 1)", values.get(1));
-
     }
 }

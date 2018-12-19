@@ -71,6 +71,38 @@
     <build>
         <pluginManagement>
             <plugins>
+                <plugin>
+                    <groupId>org.codehaus.gmaven</groupId>
+                    <artifactId>gmaven-plugin</artifactId>
+                    <version>1.5</version>
+                    <dependencies>
+                        <dependency>
+                            <groupId>org.codehaus.gmaven.runtime</groupId>
+                            <artifactId>gmaven-runtime-2.0</artifactId>
+                            <version>1.5</version>
+                        </dependency>
+                        <dependency>
+                            <groupId>org.codehaus.groovy</groupId>
+                            <artifactId>groovy</artifactId>
+                            <version>2.5.4</version>
+                        </dependency>
+                    </dependencies>
+                    <configuration>
+                        <debug>false</debug>
+                        <verbose>true</verbose>
+                        <stacktrace>true</stacktrace>
+                        <defaultScriptExtension>.groovy</defaultScriptExtension>
+                        <providerSelection>2.0</providerSelection>
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <goals>
+                                <goal>testCompile</goal>
+                                <goal>compile</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
             </plugins>
         </pluginManagement>
 

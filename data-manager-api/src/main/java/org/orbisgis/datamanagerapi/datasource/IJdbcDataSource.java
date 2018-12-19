@@ -20,17 +20,17 @@ public interface IJdbcDataSource extends IDataSource {
 
     /**
      * Return a {@link ITable} by name
-     * @param name of the table
+     * @param tableName Name of the table
      * @return
      */
-    ITable getTable(String name);
+    ITable getTable(String tableName);
 
     /**
      * Return a {@link ISpatialTable} by name
-     * @param name of the table
+     * @param tableName Name of the table
      * @return
      */
-    ISpatialTable getSpatialTable(String name);
+    ISpatialTable getSpatialTable(String tableName);
 
     /**
      * Get all table names from the underlying datasource.

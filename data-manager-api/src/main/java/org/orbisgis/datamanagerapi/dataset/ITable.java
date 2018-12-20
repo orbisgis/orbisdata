@@ -39,6 +39,7 @@ package org.orbisgis.datamanagerapi.dataset;
 import groovy.lang.Closure;
 
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 
 /**
  * Implementation of the IDataSet interface. A table is a 2D (column/line) representation of data.
@@ -49,5 +50,7 @@ import java.sql.ResultSet;
 public interface ITable extends IDataSet, ResultSet {
 
     void eachRow(Closure closure);
+
+    ResultSetMetaData getMetadata();
     
 }

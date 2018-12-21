@@ -28,8 +28,22 @@ Allows to open, create an H2GIS database. The main entry is the H2GIS class that
 
 
 ```groovy
-// How to connect
+// Connect to a file data, if the database doesn't exist a new one is created
 H2GIS.open([databaseName: './target/loadH2GIS'])
+```
+
+```groovy
+//How to query a spatial table
+H2GIS.open([databaseName: './target/loadH2GIS'])
+h2GIS.execute("""
+                DROP TABLE IF EXISTS h2gis;
+                CREATE TABLE h2gis (id int, the_geom point);
+                INSERT INTO h2gis VALUES (1, 'POINT(10 10)'::GEOMETRY), (2, 'POINT(1 1)'::GEOMETRY);
+        """)
+def concat = ""
+h2GIS.getSpatialTable "h2gis" eachRow { row -> concat += "$row.id $row.the_geom\n" }
+println concat
+//Returns 1 POINT (10 10) 2 POINT (1 1)
 ```
 
 

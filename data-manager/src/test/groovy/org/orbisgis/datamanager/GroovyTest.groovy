@@ -37,6 +37,8 @@
 package org.orbisgis.datamanager
 
 import org.junit.jupiter.api.Test
+import org.orbisgis.datamanager.h2gis.H2GIS
+import org.orbisgis.datamanager.postgis.POSTGIS
 
 import java.sql.SQLException
 

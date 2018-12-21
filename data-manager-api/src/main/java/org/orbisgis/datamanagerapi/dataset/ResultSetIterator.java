@@ -34,7 +34,7 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.datamanager;
+package org.orbisgis.datamanagerapi.dataset;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

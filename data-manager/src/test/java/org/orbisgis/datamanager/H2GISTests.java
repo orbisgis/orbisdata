@@ -38,6 +38,9 @@ package org.orbisgis.datamanager;
 
 import groovy.lang.Closure;
 import org.junit.jupiter.api.Test;
+import org.orbisgis.datamanager.h2gis.H2GIS;
+import org.orbisgis.datamanagerapi.dataset.IJdbcSpatialTable;
+import org.orbisgis.datamanagerapi.dataset.ISpatialTable;
 import org.osgi.service.jdbc.DataSourceFactory;
 
 import java.sql.SQLException;
@@ -96,7 +99,7 @@ public class H2GISTests {
         h2GIS.getSpatialTable("h2gis").eachRow(new Closure(null){
             @Override
             public Object call(Object argument) {
-                values.add(((SpatialTable)argument).getGeometry().toString());
+                values.add(((IJdbcSpatialTable)argument).getGeometry().toString());
                 return argument;
             }
         });
@@ -129,7 +132,7 @@ public class H2GISTests {
         h2GIS.getSpatialTable("h2gis").eachRow(new Closure(null){
             @Override
             public Object call(Object argument) {
-                SpatialTable sp = ((SpatialTable) argument);
+                ISpatialTable sp = ((ISpatialTable) argument);
                 try {
                     sp.updateInt(2, 3);
                     sp.updateRow();
@@ -146,7 +149,7 @@ public class H2GISTests {
             @Override
             public Object call(Object argument) {
                 try {
-                    values.add(((SpatialTable)argument).getInt(2));
+                    values.add(((ISpatialTable)argument).getInt(2));
                 } catch (SQLException e) {
                     e.printStackTrace();
                 }

@@ -34,7 +34,7 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.datamanager;
+package org.orbisgis.datamanagerapi.dataset;
 
 /**
  * Enumeration of the supported databases.
@@ -43,5 +43,5 @@ package org.orbisgis.datamanager;
  * @author Sylvain PALOMINOS (UBS 2018)
  */
 public enum Database {
-    H2GIS
+    H2GIS, POSTGIS
 }

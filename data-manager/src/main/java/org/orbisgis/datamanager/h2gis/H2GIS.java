@@ -34,7 +34,7 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.datamanager;
+package org.orbisgis.datamanager.h2gis;
 
 import groovy.sql.Sql;
 import org.h2.Driver;
@@ -70,7 +70,11 @@ public class H2GIS extends Sql implements IJdbcDataSource {
 
     private ConnectionWrapper connectionWrapper;
 
-
+    /**
+     * Private constructor to ensure the {@link #open(Map)} method.
+     *
+     * @param connection Connection to the database.
+     */
     private H2GIS(Connection connection) {
         super(connection);
         connectionWrapper = (ConnectionWrapper) connection;
@@ -130,11 +134,6 @@ public class H2GIS extends Sql implements IJdbcDataSource {
     }
 
     @Override
-    public void close() {
-        super.close();
-    }
-
-    @Override
     public ITable getTable(String tableName) {
         StatementWrapper statement;
         try {
@@ -150,7 +149,7 @@ public class H2GIS extends Sql implements IJdbcDataSource {
             LOGGER.error("Unable execute query.\n"+e.getLocalizedMessage());
             return null;
         }
-        return new Table(new TableLocation(tableName), rs, statement, Database.H2GIS);
+        return new H2gisTable(new TableLocation(tableName), rs, statement);
     }
 
     @Override
@@ -169,7 +168,7 @@ public class H2GIS extends Sql implements IJdbcDataSource {
             LOGGER.error("Unable execute query.\n"+e.getLocalizedMessage());
             return null;
         }
-        return new SpatialTable(new TableLocation(tableName), rs, statement, Database.H2GIS);
+        return new H2gisSpatialTable(new TableLocation(tableName), rs, statement);
     }
 
     @Override

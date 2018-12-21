@@ -18,10 +18,8 @@ ISpatialTable : A 2D (column/row) representation of data that contains at least 
 IJdbcDataSource : Extension of the IDataSource interface dedicated to the usage of a JDBC database.
 
 
+# H2GIS datasource
 
-# Examples
-
-## H2GIS database
 
 
 

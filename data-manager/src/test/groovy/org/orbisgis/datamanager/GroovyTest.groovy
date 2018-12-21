@@ -74,8 +74,8 @@ class GroovyTest {
                 INSERT INTO h2gis VALUES (1, 'POINT(10 10)'::GEOMETRY), (2, 'POINT(1 1)'::GEOMETRY);
         """)
         def concat = ""
-        h2GIS.getSpatialTable "h2gis" eachRow { row -> concat += "$row.id $row.the_geom\n" }
-        assertEquals("1 POINT (10 10)\n2 POINT (1 1)\n", concat)
+        h2GIS.getSpatialTable "h2gis" eachRow { row -> concat += "$row.id $row.the_geom $row.geometry\n" }
+        assertEquals("1 POINT (10 10) POINT (10 10)\n2 POINT (1 1) POINT (1 1)\n", concat)
         println(concat)
     }
 

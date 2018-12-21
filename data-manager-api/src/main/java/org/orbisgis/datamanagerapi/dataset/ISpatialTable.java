@@ -38,6 +38,7 @@ package org.orbisgis.datamanagerapi.dataset;
 
 import org.h2gis.utilities.SpatialResultSet;
 import org.h2gis.utilities.SpatialResultSetMetaData;
+import org.locationtech.jts.geom.Geometry;
 
 /**
  * Extension of ITable. A ISpatialTable is a specialisation of ITable with at least one Geometry column.
@@ -53,4 +54,10 @@ public interface ISpatialTable extends ITable, SpatialResultSet {
      * @return The metadata object.
      */
     SpatialResultSetMetaData getMetadata();
+
+    Geometry getGeometry(int columnIndex);
+
+    Geometry getGeometry(String columnLabel);
+
+    Geometry getGeometry();
 }

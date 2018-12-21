@@ -44,7 +44,8 @@ import org.h2gis.utilities.wrapper.SpatialResultSetImpl;
 import org.h2gis.utilities.wrapper.StatementWrapper;
 import org.locationtech.jts.geom.Geometry;
 import org.orbisgis.datamanagerapi.dataset.Database;
-import org.orbisgis.datamanagerapi.dataset.IJdbcSpatialTable;
+import org.orbisgis.datamanagerapi.dataset.IJdbcTable;
+import org.orbisgis.datamanagerapi.dataset.ISpatialTable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,7 +54,7 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
-public class H2gisSpatialTable extends SpatialResultSetImpl implements IJdbcSpatialTable {
+public class H2gisSpatialTable extends SpatialResultSetImpl implements ISpatialTable, IJdbcTable {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(H2gisSpatialTable.class);
 

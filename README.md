@@ -46,7 +46,7 @@ println concat
 //Returns 1 POINT (10 10) 2 POINT (1 1)
 ```
 ```groovy
-//How to display the metadata of spatial table
+//How to display the metadata of a spatial table
 def h2GIS = H2GIS.open([databaseName: './target/loadH2GIS'])
 h2GIS.execute("""
                 DROP TABLE IF EXISTS h2gis;

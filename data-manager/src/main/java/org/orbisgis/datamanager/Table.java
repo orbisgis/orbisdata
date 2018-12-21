@@ -37,6 +37,7 @@
 package org.orbisgis.datamanager;
 
 import groovy.lang.Closure;
+import groovy.lang.GroovyObject;
 import groovy.lang.MetaClass;
 import org.codehaus.groovy.runtime.InvokerHelper;
 import org.h2gis.utilities.TableLocation;
@@ -46,16 +47,19 @@ import org.orbisgis.datamanagerapi.dataset.ITable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-public class Table extends ResultSetWrapper implements ITable {
+public class Table extends ResultSetWrapper implements ITable, GroovyObject {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Table.class);
+    private static final String META_PROPERTY = "meta";
 
     private Database dataBase;
     private TableLocation tableLocation;
@@ -89,27 +93,73 @@ public class Table extends ResultSetWrapper implements ITable {
     public Iterator<Object> iterator() {
         return new ResultSetIterator(this);
     }   
-    
 
     @Override
     public void eachRow(Closure closure){
         this.forEach(closure::call);
     }
-    
 
     @Override
     public Object invokeMethod(String name, Object args) {
-        return null;
+        Method m = null;
+        try {
+            if(args == null) {
+                m = this.getClass().getDeclaredMethod(name);
+            }
+            else {
+                m = this.getClass().getDeclaredMethod(name, args.getClass());
+            }
+        } catch (NoSuchMethodException e) {
+            LOGGER.error("Unable to get a method named '" + name + "'.\n" + e.getLocalizedMessage());
+        }
+        if(m == null){
+            try {
+                String getName = "get" + name.substring(0,1).toUpperCase() + name.substring(1);
+                if(args == null) {
+                    m = this.getClass().getDeclaredMethod(getName);
+                }
+                else {
+                    m = this.getClass().getDeclaredMethod(getName, args.getClass());
+                }
+            } catch (NoSuchMethodException e) {
+                LOGGER.error("Unable to get a method named '" + name + "'.\n" + e.getLocalizedMessage());
+            }
+        }
+        if(m == null){
+            return null;
+        }
+        try {
+            if(args == null) {
+                return m.invoke(this);
+            }
+            else {
+                return m.invoke(this, args);
+            }
+        } catch (IllegalAccessException | InvocationTargetException e) {
+            LOGGER.error("Unable to invoke the method named '" + name + "'.\n" + e.getLocalizedMessage());
+            return null;
+        }
     }
 
     @Override
     public Object getProperty(String propertyName) {
-        try {
-            return getObject(propertyName);
-        } catch (SQLException e) {
-            LOGGER.error("Unable to find the column '" + propertyName + "'.\n" + e.getLocalizedMessage());
+        if(propertyName.equals(META_PROPERTY)){
+            return getMetadata();
         }
-        return propertyMap.get(propertyName);
+        Object obj = null;
+        try {
+            obj = getObject(propertyName);
+        } catch (SQLException e) {
+            LOGGER.warn("Unable to find the column '" + propertyName + "'.\n" + e.getLocalizedMessage());
+        }
+        if(obj != null) {
+            return obj;
+        }
+        obj = propertyMap.get(propertyName);
+        if(obj != null) {
+            return obj;
+        }
+        return invokeMethod(propertyName, null);
     }
 
     @Override
@@ -127,5 +177,13 @@ public class Table extends ResultSetWrapper implements ITable {
         this.metaClass = metaClass;
     }
 
-   
+    @Override
+    public ResultSetMetaData getMetadata(){
+        try {
+            return super.getMetaData();
+        } catch (SQLException e) {
+            LOGGER.error("Unable to get the metadata.\n" + e.getLocalizedMessage());
+            return null;
+        }
+    }
 }

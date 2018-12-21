@@ -92,7 +92,7 @@ class GroovyTest {
     }
 
     @Test
-    void querySpatialTableMetaData() {
+    void queryH2GISMetaData() {
         def h2GIS = H2GIS.open([databaseName: './target/loadH2GIS'])
         h2GIS.execute("""
                 DROP TABLE IF EXISTS h2gis;
@@ -103,7 +103,28 @@ class GroovyTest {
         h2GIS.rows "SELECT * FROM h2gis", {  meta ->
             concat += "${meta.getTableName(1)} $meta.columnCount\n"
         }
-        println(concat)
+        assertEquals("H2GIS 2\n", concat)
+    }
 
+    @Test
+    void querySpatialTableMetaData() {
+        def h2GIS = H2GIS.open([databaseName: './target/loadH2GIS'])
+        h2GIS.execute("""
+                DROP TABLE IF EXISTS h2gis;
+                CREATE TABLE h2gis (id int, the_geom point);
+                INSERT INTO h2gis VALUES (1, 'POINT(10 10)'::GEOMETRY), (2, 'POINT(1 1)'::GEOMETRY);
+        """)
+
+        def concat = ""
+        h2GIS.getSpatialTable("h2gis").meta.each {row ->
+            concat += "$row.columnLabel $row.columnType\n"
+        }
+        assertEquals("ID 4\nTHE_GEOM 1111\n", concat)
+
+        concat = ""
+        h2GIS.getSpatialTable("h2gis").metadata.each {row ->
+            concat += "$row.columnLabel $row.columnType\n"
+        }
+        assertEquals("ID 4\nTHE_GEOM 1111\n", concat)
     }
 }

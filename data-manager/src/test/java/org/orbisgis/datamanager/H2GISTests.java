@@ -154,7 +154,7 @@ public class H2GISTests {
             }
         });
         assertEquals(2,values.size());
-        assertTrue(3== values.get(0));
-        assertTrue(3==values.get(1));
+        assertEquals(3, (int) values.get(0));
+        assertEquals(3, (int) values.get(1));
     }
 }

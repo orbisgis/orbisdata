@@ -36,15 +36,32 @@
  */
 package org.orbisgis.datamanagerapi.dataset;
 
-import groovy.lang.GroovyObject;
-
 /**
  * Raw set of data.
  *
  * @author Erwan Bocher (CNRS)
  * @author Sylvain PALOMINOS (UBS 2018)
  */
-public interface IDataSet extends Iterable<Object>, GroovyObject {
+public interface IDataSet extends Iterable<Object> {
+
+    /**
+     * Get the location of the table. The return object can be anything allowing to locate the data (URI, URL, Path ...)
+     *
+     * @return The location of the data.
+     */
     String getLocation();
+
+    /**
+     * Get the name of the DataSet.
+     *
+     * @return The name of the DataSet.
+     */
     String getName();
+
+    /**
+     * Get the metadata object of the DataSet.
+     *
+     * @return The metadata object.
+     */
+    Object getMetadata();
 }

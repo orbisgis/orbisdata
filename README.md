@@ -45,7 +45,21 @@ h2GIS.getSpatialTable "h2gis" eachRow { row -> concat += "$row.id $row.the_geom\
 println concat
 //Returns 1 POINT (10 10) 2 POINT (1 1)
 ```
+```groovy
+//How to display the metadata of spatial table
+def h2GIS = H2GIS.open([databaseName: './target/loadH2GIS'])
+h2GIS.execute("""
+                DROP TABLE IF EXISTS h2gis;
+                CREATE TABLE h2gis (id int, the_geom point);
+                INSERT INTO h2gis VALUES (1, 'POINT(10 10)'::GEOMETRY), (2, 'POINT(1 1)'::GEOMETRY);
+        """)
 
+def concat = ""
+h2GIS.getSpatialTable("h2gis").meta.each {row -> concat += "$row.columnLabel $row.columnType\n"}
+println concat
+//Returns ID 4 THE_GEOM 1111
+
+```
 
 # Funding
 

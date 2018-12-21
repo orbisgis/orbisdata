@@ -34,7 +34,7 @@ H2GIS.open([databaseName: './target/loadH2GIS'])
 
 ```groovy
 //How to query a spatial table
-H2GIS.open([databaseName: './target/loadH2GIS'])
+def h2GIS = H2GIS.open([databaseName: './target/loadH2GIS'])
 h2GIS.execute("""
                 DROP TABLE IF EXISTS h2gis;
                 CREATE TABLE h2gis (id int, the_geom point);

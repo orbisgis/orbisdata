@@ -7,6 +7,16 @@ Orbisdata is closed to Groovy syntax and aims to provide an elegant and fluent f
 
 OrbisData is organized around a set of interfaces that must be implemented to access and store data in a range of formats including flat file, databases, remote service...
 
+IDataSource : Any data source. Allows to obtain a dataset from an identifier.
+
+IDataSet : Any kind of raw data. A dataset is an iterable GroovyObject.
+
+ITable : A 2D (column/row) representation of data that implements IDataSet. 
+
+ISpatialTable : A 2D (column/row) representation of data that contains at least one Geometry column. 
+
+IJdbcDataSource : Extension of the IDataSource interface dedicated to the usage of a JDBC database.
+
 
 
 # Examples

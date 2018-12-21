@@ -24,7 +24,7 @@ IJdbcDataSource : Extension of the IDataSource interface dedicated to the usage 
 
 Allows to open, create an H2GIS database. The main entry is the H2GIS class that offers methods to get a Table or a SpatialTable.
 
-**Groovy examples : ** 
+**Groovy examples :** 
 
 
 ```groovy

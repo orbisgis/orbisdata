@@ -76,6 +76,13 @@ public class H2GIS extends Sql implements IJdbcDataSource {
         connectionWrapper = (ConnectionWrapper) connection;
     }
 
+    /**
+     * Open the H2GIS database with the given properties and return the corresponding H2GIS object.
+     *
+     * @param properties Map of the properties to use for the database opening.
+     *
+     * @return An instantiated H2GIS object wrapping the Sql object connected to the database.
+     */
     public static H2GIS open(Map<String, String> properties) {
         Properties props = new Properties();
         properties.forEach(props::put);

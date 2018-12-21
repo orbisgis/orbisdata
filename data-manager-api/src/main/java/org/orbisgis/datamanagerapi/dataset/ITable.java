@@ -49,8 +49,18 @@ import java.sql.ResultSetMetaData;
  */
 public interface ITable extends IDataSet, ResultSet {
 
+    /**
+     * Apply the given closure to each row.
+     *
+     * @param closure Closure to apply to each row.
+     */
     void eachRow(Closure closure);
 
+    /**
+     * Get the ResultSetMetaData of the DataSet.
+     *
+     * @return The metadata object.
+     */
     ResultSetMetaData getMetadata();
     
 }

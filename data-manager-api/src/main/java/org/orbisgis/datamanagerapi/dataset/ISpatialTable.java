@@ -47,5 +47,10 @@ import org.h2gis.utilities.SpatialResultSetMetaData;
  */
 public interface ISpatialTable extends ITable, SpatialResultSet {
 
+    /**
+     * Get the SpatialResultSetMetaData of the DataSet.
+     *
+     * @return The metadata object.
+     */
     SpatialResultSetMetaData getMetadata();
 }

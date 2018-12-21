@@ -107,7 +107,7 @@ class GroovyTest {
     }
 
     @Test
-    void querSpatialTableMetaData() {
+    void querySpatialTableMetaData() {
         def h2GIS = H2GIS.open([databaseName: './target/loadH2GIS'])
         h2GIS.execute("""
                 DROP TABLE IF EXISTS h2gis;

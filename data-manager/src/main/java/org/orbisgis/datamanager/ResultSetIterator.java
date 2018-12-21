@@ -53,9 +53,16 @@ public class ResultSetIterator implements Iterator<Object> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ResultSetIterator.class);
 
+    /** Iterated ResultSet */
     private ResultSet resultSet;
+    /** Count of ResultSet row */
     private int rowCount = 0;
 
+    /**
+     * Main constructor.
+     *
+     * @param resultSet ResultSet to iterate.
+     */
     public ResultSetIterator(ResultSet resultSet){
         this.resultSet = resultSet;
         try {

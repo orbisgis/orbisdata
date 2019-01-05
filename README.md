@@ -3,7 +3,7 @@ Orbisdata is library to provide a unique access point to query, manage, retrieve
 Orbisdata is based on lambda expressions and sugar programming methods introduced since JAVA 8.
 Orbisdata is closed to Groovy syntax and aims to provide an elegant and fluent framework to play with geospatial data.
 
-**IMPORTANT :  OrbisData needs JAVA 11.**
+**IMPORTANT :  OrbisData needs at least JAVA 8.**
 
 # Architecture
 

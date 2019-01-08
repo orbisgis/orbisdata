@@ -133,6 +133,15 @@ public interface ISqlBuilder {
     ISqlBuilder orderBy(String field);
 
     /**
+     * Set the limit of the request.
+     *
+     * @param limitCount Count of row.
+     *
+     * @return ISqlBuilder instance to continue building.
+     */
+    ISqlBuilder limit(int limitCount);
+
+    /**
      * Execute the query.
      */
     ITable execute();

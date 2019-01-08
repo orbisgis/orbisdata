@@ -171,6 +171,12 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, ISq
     }
 
     @Override
+    public ISqlBuilder limit(int limitCount) {
+        query.append(" LIMIT ").append(limitCount);
+        return this;
+    }
+
+    @Override
     public ITable execute() {
         Statement statement;
         try {

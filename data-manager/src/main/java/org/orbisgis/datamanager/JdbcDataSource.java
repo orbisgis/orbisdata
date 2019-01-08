@@ -59,6 +59,13 @@ import java.sql.Statement;
 import java.util.Map;
 import java.util.UUID;
 
+/**
+ * Abstract class used to implements the request builder methods (select, from ...) in order to give a base to all the
+ * JdbcDataSource implementations.
+ *
+ * @author Erwan Bocher (CNRS)
+ * @author Sylvain PALOMINOS (UBS 2019)
+ */
 public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, ISqlBuilder {
     private static final Logger LOGGER = LoggerFactory.getLogger(JdbcDataSource.class);
 

@@ -40,6 +40,12 @@ import org.orbisgis.datamanagerapi.dataset.ITable;
 
 import java.util.Map;
 
+/**
+ * Interface defining methods for the SQL request building (select, from ...).
+ *
+ * @author Erwan Bocher (CNRS)
+ * @author Sylvain PALOMINOS (UBS 2019)
+ */
 public interface ISqlBuilder {
 
     enum Order{ASC, DESC}

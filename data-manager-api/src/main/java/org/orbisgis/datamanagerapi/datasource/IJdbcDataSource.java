@@ -73,4 +73,60 @@ public interface IJdbcDataSource extends IDataSource {
      * @return
      */
     Collection<String> getTableNames();
+    
+    
+    /**
+     * Load a file to the database
+     * @param filePath the path of the file or URI
+     */
+    void load(String filePath);
+
+
+    /**
+     * Load a file to the database
+     * @param filePath the path of the file or URI
+     * @param delete true to delete the table if exists
+     */
+    void load(String filePath, boolean delete);
+    
+    
+    /**
+     * Load a file to the database
+     * @param filePath the path of the file or URI
+     * @param tableName the name of the table 
+     */
+    void load(String filePath, String tableName);
+
+
+    /**
+     * Load a file to the database
+     * @param filePath the path of the file or URI
+     * @param tableName the name of the table
+     * @param delete true to delete the table if exists
+     */
+    void load(String filePath, String tableName, boolean delete);
+    
+    /**
+     * Load a file to the database
+     * @param filePath the path of the file or URI
+     * @param tableName the name of the table 
+     * @param encoding Encoding property.
+     * @param delete true to delete the table if exists
+     */
+    void load(String filePath, String tableName, String encoding, boolean delete);
+    
+    /**
+     * Save a table to a file
+     * @param tableName the name of the table   
+     * @param filePath the path of the file to be saved
+     */
+    void save(String tableName, String filePath);
+
+    /**
+     * Save a table to a file
+     * @param tableName the name of the table
+     * @param filePath the path of the file to be saved
+     * @param encoding Encoding property.
+     */
+    void save(String tableName, String filePath, String encoding);
 }

@@ -4,6 +4,8 @@ import groovy.sql.Sql;
 import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.TableLocation;
+import org.orbisgis.datamanager.JdbcDataSource;
+import org.orbisgis.datamanagerapi.dataset.Database;
 import org.orbisgis.datamanagerapi.dataset.IDataSet;
 import org.orbisgis.datamanagerapi.dataset.ISpatialTable;
 import org.orbisgis.datamanagerapi.dataset.ITable;
@@ -26,7 +28,7 @@ import java.util.*;
  * @author Erwan Bocher (CNRS)
  * @author Sylvain PALOMINOS (UBS 2018)
  */
-public class POSTGIS extends Sql implements IJdbcDataSource {
+public class POSTGIS extends JdbcDataSource {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(POSTGIS.class);
     private static final DataSourceFactory dataSourceFactory = new DataSourceFactoryImpl();
@@ -39,7 +41,7 @@ public class POSTGIS extends Sql implements IJdbcDataSource {
      * @param connection Connection to the database.
      */
     private POSTGIS(Connection connection) {
-        super(connection);
+        super(connection, Database.POSTGIS);
         connectionWrapper = (ConnectionWrapper) connection;
     }
 

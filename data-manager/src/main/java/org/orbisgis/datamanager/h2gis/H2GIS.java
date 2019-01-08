@@ -36,7 +36,6 @@
  */
 package org.orbisgis.datamanager.h2gis;
 
-import groovy.sql.Sql;
 import org.h2.Driver;
 import org.h2.util.OsgiDataSourceFactory;
 import org.h2gis.utilities.JDBCUtilities;
@@ -44,10 +43,12 @@ import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.TableLocation;
 import org.h2gis.utilities.wrapper.ConnectionWrapper;
 import org.h2gis.utilities.wrapper.StatementWrapper;
+import org.orbisgis.datamanager.JdbcDataSource;
+import org.orbisgis.datamanagerapi.dataset.Database;
 import org.orbisgis.datamanagerapi.dataset.IDataSet;
 import org.orbisgis.datamanagerapi.dataset.ISpatialTable;
 import org.orbisgis.datamanagerapi.dataset.ITable;
-import org.orbisgis.datamanagerapi.datasource.IJdbcDataSource;
+import org.orbisgis.datamanagerapi.dsl.ISqlBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -63,7 +64,7 @@ import java.util.*;
  * @author Erwan Bocher (CNRS)
  * @author Sylvain PALOMINOS (UBS 2018)
  */
-public class H2GIS extends Sql implements IJdbcDataSource {
+public class H2GIS extends JdbcDataSource {
 
     private static final OsgiDataSourceFactory dataSourceFactory = new OsgiDataSourceFactory(new Driver());
     private static final Logger LOGGER = LoggerFactory.getLogger(H2GIS.class);
@@ -76,7 +77,7 @@ public class H2GIS extends Sql implements IJdbcDataSource {
      * @param connection Connection to the database.
      */
     private H2GIS(Connection connection) {
-        super(connection);
+        super(connection, Database.H2GIS);
         connectionWrapper = (ConnectionWrapper) connection;
     }
 

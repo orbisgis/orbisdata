@@ -38,11 +38,11 @@ package org.orbisgis.datamanager
 
 import org.junit.jupiter.api.Test
 import org.orbisgis.datamanager.h2gis.H2GIS
-import org.orbisgis.datamanager.postgis.POSTGIS
 
 import java.sql.SQLException
 
 import static org.junit.jupiter.api.Assertions.*
+import static org.orbisgis.datamanagerapi.dsl.ISqlBuilder.Order.DESC
 
 class GroovyTest {
 
@@ -128,5 +128,41 @@ class GroovyTest {
             concat += "$row.columnLabel $row.columnType\n"
         }
         assertEquals("ID 4\nTHE_GEOM 1111\n", concat)
+    }
+
+    @Test
+    void request() throws SQLException {
+        def h2GIS = H2GIS.open([databaseName: './target/loadH2GIS'])
+        h2GIS.execute("""
+                DROP TABLE IF EXISTS h2gis;
+                CREATE TABLE h2gis (id int PRIMARY KEY, code int, the_geom point);
+                insert into h2gis values (1,22, 'POINT(10 10)'::GEOMETRY);
+                insert into h2gis values (2,56, 'POINT(20 20)'::GEOMETRY);
+                insert into h2gis values (3,22, 'POINT(10 10)'::GEOMETRY);
+                insert into h2gis values (4,22, 'POINT(10 10)'::GEOMETRY);
+                insert into h2gis values (5,22, 'POINT(20 10)'::GEOMETRY);
+                """)
+
+        def table = h2GIS.select"COUNT(id)","code","the_geom"from"h2gis"where"h2gis.code=22"and"id<5"groupBy"code"execute()
+
+        def values = new ArrayList<>()
+        table.eachRow {row ->
+                    values.add(row.getInt(1))
+                    values.add(row.getInt(2))
+        }
+        assertEquals(2,values.size())
+        assertEquals(3, (int) values.get(0))
+        assertEquals(22, (int) values.get(1))
+
+        table = h2GIS.select "*" from "h2gis" where "code=22" or "code=56" orderBy "id",DESC execute()
+
+        def values2 = new ArrayList<>();
+        table.eachRow {row -> values2.add(row.getInt(1))}
+        assertEquals(5,values2.size())
+        assertEquals(5, (int) values2.get(0))
+        assertEquals(4, (int) values2.get(1))
+        assertEquals(3, (int) values2.get(2))
+        assertEquals(2, (int) values2.get(3))
+        assertEquals(1, (int) values2.get(4))
     }
 }

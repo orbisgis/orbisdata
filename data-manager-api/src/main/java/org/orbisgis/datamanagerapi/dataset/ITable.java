@@ -40,6 +40,7 @@ import groovy.lang.Closure;
 
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
+import java.util.Collection;
 
 /**
  * Implementation of the IDataSet interface. A table is a 2D (column/line) representation of data.
@@ -61,6 +62,13 @@ public interface ITable extends IDataSet, ResultSet {
      *
      * @return The metadata object.
      */
+    @Override
     ResultSetMetaData getMetadata();
+    
+    /**
+     * Get all column names from the underlying table
+     * @return 
+     */
+    Collection<String> getColumnNames();
     
 }

@@ -48,7 +48,6 @@ import org.orbisgis.datamanagerapi.dataset.Database;
 import org.orbisgis.datamanagerapi.dataset.IDataSet;
 import org.orbisgis.datamanagerapi.dataset.ISpatialTable;
 import org.orbisgis.datamanagerapi.dataset.ITable;
-import org.orbisgis.datamanagerapi.dsl.ISqlBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

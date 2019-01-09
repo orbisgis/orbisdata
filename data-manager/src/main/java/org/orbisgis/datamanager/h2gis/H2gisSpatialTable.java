@@ -50,9 +50,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import org.h2gis.utilities.JDBCUtilities;
 
 public class H2gisSpatialTable extends SpatialResultSetImpl implements ISpatialTable, IJdbcTable {
 
@@ -155,5 +160,15 @@ public class H2gisSpatialTable extends SpatialResultSetImpl implements ISpatialT
     @Override
     public Map<String, Object> getPropertyMap() {
         return propertyMap;
+    }
+
+    @Override
+    public Collection<String> getColumnNames() {
+        try {
+            return JDBCUtilities.getFieldNames(super.getMetaData());
+        } catch (SQLException e) {
+            LOGGER.error("Unable to get the column names.\n" + e.getLocalizedMessage());
+            return new ArrayList<>();
+        }
     }
 }

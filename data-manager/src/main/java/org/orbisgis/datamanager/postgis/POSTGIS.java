@@ -1,6 +1,5 @@
 package org.orbisgis.datamanager.postgis;
 
-import groovy.sql.Sql;
 import org.h2gis.api.EmptyProgressVisitor;
 import org.h2gis.functions.io.csv.CSVDriverFunction;
 import org.h2gis.functions.io.dbf.DBFDriverFunction;
@@ -15,10 +14,11 @@ import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.TableLocation;
 import org.h2gis.utilities.URIUtilities;
+import org.orbisgis.datamanager.JdbcDataSource;
+import org.orbisgis.datamanagerapi.dataset.Database;
 import org.orbisgis.datamanagerapi.dataset.IDataSet;
 import org.orbisgis.datamanagerapi.dataset.ISpatialTable;
 import org.orbisgis.datamanagerapi.dataset.ITable;
-import org.orbisgis.datamanagerapi.datasource.IJdbcDataSource;
 import org.orbisgis.postgis_jts.ConnectionWrapper;
 import org.orbisgis.postgis_jts.StatementWrapper;
 import org.orbisgis.postgis_jts_osgi.DataSourceFactoryImpl;
@@ -40,7 +40,7 @@ import java.util.*;
  * @author Erwan Bocher (CNRS)
  * @author Sylvain PALOMINOS (UBS 2018)
  */
-public class POSTGIS extends Sql implements IJdbcDataSource {
+public class POSTGIS extends JdbcDataSource {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(POSTGIS.class);
     private static final DataSourceFactory dataSourceFactory = new DataSourceFactoryImpl();
@@ -53,7 +53,7 @@ public class POSTGIS extends Sql implements IJdbcDataSource {
      * @param connection Connection to the database.
      */
     private POSTGIS(Connection connection) {
-        super(connection);
+        super(connection, Database.POSTGIS);
         connectionWrapper = (ConnectionWrapper) connection;
     }
 

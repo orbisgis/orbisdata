@@ -45,8 +45,8 @@ import static org.junit.jupiter.api.Assertions.assertNotNull
 class GroovyPostGISTest {
 
     def dbProperties=  [databaseName: 'gisdb',
-    user: '',
-    password: '',
+    user: 'erwan',
+    password: 'th@l@ss@56',
     url :'jdbc:postgresql://ns380291.ip-94-23-250.eu/'
     ]
 
@@ -219,5 +219,16 @@ class GroovyPostGISTest {
         postGIS.getSpatialTable "postgis_imported" eachRow { row -> concat += "$row.id $row.the_geom $row.geometry\n" }
         assertEquals("1 POINT (10 10) POINT (10 10)\n2 POINT (1 1) POINT (1 1)\n", concat)
         println(concat)
+    }
+    
+    @Test
+    void queryTableColumnNames() {
+        def postGIS = POSTGIS.open(dbProperties)
+        postGIS.execute("""
+                DROP TABLE IF EXISTS postgis;
+                CREATE TABLE postgis (id int, the_geom geometry(point, 0));
+                INSERT INTO postgis VALUES (1, 'POINT(10 10)'::GEOMETRY), (2, 'POINT(1 1)'::GEOMETRY);
+        """)
+        assertEquals("id,the_geom", postGIS.getSpatialTable("postgis").columnNames.join(","))
     }
 }

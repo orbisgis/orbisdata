@@ -53,11 +53,15 @@ public interface ISpatialTable extends ITable, SpatialResultSet {
      *
      * @return The metadata object.
      */
+    @Override
     SpatialResultSetMetaData getMetadata();
 
+    @Override
     Geometry getGeometry(int columnIndex);
 
+    @Override
     Geometry getGeometry(String columnLabel);
 
+    @Override
     Geometry getGeometry();
 }

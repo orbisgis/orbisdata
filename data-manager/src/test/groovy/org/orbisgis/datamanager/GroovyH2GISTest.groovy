@@ -39,9 +39,12 @@ package org.orbisgis.datamanager
 import org.junit.jupiter.api.Test
 import org.orbisgis.datamanager.h2gis.H2GIS
 
-import static org.junit.jupiter.api.Assertions.*
+import java.sql.SQLException
 
-class GroovyTest {
+import static org.junit.jupiter.api.Assertions.*
+import static org.orbisgis.datamanagerapi.dsl.ISqlBuilder.Order.DESC
+
+class GroovyH2GISTest {
 
 
     @Test
@@ -226,4 +229,16 @@ class GroovyTest {
         assertEquals("1 POINT (10 10) POINT (10 10)\n2 POINT (1 1) POINT (1 1)\n", concat)
         println(concat)
     }
+    
+    @Test
+    void queryTableColumnNames() {
+        def h2GIS = H2GIS.open([databaseName: './target/loadH2GIS'])
+        h2GIS.execute("""
+                DROP TABLE IF EXISTS h2gis;
+                CREATE TABLE h2gis (id int, the_geom point);
+                INSERT INTO h2gis VALUES (1, 'POINT(10 10)'::GEOMETRY), (2, 'POINT(1 1)'::GEOMETRY);
+        """)
+        assertEquals("ID,THE_GEOM", h2GIS.getSpatialTable("h2gis").columnNames.join(","))
+        assertTrue(h2GIS.getSpatialTable("h2gis").columnNames.indexOf("THE_GEOM")!=-1)
+}
 }

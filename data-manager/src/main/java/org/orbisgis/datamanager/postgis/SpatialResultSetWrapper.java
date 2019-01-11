@@ -34,7 +34,6 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-
 package org.orbisgis.datamanager.postgis;
 
 import org.h2gis.utilities.SFSUtilities;

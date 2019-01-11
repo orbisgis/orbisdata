@@ -53,8 +53,11 @@ import org.slf4j.LoggerFactory;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import org.h2gis.utilities.JDBCUtilities;
 
 public class PostgisSpatialTable extends SpatialResultSetWrapper implements ISpatialTable, IJdbcTable {
 
@@ -157,5 +160,64 @@ public class PostgisSpatialTable extends SpatialResultSetWrapper implements ISpa
     @Override
     public Map<String, Object> getPropertyMap() {
         return propertyMap;
+    }
+    
+    @Override
+    public Collection<String> getColumnNames() {
+        try {
+            return JDBCUtilities.getFieldNames(super.getMetaData());
+        } catch (SQLException e) {
+            LOGGER.error("Unable to get the column names.\n" + e.getLocalizedMessage());
+            return new ArrayList<>();
+        }
+    }
+
+    /**
+     * SpatialResultSetMetadata implementation compatible with postgis database.
+     */
+    //TODO move to the postgis-jts project.
+    private class SpatialResultSetMetaDataImpl extends ResultSetMetaDataWrapper implements SpatialResultSetMetaData {
+        private int firstGeometryFieldIndex = -1;
+        private StatementWrapper statement;
+
+        public SpatialResultSetMetaDataImpl(ResultSetMetaData resultSetMetaData, StatementWrapper statement) {
+            super(resultSetMetaData);
+            this.statement = statement;
+        }
+
+        public int getFirstGeometryFieldIndex() throws SQLException {
+            if (this.firstGeometryFieldIndex == -1) {
+                for(int idColumn = 1; idColumn <= this.getColumnCount(); ++idColumn) {
+                    if (this.getColumnTypeName(idColumn).equalsIgnoreCase("geometry")) {
+                        this.firstGeometryFieldIndex = idColumn;
+                        break;
+                    }
+                }
+            }
+
+            return this.firstGeometryFieldIndex;
+        }
+
+        public int getGeometryType() throws SQLException {
+            return this.getGeometryType(this.getFirstGeometryFieldIndex());
+        }
+
+        public int getGeometryType(int column) throws SQLException {
+            return SFSUtilities.getGeometryType(this.statement.getConnection(),
+                    new TableLocation(this.getCatalogName(column), this.getSchemaName(column),
+                            this.getTableName(column)), this.getColumnName(column));
+        }
+
+        public <T> T unwrap(Class<T> iface) throws SQLException {
+            if (iface.isInstance(this)) {
+                try {
+                    return iface.cast(this);
+                } catch (ClassCastException var3) {
+                    throw new SQLException(var3);
+                }
+            } else {
+                return super.unwrap(iface);
+            }
+        }
     }
 }

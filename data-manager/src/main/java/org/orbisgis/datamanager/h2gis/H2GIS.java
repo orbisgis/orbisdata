@@ -48,9 +48,7 @@ import org.h2gis.functions.io.geojson.GeoJsonWriteDriver;
 import org.h2gis.functions.io.json.JsonWriteDriver;
 import org.h2gis.functions.io.kml.KMLWriterDriver;
 import org.h2gis.functions.io.tsv.TSVDriverFunction;
-import org.h2gis.utilities.JDBCUtilities;
-import org.h2gis.utilities.SFSUtilities;
-import org.h2gis.utilities.TableLocation;
+import org.h2gis.utilities.*;
 import org.h2gis.utilities.wrapper.ConnectionWrapper;
 import org.h2gis.utilities.wrapper.StatementWrapper;
 import org.orbisgis.datamanager.JdbcDataSource;
@@ -58,6 +56,7 @@ import org.orbisgis.datamanagerapi.dataset.Database;
 import org.orbisgis.datamanagerapi.dataset.IDataSet;
 import org.orbisgis.datamanagerapi.dataset.ISpatialTable;
 import org.orbisgis.datamanagerapi.dataset.ITable;
+import org.osgi.service.jdbc.DataSourceFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -69,7 +68,6 @@ import java.util.*;
 import org.h2gis.api.EmptyProgressVisitor;
 import org.h2gis.functions.io.shp.SHPDriverFunction;
 import org.h2gis.functions.io.utility.FileUtil;
-import org.h2gis.utilities.URIUtilities;
 
 /**
  * Implementation of the IJdbcDataSource interface dedicated to the usage of an H2/H2GIS database.
@@ -309,6 +307,66 @@ public class H2GIS extends JdbcDataSource {
             LOGGER.error("Cannot load.\n"+e.getLocalizedMessage());
         }
     }
+
+    @Override
+    public void load(Map<String, String> properties, String inputTableName) {
+        load(properties, inputTableName, inputTableName, false);
+    }
+
+    @Override
+    public void load(Map<String, String> properties, String inputTableName, boolean delete) {
+        load(properties, inputTableName, inputTableName, delete);
+    }
+
+    @Override
+    public void load(Map<String, String> properties, String inputTableName, String outputTableName) {
+        load(properties, inputTableName, outputTableName, false);
+    }
+
+    @Override
+    public void load(Map<String, String> properties, String inputTableName, String outputTableName, boolean delete) {
+        String user = properties.get(DataSourceFactory.JDBC_USER);
+        String password = properties.get(DataSourceFactory.JDBC_PASSWORD);
+        String driverName = "";
+        String jdbc_url = properties.get("url");
+        if(jdbc_url!=null) {
+            if (jdbc_url.startsWith("jdbc:")) {
+                String url = jdbc_url.substring("jdbc:".length());
+                String driverURI = url.substring(url.indexOf(":"));
+                if (url.startsWith("h2")) {
+                    driverName = "org.h2.Driver";
+                } else if (url.startsWith("postgresql")) {
+                    driverName = "org.orbisgis.postgis_jts.Driver";
+                }
+                if(!driverName.isEmpty()) {
+                    if (delete) {
+                        try {
+                            execute("DROP TABLE IF EXISTS " + outputTableName);
+                        } catch (SQLException e) {
+                            LOGGER.error("Cannot drop the table.\n" + e.getLocalizedMessage());
+                        }
+                    }
+                    try {
+                        String tmpTableName =  "TMP_"+ System.currentTimeMillis();
+                        execute(String.format("CREATE LINKED TABLE %s('%s', '%s', '%s', '%s', '%s')", tmpTableName, driverName, jdbc_url, user, password, inputTableName));
+                        execute(String.format("CREATE TABLE %s as SELECT * from %s", outputTableName, tmpTableName));
+                    } catch (SQLException e) {
+                        LOGGER.error("Cannot load the table.\n" + e.getLocalizedMessage());
+                    }
+                }
+                else{
+                    LOGGER.error("This database is not yet supported");
+                }
+            }
+            else{
+                LOGGER.error("JDBC Url must start with jdbc:");
+            }
+        }
+        else {
+            LOGGER.error("The URL of the external database cannot be null");
+        }
+    }
+
     @Override
     public void load(String filePath, String tableName) {
         load(filePath, tableName, null,false);

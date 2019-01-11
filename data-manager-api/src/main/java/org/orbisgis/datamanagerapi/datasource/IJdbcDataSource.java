@@ -40,6 +40,7 @@ import org.orbisgis.datamanagerapi.dataset.ISpatialTable;
 import org.orbisgis.datamanagerapi.dataset.ITable;
 
 import java.util.Collection;
+import java.util.Map;
 
 /**
  * Extension of the IDataSource interface dedicated to the usage of a JDBC database.
@@ -114,6 +115,40 @@ public interface IJdbcDataSource extends IDataSource {
      * @param delete true to delete the table if exists
      */
     void load(String filePath, String tableName, String encoding, boolean delete);
+
+
+    /**
+     * Load a table from another database
+     * @param properties to connect to the database
+     * @param inputTableName the name of the table we want to import
+     */
+    void load(Map<String, String> properties, String inputTableName);
+
+
+    /**
+     * Load a table from another database
+     * @param properties to connect to the database
+     * @param inputTableName the name of the table we want to import
+     * @param outputTableName the name of the imported table
+     */
+    void load(Map<String, String> properties, String inputTableName,String outputTableName);
+
+    /**
+     * Load a table from another database
+     * @param properties to connect to the database
+     * @param inputTableName the name of the table we want to import     *
+     * @param delete true to delete the outputTableName if exists
+     */
+    void load(Map<String, String> properties, String inputTableName, boolean delete);
+
+    /**
+     * Load a table from another database
+     * @param properties to connect to the database
+     * @param inputTableName the name of the table we want to import
+     * @param outputTableName the name of the imported table
+     * @param delete true to delete the outputTableName if exists
+     */
+    void load(Map<String, String> properties, String inputTableName, String outputTableName, boolean delete);
     
     /**
      * Save a table to a file

@@ -238,6 +238,27 @@ public class POSTGIS extends JdbcDataSource {
             LOGGER.error("Cannot load.\n"+e.getLocalizedMessage());
         }
     }
+
+    @Override
+    public void load(Map<String, String> properties, String tableName) {
+        LOGGER.error("Feature not yet supported");
+    }
+
+    @Override
+    public void load(Map<String, String> properties, String inputTableName, String outputTableName) {
+        LOGGER.error("Feature not yet supported");
+    }
+
+    @Override
+    public void load(Map<String, String> properties, String inputTableName, boolean delete) {
+        LOGGER.error("Feature not yet supported");
+    }
+
+    @Override
+    public void load(Map<String, String> properties, String inputTableName, String outputTableName, boolean delete) {
+        LOGGER.error("Feature not yet supported");
+    }
+
     @Override
     public void load(String filePath, String tableName) {
         load(filePath, tableName, null,false);

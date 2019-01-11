@@ -45,40 +45,40 @@ import static org.junit.jupiter.api.Assertions.assertNotNull
 class GroovyPostGISTest {
 
     def dbProperties=  [databaseName: 'gisdb',
-    user: 'erwan',
-    password: 'k@ndinsky',
+    user: '',
+    password: '',
     url :'jdbc:postgresql://ns380291.ip-94-23-250.eu/'
     ]
 
     @Test
     void loadH2GIS() {
-        def h2GIS = POSTGIS.open(dbProperties)
-        assertNotNull(h2GIS)
+        def postGIS = POSTGIS.open(dbProperties)
+        assertNotNull(postGIS)
     }
 
     @Test
     void queryH2GIS() {
-        def h2GIS = POSTGIS.open(dbProperties)
-        h2GIS.execute("""
-                DROP TABLE IF EXISTS h2gis;
-                CREATE TABLE h2gis (id int, the_geom geometry(point, 0));
-                INSERT INTO h2gis VALUES (1, 'POINT(10 10)'::GEOMETRY), (2, 'POINT(1 1)'::GEOMETRY);
+        def postGIS = POSTGIS.open(dbProperties)
+        postGIS.execute("""
+                DROP TABLE IF EXISTS postgis;
+                CREATE TABLE postgis (id int, the_geom geometry(point, 0));
+                INSERT INTO postgis VALUES (1, 'POINT(10 10)'::GEOMETRY), (2, 'POINT(1 1)'::GEOMETRY);
         """)
         def concat = ""
-        h2GIS.eachRow "SELECT THE_GEOM FROM h2gis", { row -> concat += "$row.the_geom\n" }
+        postGIS.eachRow "SELECT THE_GEOM FROM postgis", { row -> concat += "$row.the_geom\n" }
         assertEquals("POINT (10 10)\nPOINT (1 1)\n", concat)
     }
 
     @Test
     void querySpatialTable() {
-        def h2GIS = POSTGIS.open(dbProperties)
-        h2GIS.execute("""
-                DROP TABLE IF EXISTS h2gis;
-                CREATE TABLE h2gis (id int, the_geom geometry(point, 0));
-                INSERT INTO h2gis VALUES (1, 'POINT(10 10)'::GEOMETRY), (2, 'POINT(1 1)'::GEOMETRY);
+        def postGIS = POSTGIS.open(dbProperties)
+        postGIS.execute("""
+                DROP TABLE IF EXISTS postgis;
+                CREATE TABLE postgis (id int, the_geom geometry(point, 0));
+                INSERT INTO postgis VALUES (1, 'POINT(10 10)'::GEOMETRY), (2, 'POINT(1 1)'::GEOMETRY);
         """)
         def concat = ""
-        h2GIS.getSpatialTable "h2gis" eachRow { row -> concat += "$row.id $row.the_geom $row.geometry\n" }
+        postGIS.getSpatialTable "postgis" eachRow { row -> concat += "$row.id $row.the_geom $row.geometry\n" }
         assertEquals("1 POINT (10 10) POINT (10 10)\n2 POINT (1 1) POINT (1 1)\n", concat)
         println(concat)
     }
@@ -87,136 +87,136 @@ class GroovyPostGISTest {
 
     @Test
     void queryH2GISMetaData() {
-        def h2GIS = POSTGIS.open(dbProperties)
-        h2GIS.execute("""
-                DROP TABLE IF EXISTS h2gis;
-                CREATE TABLE h2gis (id int, the_geom geometry(point, 0));
-                INSERT INTO h2gis VALUES (1, 'POINT(10 10)'::GEOMETRY), (2, 'POINT(1 1)'::GEOMETRY);
+        def postGIS = POSTGIS.open(dbProperties)
+        postGIS.execute("""
+                DROP TABLE IF EXISTS postgis;
+                CREATE TABLE postgis (id int, the_geom geometry(point, 0));
+                INSERT INTO postgis VALUES (1, 'POINT(10 10)'::GEOMETRY), (2, 'POINT(1 1)'::GEOMETRY);
         """)
         def concat = ""
-        h2GIS.rows "SELECT * FROM h2gis", {  meta ->
+        postGIS.rows "SELECT * FROM postgis", {  meta ->
             concat += "${meta.getTableName(1)} $meta.columnCount\n"
         }
-        assertEquals("H2GIS 2\n", concat)
+        assertEquals("postgis 2\n", concat)
     }
 
     @Test
     void querySpatialTableMetaData() {
-        def h2GIS = POSTGIS.open(dbProperties)
-        h2GIS.execute("""
-                DROP TABLE IF EXISTS h2gis;
-                CREATE TABLE h2gis (id int, the_geom geometry(point, 0));
-                INSERT INTO h2gis VALUES (1, 'POINT(10 10)'::GEOMETRY), (2, 'POINT(1 1)'::GEOMETRY);
+        def postGIS = POSTGIS.open(dbProperties)
+        postGIS.execute("""
+                DROP TABLE IF EXISTS postgis;
+                CREATE TABLE postgis (id int, the_geom geometry(point, 0));
+                INSERT INTO postgis VALUES (1, 'POINT(10 10)'::GEOMETRY), (2, 'POINT(1 1)'::GEOMETRY);
         """)
 
         def concat = ""
-        h2GIS.getSpatialTable("h2gis").meta.each {row ->
+        postGIS.getSpatialTable("postgis").meta.each {row ->
             concat += "$row.columnLabel $row.columnType\n"
         }
-        assertEquals("ID 4\nTHE_GEOM 1111\n", concat)
+        assertEquals("id 4\nthe_geom 1111\n", concat)
 
         concat = ""
-        h2GIS.getSpatialTable("h2gis").metadata.each {row ->
+        postGIS.getSpatialTable("postgis").metadata.each {row ->
             concat += "$row.columnLabel $row.columnType\n"
         }
-        assertEquals("ID 4\nTHE_GEOM 1111\n", concat)
+        assertEquals("id 4\nthe_geom 1111\n", concat)
     }
     
     
     @Test
     void exportImportShpFile() {
-        def h2GIS = POSTGIS.open(dbProperties)
-        h2GIS.execute("""
-                DROP TABLE IF EXISTS h2gis;
-                CREATE TABLE h2gis (id int, the_geom geometry(point, 0));
-                INSERT INTO h2gis VALUES (1, 'POINT(10 10)'::GEOMETRY), (2, 'POINT(1 1)'::GEOMETRY);
+        def postGIS = POSTGIS.open(dbProperties)
+        postGIS.execute("""
+                DROP TABLE IF EXISTS postgis;
+                CREATE TABLE postgis (id int, the_geom geometry(point, 0));
+                INSERT INTO postgis VALUES (1, 'POINT(10 10)'::GEOMETRY), (2, 'POINT(1 1)'::GEOMETRY);
         """)
-        h2GIS.save("h2gis","target/h2gis_imported.shp");
-        h2GIS.load("target/h2gis_imported.shp", "h2gis_imported", null, false);
+        postGIS.save("postgis","target/postgis_imported.shp");
+        postGIS.load("target/postgis_imported.shp", "postgis_imported", null, false);
         def concat = ""
-        h2GIS.getSpatialTable "h2gis_imported" eachRow { row -> concat += "$row.id $row.the_geom $row.geometry\n" }
+        postGIS.getSpatialTable "postgis_imported" eachRow { row -> concat += "$row.id $row.the_geom $row.geometry\n" }
         assertEquals("1 POINT (10 10) POINT (10 10)\n2 POINT (1 1) POINT (1 1)\n", concat)
         println(concat)
     }
 
     @Test
     void exportImportTwoTimesShpFile() {
-        def h2GIS = POSTGIS.open(dbProperties)
-        h2GIS.execute("""
-                DROP TABLE IF EXISTS h2gis;
-                CREATE TABLE h2gis (id int, the_geom geometry(point, 0));
-                INSERT INTO h2gis VALUES (1, 'POINT(10 10)'::GEOMETRY), (2, 'POINT(1 1)'::GEOMETRY);
+        def postGIS = POSTGIS.open(dbProperties)
+        postGIS.execute("""
+                DROP TABLE IF EXISTS postgis;
+                CREATE TABLE postgis (id int, the_geom geometry(point, 0));
+                INSERT INTO postgis VALUES (1, 'POINT(10 10)'::GEOMETRY), (2, 'POINT(1 1)'::GEOMETRY);
         """)
-        h2GIS.save("h2gis","target/h2gis_imported.shp");
-        h2GIS.load("target/h2gis_imported.shp", "h2gis_imported", null, false);
-        h2GIS.load("target/h2gis_imported.shp", "h2gis_imported", null, true);
+        postGIS.save("postgis","target/postgis_imported.shp");
+        postGIS.load("target/postgis_imported.shp", "postgis_imported", null, false);
+        postGIS.load("target/postgis_imported.shp", "postgis_imported", null, true);
         def concat = ""
-        h2GIS.getSpatialTable "h2gis_imported" eachRow { row -> concat += "$row.id $row.the_geom $row.geometry\n" }
+        postGIS.getSpatialTable "postgis_imported" eachRow { row -> concat += "$row.id $row.the_geom $row.geometry\n" }
         assertEquals("1 POINT (10 10) POINT (10 10)\n2 POINT (1 1) POINT (1 1)\n", concat)
         println(concat)
     }
 
     @Test
     void exportImportShpFileSimple1() {
-        def h2GIS = POSTGIS.open(dbProperties)
-        h2GIS.execute("""
-                DROP TABLE IF EXISTS h2gis;
-                CREATE TABLE h2gis (id int, the_geom geometry(point, 0));
-                INSERT INTO h2gis VALUES (1, 'POINT(10 10)'::GEOMETRY), (2, 'POINT(1 1)'::GEOMETRY);
+        def postGIS = POSTGIS.open(dbProperties)
+        postGIS.execute("""
+                DROP TABLE IF EXISTS postgis;
+                CREATE TABLE postgis (id int, the_geom geometry(point, 0));
+                INSERT INTO postgis VALUES (1, 'POINT(10 10)'::GEOMETRY), (2, 'POINT(1 1)'::GEOMETRY);
         """)
-        h2GIS.save("h2gis","target/h2gis_imported.shp");
-        h2GIS.load("target/h2gis_imported.shp", "h2gis_imported");
+        postGIS.save("postgis","target/postgis_imported.shp");
+        postGIS.load("target/postgis_imported.shp", "postgis_imported");
         def concat = ""
-        h2GIS.getSpatialTable "h2gis_imported" eachRow { row -> concat += "$row.id $row.the_geom $row.geometry\n" }
+        postGIS.getSpatialTable "postgis_imported" eachRow { row -> concat += "$row.id $row.the_geom $row.geometry\n" }
         assertEquals("1 POINT (10 10) POINT (10 10)\n2 POINT (1 1) POINT (1 1)\n", concat)
         println(concat)
     }
 
     @Test
     void exportImportShpFileSimple2() {
-        def h2GIS = POSTGIS.open(dbProperties)
-        h2GIS.execute("""
-                DROP TABLE IF EXISTS h2gis;
-                CREATE TABLE h2gis (id int, the_geom geometry(point, 0));
-                INSERT INTO h2gis VALUES (1, 'POINT(10 10)'::GEOMETRY), (2, 'POINT(1 1)'::GEOMETRY);
+        def postGIS = POSTGIS.open(dbProperties)
+        postGIS.execute("""
+                DROP TABLE IF EXISTS postgis;
+                CREATE TABLE postgis (id int, the_geom geometry(point, 0));
+                INSERT INTO postgis VALUES (1, 'POINT(10 10)'::GEOMETRY), (2, 'POINT(1 1)'::GEOMETRY);
         """)
-        h2GIS.save("h2gis","target/h2gis_imported.shp");
-        h2GIS.load("target/h2gis_imported.shp");
+        postGIS.save("postgis","target/postgis_imported.shp");
+        postGIS.load("target/postgis_imported.shp");
         def concat = ""
-        h2GIS.getSpatialTable "h2gis_imported" eachRow { row -> concat += "$row.id $row.the_geom $row.geometry\n" }
+        postGIS.getSpatialTable "postgis_imported" eachRow { row -> concat += "$row.id $row.the_geom $row.geometry\n" }
         assertEquals("1 POINT (10 10) POINT (10 10)\n2 POINT (1 1) POINT (1 1)\n", concat)
         println(concat)
     }
     @Test
     void exportImportGeoJsonShapeFile() {
-        def h2GIS = POSTGIS.open(dbProperties)
-        h2GIS.execute("""
-                DROP TABLE IF EXISTS h2gis;
-                CREATE TABLE h2gis (id int, the_geom geometry(point, 0));
-                INSERT INTO h2gis VALUES (1, 'POINT(10 10)'::GEOMETRY), (2, 'POINT(1 1)'::GEOMETRY);
+        def postGIS = POSTGIS.open(dbProperties)
+        postGIS.execute("""
+                DROP TABLE IF EXISTS postgis;
+                CREATE TABLE postgis (id int, the_geom geometry(point, 0));
+                INSERT INTO postgis VALUES (1, 'POINT(10 10)'::GEOMETRY), (2, 'POINT(1 1)'::GEOMETRY);
         """)
-        h2GIS.save("h2gis","target/h2gis_imported.geojson");
-        h2GIS.load("target/h2gis_imported.geojson");
-        h2GIS.save("h2gis_imported","target/h2gis_imported.shp");
-        h2GIS.load("target/h2gis_imported.shp", true);
+        postGIS.save("postgis","target/postgis_imported.geojson");
+        postGIS.load("target/postgis_imported.geojson");
+        postGIS.save("postgis_imported","target/postgis_imported.shp");
+        postGIS.load("target/postgis_imported.shp", true);
         def concat = ""
-        h2GIS.getSpatialTable "h2gis_imported" eachRow { row -> concat += "$row.id $row.the_geom $row.geometry\n" }
+        postGIS.getSpatialTable "postgis_imported" eachRow { row -> concat += "$row.id $row.the_geom $row.geometry\n" }
         assertEquals("1 POINT (10 10) POINT (10 10)\n2 POINT (1 1) POINT (1 1)\n", concat)
         println(concat)
     }
 
     @Test
     void exportImportCSV() {
-        def h2GIS = POSTGIS.open(dbProperties)
-        h2GIS.execute("""
-                DROP TABLE IF EXISTS h2gis;
-                CREATE TABLE h2gis (id int, the_geom geometry(point, 0));
-                INSERT INTO h2gis VALUES (1, 'POINT(10 10)'::GEOMETRY), (2, 'POINT(1 1)'::GEOMETRY);
+        def postGIS = POSTGIS.open(dbProperties)
+        postGIS.execute("""
+                DROP TABLE IF EXISTS postgis;
+                CREATE TABLE postgis (id int, the_geom geometry(point, 0));
+                INSERT INTO postgis VALUES (1, 'POINT(10 10)'::GEOMETRY), (2, 'POINT(1 1)'::GEOMETRY);
         """)
-        h2GIS.save("h2gis","target/h2gis_imported.csv");
-        h2GIS.load("target/h2gis_imported.csv");
+        postGIS.save("postgis","target/postgis_imported.csv");
+        postGIS.load("target/postgis_imported.csv");
         def concat = ""
-        h2GIS.getSpatialTable "h2gis_imported" eachRow { row -> concat += "$row.id $row.the_geom $row.geometry\n" }
+        postGIS.getSpatialTable "postgis_imported" eachRow { row -> concat += "$row.id $row.the_geom $row.geometry\n" }
         assertEquals("1 POINT (10 10) POINT (10 10)\n2 POINT (1 1) POINT (1 1)\n", concat)
         println(concat)
     }

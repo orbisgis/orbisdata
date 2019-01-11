@@ -45,8 +45,8 @@ import static org.junit.jupiter.api.Assertions.assertNotNull
 class GroovyPostGISTest {
 
     def dbProperties=  [databaseName: 'gisdb',
-    user: 'erwan',
-    password: 'th@l@ss@56',
+    user: '',
+    password: '',
     url :'jdbc:postgresql://ns380291.ip-94-23-250.eu/'
     ]
 

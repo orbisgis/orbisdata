@@ -38,6 +38,7 @@ package org.orbisgis.datamanager
 
 import org.junit.jupiter.api.Test
 import org.orbisgis.datamanager.h2gis.H2GIS
+import org.orbisgis.datamanagerapi.dataset.ITable
 
 import java.sql.SQLException
 
@@ -240,5 +241,44 @@ class GroovyH2GISTest {
         """)
         assertEquals("ID,THE_GEOM", h2GIS.getSpatialTable("h2gis").columnNames.join(","))
         assertTrue(h2GIS.getSpatialTable("h2gis").columnNames.indexOf("THE_GEOM")!=-1)
-}
+    }
+
+    @Test
+    void loadExternalTableFromDataBase() {
+        def h2External = H2GIS.open([databaseName: './target/secondH2GIS', user:'sa', password:'sa'])
+        h2External.execute("""
+                DROP TABLE IF EXISTS externalTable;
+                CREATE TABLE externalTable (id int, the_geom point);
+                INSERT INTO externalTable VALUES (1, 'POINT(10 10)'::GEOMETRY), (2, 'POINT(1 1)'::GEOMETRY);
+        """)
+        def h2GIS = H2GIS.open([databaseName: './target/loadH2GIS'])
+        h2GIS.load([user: 'sa', password: 'sa',url :'jdbc:h2:./target/secondH2GIS'], 'externalTable',true )
+        assertTrue(h2GIS.tableNames.contains("LOADH2GIS.PUBLIC.EXTERNALTABLE"))
+    }
+
+    @Test
+    void linkExternalFile() {
+        def h2GIS = H2GIS.open([databaseName: './target/secondH2GIS', user:'sa', password:'sa'])
+        h2GIS.execute("""
+                DROP TABLE IF EXISTS externalTable;
+                CREATE TABLE externalTable (id int, the_geom point);
+                INSERT INTO externalTable VALUES (1, 'POINT(10 10)'::GEOMETRY), (2, 'POINT(1 1)'::GEOMETRY);
+        """)
+        h2GIS.save("externalTable", 'target/externalFile.shp' )
+        h2GIS.link('target/externalFile.shp', 'externalimported', true)
+        assertTrue(h2GIS.tableNames.contains("SECONDH2GIS.PUBLIC.EXTERNALIMPORTED"))
+    }
+
+    @Test
+    void linkExternalFileAsType() {
+        def h2GIS = H2GIS.open([databaseName: './target/secondH2GIS', user:'sa', password:'sa'])
+        h2GIS.execute("""
+                DROP TABLE IF EXISTS externalTable;
+                CREATE TABLE externalTable (id int, the_geom point);
+                INSERT INTO externalTable VALUES (1, 'POINT(10 10)'::GEOMETRY), (2, 'POINT(1 1)'::GEOMETRY);
+        """)
+        h2GIS.save("externalTable", 'target/externalFile.shp' )
+        def table = h2GIS.link('target/externalFile.shp', 'super',true) as ITable
+        assertEquals("PK,THE_GEOM,ID", table.columnNames.join(","))
+    }
 }

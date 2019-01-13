@@ -171,4 +171,14 @@ public class H2gisSpatialTable extends SpatialResultSetImpl implements ISpatialT
             return new ArrayList<>();
         }
     }
+
+    @Override
+    public boolean save(String filePath) {
+        return false;
+    }
+
+    @Override
+    public boolean save(String filePath, String encoding) {
+        return false;
+    }
 }

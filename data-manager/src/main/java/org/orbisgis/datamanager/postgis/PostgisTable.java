@@ -126,4 +126,14 @@ public class PostgisTable extends ResultSetWrapper implements IJdbcTable {
             return new ArrayList<>();
         }
     }
+
+    @Override
+    public boolean save(String filePath) {
+        return false;
+    }
+
+    @Override
+    public boolean save(String filePath, String encoding) {
+        return false;
+    }
 }

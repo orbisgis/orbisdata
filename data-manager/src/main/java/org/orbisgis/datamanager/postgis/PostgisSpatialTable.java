@@ -172,6 +172,16 @@ public class PostgisSpatialTable extends SpatialResultSetWrapper implements ISpa
         }
     }
 
+    @Override
+    public boolean save(String filePath) {
+        return false;
+    }
+
+    @Override
+    public boolean save(String filePath, String encoding) {
+        return false;
+    }
+
     /**
      * SpatialResultSetMetadata implementation compatible with postgis database.
      */

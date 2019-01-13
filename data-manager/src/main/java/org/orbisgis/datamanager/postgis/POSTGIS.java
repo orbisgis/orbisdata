@@ -15,6 +15,7 @@ import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.TableLocation;
 import org.h2gis.utilities.URIUtilities;
 import org.orbisgis.datamanager.JdbcDataSource;
+import org.orbisgis.datamanager.io.IOMethods;
 import org.orbisgis.datamanagerapi.dataset.*;
 import org.orbisgis.postgis_jts.ConnectionWrapper;
 import org.orbisgis.postgis_jts.StatementWrapper;
@@ -139,57 +140,13 @@ public class POSTGIS extends JdbcDataSource {
     }
 
     @Override
-    public void save(String tableName, String filePath) {
-        save(tableName,filePath,null);
+    public boolean save(String tableName, String filePath) {
+        return save(tableName,filePath,null);
     }
 
     @Override
-    public void save(String tableName, String filePath, String encoding) {
-        File fileToImport = URIUtilities.fileFromString(filePath);
-        try {
-            if (FileUtil.isExtensionWellFormated(fileToImport, "shp")) {
-                SHPDriverFunction driverFunction = new SHPDriverFunction();
-                driverFunction.exportTable(connectionWrapper, tableName, fileToImport, new EmptyProgressVisitor(),encoding);
-            }
-            else if (FileUtil.isExtensionWellFormated(fileToImport, "geojson")) {
-                LOGGER.warn("Encoding is not yet supported for this file format");
-                GeoJsonWriteDriver driverFunction = new GeoJsonWriteDriver(connectionWrapper, tableName, fileToImport);
-                driverFunction.write(new EmptyProgressVisitor());
-            }
-            else if (FileUtil.isExtensionWellFormated(fileToImport, "json")) {
-                LOGGER.warn("Encoding is not yet supported for this file format");
-                JsonWriteDriver driverFunction = new JsonWriteDriver(connectionWrapper, tableName, fileToImport);
-                driverFunction.write(new EmptyProgressVisitor());
-            }
-            else if (FileUtil.isExtensionWellFormated(fileToImport, "tsv")) {
-                LOGGER.warn("Encoding is not yet supported for this file format");
-                TSVDriverFunction driverFunction = new TSVDriverFunction();
-                driverFunction.exportTable(connectionWrapper, tableName, fileToImport,new EmptyProgressVisitor());
-            }
-            else if (FileUtil.isExtensionWellFormated(fileToImport, "csv")) {
-                if(encoding==null){
-                    encoding="charset=UTF-8";
-                }
-                CSVDriverFunction driverFunction = new CSVDriverFunction();
-                driverFunction.exportTable(connectionWrapper, tableName, fileToImport,new EmptyProgressVisitor(),encoding);
-            }
-            else if (FileUtil.isExtensionWellFormated(fileToImport, "dbf")) {
-                DBFDriverFunction driverFunction = new DBFDriverFunction();
-                driverFunction.exportTable(connectionWrapper, tableName, fileToImport,new EmptyProgressVisitor(),encoding);
-            }
-            else if (FileUtil.isExtensionWellFormated(fileToImport, "kml") ||FileUtil.isExtensionWellFormated(fileToImport, "kmz")) {
-                LOGGER.warn("Encoding is not yet supported for this file format");
-                KMLWriterDriver driverFunction = new KMLWriterDriver(connectionWrapper, tableName, fileToImport);
-                driverFunction.write(new EmptyProgressVisitor());
-            }
-            else{
-                LOGGER.error("Unsupported file format");
-            }
-        } catch (SQLException | FileNotFoundException e) {
-            LOGGER.error("Cannot load.\n"+e.getLocalizedMessage());
-        } catch (IOException e) {
-            LOGGER.error("Cannot load.\n"+e.getLocalizedMessage());
-        }
+    public boolean save(String tableName, String filePath, String encoding) {
+        return IOMethods.saveAsFile(getConnection(), false, tableName, filePath, encoding);
     }
 
     @Override

@@ -153,10 +153,11 @@ public interface IJdbcDataSource extends IDataSource {
     
     /**
      * Save a table to a file
+     * true is the file has been saved
      * @param tableName the name of the table   
      * @param filePath the path of the file to be saved
      */
-    void save(String tableName, String filePath);
+    boolean save(String tableName, String filePath);
 
     /**
      * Save a table to a file
@@ -164,7 +165,7 @@ public interface IJdbcDataSource extends IDataSource {
      * @param filePath the path of the file to be saved
      * @param encoding Encoding property.
      */
-    void save(String tableName, String filePath, String encoding);
+    boolean save(String tableName, String filePath, String encoding);
 
 
     /**

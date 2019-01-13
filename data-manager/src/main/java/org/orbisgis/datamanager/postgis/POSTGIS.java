@@ -15,10 +15,7 @@ import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.TableLocation;
 import org.h2gis.utilities.URIUtilities;
 import org.orbisgis.datamanager.JdbcDataSource;
-import org.orbisgis.datamanagerapi.dataset.Database;
-import org.orbisgis.datamanagerapi.dataset.IDataSet;
-import org.orbisgis.datamanagerapi.dataset.ISpatialTable;
-import org.orbisgis.datamanagerapi.dataset.ITable;
+import org.orbisgis.datamanagerapi.dataset.*;
 import org.orbisgis.postgis_jts.ConnectionWrapper;
 import org.orbisgis.postgis_jts.StatementWrapper;
 import org.orbisgis.postgis_jts_osgi.DataSourceFactoryImpl;
@@ -46,6 +43,7 @@ public class POSTGIS extends JdbcDataSource {
     private static final DataSourceFactory dataSourceFactory = new DataSourceFactoryImpl();
 
     private ConnectionWrapper connectionWrapper;
+
 
     /**
      * Private constructor to ensure the {@link #open(Map)} method.
@@ -195,101 +193,85 @@ public class POSTGIS extends JdbcDataSource {
     }
 
     @Override
-    public void load(String filePath, String tableName, String encoding, boolean delete) {
-        if(delete){
-            try {
-                execute("DROP TABLE IF EXISTS "+ tableName);
-            } catch (SQLException e) {
-                LOGGER.error("Cannot drop the table.\n"+e.getLocalizedMessage());
-            }
-        }
-        File fileToImport = URIUtilities.fileFromString(filePath);
-        try {
-            if (FileUtil.isFileImportable(fileToImport, "shp")) {
-                SHPDriverFunction driverFunction = new SHPDriverFunction();
-                driverFunction.importFile(connectionWrapper, tableName, fileToImport, new EmptyProgressVisitor(),encoding);
-            }
-            else if (FileUtil.isFileImportable(fileToImport, "geojson")) {
-                GeoJsonReaderDriver driverFunction = new GeoJsonReaderDriver(connectionWrapper, fileToImport);
-                driverFunction.read(new EmptyProgressVisitor(), tableName);
-            }
-            else if (FileUtil.isFileImportable(fileToImport, "csv")) {
-                if(encoding==null){
-                    encoding="charset=UTF-8";
-                }
-                CSVDriverFunction driverFunction = new CSVDriverFunction();
-                driverFunction.importFile(connectionWrapper, tableName, fileToImport,new EmptyProgressVisitor(),encoding);
-            }
-            else if (FileUtil.isFileImportable(fileToImport, "dbf")) {
-                DBFDriverFunction driverFunction = new DBFDriverFunction();
-                driverFunction.importFile(connectionWrapper, tableName, fileToImport,new EmptyProgressVisitor(),encoding);
-            }
-            else if (FileUtil.isFileImportable(fileToImport, "tsv")) {
-                LOGGER.warn("Encoding is not yet supported for this file format");
-                TSVDriverFunction driverFunction = new TSVDriverFunction();
-                driverFunction.importFile(connectionWrapper, tableName, fileToImport,new EmptyProgressVisitor());
-            }
-            else{
-                LOGGER.error("Unsupported file format");
-            }
-        } catch (SQLException | FileNotFoundException e) {
-            LOGGER.error("Cannot load.\n"+e.getLocalizedMessage());
-        } catch (IOException e) {
-            LOGGER.error("Cannot load.\n"+e.getLocalizedMessage());
-        }
+    public ITableWrapper link(String filePath, String tableName, boolean delete) {
+        LOGGER.error("This feature is not supported");
+        return null;
     }
 
     @Override
-    public void load(Map<String, String> properties, String tableName) {
-        LOGGER.error("Feature not yet supported");
+    public ITableWrapper link(String filePath, String tableName) {
+        LOGGER.error("This feature is not supported");
+        return null;
     }
 
     @Override
-    public void load(Map<String, String> properties, String inputTableName, String outputTableName) {
-        LOGGER.error("Feature not yet supported");
+    public ITableWrapper link(String filePath, boolean delete) {
+        LOGGER.error("This feature is not supported");
+        return null;
     }
 
     @Override
-    public void load(Map<String, String> properties, String inputTableName, boolean delete) {
-        LOGGER.error("Feature not yet supported");
+    public ITableWrapper link(String filePath) {
+        LOGGER.error("This feature is not supported");
+        return null;
     }
 
     @Override
-    public void load(Map<String, String> properties, String inputTableName, String outputTableName, boolean delete) {
-        LOGGER.error("Feature not yet supported");
+    public ITableWrapper load(String filePath, String tableName, String encoding, boolean delete) {
+            PostgisLoad  postgisLoad = new PostgisLoad();
+            postgisLoad.create(filePath,tableName,encoding,delete, this );
+            return postgisLoad;
     }
 
     @Override
-    public void load(String filePath, String tableName) {
-        load(filePath, tableName, null,false);
+    public ITableWrapper load(Map<String, String> properties, String tableName) {
+        LOGGER.error("This feature is not yet supported");
+        return null;
     }
 
     @Override
-    public void load(String filePath, String tableName, boolean delete) {
-        load(filePath, tableName, null, delete);
+    public ITableWrapper load(Map<String, String> properties, String inputTableName, String outputTableName) {
+        LOGGER.error("This feature is not yet supported");
+        return null;
     }
 
     @Override
-    public void load(String filePath) {
-        load(filePath, false);
+    public ITableWrapper load(Map<String, String> properties, String inputTableName, boolean delete) {
+        LOGGER.error("This feature is not yet supported");
+        return null;
     }
 
     @Override
-    public void load(String filePath, boolean delete) {
-        final String name = URIUtilities.fileFromString(filePath).getName();
-        String tableName = name.substring(0, name.lastIndexOf(".")).toUpperCase();
-        if (tableName.matches("^[a-zA-Z][a-zA-Z0-9_]*$")) {
-            if(delete){
-                try {
-                    execute("DROP TABLE IF EXISTS "+ tableName);
-                } catch (SQLException e) {
-                    LOGGER.error("Cannot drop the table.\n"+e.getLocalizedMessage());
-                }
-            }
-            load(filePath,tableName);
-        } else {
-            LOGGER.error("Unsupported file characters");
-        }
+    public ITableWrapper load(Map<String, String> properties, String inputTableName, String outputTableName, boolean delete) {
+        LOGGER.error("This feature is not yet supported");
+        return null;
     }
+
+    @Override
+    public ITableWrapper load(String filePath, String tableName) {
+        return load(filePath, tableName, null,false);
+    }
+
+    @Override
+    public ITableWrapper load(String filePath, String tableName, boolean delete) {
+        return load(filePath, tableName, null, delete);
+    }
+
+    @Override
+    public ITableWrapper load(String filePath,boolean delete) {
+        PostgisLoad postgisLoad =  new PostgisLoad();
+        postgisLoad.create(filePath, delete, this);
+        return postgisLoad;
+    }
+
+    @Override
+    public ITableWrapper load(String filePath) {
+        return load(filePath, false);
+    }
+
+    public ConnectionWrapper getConnectionWrapper() {
+        return connectionWrapper;
+    }
+
 
 }

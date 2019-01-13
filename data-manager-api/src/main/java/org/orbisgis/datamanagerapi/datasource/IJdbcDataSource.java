@@ -38,6 +38,7 @@ package org.orbisgis.datamanagerapi.datasource;
 
 import org.orbisgis.datamanagerapi.dataset.ISpatialTable;
 import org.orbisgis.datamanagerapi.dataset.ITable;
+import org.orbisgis.datamanagerapi.dataset.ITableWrapper;
 
 import java.util.Collection;
 import java.util.Map;
@@ -80,7 +81,7 @@ public interface IJdbcDataSource extends IDataSource {
      * Load a file to the database
      * @param filePath the path of the file or URI
      */
-    void load(String filePath);
+    ITableWrapper load(String filePath);
 
 
     /**
@@ -88,7 +89,7 @@ public interface IJdbcDataSource extends IDataSource {
      * @param filePath the path of the file or URI
      * @param delete true to delete the table if exists
      */
-    void load(String filePath, boolean delete);
+    ITableWrapper load(String filePath, boolean delete);
     
     
     /**
@@ -96,7 +97,7 @@ public interface IJdbcDataSource extends IDataSource {
      * @param filePath the path of the file or URI
      * @param tableName the name of the table 
      */
-    void load(String filePath, String tableName);
+    ITableWrapper load(String filePath, String tableName);
 
 
     /**
@@ -105,7 +106,7 @@ public interface IJdbcDataSource extends IDataSource {
      * @param tableName the name of the table
      * @param delete true to delete the table if exists
      */
-    void load(String filePath, String tableName, boolean delete);
+    ITableWrapper load(String filePath, String tableName, boolean delete);
     
     /**
      * Load a file to the database
@@ -114,7 +115,7 @@ public interface IJdbcDataSource extends IDataSource {
      * @param encoding Encoding property.
      * @param delete true to delete the table if exists
      */
-    void load(String filePath, String tableName, String encoding, boolean delete);
+    ITableWrapper load(String filePath, String tableName, String encoding, boolean delete);
 
 
     /**
@@ -122,7 +123,7 @@ public interface IJdbcDataSource extends IDataSource {
      * @param properties to connect to the database
      * @param inputTableName the name of the table we want to import
      */
-    void load(Map<String, String> properties, String inputTableName);
+    ITableWrapper load(Map<String, String> properties, String inputTableName);
 
 
     /**
@@ -131,7 +132,7 @@ public interface IJdbcDataSource extends IDataSource {
      * @param inputTableName the name of the table we want to import
      * @param outputTableName the name of the imported table
      */
-    void load(Map<String, String> properties, String inputTableName,String outputTableName);
+    ITableWrapper load(Map<String, String> properties, String inputTableName,String outputTableName);
 
     /**
      * Load a table from another database
@@ -139,7 +140,7 @@ public interface IJdbcDataSource extends IDataSource {
      * @param inputTableName the name of the table we want to import     *
      * @param delete true to delete the outputTableName if exists
      */
-    void load(Map<String, String> properties, String inputTableName, boolean delete);
+    ITableWrapper load(Map<String, String> properties, String inputTableName, boolean delete);
 
     /**
      * Load a table from another database
@@ -148,7 +149,7 @@ public interface IJdbcDataSource extends IDataSource {
      * @param outputTableName the name of the imported table
      * @param delete true to delete the outputTableName if exists
      */
-    void load(Map<String, String> properties, String inputTableName, String outputTableName, boolean delete);
+    ITableWrapper load(Map<String, String> properties, String inputTableName, String outputTableName, boolean delete);
     
     /**
      * Save a table to a file
@@ -164,4 +165,33 @@ public interface IJdbcDataSource extends IDataSource {
      * @param encoding Encoding property.
      */
     void save(String tableName, String filePath, String encoding);
+
+
+    /**
+     * Link a file to the database
+     * @param filePath the path of the file or URI
+     * @param tableName the name of the table
+     * @param delete true to delete the table if exists
+     */
+    ITableWrapper link(String filePath, String tableName, boolean delete);
+
+    /**
+     * Link a file to the database
+     * @param filePath the path of the file or URI
+     * @param tableName the name of the table
+     */
+    ITableWrapper link(String filePath, String tableName);
+
+    /**
+     * Link a file to the database
+     * @param filePath the path of the file or URI
+     * @param delete true to delete the table if exists
+     */
+    ITableWrapper link(String filePath,  boolean delete);
+
+    /**
+     * Link a file to the database
+     * @param filePath the path of the file or URI
+     */
+    ITableWrapper link(String filePath);
 }

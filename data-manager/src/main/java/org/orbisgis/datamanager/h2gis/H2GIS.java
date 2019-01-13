@@ -43,7 +43,6 @@ import org.h2.Driver;
 import org.h2.util.OsgiDataSourceFactory;
 import org.h2gis.functions.io.csv.CSVDriverFunction;
 import org.h2gis.functions.io.dbf.DBFDriverFunction;
-import org.h2gis.functions.io.geojson.GeoJsonReaderDriver;
 import org.h2gis.functions.io.geojson.GeoJsonWriteDriver;
 import org.h2gis.functions.io.json.JsonWriteDriver;
 import org.h2gis.functions.io.kml.KMLWriterDriver;
@@ -52,10 +51,7 @@ import org.h2gis.utilities.*;
 import org.h2gis.utilities.wrapper.ConnectionWrapper;
 import org.h2gis.utilities.wrapper.StatementWrapper;
 import org.orbisgis.datamanager.JdbcDataSource;
-import org.orbisgis.datamanagerapi.dataset.Database;
-import org.orbisgis.datamanagerapi.dataset.IDataSet;
-import org.orbisgis.datamanagerapi.dataset.ISpatialTable;
-import org.orbisgis.datamanagerapi.dataset.ITable;
+import org.orbisgis.datamanagerapi.dataset.*;
 import org.osgi.service.jdbc.DataSourceFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -264,141 +260,88 @@ public class H2GIS extends JdbcDataSource {
     }
 
     @Override
-    public void load(String filePath, String tableName, String encoding, boolean delete) {
-        if(delete){
-            try {
-                execute("DROP TABLE IF EXISTS "+ tableName);
-            } catch (SQLException e) {
-                LOGGER.error("Cannot drop the table.\n"+e.getLocalizedMessage());
-            }
-        }
-        File fileToImport = URIUtilities.fileFromString(filePath);
-        try {
-            if (FileUtil.isFileImportable(fileToImport, "shp")) {
-                SHPDriverFunction driverFunction = new SHPDriverFunction();
-                driverFunction.importFile(connectionWrapper, tableName, fileToImport, new EmptyProgressVisitor(),encoding);
-            }
-            else if (FileUtil.isFileImportable(fileToImport, "geojson")) {
-                GeoJsonReaderDriver driverFunction = new GeoJsonReaderDriver(connectionWrapper, fileToImport);
-                driverFunction.read(new EmptyProgressVisitor(), tableName);
-            }
-            else if (FileUtil.isFileImportable(fileToImport, "csv")) {
-                if(encoding==null){
-                    encoding="charset=UTF-8";
-                }
-                CSVDriverFunction driverFunction = new CSVDriverFunction();
-                driverFunction.importFile(connectionWrapper, tableName, fileToImport,new EmptyProgressVisitor(),encoding);
-            }
-            else if (FileUtil.isFileImportable(fileToImport, "dbf")) {
-                DBFDriverFunction driverFunction = new DBFDriverFunction();
-                driverFunction.importFile(connectionWrapper, tableName, fileToImport,new EmptyProgressVisitor(),encoding);
-            }
-            else if (FileUtil.isFileImportable(fileToImport, "tsv")) {
-                LOGGER.warn("Encoding is not yet supported for this file format");
-                TSVDriverFunction driverFunction = new TSVDriverFunction();
-                driverFunction.importFile(connectionWrapper, tableName, fileToImport,new EmptyProgressVisitor());
-            }
-            else{
-                LOGGER.error("Unsupported file format");
-            }
-        } catch (SQLException | FileNotFoundException e) {
-            LOGGER.error("Cannot load.\n"+e.getLocalizedMessage());
-        } catch (IOException e) {
-            LOGGER.error("Cannot load.\n"+e.getLocalizedMessage());
-        }
+    public ITableWrapper link(String filePath, String tableName, boolean delete) {
+            H2gisLinked link = new H2gisLinked();
+            link.create(filePath, tableName, delete, this);
+            return link;
     }
 
     @Override
-    public void load(Map<String, String> properties, String inputTableName) {
-        load(properties, inputTableName, inputTableName, false);
+    public ITableWrapper link(String filePath, String tableName) {
+        return link(filePath, tableName, false);
     }
 
     @Override
-    public void load(Map<String, String> properties, String inputTableName, boolean delete) {
-        load(properties, inputTableName, inputTableName, delete);
+    public ITableWrapper link(String filePath, boolean delete) {
+        H2gisLinked link = new H2gisLinked();
+        link.create(filePath, delete, this);
+        return link;
     }
 
     @Override
-    public void load(Map<String, String> properties, String inputTableName, String outputTableName) {
-        load(properties, inputTableName, outputTableName, false);
+    public ITableWrapper link(String filePath) {
+        return link(filePath,false);
     }
 
     @Override
-    public void load(Map<String, String> properties, String inputTableName, String outputTableName, boolean delete) {
-        String user = properties.get(DataSourceFactory.JDBC_USER);
-        String password = properties.get(DataSourceFactory.JDBC_PASSWORD);
-        String driverName = "";
-        String jdbc_url = properties.get("url");
-        if(jdbc_url!=null) {
-            if (jdbc_url.startsWith("jdbc:")) {
-                String url = jdbc_url.substring("jdbc:".length());
-                String driverURI = url.substring(url.indexOf(":"));
-                if (url.startsWith("h2")) {
-                    driverName = "org.h2.Driver";
-                } else if (url.startsWith("postgresql")) {
-                    driverName = "org.orbisgis.postgis_jts.Driver";
-                }
-                if(!driverName.isEmpty()) {
-                    if (delete) {
-                        try {
-                            execute("DROP TABLE IF EXISTS " + outputTableName);
-                        } catch (SQLException e) {
-                            LOGGER.error("Cannot drop the table.\n" + e.getLocalizedMessage());
-                        }
-                    }
-                    try {
-                        String tmpTableName =  "TMP_"+ System.currentTimeMillis();
-                        execute(String.format("CREATE LINKED TABLE %s('%s', '%s', '%s', '%s', '%s')", tmpTableName, driverName, jdbc_url, user, password, inputTableName));
-                        execute(String.format("CREATE TABLE %s as SELECT * from %s", outputTableName, tmpTableName));
-                    } catch (SQLException e) {
-                        LOGGER.error("Cannot load the table.\n" + e.getLocalizedMessage());
-                    }
-                }
-                else{
-                    LOGGER.error("This database is not yet supported");
-                }
-            }
-            else{
-                LOGGER.error("JDBC Url must start with jdbc:");
-            }
-        }
-        else {
-            LOGGER.error("The URL of the external database cannot be null");
-        }
+    public ITableWrapper load(String filePath, String tableName, String encoding, boolean delete) {
+        H2gisLoad h2gisLoad = new H2gisLoad();
+        h2gisLoad.create(filePath,  tableName,  encoding,  delete, this);
+        return h2gisLoad;
     }
 
     @Override
-    public void load(String filePath, String tableName) {
-        load(filePath, tableName, null,false);
+    public ITableWrapper load(Map<String, String> properties, String inputTableName) {
+        return load(properties, inputTableName, inputTableName, false);
     }
 
     @Override
-    public void load(String filePath, String tableName, boolean delete) {
-        load(filePath, tableName, null, delete);
+    public ITableWrapper load(Map<String, String> properties, String inputTableName, boolean delete) {
+        return load(properties, inputTableName, inputTableName, delete);
     }
 
     @Override
-    public void load(String filePath) {
-        load(filePath, false);
+    public ITableWrapper load(Map<String, String> properties, String inputTableName, String outputTableName) {
+        return load(properties, inputTableName, outputTableName, false);
     }
 
     @Override
-    public void load(String filePath, boolean delete) {
-        final String name = URIUtilities.fileFromString(filePath).getName();
-        String tableName = name.substring(0, name.lastIndexOf(".")).toUpperCase();
-        if (tableName.matches("^[a-zA-Z][a-zA-Z0-9_]*$")) {
-            if(delete){
-                try {
-                    execute("DROP TABLE IF EXISTS "+ tableName);
-                } catch (SQLException e) {
-                    LOGGER.error("Cannot drop the table.\n"+e.getLocalizedMessage());
-                }
-            }
-            load(filePath,tableName);
-        } else {
-            LOGGER.error("Unsupported file characters");
-        }
+    public ITableWrapper load(Map<String, String> properties, String inputTableName, String outputTableName, boolean delete) {
+        H2gisLoad h2gisLoad = new H2gisLoad();
+        h2gisLoad.create(properties,  inputTableName,outputTableName,delete, this) ;
+        return  h2gisLoad;
+
+
+    }
+
+    @Override
+    public ITableWrapper load(String filePath, String tableName) {
+        return load(filePath, tableName, null,false);
+    }
+
+    @Override
+    public ITableWrapper load(String filePath, String tableName, boolean delete) {
+        return load(filePath, tableName, null, delete);
+    }
+
+    @Override
+    public ITableWrapper load(String filePath) {
+        return load(filePath, false);
+    }
+
+    @Override
+    public ITableWrapper load(String filePath, boolean delete) {
+        H2gisLoad h2gisLoad = new H2gisLoad();
+        h2gisLoad.create(filePath,  delete, this) ;
+        return h2gisLoad;
     }
 
 
+    /**
+     * Return the current ConnectionWrapper
+     * @return
+     */
+    public ConnectionWrapper getConnectionWrapper() {
+        return connectionWrapper;
+    }
 }

@@ -41,6 +41,8 @@ import org.h2.util.OsgiDataSourceFactory;
 import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.TableLocation;
+import org.h2gis.functions.io.utility.FileUtil;
+import org.h2gis.utilities.URIUtilities;
 import org.h2gis.utilities.wrapper.ConnectionWrapper;
 import org.h2gis.utilities.wrapper.StatementWrapper;
 import org.orbisgis.datamanager.JdbcDataSource;
@@ -51,6 +53,10 @@ import org.orbisgis.datamanagerapi.dataset.ITable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -81,20 +87,36 @@ public class H2GIS extends JdbcDataSource {
     }
 
     /**
-     * Open the H2GIS database with the given properties and return the corresponding H2GIS object.
-     *
-     * @param properties Map of the properties to use for the database opening.
-     *
-     * @return An instantiated H2GIS object wrapping the Sql object connected to the database.
+     * Create an instance of H2GIS from properties
+     * @param fileName
+     * @return
      */
-    public static H2GIS open(Map<String, String> properties) {
-        Properties props = new Properties();
-        properties.forEach(props::put);
+    public static H2GIS open(String fileName) {
+        File file = URIUtilities.fileFromString(fileName);
+        try {
+            if (FileUtil.isFileImportable(file, "properties")) {
+                Properties prop = new Properties();
+                FileInputStream fous = new FileInputStream(file);
+                prop.load(fous);
+                return open(prop);
+            }
+        } catch (SQLException | IOException e) {
+            LOGGER.error("Unable to read the properties file.\n" + e.getLocalizedMessage());
+            return null;
+        }
+        return null;
+    }
+
+    /**
+     * Create an instance of H2GIS from properties
+     * @param properties
+     * @return
+     */
+    public static H2GIS open(Properties properties) {
         Connection connection;
-        properties.put("DATABASE_EVENT_LISTENER","'org.orbisgis.h2triggers.H2DatabaseEventListener'");
         // Init spatial
         try {
-            connection = SFSUtilities.wrapConnection(dataSourceFactory.createDataSource(props).getConnection());
+            connection = SFSUtilities.wrapConnection(dataSourceFactory.createDataSource(properties).getConnection());
         } catch (SQLException e) {
             LOGGER.error("Unable to create the DataSource.\n" + e.getLocalizedMessage());
             return null;
@@ -131,6 +153,19 @@ public class H2GIS extends JdbcDataSource {
             }
         }
         return new H2GIS(connection);
+    }
+
+    /**
+     * Open the H2GIS database with the given properties and return the corresponding H2GIS object.
+     *
+     * @param properties Map of the properties to use for the database opening.
+     *
+     * @return An instantiated H2GIS object wrapping the Sql object connected to the database.
+     */
+    public static H2GIS open(Map<String, String> properties) {
+        Properties props = new Properties();
+        properties.forEach(props::put);
+        return open(props);
     }
 
     @Override

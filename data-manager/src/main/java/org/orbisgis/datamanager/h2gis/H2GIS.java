@@ -36,8 +36,10 @@
  */
 package org.orbisgis.datamanager.h2gis;
 
+import groovy.lang.Writable;
 import org.h2.Driver;
 import org.h2.util.OsgiDataSourceFactory;
+import org.h2.util.ScriptReader;
 import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.TableLocation;
@@ -53,15 +55,14 @@ import org.orbisgis.datamanagerapi.dataset.ITable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
+import java.io.*;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.*;
+
+import groovy.text.SimpleTemplateEngine;
 
 /**
  * Implementation of the IJdbcDataSource interface dedicated to the usage of an H2/H2GIS database.
@@ -230,4 +231,5 @@ public class H2GIS extends JdbcDataSource {
         }
         return getTable(dataSetName);
     }
+
 }

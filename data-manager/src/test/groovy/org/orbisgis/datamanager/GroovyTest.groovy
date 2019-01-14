@@ -188,4 +188,58 @@ class GroovyTest {
         assertEquals("ID,THE_GEOM", h2GIS.getSpatialTable("h2gis").columnNames.join(","))
         assertTrue(h2GIS.getSpatialTable("h2gis").columnNames.indexOf("THE_GEOM")!=-1)
     }
+
+    @Test
+    void executeQueryBindings() {
+        def h2GIS = H2GIS.open([databaseName: './target/loadH2GIS'])
+        h2GIS.execute("""
+                DROP TABLE IF EXISTS h2gis;
+                CREATE TABLE h2gis (id int, the_geom point);
+                INSERT INTO h2gis VALUES (1, 'POINT(10 10)'::GEOMETRY), (2, 'POINT(1 1)'::GEOMETRY);
+        """)
+        def file = new File('target/myscript.sql')
+        file.delete();
+        file << 'CREATE TABLE super as SELECT * FROM $BINIOU;\n --COMMENTS HERE \nSELECT * FROM super;'
+        h2GIS.executeScript("target/myscript.sql", [BINIOU:'h2gis']);
+        def concat = ""
+        h2GIS.getSpatialTable "super" eachRow { row -> concat += "$row.id $row.the_geom $row.geometry\n" }
+        assertEquals("1 POINT (10 10) POINT (10 10)\n2 POINT (1 1) POINT (1 1)\n", concat)
+        println(concat)
+    }
+
+    @Test
+    void executeQueryNoBindings() {
+        def h2GIS = H2GIS.open([databaseName: './target/loadH2GIS'])
+        h2GIS.execute("""
+                DROP TABLE IF EXISTS h2gis;
+                CREATE TABLE h2gis (id int, the_geom point);
+                INSERT INTO h2gis VALUES (1, 'POINT(10 10)'::GEOMETRY), (2, 'POINT(1 1)'::GEOMETRY);
+        """)
+        def file = new File('target/myscript.sql')
+        file.delete();
+        file << 'CREATE TABLE super as SELECT * FROM h2gis;\n --COMMENTS HERE \nSELECT * FROM super;'
+        h2GIS.executeScript("target/myscript.sql");
+        def concat = ""
+        h2GIS.getSpatialTable "super" eachRow { row -> concat += "$row.id $row.the_geom $row.geometry\n" }
+        assertEquals("1 POINT (10 10) POINT (10 10)\n2 POINT (1 1) POINT (1 1)\n", concat)
+        println(concat)
+    }
+
+    @Test
+    void executeQueryEmptyBindings() {
+        def h2GIS = H2GIS.open([databaseName: './target/loadH2GIS'])
+        h2GIS.execute("""
+                DROP TABLE IF EXISTS h2gis;
+                CREATE TABLE h2gis (id int, the_geom point);
+                INSERT INTO h2gis VALUES (1, 'POINT(10 10)'::GEOMETRY), (2, 'POINT(1 1)'::GEOMETRY);
+        """)
+        def file = new File('target/myscript.sql')
+        file.delete();
+        file << 'CREATE TABLE super as SELECT * FROM h2gis;\n --COMMENTS HERE \nSELECT * FROM super;'
+        h2GIS.executeScript("target/myscript.sql", [:]);
+        def concat = ""
+        h2GIS.getSpatialTable "super" eachRow { row -> concat += "$row.id $row.the_geom $row.geometry\n" }
+        assertEquals("1 POINT (10 10) POINT (10 10)\n2 POINT (1 1) POINT (1 1)\n", concat)
+        println(concat)
+    }
 }

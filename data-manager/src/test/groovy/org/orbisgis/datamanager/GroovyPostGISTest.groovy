@@ -51,13 +51,13 @@ class GroovyPostGISTest {
     ]
 
     @Test
-    void loadH2GIS() {
+    void loadPostGIS() {
         def postGIS = POSTGIS.open(dbProperties)
         assertNotNull(postGIS)
     }
 
     @Test
-    void queryH2GIS() {
+    void queryPostGIS() {
         def postGIS = POSTGIS.open(dbProperties)
         postGIS.execute("""
                 DROP TABLE IF EXISTS postgis;
@@ -86,7 +86,7 @@ class GroovyPostGISTest {
 
 
     @Test
-    void queryH2GISMetaData() {
+    void queryPostGISMetaData() {
         def postGIS = POSTGIS.open(dbProperties)
         postGIS.execute("""
                 DROP TABLE IF EXISTS postgis;
@@ -230,5 +230,21 @@ class GroovyPostGISTest {
                 INSERT INTO postgis VALUES (1, 'POINT(10 10)'::GEOMETRY), (2, 'POINT(1 1)'::GEOMETRY);
         """)
         assertEquals("id,the_geom", postGIS.getSpatialTable("postgis").columnNames.join(","))
+    }
+
+    @Test
+    void exportSaveReadTableGeoJson() {
+        def postGIS = POSTGIS.open(dbProperties)
+        postGIS.execute("""
+                DROP TABLE IF EXISTS postgis;
+                CREATE TABLE postgis (id int, the_geom geometry(point, 0));
+                INSERT INTO postgis VALUES (1, 'POINT(10 10)'::GEOMETRY), (2, 'POINT(1 1)'::GEOMETRY);
+        """)
+        postGIS.getSpatialTable("postgis").save("target/postgis_saved.geojson");
+        postGIS.load("target/postgis_saved.geojson");
+        def concat = ""
+        postGIS.getSpatialTable "postgis_saved" eachRow { row -> concat += "$row.id $row.the_geom $row.geometry\n" }
+        assertEquals("1 POINT (10 10) POINT (10 10)\n2 POINT (1 1) POINT (1 1)\n", concat)
+        println(concat)
     }
 }

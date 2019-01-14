@@ -39,10 +39,11 @@ package org.orbisgis.datamanager.postgis;
 import groovy.lang.MetaClass;
 import org.codehaus.groovy.runtime.InvokerHelper;
 import org.h2gis.utilities.TableLocation;
+import org.orbisgis.datamanager.io.IOMethods;
 import org.orbisgis.datamanagerapi.dataset.Database;
 import org.orbisgis.datamanagerapi.dataset.IJdbcTable;
-import org.orbisgis.postgis_jts.ResultSetWrapper;
-import org.orbisgis.postgis_jts.StatementWrapper;
+import org.h2gis.postgis_jts.ResultSetWrapper;
+import org.h2gis.postgis_jts.StatementWrapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -129,11 +130,16 @@ public class PostgisTable extends ResultSetWrapper implements IJdbcTable {
 
     @Override
     public boolean save(String filePath) {
-        return false;
+        return save(filePath, null);
     }
 
     @Override
     public boolean save(String filePath, String encoding) {
-        return false;
+        try {
+            return IOMethods.saveAsFile(getStatement().getConnection(),false, getTableLocation().toString(false),filePath,encoding);
+        } catch (SQLException e) {
+            LOGGER.error("Cannot save the table.\n" + e.getLocalizedMessage());
+            return false;
+        }
     }
 }

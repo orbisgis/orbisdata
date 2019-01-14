@@ -41,9 +41,9 @@ import org.h2gis.utilities.SpatialResultSet;
 import org.h2gis.utilities.SpatialResultSetMetaData;
 import org.h2gis.utilities.TableLocation;
 import org.locationtech.jts.geom.Geometry;
-import org.orbisgis.postgis_jts.ResultSetMetaDataWrapper;
-import org.orbisgis.postgis_jts.ResultSetWrapper;
-import org.orbisgis.postgis_jts.StatementWrapper;
+import org.h2gis.postgis_jts.ResultSetMetaDataWrapper;
+import org.h2gis.postgis_jts.ResultSetWrapper;
+import org.h2gis.postgis_jts.StatementWrapper;
 
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;

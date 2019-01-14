@@ -156,4 +156,18 @@ public interface IJdbcTable extends ITable, GroovyObject {
         }
         return invokeMethod(propertyName, null);
     }
+
+    /**
+     * Save the table to a file
+     * true is the file has been saved
+     * @param filePath the path of the file to be saved
+     */
+    boolean save(String filePath);
+
+    /**
+     * Save the table to a file
+     * @param filePath the path of the file to be saved
+     * @param encoding Encoding property.
+     */
+    boolean save(String filePath, String encoding);
 }

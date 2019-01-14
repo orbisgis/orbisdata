@@ -281,4 +281,20 @@ class GroovyH2GISTest {
         def table = h2GIS.link('target/externalFile.shp', 'super',true) as ITable
         assertEquals("PK,THE_GEOM,ID", table.columnNames.join(","))
     }
+
+    @Test
+    void linkExternalFileAsTypeAndSave() {
+        def h2GIS = H2GIS.open([databaseName: './target/secondH2GIS', user:'sa', password:'sa'])
+        h2GIS.execute("""
+                DROP TABLE IF EXISTS externalTable;
+                CREATE TABLE externalTable (id int, the_geom point);
+                INSERT INTO externalTable VALUES (1, 'POINT(10 10)'::GEOMETRY), (2, 'POINT(1 1)'::GEOMETRY);
+        """)
+        h2GIS.save("externalTable", 'target/externalFile.shp' )
+        def table = h2GIS.link('target/externalFile.shp', 'super',true) as ITable
+        table.save('target/supersave.shp')
+        h2GIS.load( 'target/supersave.shp',true )
+        assertTrue(h2GIS.tableNames.contains("SECONDH2GIS.PUBLIC.SUPERSAVE"))
+        assertEquals("PK,THE_GEOM,ID", table.columnNames.join(","))
+    }
 }

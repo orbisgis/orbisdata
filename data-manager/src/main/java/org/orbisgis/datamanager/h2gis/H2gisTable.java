@@ -134,18 +134,22 @@ public class H2gisTable extends ResultSetWrapper implements IJdbcTable {
         try {
             return JDBCUtilities.getFieldNames(super.getMetaData());
         } catch (SQLException e) {
-            LOGGER.error("Unable to get the column names.\n" + e.getLocalizedMessage());
             return new ArrayList<>();
         }
     }
 
     @Override
     public boolean save(String filePath) {
-        return false;
+        return save(filePath, null);
     }
 
     @Override
     public boolean save(String filePath, String encoding) {
-        return false;
+        try {
+            return IOMethods.saveAsFile(getStatement().getConnection(),true, getTableLocation().toString(true),filePath,encoding);
+        } catch (SQLException e) {
+            LOGGER.error("Cannot save the table.\n" + e.getLocalizedMessage());
+            return false;
+        }
     }
 }

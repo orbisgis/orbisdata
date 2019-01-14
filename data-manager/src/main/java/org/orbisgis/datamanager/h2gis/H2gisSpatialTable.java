@@ -43,6 +43,7 @@ import org.h2gis.utilities.TableLocation;
 import org.h2gis.utilities.wrapper.SpatialResultSetImpl;
 import org.h2gis.utilities.wrapper.StatementWrapper;
 import org.locationtech.jts.geom.Geometry;
+import org.orbisgis.datamanager.io.IOMethods;
 import org.orbisgis.datamanagerapi.dataset.Database;
 import org.orbisgis.datamanagerapi.dataset.IJdbcTable;
 import org.orbisgis.datamanagerapi.dataset.ISpatialTable;
@@ -174,11 +175,16 @@ public class H2gisSpatialTable extends SpatialResultSetImpl implements ISpatialT
 
     @Override
     public boolean save(String filePath) {
-        return false;
+        return save(filePath, null);
     }
 
     @Override
     public boolean save(String filePath, String encoding) {
-        return false;
+        try {
+            return IOMethods.saveAsFile(getStatement().getConnection(),true, getTableLocation().toString(true),filePath,encoding);
+        } catch (SQLException e) {
+            LOGGER.error("Cannot save the table.\n" + e.getLocalizedMessage());
+            return false;
+        }
     }
 }

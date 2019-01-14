@@ -1,32 +1,18 @@
 package org.orbisgis.datamanager.postgis;
 
-import org.h2gis.api.EmptyProgressVisitor;
-import org.h2gis.functions.io.csv.CSVDriverFunction;
-import org.h2gis.functions.io.dbf.DBFDriverFunction;
-import org.h2gis.functions.io.geojson.GeoJsonReaderDriver;
-import org.h2gis.functions.io.geojson.GeoJsonWriteDriver;
-import org.h2gis.functions.io.json.JsonWriteDriver;
-import org.h2gis.functions.io.kml.KMLWriterDriver;
-import org.h2gis.functions.io.shp.SHPDriverFunction;
-import org.h2gis.functions.io.tsv.TSVDriverFunction;
-import org.h2gis.functions.io.utility.FileUtil;
 import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.TableLocation;
-import org.h2gis.utilities.URIUtilities;
 import org.orbisgis.datamanager.JdbcDataSource;
 import org.orbisgis.datamanager.io.IOMethods;
 import org.orbisgis.datamanagerapi.dataset.*;
-import org.orbisgis.postgis_jts.ConnectionWrapper;
-import org.orbisgis.postgis_jts.StatementWrapper;
-import org.orbisgis.postgis_jts_osgi.DataSourceFactoryImpl;
+import org.h2gis.postgis_jts.ConnectionWrapper;
+import org.h2gis.postgis_jts.StatementWrapper;
+import org.h2gis.postgis_jts_osgi.DataSourceFactoryImpl;
 import org.osgi.service.jdbc.DataSourceFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;

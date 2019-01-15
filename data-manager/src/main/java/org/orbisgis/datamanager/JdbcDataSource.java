@@ -218,20 +218,20 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, ISq
                     return new H2gisTable(new TableLocation(name), resultSet, (StatementWrapper) statement);
                 }
             case POSTGIS:
-                if(!(statement instanceof org.orbisgis.postgis_jts.StatementWrapper)){
+                if(!(statement instanceof org.h2gis.postgis_jts.StatementWrapper)){
                     LOGGER.error("The statement class not compatible with the database.");
                     break;
                 }
                 try {
                     if(SFSUtilities.hasGeometryField(resultSet)) {
-                        return new PostgisSpatialTable(new TableLocation(name), resultSet, (org.orbisgis.postgis_jts.StatementWrapper)statement);
+                        return new PostgisSpatialTable(new TableLocation(name), resultSet, (org.h2gis.postgis_jts.StatementWrapper)statement);
                     }
                     else{
-                        return new PostgisTable(new TableLocation(name), resultSet, (org.orbisgis.postgis_jts.StatementWrapper)statement);
+                        return new PostgisTable(new TableLocation(name), resultSet, (org.h2gis.postgis_jts.StatementWrapper)statement);
                     }
                 } catch (SQLException e) {
                     LOGGER.warn("Unable to detect if table '"+name+"' has a geometric field.\n"+e.getLocalizedMessage());
-                    return new PostgisTable(new TableLocation(name), resultSet, (org.orbisgis.postgis_jts.StatementWrapper)statement);
+                    return new PostgisTable(new TableLocation(name), resultSet, (org.h2gis.postgis_jts.StatementWrapper)statement);
                 }
         }
         return null;
@@ -239,26 +239,27 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, ISq
 
     /**
      * This method is used to execute a SQL file
+     *
      * @param fileName the sql file
      */
-    public void executeScript(String fileName){
-        executeScript(fileName,null);
+    public void executeScript(String fileName) {
+        executeScript(fileName, null);
     }
 
-
-        /**
-         * This method is used to execute a SQL file that contains parametrized text
-         * Parametrized text must be expressed with $value or ${value}
-         * @param fileName the sql file
-         * @param bindings the map between parametrized text and its value.
-         * eg. ["value", "myvalue"] to replace ${value} by myvalue
-         */
-    public void executeScript(String fileName, Map<String, String> bindings){
+    /**
+     * This method is used to execute a SQL file that contains parametrized text
+     * Parametrized text must be expressed with $value or ${value}
+     *
+     * @param fileName the sql file
+     * @param bindings the map between parametrized text and its value. eg.
+     * ["value", "myvalue"] to replace ${value} by myvalue
+     */
+    public void executeScript(String fileName, Map<String, String> bindings) {
         File file = URIUtilities.fileFromString(fileName);
         try {
             if (FileUtil.isFileImportable(file, "sql")) {
-                SimpleTemplateEngine engine =null;
-                if(bindings!=null && !bindings.isEmpty()){
+                SimpleTemplateEngine engine = null;
+                if (bindings != null && !bindings.isEmpty()) {
                     engine = new SimpleTemplateEngine();
                 }
                 ScriptReader scriptReader = new ScriptReader(new FileReader(file));
@@ -269,7 +270,7 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, ISq
                         break;
                     }
                     if (!commandSQL.isEmpty()) {
-                        if(engine!=null) {
+                        if (engine != null) {
                             commandSQL = engine.createTemplate(commandSQL).make(bindings).toString();
                         }
                         execute(commandSQL);

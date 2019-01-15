@@ -36,13 +36,17 @@
  */
 package org.orbisgis.datamanager.postgis;
 
+import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.SpatialResultSet;
 import org.h2gis.utilities.SpatialResultSetMetaData;
+import org.h2gis.utilities.TableLocation;
 import org.locationtech.jts.geom.Geometry;
-import org.orbisgis.postgis_jts.ResultSetWrapper;
-import org.orbisgis.postgis_jts.StatementWrapper;
+import org.h2gis.postgis_jts.ResultSetMetaDataWrapper;
+import org.h2gis.postgis_jts.ResultSetWrapper;
+import org.h2gis.postgis_jts.StatementWrapper;
 
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 
 //TODO move to the postgis-jts project.
@@ -104,6 +108,60 @@ public class SpatialResultSetWrapper extends ResultSetWrapper implements Spatial
             }
         } else {
             return super.unwrap(iface);
+        }
+    }
+
+    @Override
+    public ResultSetMetaData getMetaData() throws SQLException {
+        return new SpatialResultSetMetaDataImpl(super.getMetaData(), (StatementWrapper)this.getStatement());
+    }
+
+    /**
+     * SpatialResultSetMetadata implementation compatible with postgis database.
+     */
+    //TODO move to the postgis-jts project.
+    private class SpatialResultSetMetaDataImpl extends ResultSetMetaDataWrapper implements SpatialResultSetMetaData {
+        private int firstGeometryFieldIndex = -1;
+        private StatementWrapper statement;
+
+        public SpatialResultSetMetaDataImpl(ResultSetMetaData resultSetMetaData, StatementWrapper statement) {
+            super(resultSetMetaData);
+            this.statement = statement;
+        }
+
+        public int getFirstGeometryFieldIndex() throws SQLException {
+            if (this.firstGeometryFieldIndex == -1) {
+                for(int idColumn = 1; idColumn <= this.getColumnCount(); ++idColumn) {
+                    if (this.getColumnTypeName(idColumn).equalsIgnoreCase("geometry")) {
+                        this.firstGeometryFieldIndex = idColumn;
+                        break;
+                    }
+                }
+            }
+
+            return this.firstGeometryFieldIndex;
+        }
+
+        public int getGeometryType() throws SQLException {
+            return this.getGeometryType(this.getFirstGeometryFieldIndex());
+        }
+
+        public int getGeometryType(int column) throws SQLException {
+            return SFSUtilities.getGeometryType(this.statement.getConnection(),
+                    new TableLocation(this.getCatalogName(column), this.getSchemaName(column),
+                            this.getTableName(column)), this.getColumnName(column));
+        }
+
+        public <T> T unwrap(Class<T> iface) throws SQLException {
+            if (iface.isInstance(this)) {
+                try {
+                    return iface.cast(this);
+                } catch (ClassCastException var3) {
+                    throw new SQLException(var3);
+                }
+            } else {
+                return super.unwrap(iface);
+            }
         }
     }
 }

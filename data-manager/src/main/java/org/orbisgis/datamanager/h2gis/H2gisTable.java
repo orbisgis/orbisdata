@@ -41,6 +41,7 @@ import org.codehaus.groovy.runtime.InvokerHelper;
 import org.h2gis.utilities.TableLocation;
 import org.h2gis.utilities.wrapper.ResultSetWrapper;
 import org.h2gis.utilities.wrapper.StatementWrapper;
+import org.orbisgis.datamanager.io.IOMethods;
 import org.orbisgis.datamanagerapi.dataset.Database;
 import org.orbisgis.datamanagerapi.dataset.IJdbcTable;
 import org.slf4j.Logger;
@@ -133,8 +134,22 @@ public class H2gisTable extends ResultSetWrapper implements IJdbcTable {
         try {
             return JDBCUtilities.getFieldNames(super.getMetaData());
         } catch (SQLException e) {
-            LOGGER.error("Unable to get the column names.\n" + e.getLocalizedMessage());
             return new ArrayList<>();
+        }
+    }
+
+    @Override
+    public boolean save(String filePath) {
+        return save(filePath, null);
+    }
+
+    @Override
+    public boolean save(String filePath, String encoding) {
+        try {
+            return IOMethods.saveAsFile(getStatement().getConnection(),true, getTableLocation().toString(true),filePath,encoding);
+        } catch (SQLException e) {
+            LOGGER.error("Cannot save the table.\n" + e.getLocalizedMessage());
+            return false;
         }
     }
 }

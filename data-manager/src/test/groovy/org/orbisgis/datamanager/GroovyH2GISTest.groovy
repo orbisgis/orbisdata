@@ -38,20 +38,22 @@ package org.orbisgis.datamanager
 
 import org.junit.jupiter.api.Test
 import org.orbisgis.datamanager.h2gis.H2GIS
+import org.orbisgis.datamanagerapi.dataset.ITable
 
 import java.sql.SQLException
 
 import static org.junit.jupiter.api.Assertions.*
 import static org.orbisgis.datamanagerapi.dsl.ISqlBuilder.Order.DESC
 
-class GroovyTest {
+class GroovyH2GISTest {
+
 
     @Test
     void loadH2GIS() {
         def h2GIS = H2GIS.open([databaseName: './target/loadH2GIS'])
         assertNotNull(h2GIS)
     }
-
+    
     @Test
     void loadH2GISFromFile() {
         Properties properties = new Properties();
@@ -91,7 +93,7 @@ class GroovyTest {
     }
 
     @Test
-    void queryTableNames() throws SQLException {
+    void queryTableNames() {
         def h2GIS = H2GIS.open([databaseName: './target/loadH2GIS'])
         h2GIS.execute("""
                 DROP TABLE IF EXISTS table1, table2;
@@ -140,41 +142,104 @@ class GroovyTest {
         }
         assertEquals("ID 4\nTHE_GEOM 1111\n", concat)
     }
-
+    
+    
     @Test
-    void request() throws SQLException {
+    void exportImportShpFile() {
         def h2GIS = H2GIS.open([databaseName: './target/loadH2GIS'])
         h2GIS.execute("""
                 DROP TABLE IF EXISTS h2gis;
-                CREATE TABLE h2gis (id int PRIMARY KEY, code int, the_geom point);
-                insert into h2gis values (1,22, 'POINT(10 10)'::GEOMETRY);
-                insert into h2gis values (2,56, 'POINT(20 20)'::GEOMETRY);
-                insert into h2gis values (3,22, 'POINT(10 10)'::GEOMETRY);
-                insert into h2gis values (4,22, 'POINT(10 10)'::GEOMETRY);
-                insert into h2gis values (5,22, 'POINT(20 10)'::GEOMETRY);
-                """)
+                CREATE TABLE h2gis (id int, the_geom point);
+                INSERT INTO h2gis VALUES (1, 'POINT(10 10)'::GEOMETRY), (2, 'POINT(1 1)'::GEOMETRY);
+        """)
+        h2GIS.save("h2gis","target/h2gis_imported.shp");
+        h2GIS.load("target/h2gis_imported.shp", "h2gis_imported", null, false);
+        def concat = ""
+        h2GIS.getSpatialTable "h2gis_imported" eachRow { row -> concat += "$row.id $row.the_geom $row.geometry\n" }
+        assertEquals("1 POINT (10 10) POINT (10 10)\n2 POINT (1 1) POINT (1 1)\n", concat)
+        println(concat)
+    }
 
-        def table = h2GIS.select"COUNT(id)","code","the_geom"from"h2gis"where"h2gis.code=22"and"id<5"groupBy"code"execute()
+    @Test
+    void exportImportTwoTimesShpFile() {
+        def h2GIS = H2GIS.open([databaseName: './target/loadH2GIS'])
+        h2GIS.execute("""
+                DROP TABLE IF EXISTS h2gis;
+                CREATE TABLE h2gis (id int, the_geom point);
+                INSERT INTO h2gis VALUES (1, 'POINT(10 10)'::GEOMETRY), (2, 'POINT(1 1)'::GEOMETRY);
+        """)
+        h2GIS.save("h2gis","target/h2gis_imported.shp");
+        h2GIS.load("target/h2gis_imported.shp", "h2gis_imported", null, false);
+        h2GIS.load("target/h2gis_imported.shp", "h2gis_imported", null, true);
+        def concat = ""
+        h2GIS.getSpatialTable "h2gis_imported" eachRow { row -> concat += "$row.id $row.the_geom $row.geometry\n" }
+        assertEquals("1 POINT (10 10) POINT (10 10)\n2 POINT (1 1) POINT (1 1)\n", concat)
+        println(concat)
+    }
 
-        def values = new ArrayList<>()
-        table.eachRow {row ->
-                    values.add(row.getInt(1))
-                    values.add(row.getInt(2))
-        }
-        assertEquals(2,values.size())
-        assertEquals(3, (int) values.get(0))
-        assertEquals(22, (int) values.get(1))
+    @Test
+    void exportImportShpFileSimple1() {
+        def h2GIS = H2GIS.open([databaseName: './target/loadH2GIS'])
+        h2GIS.execute("""
+                DROP TABLE IF EXISTS h2gis;
+                CREATE TABLE h2gis (id int, the_geom point);
+                INSERT INTO h2gis VALUES (1, 'POINT(10 10)'::GEOMETRY), (2, 'POINT(1 1)'::GEOMETRY);
+        """)
+        h2GIS.save("h2gis","target/h2gis_imported.shp");
+        h2GIS.load("target/h2gis_imported.shp", "h2gis_imported");
+        def concat = ""
+        h2GIS.getSpatialTable "h2gis_imported" eachRow { row -> concat += "$row.id $row.the_geom $row.geometry\n" }
+        assertEquals("1 POINT (10 10) POINT (10 10)\n2 POINT (1 1) POINT (1 1)\n", concat)
+        println(concat)
+    }
 
-        table = h2GIS.select "*" from "h2gis" where "code=22" or "code=56" orderBy "id",DESC execute()
+    @Test
+    void exportImportShpFileSimple2() {
+        def h2GIS = H2GIS.open([databaseName: './target/loadH2GIS'])
+        h2GIS.execute("""
+                DROP TABLE IF EXISTS h2gis;
+                CREATE TABLE h2gis (id int, the_geom point);
+                INSERT INTO h2gis VALUES (1, 'POINT(10 10)'::GEOMETRY), (2, 'POINT(1 1)'::GEOMETRY);
+        """)
+        h2GIS.save("h2gis","target/h2gis_imported.shp");
+        h2GIS.load("target/h2gis_imported.shp");
+        def concat = ""
+        h2GIS.getSpatialTable "h2gis_imported" eachRow { row -> concat += "$row.id $row.the_geom $row.geometry\n" }
+        assertEquals("1 POINT (10 10) POINT (10 10)\n2 POINT (1 1) POINT (1 1)\n", concat)
+        println(concat)
+    }
+    @Test
+    void exportImportGeoJsonShapeFile() {
+        def h2GIS = H2GIS.open([databaseName: './target/loadH2GIS'])
+        h2GIS.execute("""
+                DROP TABLE IF EXISTS h2gis;
+                CREATE TABLE h2gis (id int, the_geom point);
+                INSERT INTO h2gis VALUES (1, 'POINT(10 10)'::GEOMETRY), (2, 'POINT(1 1)'::GEOMETRY);
+        """)
+        h2GIS.save("h2gis","target/h2gis_imported.geojson");
+        h2GIS.load("target/h2gis_imported.geojson");
+        h2GIS.save("h2gis_imported","target/h2gis_imported.shp");
+        h2GIS.load("target/h2gis_imported.shp", true);
+        def concat = ""
+        h2GIS.getSpatialTable "h2gis_imported" eachRow { row -> concat += "$row.id $row.the_geom $row.geometry\n" }
+        assertEquals("1 POINT (10 10) POINT (10 10)\n2 POINT (1 1) POINT (1 1)\n", concat)
+        println(concat)
+    }
 
-        def values2 = new ArrayList<>();
-        table.eachRow {row -> values2.add(row.getInt(1))}
-        assertEquals(5,values2.size())
-        assertEquals(5, (int) values2.get(0))
-        assertEquals(4, (int) values2.get(1))
-        assertEquals(3, (int) values2.get(2))
-        assertEquals(2, (int) values2.get(3))
-        assertEquals(1, (int) values2.get(4))
+    @Test
+    void exportImportCSV() {
+        def h2GIS = H2GIS.open([databaseName: './target/loadH2GIS'])
+        h2GIS.execute("""
+                DROP TABLE IF EXISTS h2gis;
+                CREATE TABLE h2gis (id int, the_geom point);
+                INSERT INTO h2gis VALUES (1, 'POINT(10 10)'::GEOMETRY), (2, 'POINT(1 1)'::GEOMETRY);
+        """)
+        h2GIS.save("h2gis","target/h2gis_imported.csv");
+        h2GIS.load("target/h2gis_imported.csv");
+        def concat = ""
+        h2GIS.getSpatialTable "h2gis_imported" eachRow { row -> concat += "$row.id $row.the_geom $row.geometry\n" }
+        assertEquals("1 POINT (10 10) POINT (10 10)\n2 POINT (1 1) POINT (1 1)\n", concat)
+        println(concat)
     }
     
     @Test
@@ -189,6 +254,61 @@ class GroovyTest {
         assertTrue(h2GIS.getSpatialTable("h2gis").columnNames.indexOf("THE_GEOM")!=-1)
     }
 
+    @Test
+    void loadExternalTableFromDataBase() {
+        def h2External = H2GIS.open([databaseName: './target/secondH2GIS', user:'sa', password:'sa'])
+        h2External.execute("""
+                DROP TABLE IF EXISTS externalTable;
+                CREATE TABLE externalTable (id int, the_geom point);
+                INSERT INTO externalTable VALUES (1, 'POINT(10 10)'::GEOMETRY), (2, 'POINT(1 1)'::GEOMETRY);
+        """)
+        def h2GIS = H2GIS.open([databaseName: './target/loadH2GIS'])
+        h2GIS.load([user: 'sa', password: 'sa',url :'jdbc:h2:./target/secondH2GIS'], 'externalTable',true )
+        assertTrue(h2GIS.tableNames.contains("LOADH2GIS.PUBLIC.EXTERNALTABLE"))
+    }
+
+    @Test
+    void linkExternalFile() {
+        def h2GIS = H2GIS.open([databaseName: './target/secondH2GIS', user:'sa', password:'sa'])
+        h2GIS.execute("""
+                DROP TABLE IF EXISTS externalTable;
+                CREATE TABLE externalTable (id int, the_geom point);
+                INSERT INTO externalTable VALUES (1, 'POINT(10 10)'::GEOMETRY), (2, 'POINT(1 1)'::GEOMETRY);
+        """)
+        h2GIS.save("externalTable", 'target/externalFile.shp' )
+        h2GIS.link('target/externalFile.shp', 'externalimported', true)
+        assertTrue(h2GIS.tableNames.contains("SECONDH2GIS.PUBLIC.EXTERNALIMPORTED"))
+    }
+
+    @Test
+    void linkExternalFileAsType() {
+        def h2GIS = H2GIS.open([databaseName: './target/secondH2GIS', user:'sa', password:'sa'])
+        h2GIS.execute("""
+                DROP TABLE IF EXISTS externalTable;
+                CREATE TABLE externalTable (id int, the_geom point);
+                INSERT INTO externalTable VALUES (1, 'POINT(10 10)'::GEOMETRY), (2, 'POINT(1 1)'::GEOMETRY);
+        """)
+        h2GIS.save("externalTable", 'target/externalFile.shp' )
+        def table = h2GIS.link('target/externalFile.shp', 'super',true) as ITable
+        assertEquals("PK,THE_GEOM,ID", table.columnNames.join(","))
+    }
+
+    @Test
+    void linkExternalFileAsTypeAndSave() {
+        def h2GIS = H2GIS.open([databaseName: './target/secondH2GIS', user:'sa', password:'sa'])
+        h2GIS.execute("""
+                DROP TABLE IF EXISTS externalTable;
+                CREATE TABLE externalTable (id int, the_geom point);
+                INSERT INTO externalTable VALUES (1, 'POINT(10 10)'::GEOMETRY), (2, 'POINT(1 1)'::GEOMETRY);
+        """)
+        h2GIS.save("externalTable", 'target/externalFile.shp' )
+        def table = h2GIS.link('target/externalFile.shp', 'super',true) as ITable
+        table.save('target/supersave.shp')
+        h2GIS.load( 'target/supersave.shp',true )
+        assertTrue(h2GIS.tableNames.contains("SECONDH2GIS.PUBLIC.SUPERSAVE"))
+        assertEquals("PK,THE_GEOM,ID", table.columnNames.join(","))
+    }
+    
     @Test
     void executeQueryBindings() {
         def h2GIS = H2GIS.open([databaseName: './target/loadH2GIS'])

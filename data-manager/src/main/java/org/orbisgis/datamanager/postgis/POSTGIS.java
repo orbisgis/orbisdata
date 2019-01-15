@@ -11,9 +11,6 @@ import org.orbisgis.datamanagerapi.dataset.Database;
 import org.orbisgis.datamanagerapi.dataset.IDataSet;
 import org.orbisgis.datamanagerapi.dataset.ISpatialTable;
 import org.orbisgis.datamanagerapi.dataset.ITable;
-import org.orbisgis.postgis_jts.ConnectionWrapper;
-import org.orbisgis.postgis_jts.StatementWrapper;
-import org.orbisgis.postgis_jts_osgi.DataSourceFactoryImpl;
 import org.osgi.service.jdbc.DataSourceFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,7 +20,12 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
 import org.h2gis.functions.io.utility.FileUtil;
+import org.h2gis.postgis_jts.ConnectionWrapper;
+import org.h2gis.postgis_jts.StatementWrapper;
+import org.h2gis.postgis_jts_osgi.DataSourceFactoryImpl;
 import org.h2gis.utilities.URIUtilities;
+import org.orbisgis.datamanager.io.IOMethods;
+import org.orbisgis.datamanagerapi.dataset.ITableWrapper;
 
 /**
  * Implementation of the IJdbcDataSource interface dedicated to the usage of an postgres/postgis database.
@@ -37,6 +39,7 @@ public class POSTGIS extends JdbcDataSource {
     private static final DataSourceFactory dataSourceFactory = new DataSourceFactoryImpl();
 
     private ConnectionWrapper connectionWrapper;
+
 
     /**
      * Private constructor to ensure the {@link #open(Map)} method.
@@ -161,4 +164,101 @@ public class POSTGIS extends JdbcDataSource {
         }
         return getTable(dataSetName);
     }
+
+    @Override
+    public boolean save(String tableName, String filePath) {
+        return save(tableName,filePath,null);
+    }
+
+    @Override
+    public boolean save(String tableName, String filePath, String encoding) {
+        return IOMethods.saveAsFile(getConnection(), false, tableName, filePath, encoding);
+    }
+
+    @Override
+    public ITableWrapper link(String filePath, String tableName, boolean delete) {
+        LOGGER.error("This feature is not supported");
+        return null;
+    }
+
+    @Override
+    public ITableWrapper link(String filePath, String tableName) {
+        LOGGER.error("This feature is not supported");
+        return null;
+    }
+
+    @Override
+    public ITableWrapper link(String filePath, boolean delete) {
+        LOGGER.error("This feature is not supported");
+        return null;
+    }
+
+    @Override
+    public ITableWrapper link(String filePath) {
+        LOGGER.error("This feature is not supported");
+        return null;
+    }
+
+    @Override
+    public ITableWrapper load(String filePath, String tableName, String encoding, boolean delete) {
+            PostgisLoad  postgisLoad = new PostgisLoad();
+            postgisLoad.create(filePath,tableName,encoding,delete, this );
+            return postgisLoad;
+    }
+
+    @Override
+    public ITableWrapper load(Map<String, String> properties, String tableName) {
+        LOGGER.error("This feature is not yet supported");
+        return null;
+    }
+
+    @Override
+    public ITableWrapper load(Map<String, String> properties, String inputTableName, String outputTableName) {
+        LOGGER.error("This feature is not yet supported");
+        return null;
+    }
+
+    @Override
+    public ITableWrapper load(Map<String, String> properties, String inputTableName, boolean delete) {
+        LOGGER.error("This feature is not yet supported");
+        return null;
+    }
+
+    @Override
+    public ITableWrapper load(Map<String, String> properties, String inputTableName, String outputTableName, boolean delete) {
+        LOGGER.error("This feature is not yet supported");
+        return null;
+    }
+
+    @Override
+    public ITableWrapper load(String filePath, String tableName) {
+        return load(filePath, tableName, null,false);
+    }
+
+    @Override
+    public ITableWrapper load(String filePath, String tableName, boolean delete) {
+        return load(filePath, tableName, null, delete);
+    }
+
+    @Override
+    public ITableWrapper load(String filePath,boolean delete) {
+        PostgisLoad postgisLoad =  new PostgisLoad();
+        postgisLoad.create(filePath, delete, this);
+        return postgisLoad;
+    }
+
+    @Override
+    public ITableWrapper load(String filePath) {
+        return load(filePath, false);
+    }
+
+    /**
+     * Return the current ConnectionWrapper
+     * @return ConnectionWrapper
+     */
+    public ConnectionWrapper getConnectionWrapper() {
+        return connectionWrapper;
+    }
+
+
 }

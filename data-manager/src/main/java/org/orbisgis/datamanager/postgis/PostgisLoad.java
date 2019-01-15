@@ -116,12 +116,13 @@ public class PostgisLoad implements ITableWrapper {
     }
 
     /**
+     * Load a file to a PostGIS database
      *
-     * @param filePath
-     * @param tableName
-     * @param encoding
-     * @param delete
-     * @param postGIS
+     * @param filePath the path of the file
+     * @param tableName the name of the table created to store the file
+     * @param encoding an encoding value to read the file
+     * @param delete true to delete the table if exists
+     * @param postGIS the PostGIS database
      */
     public void create(String filePath, String tableName, String encoding, boolean delete, POSTGIS postGIS) {
         this.tableName=tableName;
@@ -170,10 +171,11 @@ public class PostgisLoad implements ITableWrapper {
     }
 
     /**
+     * Load a file to a PostGIS database
      *
-     * @param filePath
-     * @param delete
-     * @param postGIS
+     * @param filePath the path of the file.
+     * @param delete true to delete the table if exists
+     * @param postGIS the PostGIS database
      */
     public void create(String filePath, boolean delete,  POSTGIS postGIS) {
         final String name = URIUtilities.fileFromString(filePath).getName();
@@ -186,12 +188,12 @@ public class PostgisLoad implements ITableWrapper {
     }
 
     /**
-     *
-     * @param properties
-     * @param inputTableName
-     * @param outputTableName
-     * @param delete
-     * @param postGIS
+     * Load a table to a PostGIS database from another database
+     * @param properties external database properties to set up the connection
+     * @param inputTableName the name of the table in the external database
+     * @param outputTableName the name of the table in the PostGIS database
+     * @param delete true to delete the table if exists
+     * @param postGIS the PostGIS database
      */
     public void create(Map<String, String> properties, String inputTableName, String outputTableName, boolean delete,  POSTGIS postGIS){
         String user = properties.get(DataSourceFactory.JDBC_USER);

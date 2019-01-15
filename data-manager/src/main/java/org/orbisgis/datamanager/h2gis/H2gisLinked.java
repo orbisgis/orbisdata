@@ -105,11 +105,12 @@ public class H2gisLinked implements ITableWrapper {
     }
 
     /**
+     * Create a dynamic link from a file
      *
-     * @param filePath
-     * @param tableName
-     * @param delete
-     * @param h2GIS
+     * @param filePath the path of the file
+     * @param tableName the name of the table created to store the file
+     * @param delete true to delete the table if exists
+     * @param h2GIS the H2GIS database
      */
     public void create(String filePath, String tableName, boolean delete, H2GIS h2GIS) {
         this.tableName=tableName;
@@ -130,10 +131,11 @@ public class H2gisLinked implements ITableWrapper {
     }
 
     /**
+     * Create a dynamic link from a file
      *
-     * @param filePath
-     * @param delete
-     * @param h2GIS
+     * @param filePath the path of the file
+     * @param delete true to delete the table if exists
+     * @param h2GIS the H2GIS database
      */
     public void create(String filePath, boolean delete, H2GIS h2GIS) {
         final String name = URIUtilities.fileFromString(filePath).getName();

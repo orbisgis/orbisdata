@@ -117,12 +117,13 @@ public class H2gisLoad implements ITableWrapper {
     }
 
     /**
+     * Load a file to a H2GIS database
      *
-     * @param filePath
-     * @param tableName
-     * @param encoding
-     * @param delete
-     * @param h2GIS
+     * @param filePath the path of the file
+     * @param tableName the name of the table created to store the file
+     * @param encoding an encoding value to read the file
+     * @param delete true to delete the table if exists
+     * @param h2GIS the H2GIS database
      */
     public void create(String filePath, String tableName, String encoding, boolean delete, H2GIS h2GIS) {
         this.tableName=tableName;
@@ -171,10 +172,11 @@ public class H2gisLoad implements ITableWrapper {
     }
 
     /**
+     * Load a file to a H2GIS database
      *
-     * @param filePath
-     * @param delete
-     * @param h2GIS
+     * @param filePath the path of the file.
+     * @param delete true to delete the table if exists
+     * @param h2GIS the H2GIS database
      */
     public void create(String filePath, boolean delete, H2GIS h2GIS) {
         final String name = URIUtilities.fileFromString(filePath).getName();
@@ -187,12 +189,12 @@ public class H2gisLoad implements ITableWrapper {
     }
 
     /**
-     *
-     * @param properties
-     * @param inputTableName
-     * @param outputTableName
-     * @param delete
-     * @param h2GIS
+     * Load a table to a H2GIS database from another database
+     * @param properties external database properties to set up the connection
+     * @param inputTableName the name of the table in the external database
+     * @param outputTableName the name of the table in the H2GIS database
+     * @param delete true to delete the table if exists
+     * @param h2GIS the H2GIS database
      */
     public void create(Map<String, String> properties, String inputTableName, String outputTableName, boolean delete, H2GIS h2GIS){
         String user = properties.get(DataSourceFactory.JDBC_USER);

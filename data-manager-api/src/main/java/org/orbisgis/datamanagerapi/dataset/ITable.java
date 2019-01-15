@@ -72,16 +72,17 @@ public interface ITable extends IDataSet, ResultSet {
     Collection<String> getColumnNames();
 
     /**
-     * Save a table to a file
-     * true is the file has been saved
+     * Save the table to a file
      * @param filePath the path of the file to be saved
+     * @return true is the file has been saved
      */
     boolean save(String filePath);
 
     /**
-     * Save a table to a file
+     * Save the table to a file
      * @param filePath the path of the file to be saved
      * @param encoding Encoding property.
+     * @return true is the file has been saved
      */
     boolean save(String filePath, String encoding);
     

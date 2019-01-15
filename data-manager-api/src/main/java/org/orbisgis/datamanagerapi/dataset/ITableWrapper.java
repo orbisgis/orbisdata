@@ -46,5 +46,10 @@ package org.orbisgis.datamanagerapi.dataset;
 
 public interface ITableWrapper {
 
+    /**
+     * A method to cast the ITableWrapper to another object
+     * @param clazz
+     * @return
+     */
     Object asType(Class clazz);
 }

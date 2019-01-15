@@ -24,11 +24,14 @@ IJdbcDataSource : Extension of the IDataSource interface dedicated to the usage 
 
 Allows to open, create an H2GIS database. The main entry is the H2GIS class that offers methods to get a Table or a SpatialTable.
 
+Run the following groovy scripts in your favourite IDE or use the Groovy Console. More information at http://groovy-lang.org/groovyconsole.html
+
+
 **Groovy examples :** 
 
 
 ```groovy
-// Connect to a file data, if the database doesn't exist a new one is created
+// Connect to an H2GIS file database. if the database doesn't exist a new one is created.
 @GrabResolver(name='orbisgis', root='http://repo.orbisgis.org/')
 @Grab(group='org.orbisgis', module='data-manager', version='1.0-SNAPSHOT')
 

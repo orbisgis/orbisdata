@@ -36,18 +36,24 @@
  */
 package org.orbisgis.datamanager.h2gis;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import org.h2.Driver;
 import org.h2.util.OsgiDataSourceFactory;
-import org.h2gis.utilities.JDBCUtilities;
-import org.h2gis.utilities.SFSUtilities;
-import org.h2gis.utilities.TableLocation;
+import org.h2gis.functions.io.csv.CSVDriverFunction;
+import org.h2gis.functions.io.dbf.DBFDriverFunction;
+import org.h2gis.functions.io.geojson.GeoJsonWriteDriver;
+import org.h2gis.functions.io.json.JsonWriteDriver;
+import org.h2gis.functions.io.kml.KMLWriterDriver;
+import org.h2gis.functions.io.tsv.TSVDriverFunction;
+import org.h2gis.utilities.*;
 import org.h2gis.utilities.wrapper.ConnectionWrapper;
 import org.h2gis.utilities.wrapper.StatementWrapper;
 import org.orbisgis.datamanager.JdbcDataSource;
-import org.orbisgis.datamanagerapi.dataset.Database;
-import org.orbisgis.datamanagerapi.dataset.IDataSet;
-import org.orbisgis.datamanagerapi.dataset.ISpatialTable;
-import org.orbisgis.datamanagerapi.dataset.ITable;
+import org.orbisgis.datamanager.io.IOMethods;
+import org.orbisgis.datamanagerapi.dataset.*;
+import org.osgi.service.jdbc.DataSourceFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -56,6 +62,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.*;
+import org.h2gis.api.EmptyProgressVisitor;
+import org.h2gis.functions.io.shp.SHPDriverFunction;
+import org.h2gis.functions.io.utility.FileUtil;
 
 /**
  * Implementation of the IJdbcDataSource interface dedicated to the usage of an H2/H2GIS database.
@@ -194,5 +203,102 @@ public class H2GIS extends JdbcDataSource {
             return getSpatialTable(dataSetName);
         }
         return getTable(dataSetName);
+    }
+
+
+    @Override
+    public boolean save(String tableName, String filePath) {
+        return save(tableName,filePath,null);
+    }
+
+    @Override
+    public boolean save(String tableName, String filePath, String encoding) {
+        return IOMethods.saveAsFile(getConnection(), true,tableName,filePath, encoding);
+    }
+
+    @Override
+    public ITableWrapper link(String filePath, String tableName, boolean delete) {
+            H2gisLinked link = new H2gisLinked();
+            link.create(filePath, tableName, delete, this);
+            return link;
+    }
+
+    @Override
+    public ITableWrapper link(String filePath, String tableName) {
+        return link(filePath, tableName, false);
+    }
+
+    @Override
+    public ITableWrapper link(String filePath, boolean delete) {
+        H2gisLinked link = new H2gisLinked();
+        link.create(filePath, delete, this);
+        return link;
+    }
+
+    @Override
+    public ITableWrapper link(String filePath) {
+        return link(filePath,false);
+    }
+
+    @Override
+    public ITableWrapper load(String filePath, String tableName, String encoding, boolean delete) {
+        H2gisLoad h2gisLoad = new H2gisLoad();
+        h2gisLoad.create(filePath,  tableName,  encoding,  delete, this);
+        return h2gisLoad;
+    }
+
+    @Override
+    public ITableWrapper load(Map<String, String> properties, String inputTableName) {
+        return load(properties, inputTableName, inputTableName, false);
+    }
+
+    @Override
+    public ITableWrapper load(Map<String, String> properties, String inputTableName, boolean delete) {
+        return load(properties, inputTableName, inputTableName, delete);
+    }
+
+    @Override
+    public ITableWrapper load(Map<String, String> properties, String inputTableName, String outputTableName) {
+        return load(properties, inputTableName, outputTableName, false);
+    }
+
+    @Override
+    public ITableWrapper load(Map<String, String> properties, String inputTableName, String outputTableName, boolean delete) {
+        H2gisLoad h2gisLoad = new H2gisLoad();
+        h2gisLoad.create(properties,  inputTableName,outputTableName,delete, this) ;
+        return  h2gisLoad;
+
+
+    }
+
+    @Override
+    public ITableWrapper load(String filePath, String tableName) {
+        return load(filePath, tableName, null,false);
+    }
+
+    @Override
+    public ITableWrapper load(String filePath, String tableName, boolean delete) {
+        return load(filePath, tableName, null, delete);
+    }
+
+    @Override
+    public ITableWrapper load(String filePath) {
+        return load(filePath, false);
+    }
+
+    @Override
+    public ITableWrapper load(String filePath, boolean delete) {
+        H2gisLoad h2gisLoad = new H2gisLoad();
+        h2gisLoad.create(filePath,  delete, this) ;
+        return h2gisLoad;
+    }
+
+
+    /**
+     * Return the current ConnectionWrapper
+     * @return
+     */
+    public ConnectionWrapper getConnectionWrapper() {
+        return connectionWrapper;
     }
 }

@@ -42,11 +42,12 @@ import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.SpatialResultSetMetaData;
 import org.h2gis.utilities.TableLocation;
 import org.locationtech.jts.geom.Geometry;
+import org.orbisgis.datamanager.io.IOMethods;
 import org.orbisgis.datamanagerapi.dataset.Database;
 import org.orbisgis.datamanagerapi.dataset.IJdbcTable;
 import org.orbisgis.datamanagerapi.dataset.ISpatialTable;
-import org.orbisgis.postgis_jts.ResultSetMetaDataWrapper;
-import org.orbisgis.postgis_jts.StatementWrapper;
+import org.h2gis.postgis_jts.ResultSetMetaDataWrapper;
+import org.h2gis.postgis_jts.StatementWrapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -169,6 +170,21 @@ public class PostgisSpatialTable extends SpatialResultSetWrapper implements ISpa
         } catch (SQLException e) {
             LOGGER.error("Unable to get the column names.\n" + e.getLocalizedMessage());
             return new ArrayList<>();
+        }
+    }
+
+    @Override
+    public boolean save(String filePath) {
+        return save(filePath, null);
+    }
+
+    @Override
+    public boolean save(String filePath, String encoding) {
+        try {
+            return IOMethods.saveAsFile(getStatement().getConnection(),false, getTableLocation().toString(false),filePath,encoding);
+        } catch (SQLException e) {
+            LOGGER.error("Cannot save the table.\n" + e.getLocalizedMessage());
+            return false;
         }
     }
 

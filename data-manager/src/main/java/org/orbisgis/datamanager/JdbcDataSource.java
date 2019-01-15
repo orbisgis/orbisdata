@@ -211,20 +211,20 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, ISq
                     return new H2gisTable(new TableLocation(name), resultSet, (StatementWrapper) statement);
                 }
             case POSTGIS:
-                if(!(statement instanceof org.orbisgis.postgis_jts.StatementWrapper)){
+                if(!(statement instanceof org.h2gis.postgis_jts.StatementWrapper)){
                     LOGGER.error("The statement class not compatible with the database.");
                     break;
                 }
                 try {
                     if(SFSUtilities.hasGeometryField(resultSet)) {
-                        return new PostgisSpatialTable(new TableLocation(name), resultSet, (org.orbisgis.postgis_jts.StatementWrapper)statement);
+                        return new PostgisSpatialTable(new TableLocation(name), resultSet, (org.h2gis.postgis_jts.StatementWrapper)statement);
                     }
                     else{
-                        return new PostgisTable(new TableLocation(name), resultSet, (org.orbisgis.postgis_jts.StatementWrapper)statement);
+                        return new PostgisTable(new TableLocation(name), resultSet, (org.h2gis.postgis_jts.StatementWrapper)statement);
                     }
                 } catch (SQLException e) {
                     LOGGER.warn("Unable to detect if table '"+name+"' has a geometric field.\n"+e.getLocalizedMessage());
-                    return new PostgisTable(new TableLocation(name), resultSet, (org.orbisgis.postgis_jts.StatementWrapper)statement);
+                    return new PostgisTable(new TableLocation(name), resultSet, (org.h2gis.postgis_jts.StatementWrapper)statement);
                 }
         }
         return null;

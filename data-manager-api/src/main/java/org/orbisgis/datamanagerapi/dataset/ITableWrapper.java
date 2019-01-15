@@ -34,56 +34,22 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
+
 package org.orbisgis.datamanagerapi.dataset;
 
-import groovy.lang.Closure;
-
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.util.Collection;
-
 /**
- * Implementation of the IDataSet interface. A table is a 2D (column/line) representation of data.
+ * This interface must be used to implement the asType cast in groovy
  *
  * @author Erwan Bocher (CNRS)
  * @author Sylvain PALOMINOS (UBS 2018)
  */
-public interface ITable extends IDataSet, ResultSet {
+
+public interface ITableWrapper {
 
     /**
-     * Apply the given closure to each row.
-     *
-     * @param closure Closure to apply to each row.
+     * A method to cast the ITableWrapper to another object
+     * @param clazz
+     * @return
      */
-    void eachRow(Closure closure);
-
-    /**
-     * Get the ResultSetMetaData of the DataSet.
-     *
-     * @return The metadata object.
-     */
-    @Override
-    ResultSetMetaData getMetadata();
-    
-    /**
-     * Get all column names from the underlying table
-     * @return 
-     */
-    Collection<String> getColumnNames();
-
-    /**
-     * Save the table to a file
-     * @param filePath the path of the file to be saved
-     * @return true is the file has been saved
-     */
-    boolean save(String filePath);
-
-    /**
-     * Save the table to a file
-     * @param filePath the path of the file to be saved
-     * @param encoding Encoding property.
-     * @return true is the file has been saved
-     */
-    boolean save(String filePath, String encoding);
-    
+    Object asType(Class clazz);
 }

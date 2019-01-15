@@ -94,6 +94,30 @@ println((h2GIS.link('/tmp/myshapeFile.shp') as ITable).columnNames)
 
 ```
 
+# PostGIS datasource
+
+As for H2GIS a PostGIS datasource is available. 
+The use is identical to H2GIS but some features are not supported such as linked files or tables.
+
+**Groovy examples :** 
+
+
+```groovy
+// Connect to a PostGIS database
+@GrabResolver(name='orbisgis', root='http://repo.orbisgis.org/')
+@Grab(group='org.orbisgis', module='data-manager', version='1.0-SNAPSHOT')
+
+import org.orbisgis.datamanager.postgis.POSTGIS
+
+def dbProperties=  [databaseName: 'mydbName',
+    user: 'myUserName',
+    password: 'myPassword',
+    url :'jdbc:postgresql://myHost'
+    ]
+def postgis = POSTGIS.open(dbProperties)
+println(postgis.tablenames)
+```
+
 # Funding
 
 OrbisData is developed within the following frameworks :

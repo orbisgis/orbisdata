@@ -42,7 +42,7 @@ import org.orbisgis.datamanager.postgis.POSTGIS
 import static org.junit.jupiter.api.Assertions.assertEquals
 import static org.junit.jupiter.api.Assertions.assertNotNull
 
-class GroovyPostGISTest {
+/*class GroovyPostGISTest {
 
     def dbProperties=  [databaseName: 'gisdb',
     user: '',
@@ -247,4 +247,4 @@ class GroovyPostGISTest {
         assertEquals("1 POINT (10 10) POINT (10 10)\n2 POINT (1 1) POINT (1 1)\n", concat)
         println(concat)
     }
-}
+}*/

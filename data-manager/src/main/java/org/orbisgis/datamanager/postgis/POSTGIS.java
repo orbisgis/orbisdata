@@ -1,14 +1,16 @@
 package org.orbisgis.datamanager.postgis;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.TableLocation;
 import org.orbisgis.datamanager.JdbcDataSource;
-import org.orbisgis.datamanager.io.IOMethods;
-import org.orbisgis.datamanagerapi.dataset.*;
-import org.h2gis.postgis_jts.ConnectionWrapper;
-import org.h2gis.postgis_jts.StatementWrapper;
-import org.h2gis.postgis_jts_osgi.DataSourceFactoryImpl;
+import org.orbisgis.datamanagerapi.dataset.Database;
+import org.orbisgis.datamanagerapi.dataset.IDataSet;
+import org.orbisgis.datamanagerapi.dataset.ISpatialTable;
+import org.orbisgis.datamanagerapi.dataset.ITable;
 import org.osgi.service.jdbc.DataSourceFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,6 +19,13 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
+import org.h2gis.functions.io.utility.FileUtil;
+import org.h2gis.postgis_jts.ConnectionWrapper;
+import org.h2gis.postgis_jts.StatementWrapper;
+import org.h2gis.postgis_jts_osgi.DataSourceFactoryImpl;
+import org.h2gis.utilities.URIUtilities;
+import org.orbisgis.datamanager.io.IOMethods;
+import org.orbisgis.datamanagerapi.dataset.ITableWrapper;
 
 /**
  * Implementation of the IJdbcDataSource interface dedicated to the usage of an postgres/postgis database.
@@ -42,6 +51,43 @@ public class POSTGIS extends JdbcDataSource {
         connectionWrapper = (ConnectionWrapper) connection;
     }
 
+    
+    /**
+     * Create an instance of POSTGIS from file
+     * @param fileName
+     * @return
+     */
+    public static POSTGIS open(String fileName) {
+        File file = URIUtilities.fileFromString(fileName);
+        try {
+            if (FileUtil.isFileImportable(file, "properties")) {
+                Properties prop = new Properties();
+                FileInputStream fous = new FileInputStream(file);
+                prop.load(fous);
+                return open(prop);
+            }
+        } catch (SQLException | IOException e) {
+            LOGGER.error("Unable to read the properties file.\n" + e.getLocalizedMessage());
+            return null;
+        }
+        return null;
+    }
+    
+    /**
+     * Create an instance of POSTGIS from properties
+     * @param properties
+     * @return 
+     */
+    public static POSTGIS open(Properties properties) {
+        Connection connection;
+        try {
+            connection = dataSourceFactory.createDataSource(properties).getConnection();
+        } catch (SQLException e) {
+            LOGGER.error("Unable to create the DataSource.\n" + e.getLocalizedMessage());
+            return null;
+        }
+        return new POSTGIS(connection);
+    }
     /**
      * Open the POSTGIS database with the given properties and return the corresponding POSTGIS object.
      *
@@ -52,14 +98,8 @@ public class POSTGIS extends JdbcDataSource {
     public static POSTGIS open(Map<String, String> properties) {
         Properties props = new Properties();
         properties.forEach(props::put);
-        Connection connection;
-        try {
-            connection = dataSourceFactory.createDataSource(props).getConnection();
-        } catch (SQLException e) {
-            LOGGER.error("Unable to create the DataSource.\n" + e.getLocalizedMessage());
-            return null;
-        }
-        return new POSTGIS(connection);
+        return open(props);
+        
     }
 
     @Override
@@ -212,6 +252,10 @@ public class POSTGIS extends JdbcDataSource {
         return load(filePath, false);
     }
 
+    /**
+     * Return the current ConnectionWrapper
+     * @return ConnectionWrapper
+     */
     public ConnectionWrapper getConnectionWrapper() {
         return connectionWrapper;
     }

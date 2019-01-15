@@ -37,8 +37,12 @@
 package org.orbisgis.datamanager;
 
 import groovy.sql.Sql;
+import groovy.text.SimpleTemplateEngine;
+import org.h2.util.ScriptReader;
+import org.h2gis.functions.io.utility.FileUtil;
 import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.TableLocation;
+import org.h2gis.utilities.URIUtilities;
 import org.h2gis.utilities.wrapper.StatementWrapper;
 import org.orbisgis.datamanager.h2gis.H2gisSpatialTable;
 import org.orbisgis.datamanager.h2gis.H2gisTable;
@@ -52,6 +56,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.sql.DataSource;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -228,5 +235,50 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, ISq
                 }
         }
         return null;
+    }
+
+    /**
+     * This method is used to execute a SQL file
+     *
+     * @param fileName the sql file
+     */
+    public void executeScript(String fileName) {
+        executeScript(fileName, null);
+    }
+
+    /**
+     * This method is used to execute a SQL file that contains parametrized text
+     * Parametrized text must be expressed with $value or ${value}
+     *
+     * @param fileName the sql file
+     * @param bindings the map between parametrized text and its value. eg.
+     * ["value", "myvalue"] to replace ${value} by myvalue
+     */
+    public void executeScript(String fileName, Map<String, String> bindings) {
+        File file = URIUtilities.fileFromString(fileName);
+        try {
+            if (FileUtil.isFileImportable(file, "sql")) {
+                SimpleTemplateEngine engine = null;
+                if (bindings != null && !bindings.isEmpty()) {
+                    engine = new SimpleTemplateEngine();
+                }
+                ScriptReader scriptReader = new ScriptReader(new FileReader(file));
+                scriptReader.setSkipRemarks(true);
+                while (true) {
+                    String commandSQL = scriptReader.readStatement();
+                    if (commandSQL == null) {
+                        break;
+                    }
+                    if (!commandSQL.isEmpty()) {
+                        if (engine != null) {
+                            commandSQL = engine.createTemplate(commandSQL).make(bindings).toString();
+                        }
+                        execute(commandSQL);
+                    }
+                }
+            }
+        } catch (SQLException | IOException | ClassNotFoundException e) {
+            LOGGER.error("Unable to read the SQL file.\n" + e.getLocalizedMessage());
+        }
     }
 }

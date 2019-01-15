@@ -29,11 +29,22 @@ Allows to open, create an H2GIS database. The main entry is the H2GIS class that
 
 ```groovy
 // Connect to a file data, if the database doesn't exist a new one is created
+@GrabResolver(name='orbisgis', root='http://repo.orbisgis.org/')
+@Grab(group='org.orbisgis', module='data-manager', version='1.0-SNAPSHOT')
+
+import org.orbisgis.datamanager.h2gis.H2GIS
+
 H2GIS.open([databaseName: './target/loadH2GIS'])
 ```
 
 ```groovy
 //How to query a spatial table
+@GrabResolver(name='orbisgis', root='http://repo.orbisgis.org/')
+@Grab(group='org.orbisgis', module='data-manager', version='1.0-SNAPSHOT')
+
+import org.orbisgis.datamanager.h2gis.H2GIS
+import org.orbisgis.datamanagerapi.dataset.ISpatialTable
+
 def h2GIS = H2GIS.open([databaseName: './target/loadH2GIS'])
 h2GIS.execute("""
                 DROP TABLE IF EXISTS h2gis;
@@ -47,6 +58,12 @@ println concat
 ```
 ```groovy
 //How to display the metadata of a spatial table
+@GrabResolver(name='orbisgis', root='http://repo.orbisgis.org/')
+@Grab(group='org.orbisgis', module='data-manager', version='1.0-SNAPSHOT')
+
+import org.orbisgis.datamanager.h2gis.H2GIS
+import org.orbisgis.datamanagerapi.dataset.ISpatialTable
+
 def h2GIS = H2GIS.open([databaseName: './target/loadH2GIS'])
 h2GIS.execute("""
                 DROP TABLE IF EXISTS h2gis;
@@ -58,6 +75,19 @@ def concat = ""
 h2GIS.getSpatialTable("h2gis").meta.each {row -> concat += "$row.columnLabel $row.columnType\n"}
 println concat
 //Returns ID 4 THE_GEOM 1111
+
+```
+```groovy
+//List column names from a shape file
+@GrabResolver(name='orbisgis', root='http://repo.orbisgis.org/')
+@Grab(group='org.orbisgis', module='data-manager', version='1.0-SNAPSHOT')
+
+
+import org.orbisgis.datamanager.h2gis.H2GIS
+import org.orbisgis.datamanagerapi.dataset.ITable
+
+def  h2GIS = H2GIS.open([databaseName: '/tmp/loadH2GIS'])
+println((h2GIS.link('/tmp/myshapeFile.shp') as ITable).columnNames)
 
 ```
 

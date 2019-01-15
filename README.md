@@ -96,7 +96,7 @@ println((h2GIS.link('/tmp/myshapeFile.shp') as ITable).columnNames)
 
 ```groovy
 //Execute a parametrized SQL file
-// Let's imagine you have a sql file call mysql.sql that contains the following queries
+// Let's imagine you have a sql file call myscript.sql that contains the following queries
 // CREATE TABLE buffer_distance as SELECT ST_BUFFER(THE_GEOM, ${distance}) as the_geom FROM rivers;
 // CREATE TABLE distance_risk as SELECT ST_ClosestPoint(a.the_geom, b.the_geom) as the_geom FROM buffer_distance as A, buildings as B WHERE ST_INTERSECTS(a.the_geom, b.the_geom);
 @GrabResolver(name='orbisgis', root='http://repo.orbisgis.org/')
@@ -108,7 +108,7 @@ import org.orbisgis.datamanager.h2gis.H2GIS
 def  h2GIS = H2GIS.open([databaseName: '/tmp/loadH2GIS'])
 h2GIS.load('/tmp/rivers.shp')
 h2GIS.load('/tmp/buildings.shp')
-h2GIS.executeScript('/tmp/mysql.sql', [distance:12])
+h2GIS.executeScript('/tmp/myscript.sql', [distance:12])
 h2GIS.save("distance_risk","/tmp/distance_risk.shp");
 ```
 

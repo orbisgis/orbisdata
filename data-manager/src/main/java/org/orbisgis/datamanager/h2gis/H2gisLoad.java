@@ -40,6 +40,7 @@ import org.h2gis.api.EmptyProgressVisitor;
 import org.h2gis.functions.io.csv.CSVDriverFunction;
 import org.h2gis.functions.io.dbf.DBFDriverFunction;
 import org.h2gis.functions.io.geojson.GeoJsonReaderDriver;
+import org.h2gis.functions.io.gpx.GPXDriverFunction;
 import org.h2gis.functions.io.shp.SHPDriverFunction;
 import org.h2gis.functions.io.tsv.TSVDriverFunction;
 import org.h2gis.functions.io.utility.FileUtil;
@@ -61,6 +62,7 @@ import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Map;
+import org.h2gis.functions.io.osm.OSMDriverFunction;
 
 /**
  * This class is used to load a file to a H2GIS database
@@ -79,6 +81,12 @@ public class H2gisLoad implements ITableWrapper {
 
     @Override
     public Object asType(Class clazz) {
+        if(tableName==null){
+            return null;
+        }
+        if(tableName.isEmpty()){
+            return null;
+        }
         if (clazz == ITable.class){
             StatementWrapper statement;
             try {
@@ -128,38 +136,48 @@ public class H2gisLoad implements ITableWrapper {
     public void create(String filePath, String tableName, String encoding, boolean delete, H2GIS h2GIS) {
         this.tableName=tableName;
         this.connectionWrapper =  h2GIS.getConnectionWrapper();
-        if(delete){
-            try {
-                h2GIS.execute("DROP TABLE IF EXISTS "+ tableName);
-            } catch (SQLException e) {
-                LOGGER.error("Cannot drop the table.\n"+e.getLocalizedMessage());
-            }
-        }
         File fileToImport = URIUtilities.fileFromString(filePath);
         try {
-            if (FileUtil.isFileImportable(fileToImport, "shp")) {
+            if (FileUtil.isExtensionWellFormated(fileToImport, "shp")) {
+                deleteTable( delete,  h2GIS);
                 SHPDriverFunction driverFunction = new SHPDriverFunction();
                 driverFunction.importFile(connectionWrapper, tableName, fileToImport, new EmptyProgressVisitor(),encoding);
             }
-            else if (FileUtil.isFileImportable(fileToImport, "geojson")) {
+            else if (FileUtil.isExtensionWellFormated(fileToImport, "geojson")) {
+                deleteTable( delete,  h2GIS);
                 GeoJsonReaderDriver driverFunction = new GeoJsonReaderDriver(connectionWrapper, fileToImport);
                 driverFunction.read(new EmptyProgressVisitor(), tableName);
             }
-            else if (FileUtil.isFileImportable(fileToImport, "csv")) {
+            else if (FileUtil.isExtensionWellFormated(fileToImport, "csv")) {
+                deleteTable( delete,  h2GIS);
                 if(encoding==null){
                     encoding="charset=UTF-8";
                 }
                 CSVDriverFunction driverFunction = new CSVDriverFunction();
                 driverFunction.importFile(connectionWrapper, tableName, fileToImport,new EmptyProgressVisitor(),encoding);
             }
-            else if (FileUtil.isFileImportable(fileToImport, "dbf")) {
+            else if (FileUtil.isExtensionWellFormated(fileToImport, "dbf")) {
+                deleteTable( delete,  h2GIS);
                 DBFDriverFunction driverFunction = new DBFDriverFunction();
                 driverFunction.importFile(connectionWrapper, tableName, fileToImport,new EmptyProgressVisitor(),encoding);
             }
-            else if (FileUtil.isFileImportable(fileToImport, "tsv")) {
+            else if (FileUtil.isExtensionWellFormated(fileToImport, "tsv")) {
+                deleteTable( delete,  h2GIS);
                 LOGGER.warn("Encoding is not yet supported for this file format");
                 TSVDriverFunction driverFunction = new TSVDriverFunction();
                 driverFunction.importFile(connectionWrapper, tableName, fileToImport,new EmptyProgressVisitor());
+            }
+            else if (FileUtil.isExtensionWellFormated(fileToImport, "osm")||FileUtil.isFileImportable(fileToImport, "gz")||FileUtil.isFileImportable(fileToImport, "bz")) {
+                LOGGER.warn("Encoding is not yet supported for this file format");
+                OSMDriverFunction driverFunction = new OSMDriverFunction();
+                driverFunction.importFile(connectionWrapper, tableName, fileToImport,new EmptyProgressVisitor(),delete);
+                tableName=null;
+            }
+            else if (FileUtil.isExtensionWellFormated(fileToImport, "gpx")) {
+                LOGGER.warn("Encoding is not yet supported for this file format");
+                GPXDriverFunction driverFunction = new GPXDriverFunction();
+                driverFunction.importFile(connectionWrapper, tableName, fileToImport,new EmptyProgressVisitor(),delete);
+                tableName=null;
             }
             else{
                 LOGGER.error("Unsupported file format");
@@ -168,6 +186,22 @@ public class H2gisLoad implements ITableWrapper {
             LOGGER.error("Cannot load.\n"+e.getLocalizedMessage());
         } catch (IOException e) {
             LOGGER.error("Cannot load.\n"+e.getLocalizedMessage());
+        }
+    }
+    
+    /**
+     * Method to delete a table
+     *
+     * @param delete true to delete
+     * @param h2GIS the H2GIS database 
+     */
+    private void deleteTable(boolean delete, H2GIS h2GIS) {
+        if (delete) {
+            try {
+                h2GIS.execute("DROP TABLE IF EXISTS " + tableName);
+            } catch (SQLException e) {
+                LOGGER.error("Cannot drop the table.\n" + e.getLocalizedMessage());
+            }
         }
     }
 

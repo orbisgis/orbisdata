@@ -36,6 +36,7 @@
  */
 package org.orbisgis.datamanager
 
+import org.h2gis.functions.io.utility.FileUtil
 import org.junit.jupiter.api.Test
 import org.orbisgis.datamanager.h2gis.H2GIS
 import org.orbisgis.datamanagerapi.dataset.ITable
@@ -361,5 +362,55 @@ class GroovyH2GISTest {
         h2GIS.getSpatialTable "super" eachRow { row -> concat += "$row.id $row.the_geom $row.geometry\n" }
         assertEquals("1 POINT (10 10) POINT (10 10)\n2 POINT (1 1) POINT (1 1)\n", concat)
         println(concat)
+    }
+    
+    @Test
+    void executeQueryBindingsNumeric() {
+        def h2GIS = H2GIS.open([databaseName: './target/loadH2GIS'])
+        h2GIS.execute("""
+                DROP TABLE IF EXISTS h2gis;
+                CREATE TABLE h2gis (id int, the_geom point);
+                INSERT INTO h2gis VALUES (1, 'POINT(10 10)'::GEOMETRY), (2, 'POINT(1 1)'::GEOMETRY);
+        """)
+        def file = new File('target/myscript.sql')
+        file.delete();
+        file << 'CREATE TABLE super as SELECT ST_BUFFER(the_geom, $DISTANCE) as the_geom FROM $BINIOU;'
+        h2GIS.executeScript("target/myscript.sql", [BINIOU:'h2gis', DISTANCE:10]);
+        def concat = ""
+        h2GIS.getSpatialTable "super" eachRow { row -> concat += "$row.id $row.the_geom $row.geometry\n" }
+        assertEquals("1 POINT (10 10) POINT (10 10)\n2 POINT (1 1) POINT (1 1)\n", concat)
+        println(concat)
+    }
+
+
+    @Test
+    void loadOSMFile() {
+        def h2GIS = H2GIS.open([databaseName: './target/loadH2GIS'])
+        def bbox = "(47.63538867628185,-2.126747667789459,47.63620380562177,-2.1253328025341034)"
+        def queryURL = "[timeout:900];(node[\"building\"]${bbox};way[\"building\"]${bbox};relation[\"building\"]${bbox};);out;"
+
+        println(queryURL)
+
+        def outputOSMFile = new File("target/map.osm")
+
+        if (outputOSMFile.exists()) {
+            outputOSMFile.delete()
+        }
+        def apiUrl = "https://lz4.overpass-api.de/api/interpreter?data="
+        def connection = new URL(apiUrl + URLEncoder.encode(queryURL)).openConnection() as HttpURLConnection
+
+        connection.setRequestMethod("GET")
+
+        println "Executing query... $queryURL"
+        //Save the result in a file
+        if (connection.responseCode == 200) {
+            println "Downloading the OSM data from overpass api"
+            outputOSMFile << connection.inputStream
+        } else {
+            println "Cannot execute the query"
+        }
+        h2GIS.load(outputOSMFile.absolutePath, 'map', true)
+        assertTrue(h2GIS.tableNames.count{it.startsWith('LOADH2GIS.PUBLIC.MAP')}==11 )
+
     }
 }

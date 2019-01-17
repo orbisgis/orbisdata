@@ -36,27 +36,43 @@
  */
 package org.orbisgis.datamanager
 
+import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.condition.EnabledIfSystemProperty
 import org.orbisgis.datamanager.postgis.POSTGIS
 
 import static org.junit.jupiter.api.Assertions.assertEquals
 import static org.junit.jupiter.api.Assertions.assertNotNull
 
-/*class GroovyPostGISTest {
+class GroovyPostGISTest {
 
-    def dbProperties=  [databaseName: 'gisdb',
+    def static dbProperties=  [databaseName: 'gisdb',
     user: '',
     password: '',
     url :'jdbc:postgresql://ns380291.ip-94-23-250.eu/'
     ]
 
+    @BeforeAll
+    static void init(){
+        System.setProperty("test.postgis",
+                Boolean.toString(!dbProperties.user.isEmpty() && !dbProperties.password.isEmpty()));
+    }
+
     @Test
+    void ensureNoPasswordNorLogin(){
+        assertEquals("", dbProperties.user)
+        assertEquals("", dbProperties.password)
+    }
+
+    @Test
+    @EnabledIfSystemProperty(named = "test.postgis", matches = "true")
     void loadPostGIS() {
         def postGIS = POSTGIS.open(dbProperties)
         assertNotNull(postGIS)
     }
 
     @Test
+    @EnabledIfSystemProperty(named = "test.postgis", matches = "true")
     void queryPostGIS() {
         def postGIS = POSTGIS.open(dbProperties)
         postGIS.execute("""
@@ -70,6 +86,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull
     }
 
     @Test
+    @EnabledIfSystemProperty(named = "test.postgis", matches = "true")
     void querySpatialTable() {
         def postGIS = POSTGIS.open(dbProperties)
         postGIS.execute("""
@@ -86,6 +103,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull
 
 
     @Test
+    @EnabledIfSystemProperty(named = "test.postgis", matches = "true")
     void queryPostGISMetaData() {
         def postGIS = POSTGIS.open(dbProperties)
         postGIS.execute("""
@@ -101,6 +119,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull
     }
 
     @Test
+    @EnabledIfSystemProperty(named = "test.postgis", matches = "true")
     void querySpatialTableMetaData() {
         def postGIS = POSTGIS.open(dbProperties)
         postGIS.execute("""
@@ -124,15 +143,16 @@ import static org.junit.jupiter.api.Assertions.assertNotNull
     
     
     @Test
+    @EnabledIfSystemProperty(named = "test.postgis", matches = "true")
     void exportImportShpFile() {
         def postGIS = POSTGIS.open(dbProperties)
         postGIS.execute("""
-                DROP TABLE IF EXISTS postgis;
+                DROP TABLE IF EXISTS postgis, postgis_imported;
                 CREATE TABLE postgis (id int, the_geom geometry(point, 0));
                 INSERT INTO postgis VALUES (1, 'POINT(10 10)'::GEOMETRY), (2, 'POINT(1 1)'::GEOMETRY);
         """)
-        postGIS.save("postgis","target/postgis_imported.shp");
-        postGIS.load("target/postgis_imported.shp", "postgis_imported", null, false);
+        postGIS.save("postgis","target/postgis_imported.shp")
+        postGIS.load("target/postgis_imported.shp", "postgis_imported", null, false)
         def concat = ""
         postGIS.getSpatialTable "postgis_imported" eachRow { row -> concat += "$row.id $row.the_geom $row.geometry\n" }
         assertEquals("1 POINT (10 10) POINT (10 10)\n2 POINT (1 1) POINT (1 1)\n", concat)
@@ -140,16 +160,17 @@ import static org.junit.jupiter.api.Assertions.assertNotNull
     }
 
     @Test
+    @EnabledIfSystemProperty(named = "test.postgis", matches = "true")
     void exportImportTwoTimesShpFile() {
         def postGIS = POSTGIS.open(dbProperties)
         postGIS.execute("""
-                DROP TABLE IF EXISTS postgis;
+                DROP TABLE IF EXISTS postgis, postgis_imported;
                 CREATE TABLE postgis (id int, the_geom geometry(point, 0));
                 INSERT INTO postgis VALUES (1, 'POINT(10 10)'::GEOMETRY), (2, 'POINT(1 1)'::GEOMETRY);
         """)
-        postGIS.save("postgis","target/postgis_imported.shp");
-        postGIS.load("target/postgis_imported.shp", "postgis_imported", null, false);
-        postGIS.load("target/postgis_imported.shp", "postgis_imported", null, true);
+        postGIS.save("postgis","target/postgis_imported.shp")
+        postGIS.load("target/postgis_imported.shp", "postgis_imported", null, false)
+        postGIS.load("target/postgis_imported.shp", "postgis_imported", null, true)
         def concat = ""
         postGIS.getSpatialTable "postgis_imported" eachRow { row -> concat += "$row.id $row.the_geom $row.geometry\n" }
         assertEquals("1 POINT (10 10) POINT (10 10)\n2 POINT (1 1) POINT (1 1)\n", concat)
@@ -157,15 +178,16 @@ import static org.junit.jupiter.api.Assertions.assertNotNull
     }
 
     @Test
+    @EnabledIfSystemProperty(named = "test.postgis", matches = "true")
     void exportImportShpFileSimple1() {
         def postGIS = POSTGIS.open(dbProperties)
         postGIS.execute("""
-                DROP TABLE IF EXISTS postgis;
+                DROP TABLE IF EXISTS postgis, postgis_imported;
                 CREATE TABLE postgis (id int, the_geom geometry(point, 0));
                 INSERT INTO postgis VALUES (1, 'POINT(10 10)'::GEOMETRY), (2, 'POINT(1 1)'::GEOMETRY);
         """)
-        postGIS.save("postgis","target/postgis_imported.shp");
-        postGIS.load("target/postgis_imported.shp", "postgis_imported");
+        postGIS.save("postgis","target/postgis_imported.shp")
+        postGIS.load("target/postgis_imported.shp", "postgis_imported")
         def concat = ""
         postGIS.getSpatialTable "postgis_imported" eachRow { row -> concat += "$row.id $row.the_geom $row.geometry\n" }
         assertEquals("1 POINT (10 10) POINT (10 10)\n2 POINT (1 1) POINT (1 1)\n", concat)
@@ -173,32 +195,34 @@ import static org.junit.jupiter.api.Assertions.assertNotNull
     }
 
     @Test
+    @EnabledIfSystemProperty(named = "test.postgis", matches = "true")
     void exportImportShpFileSimple2() {
         def postGIS = POSTGIS.open(dbProperties)
         postGIS.execute("""
-                DROP TABLE IF EXISTS postgis;
+                DROP TABLE IF EXISTS postgis, postgis_imported;
                 CREATE TABLE postgis (id int, the_geom geometry(point, 0));
                 INSERT INTO postgis VALUES (1, 'POINT(10 10)'::GEOMETRY), (2, 'POINT(1 1)'::GEOMETRY);
         """)
-        postGIS.save("postgis","target/postgis_imported.shp");
-        postGIS.load("target/postgis_imported.shp");
+        postGIS.save("postgis","target/postgis_imported.shp")
+        postGIS.load("target/postgis_imported.shp")
         def concat = ""
         postGIS.getSpatialTable "postgis_imported" eachRow { row -> concat += "$row.id $row.the_geom $row.geometry\n" }
         assertEquals("1 POINT (10 10) POINT (10 10)\n2 POINT (1 1) POINT (1 1)\n", concat)
         println(concat)
     }
     @Test
+    @EnabledIfSystemProperty(named = "test.postgis", matches = "true")
     void exportImportGeoJsonShapeFile() {
         def postGIS = POSTGIS.open(dbProperties)
         postGIS.execute("""
-                DROP TABLE IF EXISTS postgis;
+                DROP TABLE IF EXISTS postgis, postgis_imported;
                 CREATE TABLE postgis (id int, the_geom geometry(point, 0));
                 INSERT INTO postgis VALUES (1, 'POINT(10 10)'::GEOMETRY), (2, 'POINT(1 1)'::GEOMETRY);
         """)
-        postGIS.save("postgis","target/postgis_imported.geojson");
-        postGIS.load("target/postgis_imported.geojson");
-        postGIS.save("postgis_imported","target/postgis_imported.shp");
-        postGIS.load("target/postgis_imported.shp", true);
+        postGIS.save("postgis","target/postgis_imported.geojson")
+        postGIS.load("target/postgis_imported.geojson")
+        postGIS.save("postgis_imported","target/postgis_imported.shp")
+        postGIS.load("target/postgis_imported.shp", true)
         def concat = ""
         postGIS.getSpatialTable "postgis_imported" eachRow { row -> concat += "$row.id $row.the_geom $row.geometry\n" }
         assertEquals("1 POINT (10 10) POINT (10 10)\n2 POINT (1 1) POINT (1 1)\n", concat)
@@ -206,15 +230,16 @@ import static org.junit.jupiter.api.Assertions.assertNotNull
     }
 
     @Test
+    @EnabledIfSystemProperty(named = "test.postgis", matches = "true")
     void exportImportCSV() {
         def postGIS = POSTGIS.open(dbProperties)
         postGIS.execute("""
-                DROP TABLE IF EXISTS postgis;
+                DROP TABLE IF EXISTS postgis, postgis_imported;
                 CREATE TABLE postgis (id int, the_geom geometry(point, 0));
                 INSERT INTO postgis VALUES (1, 'POINT(10 10)'::GEOMETRY), (2, 'POINT(1 1)'::GEOMETRY);
         """)
-        postGIS.save("postgis","target/postgis_imported.csv");
-        postGIS.load("target/postgis_imported.csv");
+        postGIS.save("postgis","target/postgis_imported.csv")
+        postGIS.load("target/postgis_imported.csv")
         def concat = ""
         postGIS.getSpatialTable "postgis_imported" eachRow { row -> concat += "$row.id $row.the_geom $row.geometry\n" }
         assertEquals("1 POINT (10 10) POINT (10 10)\n2 POINT (1 1) POINT (1 1)\n", concat)
@@ -222,6 +247,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull
     }
     
     @Test
+    @EnabledIfSystemProperty(named = "test.postgis", matches = "true")
     void queryTableColumnNames() {
         def postGIS = POSTGIS.open(dbProperties)
         postGIS.execute("""
@@ -233,10 +259,11 @@ import static org.junit.jupiter.api.Assertions.assertNotNull
     }
 
     @Test
+    @EnabledIfSystemProperty(named = "test.postgis", matches = "true")
     void exportSaveReadTableGeoJson() {
         def postGIS = POSTGIS.open(dbProperties)
         postGIS.execute("""
-                DROP TABLE IF EXISTS postgis;
+                DROP TABLE IF EXISTS postgis, postgis_saved;
                 CREATE TABLE postgis (id int, the_geom geometry(point, 0));
                 INSERT INTO postgis VALUES (1, 'POINT(10 10)'::GEOMETRY), (2, 'POINT(1 1)'::GEOMETRY);
         """)
@@ -247,4 +274,4 @@ import static org.junit.jupiter.api.Assertions.assertNotNull
         assertEquals("1 POINT (10 10) POINT (10 10)\n2 POINT (1 1) POINT (1 1)\n", concat)
         println(concat)
     }
-}*/
+}

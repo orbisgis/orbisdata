@@ -410,7 +410,7 @@ class GroovyH2GISTest {
             println "Cannot execute the query"
         }
         h2GIS.load(outputOSMFile.absolutePath, 'map', true)
-        assertTrue(h2GIS.tableNames.count{it.startsWith('LOADH2GIS.PUBLIC.MAP')==11 })
+        assertTrue(h2GIS.tableNames.count{it.startsWith('LOADH2GIS.PUBLIC.MAP')}==11 )
 
     }
 }

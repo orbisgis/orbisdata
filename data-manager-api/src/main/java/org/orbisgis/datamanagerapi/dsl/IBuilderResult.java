@@ -34,57 +34,38 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.datamanagerapi.dataset;
+package org.orbisgis.datamanagerapi.dsl;
+
 
 import groovy.lang.Closure;
-import org.orbisgis.datamanagerapi.dsl.IWhereBuilder;
-
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.util.Collection;
+import org.orbisgis.datamanagerapi.dataset.ISpatialTable;
+import org.orbisgis.datamanagerapi.dataset.ITable;
 
 /**
- * Implementation of the IDataSet interface. A table is a 2D (column/line) representation of data.
+ * Define the methods use to get the result of a SQL request.
  *
  * @author Erwan Bocher (CNRS)
- * @author Sylvain PALOMINOS (UBS 2018)
+ * @author Sylvain PALOMINOS (UBS 2019)
  */
-public interface ITable extends IDataSet, ResultSet, IWhereBuilder {
+public interface IBuilderResult {
 
     /**
-     * Apply the given closure to each row.
+     * Apply the given closure on each row of the result of the SQL request.
      *
      * @param closure Closure to apply to each row.
      */
     void eachRow(Closure closure);
 
     /**
-     * Get the ResultSetMetaData of the DataSet.
+     * Convert the result of the SQL request into a ITable or ISpatialTable.
      *
-     * @return The metadata object.
+     * @param clazz New class of the result.
+     *
+     * @return The result wrapped into the given class.
      */
-    @Override
-    ResultSetMetaData getMetadata();
-    
-    /**
-     * Get all column names from the underlying table
-     * @return 
-     */
-    Collection<String> getColumnNames();
+    Object asType(Class clazz);
 
-    /**
-     * Save the table to a file
-     * @param filePath the path of the file to be saved
-     * @return true is the file has been saved
-     */
-    boolean save(String filePath);
+    ITable getTable();
 
-    /**
-     * Save the table to a file
-     * @param filePath the path of the file to be saved
-     * @param encoding Encoding property.
-     * @return true is the file has been saved
-     */
-    boolean save(String filePath, String encoding);
-    
+    ISpatialTable getSpatialTable();
 }

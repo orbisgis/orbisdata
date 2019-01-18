@@ -34,57 +34,35 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.datamanagerapi.dataset;
-
-import groovy.lang.Closure;
-import org.orbisgis.datamanagerapi.dsl.IWhereBuilder;
-
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.util.Collection;
+package org.orbisgis.datamanagerapi.dsl;
 
 /**
- * Implementation of the IDataSet interface. A table is a 2D (column/line) representation of data.
+ * Interface defining methods for the SQL 'where' condition building. The request construction can be continued thanks to the
+ * IConditionOrOptionBuilder or its result can be get calling 'eachRow' to iterate on the resultSet or 'as ITable' to get the
+ * ITable object.
+ * The methods inherited from IOptionBuilder allow to set option returning an IOptionBuilder while
+ * IConditionOrOptionBuilder own methods allow to add where condition returning an IConditionOrOptionBuilder.
  *
  * @author Erwan Bocher (CNRS)
- * @author Sylvain PALOMINOS (UBS 2018)
+ * @author Sylvain PALOMINOS (UBS 2019)
  */
-public interface ITable extends IDataSet, ResultSet, IWhereBuilder {
+public interface IConditionOrOptionBuilder extends IOptionBuilder {
 
     /**
-     * Apply the given closure to each row.
+     * Add a 'and' condition for the selection.
      *
-     * @param closure Closure to apply to each row.
-     */
-    void eachRow(Closure closure);
-
-    /**
-     * Get the ResultSetMetaData of the DataSet.
+     * @param condition Condition to add for for the selection.
      *
-     * @return The metadata object.
+     * @return ISqlBuilder instance to continue building.
      */
-    @Override
-    ResultSetMetaData getMetadata();
-    
-    /**
-     * Get all column names from the underlying table
-     * @return 
-     */
-    Collection<String> getColumnNames();
+    IConditionOrOptionBuilder and(String condition);
 
     /**
-     * Save the table to a file
-     * @param filePath the path of the file to be saved
-     * @return true is the file has been saved
+     * Add a 'or' condition for the selection.
+     *
+     * @param condition Condition to add for for the selection.
+     *
+     * @return ISqlBuilder instance to continue building.
      */
-    boolean save(String filePath);
-
-    /**
-     * Save the table to a file
-     * @param filePath the path of the file to be saved
-     * @param encoding Encoding property.
-     * @return true is the file has been saved
-     */
-    boolean save(String filePath, String encoding);
-    
+    IConditionOrOptionBuilder or(String condition);
 }

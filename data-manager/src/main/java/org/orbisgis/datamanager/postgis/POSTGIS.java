@@ -118,7 +118,7 @@ public class POSTGIS extends JdbcDataSource {
             LOGGER.error("Unable execute query.\n"+e.getLocalizedMessage());
             return null;
         }
-        return new PostgisTable(new TableLocation(tableName), rs, statement);
+        return new PostgisTable(new TableLocation(tableName), rs, statement, this);
     }
 
     @Override
@@ -137,7 +137,7 @@ public class POSTGIS extends JdbcDataSource {
             LOGGER.error("Unable execute query.\n"+e.getLocalizedMessage());
             return null;
         }
-        return new PostgisSpatialTable(new TableLocation(tableName), rs, statement);
+        return new PostgisSpatialTable(new TableLocation(tableName), rs, statement, this);
     }
 
     @Override

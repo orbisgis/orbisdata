@@ -39,12 +39,14 @@ package org.orbisgis.datamanager
 import org.h2gis.functions.io.utility.FileUtil
 import org.junit.jupiter.api.Test
 import org.orbisgis.datamanager.h2gis.H2GIS
+import org.orbisgis.datamanagerapi.dataset.ISpatialTable
 import org.orbisgis.datamanagerapi.dataset.ITable
+import org.osgi.service.jdbc.DataSourceFactory
 
 import java.sql.SQLException
 
 import static org.junit.jupiter.api.Assertions.*
-import static org.orbisgis.datamanagerapi.dsl.ISqlBuilder.Order.DESC
+import static org.orbisgis.datamanagerapi.dsl.IOptionBuilder.Order.DESC
 
 class GroovyH2GISTest {
 
@@ -243,6 +245,23 @@ class GroovyH2GISTest {
         assertEquals("1 POINT (10 10)\n2 POINT (1 1)\n", concat)
         println(concat)
     }
+
+    @Test
+    void querySpatialTableWhere() throws SQLException {
+        def h2GIS = H2GIS.open([databaseName: './target/loadH2GIS'])
+        h2GIS.execute("""
+                DROP TABLE IF EXISTS h2gis, h2gis_imported;
+                CREATE TABLE h2gis (id int, the_geom point);
+                INSERT INTO h2gis VALUES (1, 'POINT(10 10)'::GEOMETRY), (2, 'POINT(1 1)'::GEOMETRY);
+        """)
+
+        def values = new ArrayList<>()
+        h2GIS.getSpatialTable "h2gis" where "id=2" eachRow {row ->
+            values.add "$row.the_geom"
+        }
+        assertEquals(1,values.size())
+        assertEquals("POINT (1 1)", values.get(0).toString())
+    }
     
     @Test
     void queryTableColumnNames() {
@@ -417,5 +436,40 @@ class GroovyH2GISTest {
         h2GIS.load(outputOSMFile.absolutePath, 'map', true)
         assertTrue(h2GIS.tableNames.count{it.startsWith('LOADH2GIS.PUBLIC.MAP')}==11 )
 
+    }
+
+    @Test
+    void request() throws SQLException {
+        def h2GIS = H2GIS.open([databaseName: './target/loadH2GIS'])
+        h2GIS.execute """DROP TABLE IF EXISTS h2gis;
+                CREATE TABLE h2gis (id int PRIMARY KEY, code int, the_geom point);
+                insert into h2gis values (1,22, 'POINT(10 10)'::GEOMETRY);
+                insert into h2gis values (2,56, 'POINT(20 20)'::GEOMETRY);
+                insert into h2gis values (3,22, 'POINT(10 10)'::GEOMETRY);
+                insert into h2gis values (4,22, 'POINT(10 10)'::GEOMETRY);
+                insert into h2gis values (5,22, 'POINT(20 10)'::GEOMETRY);"""
+
+        def table = h2GIS.select "COUNT(id)", "code", "the_geom" from "h2gis" where "code=22" and "id<5" groupBy "code" spatialTable
+
+        def values = new ArrayList<>()
+        table.eachRow {row ->
+            values.add row.getInt(1)
+            values.add row.getInt(2)
+        }
+        assertEquals(2,values.size())
+        assertEquals(3, (int) values.get(0))
+        assertEquals(22, (int) values.get(1))
+
+        values = new ArrayList<>()
+
+        h2GIS.select("*") from "h2gis" where "code=22" or "code=56" orderBy "id", DESC eachRow {row ->
+            values.add row.getInt(1)
+        }
+        assertEquals(5,values.size())
+        assertEquals(5, (int) values.get(0))
+        assertEquals(4, (int) values.get(1))
+        assertEquals(3, (int) values.get(2))
+        assertEquals(2, (int) values.get(3))
+        assertEquals(1, (int) values.get(4))
     }
 }

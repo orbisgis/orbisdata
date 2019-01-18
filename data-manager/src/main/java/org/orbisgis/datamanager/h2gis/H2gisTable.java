@@ -38,23 +38,26 @@ package org.orbisgis.datamanager.h2gis;
 
 import groovy.lang.MetaClass;
 import org.codehaus.groovy.runtime.InvokerHelper;
+import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.TableLocation;
 import org.h2gis.utilities.wrapper.ResultSetWrapper;
 import org.h2gis.utilities.wrapper.StatementWrapper;
+import org.orbisgis.datamanager.JdbcDataSource;
+import org.orbisgis.datamanager.dsl.ConditionOrOptionBuilder;
 import org.orbisgis.datamanager.io.IOMethods;
 import org.orbisgis.datamanagerapi.dataset.Database;
 import org.orbisgis.datamanagerapi.dataset.IJdbcTable;
+import org.orbisgis.datamanagerapi.dataset.ISpatialTable;
+import org.orbisgis.datamanagerapi.dataset.ITable;
+import org.orbisgis.datamanagerapi.dsl.IConditionOrOptionBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import org.h2gis.utilities.JDBCUtilities;
+import java.sql.Statement;
+import java.util.*;
 
 public class H2gisTable extends ResultSetWrapper implements IJdbcTable {
 
@@ -68,6 +71,10 @@ public class H2gisTable extends ResultSetWrapper implements IJdbcTable {
     private MetaClass metaClass;
     /** Map of the properties */
     private Map<String, Object> propertyMap;
+    /** Filter query */
+    private StringBuilder query = new StringBuilder();
+    /** DataSource to execute query */
+    private JdbcDataSource jdbcDataSource;
 
     /**
      * Main constructor.
@@ -76,7 +83,8 @@ public class H2gisTable extends ResultSetWrapper implements IJdbcTable {
      * @param resultSet ResultSet containing the data of the table.
      * @param statement Statement used to request the database.
      */
-    public H2gisTable(TableLocation tableLocation, ResultSet resultSet, StatementWrapper statement) {
+    public H2gisTable(TableLocation tableLocation, ResultSet resultSet, StatementWrapper statement,
+                         JdbcDataSource jdbcDataSource) {
         super(resultSet, statement);
         try {
             resultSet.beforeFirst();
@@ -87,6 +95,7 @@ public class H2gisTable extends ResultSetWrapper implements IJdbcTable {
         this.dataBase = Database.H2GIS;
         this.metaClass = InvokerHelper.getMetaClass(getClass());
         this.propertyMap = new HashMap<>();
+        this.jdbcDataSource = jdbcDataSource;
     }
 
     @Override
@@ -151,5 +160,15 @@ public class H2gisTable extends ResultSetWrapper implements IJdbcTable {
             LOGGER.error("Cannot save the table.\n" + e.getLocalizedMessage());
             return false;
         }
+    }
+
+    @Override
+    public IConditionOrOptionBuilder where(String condition) {
+        query = new StringBuilder();
+        query.append("SELECT * FROM ");
+        query.append(tableLocation.getTable().toUpperCase());
+        query.append(" WHERE ");
+        query.append(condition);
+        return new ConditionOrOptionBuilder(query.toString(), jdbcDataSource);
     }
 }

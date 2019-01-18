@@ -34,57 +34,26 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.datamanagerapi.dataset;
-
-import groovy.lang.Closure;
-import org.orbisgis.datamanagerapi.dsl.IWhereBuilder;
-
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.util.Collection;
+package org.orbisgis.datamanagerapi.dsl;
 
 /**
- * Implementation of the IDataSet interface. A table is a 2D (column/line) representation of data.
+ * Interface defining methods for the SQL 'from' building. The request construction can be continued thanks to the
+ * IConditionOrOptionBuilder or its result can be get calling 'eachRow' to iterate on the resultSet or 'as ITable' to
+ * get the ITable object.
+ * As the IConditionOrOptionBuilder extends IOptionBuilder the result of the where method ca be
+ * used to add condition (using AND or OR) or to set options (Like LIMIT, GROUP BY, ...).
  *
  * @author Erwan Bocher (CNRS)
- * @author Sylvain PALOMINOS (UBS 2018)
+ * @author Sylvain PALOMINOS (UBS 2019)
  */
-public interface ITable extends IDataSet, ResultSet, IWhereBuilder {
+public interface IWhereBuilder {
 
     /**
-     * Apply the given closure to each row.
+     * Indicates the condition for the selection.
      *
-     * @param closure Closure to apply to each row.
-     */
-    void eachRow(Closure closure);
-
-    /**
-     * Get the ResultSetMetaData of the DataSet.
+     * @param condition Condition to use for for the selection.
      *
-     * @return The metadata object.
+     * @return ISqlBuilder instance to continue building.
      */
-    @Override
-    ResultSetMetaData getMetadata();
-    
-    /**
-     * Get all column names from the underlying table
-     * @return 
-     */
-    Collection<String> getColumnNames();
-
-    /**
-     * Save the table to a file
-     * @param filePath the path of the file to be saved
-     * @return true is the file has been saved
-     */
-    boolean save(String filePath);
-
-    /**
-     * Save the table to a file
-     * @param filePath the path of the file to be saved
-     * @param encoding Encoding property.
-     * @return true is the file has been saved
-     */
-    boolean save(String filePath, String encoding);
-    
+    IConditionOrOptionBuilder where(String condition);
 }

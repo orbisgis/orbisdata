@@ -44,6 +44,7 @@ import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.TableLocation;
 import org.h2gis.utilities.URIUtilities;
 import org.h2gis.utilities.wrapper.StatementWrapper;
+import org.orbisgis.datamanager.dsl.FromBuilder;
 import org.orbisgis.datamanager.h2gis.H2gisSpatialTable;
 import org.orbisgis.datamanager.h2gis.H2gisTable;
 import org.orbisgis.datamanager.postgis.PostgisSpatialTable;
@@ -51,7 +52,9 @@ import org.orbisgis.datamanager.postgis.PostgisTable;
 import org.orbisgis.datamanagerapi.dataset.Database;
 import org.orbisgis.datamanagerapi.dataset.ITable;
 import org.orbisgis.datamanagerapi.datasource.IJdbcDataSource;
-import org.orbisgis.datamanagerapi.dsl.ISqlBuilder;
+import org.orbisgis.datamanagerapi.dsl.IFromBuilder;
+import org.orbisgis.datamanagerapi.dsl.ISelectBuilder;
+import org.orbisgis.datamanagerapi.dsl.IWhereBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -73,7 +76,7 @@ import java.util.UUID;
  * @author Erwan Bocher (CNRS)
  * @author Sylvain PALOMINOS (UBS 2019)
  */
-public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, ISqlBuilder {
+public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, ISelectBuilder {
     private static final Logger LOGGER = LoggerFactory.getLogger(JdbcDataSource.class);
 
     private StringBuilder query = new StringBuilder();
@@ -99,7 +102,7 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, ISq
     }
 
     @Override
-    public ISqlBuilder select(String... fields) {
+    public IFromBuilder select(String... fields) {
         query = new StringBuilder();
         query.append("SELECT ");
         StringBuilder columns = new StringBuilder();
@@ -113,128 +116,7 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, ISq
             columns.append("* ");
         }
         query.append(columns);
-        return this;
-    }
-
-    @Override
-    public ISqlBuilder from(String... tables) {
-        query.append("FROM ");
-        for(String table : tables){
-            query.append(table).append(", ");
-        }
-        query.deleteCharAt(query.length()-2);
-        return this;
-    }
-
-    @Override
-    public ISqlBuilder where(String condition) {
-        query.append("WHERE ");
-        query.append(condition);
-        return this;
-    }
-
-    @Override
-    public ISqlBuilder and(String condition) {
-        query.append(" AND ");
-        query.append(condition);
-        return this;
-    }
-
-    @Override
-    public ISqlBuilder or(String condition) {
-        query.append(" OR ");
-        query.append(condition);
-        return this;
-    }
-
-    @Override
-    public ISqlBuilder groupBy(String... fields) {
-        query.append(" GROUP BY ");
-        for(String field : fields){
-            query.append(field).append(", ");
-        }
-        query.deleteCharAt(query.length()-2);
-        return this;
-    }
-
-    @Override
-    public ISqlBuilder orderBy(Map<String, Order> orderByMap) {
-        query.append(" ORDER BY ");
-        orderByMap.forEach((key, value) -> query.append(key).append(" ").append(value.name()).append(", "));
-        query.deleteCharAt(query.length()-2);
-        return this;
-    }
-
-    @Override
-    public ISqlBuilder orderBy(String field, Order order) {
-        query.append(" ORDER BY ").append(field).append(" ").append(order.name());
-        return this;
-    }
-
-    @Override
-    public ISqlBuilder orderBy(String field) {
-        query.append(" ORDER BY ").append(field);
-        return this;
-    }
-
-    @Override
-    public ISqlBuilder limit(int limitCount) {
-        query.append(" LIMIT ").append(limitCount);
-        return this;
-    }
-
-    @Override
-    public ITable execute() {
-        Statement statement;
-        try {
-            statement = getConnection().createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);
-        } catch (SQLException e) {
-            LOGGER.error("Unable to create the StatementWrapper.\n" + e.getLocalizedMessage());
-            return null;
-        }
-        ResultSet resultSet;
-        try {
-            resultSet = statement.executeQuery(query.toString());
-        } catch (SQLException e) {
-            LOGGER.error("Unable to execute the query.\n" + e.getLocalizedMessage());
-            return null;
-        }
-        String name = "TABLE_"+UUID.randomUUID().toString();
-        switch(database) {
-            case H2GIS:
-                if(!(statement instanceof StatementWrapper)){
-                    LOGGER.error("The statement class not compatible with the database.");
-                    break;
-                }
-                try {
-                    if(SFSUtilities.hasGeometryField(resultSet)) {
-                        return new H2gisSpatialTable(new TableLocation(name), resultSet, (StatementWrapper) statement);
-                    }
-                    else{
-                        return new H2gisTable(new TableLocation(name), resultSet, (StatementWrapper) statement);
-                    }
-                } catch (SQLException e) {
-                    LOGGER.warn("Unable to detect if table '"+name+"' has a geometric field.\n"+e.getLocalizedMessage());
-                    return new H2gisTable(new TableLocation(name), resultSet, (StatementWrapper) statement);
-                }
-            case POSTGIS:
-                if(!(statement instanceof org.h2gis.postgis_jts.StatementWrapper)){
-                    LOGGER.error("The statement class not compatible with the database.");
-                    break;
-                }
-                try {
-                    if(SFSUtilities.hasGeometryField(resultSet)) {
-                        return new PostgisSpatialTable(new TableLocation(name), resultSet, (org.h2gis.postgis_jts.StatementWrapper)statement);
-                    }
-                    else{
-                        return new PostgisTable(new TableLocation(name), resultSet, (org.h2gis.postgis_jts.StatementWrapper)statement);
-                    }
-                } catch (SQLException e) {
-                    LOGGER.warn("Unable to detect if table '"+name+"' has a geometric field.\n"+e.getLocalizedMessage());
-                    return new PostgisTable(new TableLocation(name), resultSet, (org.h2gis.postgis_jts.StatementWrapper)statement);
-                }
-        }
-        return null;
+        return new FromBuilder(query.toString(), this);
     }
 
     /**

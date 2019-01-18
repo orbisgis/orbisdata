@@ -34,57 +34,25 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.datamanagerapi.dataset;
 
-import groovy.lang.Closure;
-import org.orbisgis.datamanagerapi.dsl.IWhereBuilder;
+package org.orbisgis.datamanagerapi.dsl;
 
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.util.Collection;
 
 /**
- * Implementation of the IDataSet interface. A table is a 2D (column/line) representation of data.
+ * Interface defining methods for the SQL 'select' building. The request construction can be continued thanks to the
+ * IFromBuilder.
  *
  * @author Erwan Bocher (CNRS)
- * @author Sylvain PALOMINOS (UBS 2018)
+ * @author Sylvain PALOMINOS (UBS 2019)
  */
-public interface ITable extends IDataSet, ResultSet, IWhereBuilder {
+public interface ISelectBuilder {
 
     /**
-     * Apply the given closure to each row.
+     * Start point of the SQL request.
      *
-     * @param closure Closure to apply to each row.
-     */
-    void eachRow(Closure closure);
-
-    /**
-     * Get the ResultSetMetaData of the DataSet.
+     * @param fields Array of the fields to select.
      *
-     * @return The metadata object.
+     * @return ISqlBuilder instance to continue building.
      */
-    @Override
-    ResultSetMetaData getMetadata();
-    
-    /**
-     * Get all column names from the underlying table
-     * @return 
-     */
-    Collection<String> getColumnNames();
-
-    /**
-     * Save the table to a file
-     * @param filePath the path of the file to be saved
-     * @return true is the file has been saved
-     */
-    boolean save(String filePath);
-
-    /**
-     * Save the table to a file
-     * @param filePath the path of the file to be saved
-     * @param encoding Encoding property.
-     * @return true is the file has been saved
-     */
-    boolean save(String filePath, String encoding);
-    
+    IFromBuilder select(String... fields);
 }

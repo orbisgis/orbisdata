@@ -40,6 +40,7 @@ import org.h2gis.utilities.TableLocation;
 import org.h2gis.utilities.URIUtilities;
 import org.h2gis.utilities.wrapper.ConnectionWrapper;
 import org.h2gis.utilities.wrapper.StatementWrapper;
+import org.orbisgis.datamanager.JdbcDataSource;
 import org.orbisgis.datamanager.io.IOMethods;
 import org.orbisgis.datamanagerapi.dataset.ISpatialTable;
 import org.orbisgis.datamanagerapi.dataset.ITable;
@@ -62,6 +63,7 @@ public class H2gisLoad implements ITableWrapper {
     private static final Logger LOGGER = LoggerFactory.getLogger(H2gisLoad.class);
     private String tableName;
     private ConnectionWrapper connectionWrapper;
+    private JdbcDataSource jdbcDataSource;
 
     /**
      * Load a table to a H2GIS database from another database
@@ -74,6 +76,7 @@ public class H2gisLoad implements ITableWrapper {
      */
     public H2gisLoad(Map<String, String> properties, String inputTableName, String outputTableName, boolean delete, H2GIS h2GIS){
         create(properties, inputTableName, outputTableName, delete, h2GIS);
+        jdbcDataSource = h2GIS;
     }
 
     /**
@@ -91,6 +94,7 @@ public class H2gisLoad implements ITableWrapper {
         } else {
             LOGGER.error("Unsupported file characters");
         }
+        jdbcDataSource = h2GIS;
     }
 
     /**
@@ -104,6 +108,7 @@ public class H2gisLoad implements ITableWrapper {
      */
     public H2gisLoad(String filePath, String tableName, String encoding, boolean delete, H2GIS h2GIS) {
         create(filePath, tableName, encoding, delete, h2GIS);
+        jdbcDataSource = h2GIS;
     }
 
     @Override
@@ -129,7 +134,7 @@ public class H2gisLoad implements ITableWrapper {
                 LOGGER.error("Unable execute query.\n"+e.getLocalizedMessage());
                 return null;
             }
-            return new H2gisTable(new TableLocation(tableName), rs, statement);
+            return new H2gisTable(new TableLocation(tableName), rs, statement, jdbcDataSource);
         }
         else if(clazz == ISpatialTable.class){
             StatementWrapper statement;
@@ -146,7 +151,7 @@ public class H2gisLoad implements ITableWrapper {
                 LOGGER.error("Unable execute query.\n"+e.getLocalizedMessage());
                 return null;
             }
-            return new H2gisSpatialTable(new TableLocation(tableName), rs, statement);
+            return new H2gisSpatialTable(new TableLocation(tableName), rs, statement, jdbcDataSource);
         }
         return null;
     }

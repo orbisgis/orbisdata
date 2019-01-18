@@ -34,57 +34,24 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.datamanagerapi.dataset;
-
-import groovy.lang.Closure;
-import org.orbisgis.datamanagerapi.dsl.IWhereBuilder;
-
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.util.Collection;
+package org.orbisgis.datamanagerapi.dsl;
 
 /**
- * Implementation of the IDataSet interface. A table is a 2D (column/line) representation of data.
+ * Interface defining methods for the SQL 'from' building. The request construction can be continued thanks to the
+ * IWhereBuilder or its result can be get calling 'eachRow' to iterate on the resultSet or 'as ITable' to get the
+ * ITable object
  *
  * @author Erwan Bocher (CNRS)
- * @author Sylvain PALOMINOS (UBS 2018)
+ * @author Sylvain PALOMINOS (UBS 2019)
  */
-public interface ITable extends IDataSet, ResultSet, IWhereBuilder {
+public interface IFromBuilder {
 
     /**
-     * Apply the given closure to each row.
+     * Indicates the table use for the selection.
      *
-     * @param closure Closure to apply to each row.
-     */
-    void eachRow(Closure closure);
-
-    /**
-     * Get the ResultSetMetaData of the DataSet.
+     * @param tables Array of the table use for the selection.
      *
-     * @return The metadata object.
+     * @return ISqlBuilder instance to continue building.
      */
-    @Override
-    ResultSetMetaData getMetadata();
-    
-    /**
-     * Get all column names from the underlying table
-     * @return 
-     */
-    Collection<String> getColumnNames();
-
-    /**
-     * Save the table to a file
-     * @param filePath the path of the file to be saved
-     * @return true is the file has been saved
-     */
-    boolean save(String filePath);
-
-    /**
-     * Save the table to a file
-     * @param filePath the path of the file to be saved
-     * @param encoding Encoding property.
-     * @return true is the file has been saved
-     */
-    boolean save(String filePath, String encoding);
-    
+    IWhereBuilder from(String... tables);
 }

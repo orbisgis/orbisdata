@@ -40,6 +40,7 @@ import org.h2gis.utilities.TableLocation;
 import org.h2gis.utilities.URIUtilities;
 import org.h2gis.utilities.wrapper.ConnectionWrapper;
 import org.h2gis.utilities.wrapper.StatementWrapper;
+import org.orbisgis.datamanager.JdbcDataSource;
 import org.orbisgis.datamanagerapi.dataset.ISpatialTable;
 import org.orbisgis.datamanagerapi.dataset.ITable;
 import org.orbisgis.datamanagerapi.dataset.ITableWrapper;
@@ -59,6 +60,7 @@ public class H2gisLinked implements ITableWrapper {
     private static final Logger LOGGER = LoggerFactory.getLogger(H2gisLinked.class);
     private String tableName;
     private ConnectionWrapper connectionWrapper;
+    private JdbcDataSource jdbcDataSource;
 
     /**
      * Create a dynamic link from a file
@@ -70,6 +72,7 @@ public class H2gisLinked implements ITableWrapper {
      */
     public H2gisLinked(String filePath, String tableName, boolean delete, H2GIS h2GIS) {
         create(filePath, tableName, delete, h2GIS);
+        jdbcDataSource = h2GIS;
     }
 
 
@@ -107,7 +110,7 @@ public class H2gisLinked implements ITableWrapper {
                 LOGGER.error("Unable execute query.\n"+e.getLocalizedMessage());
                 return null;
             }
-            return new H2gisTable(new TableLocation(tableName), rs, statement);
+            return new H2gisTable(new TableLocation(tableName), rs, statement, jdbcDataSource);
         }
         else if(clazz == ISpatialTable.class){
             StatementWrapper statement;
@@ -124,7 +127,7 @@ public class H2gisLinked implements ITableWrapper {
                 LOGGER.error("Unable execute query.\n"+e.getLocalizedMessage());
                 return null;
             }
-            return new H2gisSpatialTable(new TableLocation(tableName), rs, statement);
+            return new H2gisSpatialTable(new TableLocation(tableName), rs, statement, jdbcDataSource);
         }
         return null;
     }

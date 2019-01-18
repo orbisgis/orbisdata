@@ -49,6 +49,7 @@ import org.h2gis.utilities.TableLocation;
 import org.h2gis.utilities.URIUtilities;
 import org.h2gis.postgis_jts.ConnectionWrapper;
 import org.h2gis.postgis_jts.StatementWrapper;
+import org.orbisgis.datamanager.JdbcDataSource;
 import org.orbisgis.datamanager.io.IOMethods;
 import org.orbisgis.datamanagerapi.dataset.ISpatialTable;
 import org.orbisgis.datamanagerapi.dataset.ITable;
@@ -74,6 +75,7 @@ public class PostgisLoad implements ITableWrapper {
     private static final Logger LOGGER = LoggerFactory.getLogger(PostgisLoad.class);
     private String tableName;
     private ConnectionWrapper connectionWrapper;
+    private JdbcDataSource jdbcDataSource;
 
     /**
      * Load a table to a POSTGIS database from another database
@@ -86,6 +88,7 @@ public class PostgisLoad implements ITableWrapper {
      */
     public PostgisLoad(Map<String, String> properties, String inputTableName, String outputTableName, boolean delete, POSTGIS postgis){
         create(properties, inputTableName, outputTableName, delete, postgis);
+        jdbcDataSource = postgis;
     }
 
     /**
@@ -103,6 +106,7 @@ public class PostgisLoad implements ITableWrapper {
         } else {
             LOGGER.error("Unsupported file characters");
         }
+        jdbcDataSource = postgis;
     }
 
     /**
@@ -118,6 +122,7 @@ public class PostgisLoad implements ITableWrapper {
         } else {
             LOGGER.error("Unsupported file characters");
         }
+        jdbcDataSource = postgis;
     }
 
     @Override
@@ -143,7 +148,7 @@ public class PostgisLoad implements ITableWrapper {
                 LOGGER.error("Unable execute query.\n"+e.getLocalizedMessage());
                 return null;
             }
-            return new PostgisTable(new TableLocation(tableName), rs, statement);
+            return new PostgisTable(new TableLocation(tableName), rs, statement, jdbcDataSource);
         }
         else if(clazz == ISpatialTable.class){
             StatementWrapper statement;
@@ -160,7 +165,7 @@ public class PostgisLoad implements ITableWrapper {
                 LOGGER.error("Unable execute query.\n"+e.getLocalizedMessage());
                 return null;
             }
-            return new PostgisSpatialTable(new TableLocation(tableName), rs, statement);
+            return new PostgisSpatialTable(new TableLocation(tableName), rs, statement, jdbcDataSource);
         }
         return null;
     }

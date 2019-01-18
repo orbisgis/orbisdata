@@ -201,9 +201,7 @@ public class POSTGIS extends JdbcDataSource {
 
     @Override
     public ITableWrapper load(String filePath, String tableName, String encoding, boolean delete) {
-            PostgisLoad  postgisLoad = new PostgisLoad();
-            postgisLoad.create(filePath,tableName,encoding,delete, this );
-            return postgisLoad;
+        return new PostgisLoad(filePath,tableName,encoding,delete, this);
     }
 
     @Override
@@ -242,9 +240,7 @@ public class POSTGIS extends JdbcDataSource {
 
     @Override
     public ITableWrapper load(String filePath,boolean delete) {
-        PostgisLoad postgisLoad =  new PostgisLoad();
-        postgisLoad.create(filePath, delete, this);
-        return postgisLoad;
+        return new PostgisLoad(filePath, delete, this);
     }
 
     @Override

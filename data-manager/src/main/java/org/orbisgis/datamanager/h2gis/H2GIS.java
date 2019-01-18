@@ -62,7 +62,7 @@ import org.orbisgis.datamanager.io.IOMethods;
  * Implementation of the IJdbcDataSource interface dedicated to the usage of an H2/H2GIS database.
  *
  * @author Erwan Bocher (CNRS)
- * @author Sylvain PALOMINOS (UBS 2018)
+ * @author Sylvain PALOMINOS (UBS 2018-2019)
  */
 public class H2GIS extends JdbcDataSource {
 
@@ -89,15 +89,14 @@ public class H2GIS extends JdbcDataSource {
     public static H2GIS open(String fileName) {
         File file = URIUtilities.fileFromString(fileName);
         try {
-            if (FileUtil.isFileImportable(file, "properties")) {
+            if (FileUtil.isExtensionWellFormated(file, "properties")) {
                 Properties prop = new Properties();
                 FileInputStream fous = new FileInputStream(file);
                 prop.load(fous);
                 return open(prop);
             }
-        } catch (SQLException | IOException e) {
+        } catch (IOException e) {
             LOGGER.error("Unable to read the properties file.\n" + e.getLocalizedMessage());
-            return null;
         }
         return null;
     }
@@ -238,9 +237,7 @@ public class H2GIS extends JdbcDataSource {
 
     @Override
     public ITableWrapper link(String filePath, String tableName, boolean delete) {
-        H2gisLinked link = new H2gisLinked();
-        link.create(filePath, tableName, delete, this);
-        return link;
+        return new H2gisLinked(filePath, tableName, delete, this);
     }
 
     @Override
@@ -250,9 +247,7 @@ public class H2GIS extends JdbcDataSource {
 
     @Override
     public ITableWrapper link(String filePath, boolean delete) {
-        H2gisLinked link = new H2gisLinked();
-        link.create(filePath, delete, this);
-        return link;
+        return new H2gisLinked(filePath, delete, this);
     }
 
     @Override
@@ -262,9 +257,7 @@ public class H2GIS extends JdbcDataSource {
 
     @Override
     public ITableWrapper load(String filePath, String tableName, String encoding, boolean delete) {
-        H2gisLoad h2gisLoad = new H2gisLoad();
-        h2gisLoad.create(filePath, tableName, encoding, delete, this);
-        return h2gisLoad;
+        return new H2gisLoad(filePath, tableName, encoding, delete, this);
     }
 
     @Override
@@ -284,9 +277,7 @@ public class H2GIS extends JdbcDataSource {
 
     @Override
     public ITableWrapper load(Map<String, String> properties, String inputTableName, String outputTableName, boolean delete) {
-        H2gisLoad h2gisLoad = new H2gisLoad();
-        h2gisLoad.create(properties, inputTableName, outputTableName, delete, this);
-        return h2gisLoad;
+        return new H2gisLoad(properties, inputTableName, outputTableName, delete, this);
 
     }
 
@@ -307,9 +298,7 @@ public class H2GIS extends JdbcDataSource {
 
     @Override
     public ITableWrapper load(String filePath, boolean delete) {
-        H2gisLoad h2gisLoad = new H2gisLoad();
-        h2gisLoad.create(filePath, delete, this);
-        return h2gisLoad;
+        return new H2gisLoad(filePath, delete, this);
     }
 
     /**

@@ -49,6 +49,7 @@ import org.h2gis.utilities.TableLocation;
 import org.h2gis.utilities.URIUtilities;
 import org.h2gis.postgis_jts.ConnectionWrapper;
 import org.h2gis.postgis_jts.StatementWrapper;
+import org.orbisgis.datamanager.io.IOMethods;
 import org.orbisgis.datamanagerapi.dataset.ISpatialTable;
 import org.orbisgis.datamanagerapi.dataset.ITable;
 import org.orbisgis.datamanagerapi.dataset.ITableWrapper;
@@ -74,8 +75,49 @@ public class PostgisLoad implements ITableWrapper {
     private String tableName;
     private ConnectionWrapper connectionWrapper;
 
+    /**
+     * Load a table to a POSTGIS database from another database
+     *
+     * @param properties external database properties to set up the connection
+     * @param inputTableName the name of the table in the external database
+     * @param outputTableName the name of the table in the POSTGIS database
+     * @param delete true to delete the table if exists
+     * @param postgis the POSTGIS database
+     */
+    public PostgisLoad(Map<String, String> properties, String inputTableName, String outputTableName, boolean delete, POSTGIS postgis){
+        create(properties, inputTableName, outputTableName, delete, postgis);
+    }
 
-    public PostgisLoad() {
+    /**
+     * Load a file to a POSTGIS database
+     *
+     * @param filePath the path of the file.
+     * @param delete true to delete the table if exists
+     * @param postgis the POSTGIS database
+     */
+    public PostgisLoad(String filePath, boolean delete, POSTGIS postgis) {
+        final String name = URIUtilities.fileFromString(filePath).getName();
+        String tableName = name.substring(0, name.lastIndexOf(".")).toUpperCase();
+        if (tableName.matches("^[a-zA-Z][a-zA-Z0-9_]*$")) {
+            create(filePath,tableName, null, delete,postgis);
+        } else {
+            LOGGER.error("Unsupported file characters");
+        }
+    }
+
+    /**
+     * Load a file to a POSTGIS database
+     *
+     * @param filePath the path of the file.
+     * @param delete true to delete the table if exists
+     * @param postgis the POSTGIS database
+     */
+    public PostgisLoad(String filePath, String tableName, String encoding, boolean delete, POSTGIS postgis) {
+        if (tableName.matches("^[a-zA-Z][a-zA-Z0-9_]*$")) {
+            create(filePath,tableName, encoding, delete,postgis);
+        } else {
+            LOGGER.error("Unsupported file characters");
+        }
     }
 
     @Override
@@ -132,92 +174,10 @@ public class PostgisLoad implements ITableWrapper {
      * @param delete true to delete the table if exists
      * @param postGIS the PostGIS database
      */
-    public void create(String filePath, String tableName, String encoding, boolean delete, POSTGIS postGIS) {
+    private void create(String filePath, String tableName, String encoding, boolean delete, POSTGIS postGIS) {
         this.tableName=tableName;
         this.connectionWrapper =  postGIS.getConnectionWrapper();
-        File fileToImport = URIUtilities.fileFromString(filePath);
-        try {
-            if (FileUtil.isExtensionWellFormated(fileToImport, "shp")) {
-                deleteTable( delete,  postGIS);
-                SHPDriverFunction driverFunction = new SHPDriverFunction();
-                driverFunction.importFile(connectionWrapper, tableName, fileToImport, new EmptyProgressVisitor(),encoding);
-            }
-            else if (FileUtil.isExtensionWellFormated(fileToImport, "geojson")) {
-                deleteTable( delete,  postGIS);
-                GeoJsonReaderDriver driverFunction = new GeoJsonReaderDriver(connectionWrapper, fileToImport);
-                driverFunction.read(new EmptyProgressVisitor(), tableName);
-            }
-            else if (FileUtil.isExtensionWellFormated(fileToImport, "csv")) {
-                deleteTable( delete,  postGIS);
-                if(encoding==null){
-                    encoding="charset=UTF-8";
-                }
-                CSVDriverFunction driverFunction = new CSVDriverFunction();
-                driverFunction.importFile(connectionWrapper, tableName, fileToImport,new EmptyProgressVisitor(),encoding);
-            }
-            else if (FileUtil.isExtensionWellFormated(fileToImport, "dbf")) {
-                deleteTable( delete,  postGIS);
-                DBFDriverFunction driverFunction = new DBFDriverFunction();
-                driverFunction.importFile(connectionWrapper, tableName, fileToImport,new EmptyProgressVisitor(),encoding);
-            }
-            else if (FileUtil.isExtensionWellFormated(fileToImport, "tsv")) {
-                deleteTable( delete,  postGIS);
-                LOGGER.warn("Encoding is not yet supported for this file format");
-                TSVDriverFunction driverFunction = new TSVDriverFunction();
-                driverFunction.importFile(connectionWrapper, tableName, fileToImport,new EmptyProgressVisitor());
-            }
-            else if (FileUtil.isExtensionWellFormated(fileToImport, "osm")||FileUtil.isFileImportable(fileToImport, "gz")||FileUtil.isFileImportable(fileToImport, "bz")) {
-                LOGGER.warn("Encoding is not yet supported for this file format");
-                OSMDriverFunction driverFunction = new OSMDriverFunction();
-                driverFunction.importFile(connectionWrapper, tableName, fileToImport,new EmptyProgressVisitor(),delete);
-                tableName=null;
-            }
-            else if (FileUtil.isExtensionWellFormated(fileToImport, "gpx")) {
-                LOGGER.warn("Encoding is not yet supported for this file format");
-                GPXDriverFunction driverFunction = new GPXDriverFunction();
-                driverFunction.importFile(connectionWrapper, tableName, fileToImport,new EmptyProgressVisitor(),delete);
-                tableName=null;
-            }
-            else{
-                LOGGER.error("Unsupported file format");
-            }
-        } catch (SQLException | FileNotFoundException e) {
-            LOGGER.error("Cannot load.\n"+e.getLocalizedMessage());
-        } catch (IOException e) {
-            LOGGER.error("Cannot load.\n"+e.getLocalizedMessage());
-        }
-    }
-
-    /**
-     * Method to delete a table
-     *
-     * @param delete true to delete
-     * @param postGIS the POSTGIS database
-     */
-    private void deleteTable(boolean delete, POSTGIS postGIS) {
-        if (delete) {
-            try {
-                postGIS.execute("DROP TABLE IF EXISTS " + tableName);
-            } catch (SQLException e) {
-                LOGGER.error("Cannot drop the table.\n" + e.getLocalizedMessage());
-            }
-        }
-    }
-    /**
-     * Load a file to a PostGIS database
-     *
-     * @param filePath the path of the file.
-     * @param delete true to delete the table if exists
-     * @param postGIS the PostGIS database
-     */
-    public void create(String filePath, boolean delete,  POSTGIS postGIS) {
-        final String name = URIUtilities.fileFromString(filePath).getName();
-        String tableName = name.substring(0, name.lastIndexOf(".")).toUpperCase();
-        if (tableName.matches("^[a-zA-Z][a-zA-Z0-9_]*$")) {
-            create(filePath,tableName, null, delete,postGIS);
-        } else {
-            LOGGER.error("Unsupported file characters");
-        }
+        IOMethods.loadFile(filePath, tableName, encoding, delete, postGIS);
     }
 
     /**
@@ -228,7 +188,7 @@ public class PostgisLoad implements ITableWrapper {
      * @param delete true to delete the table if exists
      * @param postGIS the PostGIS database
      */
-    public void create(Map<String, String> properties, String inputTableName, String outputTableName, boolean delete,  POSTGIS postGIS){
+    private void create(Map<String, String> properties, String inputTableName, String outputTableName, boolean delete,  POSTGIS postGIS){
         String user = properties.get(DataSourceFactory.JDBC_USER);
         String password = properties.get(DataSourceFactory.JDBC_PASSWORD);
         String driverName = "";

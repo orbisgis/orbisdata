@@ -52,7 +52,7 @@ import java.sql.SQLException;
 /**
  * This class is used to link a file or a table to a H2GIS database
  * @author Erwan Bocher (CNRS)
- * @author Sylvain PALOMINOS (UBS 2018)
+ * @author Sylvain PALOMINOS (UBS 2018-2019)
  */
 public class H2gisLinked implements ITableWrapper {
 
@@ -60,8 +60,34 @@ public class H2gisLinked implements ITableWrapper {
     private String tableName;
     private ConnectionWrapper connectionWrapper;
 
-    public H2gisLinked() {
+    /**
+     * Create a dynamic link from a file
+     *
+     * @param filePath the path of the file
+     * @param tableName the name of the table created to store the file
+     * @param delete true to delete the table if exists
+     * @param h2GIS the H2GIS database
+     */
+    public H2gisLinked(String filePath, String tableName, boolean delete, H2GIS h2GIS) {
+        create(filePath, tableName, delete, h2GIS);
+    }
 
+
+    /**
+     * Create a dynamic link from a file
+     *
+     * @param filePath the path of the file
+     * @param delete true to delete the table if exists
+     * @param h2GIS the H2GIS database
+     */
+    public H2gisLinked(String filePath, boolean delete, H2GIS h2GIS) {
+        final String name = URIUtilities.fileFromString(filePath).getName();
+        String tableName = name.substring(0, name.lastIndexOf(".")).toUpperCase();
+        if (tableName.matches("^[a-zA-Z][a-zA-Z0-9_]*$")) {
+            create(filePath, tableName,delete, h2GIS);
+        } else {
+            LOGGER.error("The file name contains unsupported characters");
+        }
     }
 
     @Override
@@ -111,7 +137,7 @@ public class H2gisLinked implements ITableWrapper {
      * @param delete true to delete the table if exists
      * @param h2GIS the H2GIS database
      */
-    public void create(String filePath, String tableName, boolean delete, H2GIS h2GIS) {
+    private void create(String filePath, String tableName, boolean delete, H2GIS h2GIS) {
         this.tableName=tableName;
         this.connectionWrapper =  h2GIS.getConnectionWrapper();
         if(delete){
@@ -126,23 +152,6 @@ public class H2gisLinked implements ITableWrapper {
             h2GIS.execute(String.format("CALL FILE_TABLE('%s','%s')", filePath, tableName));
         } catch (SQLException e) {
             LOGGER.error("Cannot link the file.\n"+e.getLocalizedMessage());
-        }
-    }
-
-    /**
-     * Create a dynamic link from a file
-     *
-     * @param filePath the path of the file
-     * @param delete true to delete the table if exists
-     * @param h2GIS the H2GIS database
-     */
-    public void create(String filePath, boolean delete, H2GIS h2GIS) {
-        final String name = URIUtilities.fileFromString(filePath).getName();
-        String tableName = name.substring(0, name.lastIndexOf(".")).toUpperCase();
-        if (tableName.matches("^[a-zA-Z][a-zA-Z0-9_]*$")) {
-            create(filePath, tableName,delete, h2GIS);
-        } else {
-            LOGGER.error("The file name contains unsupported characters");
         }
     }
 }

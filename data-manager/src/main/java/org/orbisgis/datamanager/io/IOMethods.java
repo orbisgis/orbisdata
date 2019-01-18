@@ -1,13 +1,19 @@
 package org.orbisgis.datamanager.io;
 
+import org.h2gis.api.DriverFunction;
 import org.h2gis.api.EmptyProgressVisitor;
 import org.h2gis.functions.io.csv.CSVDriverFunction;
 import org.h2gis.functions.io.dbf.DBFDriverFunction;
+import org.h2gis.functions.io.geojson.GeoJsonReaderDriver;
+import org.h2gis.functions.io.gpx.GPXDriverFunction;
 import org.h2gis.functions.io.kml.KMLWriterDriver;
+import org.h2gis.functions.io.osm.OSMDriverFunction;
 import org.h2gis.functions.io.shp.SHPDriverFunction;
 import org.h2gis.functions.io.tsv.TSVDriverFunction;
 import org.h2gis.functions.io.utility.FileUtil;
 import org.h2gis.utilities.URIUtilities;
+import org.orbisgis.datamanager.JdbcDataSource;
+import org.orbisgis.datamanager.h2gis.H2GIS;
 import org.orbisgis.datamanager.h2gis.H2gisLinked;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,6 +28,9 @@ import org.h2gis.functions.io.json.JsonDriverFunction;
 
 /**
  * IO methods for database
+ *
+ * @author Erwan Bocher (CNRS)
+ * @author Sylvain PALOMINOS (UBS 2019)
  */
 public class IOMethods {
 
@@ -40,53 +49,111 @@ public class IOMethods {
     public static boolean saveAsFile(Connection connection, boolean isH2,String tableName, String filePath, String encoding){
         File fileToSave = URIUtilities.fileFromString(filePath);
         try {
+            DriverFunction driverFunction = null;
             if (FileUtil.isExtensionWellFormated(fileToSave, "shp")) {
-                SHPDriverFunction driverFunction = new SHPDriverFunction();
-                driverFunction.exportTable(connection, isH2?tableName.toUpperCase():tableName, fileToSave, new EmptyProgressVisitor(),encoding);
-                return true;
+                driverFunction = new SHPDriverFunction();
             }
             else if (FileUtil.isExtensionWellFormated(fileToSave, "geojson")) {
-                GeoJsonDriverFunction gjdf = new GeoJsonDriverFunction();
-                gjdf.exportTable(connection, isH2?tableName.toUpperCase():tableName, fileToSave, new EmptyProgressVisitor(), encoding);
-                return true;
+                driverFunction = new GeoJsonDriverFunction();
             }
             else if (FileUtil.isExtensionWellFormated(fileToSave, "json")) {
-                JsonDriverFunction gjdf = new JsonDriverFunction();
-                gjdf.exportTable(connection, isH2?tableName.toUpperCase():tableName, fileToSave, new EmptyProgressVisitor(), encoding);
-                return true;
+                driverFunction = new JsonDriverFunction();
             }
             else if (FileUtil.isExtensionWellFormated(fileToSave, "tsv")) {
-                TSVDriverFunction driverFunction = new TSVDriverFunction();
-                driverFunction.exportTable(connection, isH2?tableName.toUpperCase():tableName, fileToSave,new EmptyProgressVisitor(),encoding);
-                return true;
+                driverFunction = new TSVDriverFunction();
             }
             else if (FileUtil.isExtensionWellFormated(fileToSave, "csv")) {
                 if(encoding==null){
                     encoding="charset=UTF-8";
                 }
-                CSVDriverFunction driverFunction = new CSVDriverFunction();
-                driverFunction.exportTable(connection, isH2?tableName.toUpperCase():tableName, fileToSave,new EmptyProgressVisitor(),encoding);
-                return true;
+                driverFunction = new CSVDriverFunction();
             }
             else if (FileUtil.isExtensionWellFormated(fileToSave, "dbf")) {
-                DBFDriverFunction driverFunction = new DBFDriverFunction();
-                driverFunction.exportTable(connection, isH2?tableName.toUpperCase():tableName, fileToSave,new EmptyProgressVisitor(),encoding);
-                return true;
+                driverFunction = new DBFDriverFunction();
             }
             else if (FileUtil.isExtensionWellFormated(fileToSave, "kml") ||FileUtil.isExtensionWellFormated(fileToSave, "kmz")) {
                 LOGGER.warn("Encoding is not yet supported for this file format");
-                KMLWriterDriver driverFunction = new KMLWriterDriver(connection, isH2?tableName.toUpperCase():tableName, fileToSave);
-                driverFunction.write(new EmptyProgressVisitor());
+                KMLWriterDriver driver = new KMLWriterDriver(connection, isH2?tableName.toUpperCase():tableName, fileToSave);
+                driver.write(new EmptyProgressVisitor());
                 return true;
             }
             else{
                 LOGGER.error("Unsupported file format");
-                return false;
             }
-        } catch (SQLException | FileNotFoundException e) {
+            if(driverFunction != null){
+                driverFunction.exportTable(connection, isH2?tableName.toUpperCase():tableName, fileToSave,
+                        new EmptyProgressVisitor(), encoding);
+                return true;
+            }
+        } catch (SQLException | IOException e) {
             LOGGER.error("Cannot save.\n"+e.getLocalizedMessage());
-        } catch (IOException e) {
-            LOGGER.error("Cannot save.\n"+e.getLocalizedMessage());
+        }
+        return false;
+    }
+
+    /**
+     * Load a file to a H2GIS database
+     *
+     * @param filePath the path of the file
+     * @param tableName the name of the table created to store the file
+     * @param encoding an encoding value to read the file
+     * @param delete true to delete the table if exists
+     * @param dataSource the database
+     */
+    //TODO reformat the code once all the driver have the same importFile signature
+    public static boolean loadFile(String filePath, String tableName, String encoding, boolean delete, JdbcDataSource dataSource) {
+        Connection connection = dataSource.getConnection();
+        File fileToImport = URIUtilities.fileFromString(filePath);
+        try {
+            DriverFunction driverFunction = null;
+            if (FileUtil.isExtensionWellFormated(fileToImport, "shp")) {
+                driverFunction = new SHPDriverFunction();
+            }
+            else if (FileUtil.isExtensionWellFormated(fileToImport, "geojson")) {
+                dataSource.execute("DROP TABLE IF EXISTS " + tableName);
+                GeoJsonReaderDriver driver = new GeoJsonReaderDriver(connection, fileToImport);
+                driver.read(new EmptyProgressVisitor(), tableName);
+                return true;
+            }
+            else if (FileUtil.isExtensionWellFormated(fileToImport, "csv")) {
+                driverFunction = new CSVDriverFunction();
+            }
+            else if (FileUtil.isExtensionWellFormated(fileToImport, "dbf")) {
+                driverFunction = new DBFDriverFunction();
+            }
+            else if (FileUtil.isExtensionWellFormated(fileToImport, "tsv")) {
+                LOGGER.warn("Encoding is not yet supported for this file format");
+                encoding = null;
+                delete = false;
+                driverFunction = new TSVDriverFunction();
+            }
+            else if (FileUtil.isExtensionWellFormated(fileToImport, "osm") ||
+                        FileUtil.isExtensionWellFormated(fileToImport, "gz") ||
+                        FileUtil.isExtensionWellFormated(fileToImport, "bz")) {
+                LOGGER.warn("Encoding is not yet supported for this file format");
+                encoding = null;
+                driverFunction = new OSMDriverFunction();
+            }
+            else if (FileUtil.isExtensionWellFormated(fileToImport, "gpx")) {
+                LOGGER.warn("Encoding is not yet supported for this file format");
+                encoding = null;
+                driverFunction = new GPXDriverFunction();
+            }
+            else{
+                LOGGER.error("Unsupported file format");
+            }
+            if(driverFunction != null){
+                dataSource.execute("DROP TABLE IF EXISTS " + tableName);
+                if(encoding != null) {
+                    driverFunction.importFile(connection, tableName, fileToImport, new EmptyProgressVisitor(), encoding);
+                }
+                else {
+                    driverFunction.importFile(connection, tableName, fileToImport, new EmptyProgressVisitor(), delete);
+                }
+                return true;
+            }
+        } catch (SQLException | IOException e) {
+            LOGGER.error("Cannot load.\n"+e.getLocalizedMessage());
         }
         return false;
     }

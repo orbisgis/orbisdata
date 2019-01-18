@@ -38,6 +38,7 @@ package org.orbisgis.datamanager.h2gis;
 
 import groovy.lang.MetaClass;
 import org.codehaus.groovy.runtime.InvokerHelper;
+import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.SpatialResultSetMetaData;
 import org.h2gis.utilities.TableLocation;
 import org.h2gis.utilities.wrapper.SpatialResultSetImpl;
@@ -51,15 +52,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import org.h2gis.utilities.JDBCUtilities;
 
+/**
+ * @author Erwan Bocher (CNRS)
+ * @author Sylvain PALOMINOS (UBS 2018-2019)
+ */
 public class H2gisSpatialTable extends SpatialResultSetImpl implements ISpatialTable, IJdbcTable {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(H2gisSpatialTable.class);

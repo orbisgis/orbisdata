@@ -41,7 +41,6 @@ import org.junit.jupiter.api.Test;
 import org.orbisgis.datamanager.h2gis.H2GIS;
 import org.orbisgis.datamanagerapi.dataset.ISpatialTable;
 import org.orbisgis.datamanagerapi.dataset.ITable;
-import org.orbisgis.datamanagerapi.dsl.ISqlBuilder;
 import org.osgi.service.jdbc.DataSourceFactory;
 
 import java.sql.SQLException;
@@ -51,7 +50,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.orbisgis.datamanagerapi.dsl.ISqlBuilder.Order.DESC;
+import static org.orbisgis.datamanagerapi.dsl.IOptionBuilder.Order.DESC;
 
 
 /**
@@ -108,6 +107,25 @@ public class H2GISTests {
         assertEquals(2,values.size());
         assertEquals("POINT (10 10)", values.get(0));
         assertEquals("POINT (1 1)", values.get(1));
+    }
+
+    @Test
+    public void querySpatialTableWhere() throws SQLException {
+        Map<String, String> map = new HashMap<>();
+        map.put(DataSourceFactory.JDBC_DATABASE_NAME, "../../target/loadH2GIS");
+        H2GIS h2GIS = H2GIS.open(map);
+        h2GIS.execute("DROP TABLE IF EXISTS h2gis; CREATE TABLE h2gis (id int, the_geom point);insert into h2gis values (1, 'POINT(10 10)'::GEOMETRY), (2, 'POINT(1 1)'::GEOMETRY);");
+
+        ArrayList<String> values = new ArrayList<>();
+        h2GIS.getSpatialTable("h2gis").where("id=2").eachRow(new Closure(null){
+            @Override
+            public Object call(Object argument) {
+                values.add(((ISpatialTable)argument).getGeometry().toString());
+                return argument;
+            }
+        });
+        assertEquals(1,values.size());
+        assertEquals("POINT (1 1)", values.get(0));
     }
 
     @Test
@@ -176,13 +194,13 @@ public class H2GISTests {
                 "insert into h2gis values (4,22, 'POINT(10 10)'::GEOMETRY);" +
                 "insert into h2gis values (5,22, 'POINT(20 10)'::GEOMETRY);");
 
-        ITable table = h2GIS
+        ITable table = ((ITable)h2GIS
                 .select("COUNT(id)", "code", "the_geom")
                 .from("h2gis")
                 .where("code=22")
                 .and("id<5")
                 .groupBy("code")
-                .execute();
+                .asType(ITable.class));
 
         ArrayList<Integer> values = new ArrayList<>();
         table.eachRow(new Closure(null){
@@ -201,13 +219,13 @@ public class H2GISTests {
         assertEquals(3, (int) values.get(0));
         assertEquals(22, (int) values.get(1));
 
-        table = h2GIS
+        table = ((ITable)h2GIS
                 .select("*")
                 .from("h2gis")
                 .where("code=22")
                 .or("code=56")
                 .orderBy("id", DESC)
-                .execute();
+                .asType(ITable.class));
 
         ArrayList<Integer> values2 = new ArrayList<>();
         table.eachRow(new Closure(null){

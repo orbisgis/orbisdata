@@ -36,64 +36,19 @@
  */
 package org.orbisgis.datamanagerapi.dsl;
 
-import org.orbisgis.datamanagerapi.dataset.ITable;
-
 import java.util.Map;
 
 /**
- * Interface defining methods for the SQL request building (select, from ...).
+ * Interface defining methods for the SQL request option building (LIMIT, GROUP BY, ORDER BY, ...). The request
+ * construction can be continued thanks to the IOptionBuilder or its result can be get calling 'eachRow' to iterate on
+ * the resultSet or 'as ITable' to get the ITable object.
  *
  * @author Erwan Bocher (CNRS)
  * @author Sylvain PALOMINOS (UBS 2019)
  */
-public interface ISqlBuilder {
+public interface IOptionBuilder extends IBuilderResult {
 
     enum Order{ASC, DESC}
-
-    /**
-     * Start point of the SQL request.
-     *
-     * @param fields Array of the fields to select.
-     *
-     * @return ISqlBuilder instance to continue building.
-     */
-    ISqlBuilder select(String... fields);
-
-    /**
-     * Indicates the table use for the selection.
-     *
-     * @param tables Array of the table use for the selection.
-     *
-     * @return ISqlBuilder instance to continue building.
-     */
-    ISqlBuilder from(String... tables);
-
-    /**
-     * Indicates the condition for the selection.
-     *
-     * @param condition Condition to use for for the selection.
-     *
-     * @return ISqlBuilder instance to continue building.
-     */
-    ISqlBuilder where(String condition);
-
-    /**
-     * Add a 'and' condition for the selection.
-     *
-     * @param condition Condition to add for for the selection.
-     *
-     * @return ISqlBuilder instance to continue building.
-     */
-    ISqlBuilder and(String condition);
-
-    /**
-     * Add a 'or' condition for the selection.
-     *
-     * @param condition Condition to add for for the selection.
-     *
-     * @return ISqlBuilder instance to continue building.
-     */
-    ISqlBuilder or(String condition);
 
     /**
      * Set the group by fields.
@@ -102,7 +57,7 @@ public interface ISqlBuilder {
      *
      * @return ISqlBuilder instance to continue building.
      */
-    ISqlBuilder groupBy(String... fields);
+    IOptionBuilder groupBy(String... fields);
 
     /**
      * Set the order by fields.
@@ -111,7 +66,7 @@ public interface ISqlBuilder {
      *
      * @return ISqlBuilder instance to continue building.
      */
-    ISqlBuilder orderBy(Map<String, Order> orderByMap);
+    IOptionBuilder orderBy(Map<String, Order> orderByMap);
 
     /**
      * Set the order by unique field.
@@ -121,7 +76,7 @@ public interface ISqlBuilder {
      *
      * @return ISqlBuilder instance to continue building.
      */
-    ISqlBuilder orderBy(String field, Order order);
+    IOptionBuilder orderBy(String field, Order order);
 
     /**
      * Set the ASC order by unique field.
@@ -130,7 +85,7 @@ public interface ISqlBuilder {
      *
      * @return ISqlBuilder instance to continue building.
      */
-    ISqlBuilder orderBy(String field);
+    IOptionBuilder orderBy(String field);
 
     /**
      * Set the limit of the request.
@@ -139,10 +94,5 @@ public interface ISqlBuilder {
      *
      * @return ISqlBuilder instance to continue building.
      */
-    ISqlBuilder limit(int limitCount);
-
-    /**
-     * Execute the query.
-     */
-    ITable execute();
+    IOptionBuilder limit(int limitCount);
 }

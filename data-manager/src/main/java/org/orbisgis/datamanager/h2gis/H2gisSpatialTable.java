@@ -44,10 +44,13 @@ import org.h2gis.utilities.TableLocation;
 import org.h2gis.utilities.wrapper.SpatialResultSetImpl;
 import org.h2gis.utilities.wrapper.StatementWrapper;
 import org.locationtech.jts.geom.Geometry;
+import org.orbisgis.datamanager.JdbcDataSource;
+import org.orbisgis.datamanager.dsl.ConditionOrOptionBuilder;
 import org.orbisgis.datamanager.io.IOMethods;
 import org.orbisgis.datamanagerapi.dataset.Database;
 import org.orbisgis.datamanagerapi.dataset.IJdbcTable;
 import org.orbisgis.datamanagerapi.dataset.ISpatialTable;
+import org.orbisgis.datamanagerapi.dsl.IConditionOrOptionBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -74,6 +77,10 @@ public class H2gisSpatialTable extends SpatialResultSetImpl implements ISpatialT
     private MetaClass metaClass;
     /** Map of the properties */
     private Map<String, Object> propertyMap;
+    /** Filter query */
+    private StringBuilder query = new StringBuilder();
+    /** DataSource to execute query */
+    private JdbcDataSource jdbcDataSource;
 
     /**
      * Main constructor.
@@ -82,7 +89,8 @@ public class H2gisSpatialTable extends SpatialResultSetImpl implements ISpatialT
      * @param resultSet ResultSet containing the data of the table.
      * @param statement Statement used to request the database.
      */
-    public H2gisSpatialTable(TableLocation tableLocation, ResultSet resultSet, StatementWrapper statement) {
+    public H2gisSpatialTable(TableLocation tableLocation, ResultSet resultSet, StatementWrapper statement,
+                                JdbcDataSource jdbcDataSource) {
         super(resultSet, statement);
         try {
             resultSet.beforeFirst();
@@ -93,6 +101,7 @@ public class H2gisSpatialTable extends SpatialResultSetImpl implements ISpatialT
         this.tableLocation = tableLocation;
         this.metaClass = InvokerHelper.getMetaClass(getClass());
         this.propertyMap = new HashMap<>();
+        this.jdbcDataSource = jdbcDataSource;
     }
 
     @Override
@@ -188,5 +197,15 @@ public class H2gisSpatialTable extends SpatialResultSetImpl implements ISpatialT
             LOGGER.error("Cannot save the table.\n" + e.getLocalizedMessage());
             return false;
         }
+    }
+
+    @Override
+    public IConditionOrOptionBuilder where(String condition) {
+        query = new StringBuilder();
+        query.append("SELECT * FROM ");
+        query.append(tableLocation.getTable().toUpperCase());
+        query.append(" WHERE ");
+        query.append(condition);
+        return new ConditionOrOptionBuilder(query.toString(), jdbcDataSource);
     }
 }

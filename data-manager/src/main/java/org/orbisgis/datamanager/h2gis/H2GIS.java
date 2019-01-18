@@ -178,7 +178,7 @@ public class H2GIS extends JdbcDataSource {
             LOGGER.error("Unable execute query.\n"+e.getLocalizedMessage());
             return null;
         }
-        return new H2gisTable(new TableLocation(tableName), rs, statement);
+        return new H2gisTable(new TableLocation(tableName), rs, statement, this);
     }
 
     @Override
@@ -197,7 +197,7 @@ public class H2GIS extends JdbcDataSource {
             LOGGER.error("Unable execute query.\n"+e.getLocalizedMessage());
             return null;
         }
-        return new H2gisSpatialTable(new TableLocation(tableName), rs, statement);
+        return new H2gisSpatialTable(new TableLocation(tableName), rs, statement, this);
     }
 
     @Override

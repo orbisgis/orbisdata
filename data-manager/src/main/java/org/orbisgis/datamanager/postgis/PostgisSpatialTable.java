@@ -44,13 +44,17 @@ import org.h2gis.utilities.TableLocation;
 import org.locationtech.jts.geom.Geometry;
 import org.orbisgis.datamanager.JdbcDataSource;
 import org.orbisgis.datamanager.dsl.ConditionOrOptionBuilder;
+import org.orbisgis.datamanager.dsl.OptionBuilder;
+import org.orbisgis.datamanager.dsl.WhereBuilder;
 import org.orbisgis.datamanager.io.IOMethods;
 import org.orbisgis.datamanagerapi.dataset.Database;
 import org.orbisgis.datamanagerapi.dataset.IJdbcTable;
 import org.orbisgis.datamanagerapi.dataset.ISpatialTable;
 import org.h2gis.postgis_jts.ResultSetMetaDataWrapper;
 import org.h2gis.postgis_jts.StatementWrapper;
+import org.orbisgis.datamanagerapi.dataset.ITable;
 import org.orbisgis.datamanagerapi.dsl.IConditionOrOptionBuilder;
+import org.orbisgis.datamanagerapi.dsl.IOptionBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -201,14 +205,62 @@ public class PostgisSpatialTable extends SpatialResultSetWrapper implements ISpa
         }
     }
 
+    private String getQuery(){
+        return "SELECT * FROM " + tableLocation.getTable().toUpperCase();
+    }
+
     @Override
     public IConditionOrOptionBuilder where(String condition) {
-        query = new StringBuilder();
-        query.append("SELECT * FROM ");
-        query.append(tableLocation.getTable().toLowerCase());
-        query.append(" WHERE ");
-        query.append(condition);
-        return new ConditionOrOptionBuilder(query.toString(), jdbcDataSource);
+        return new WhereBuilder(getQuery(), jdbcDataSource).where(condition);
+    }
+
+    @Override
+    public IOptionBuilder groupBy(String... fields) {
+        return new OptionBuilder(getQuery(), jdbcDataSource).groupBy(fields);
+    }
+
+    @Override
+    public IOptionBuilder orderBy(Map<String, Order> orderByMap) {
+        return new OptionBuilder(getQuery(), jdbcDataSource).orderBy(orderByMap);
+    }
+
+    @Override
+    public IOptionBuilder orderBy(String field, Order order) {
+        return new OptionBuilder(getQuery(), jdbcDataSource).orderBy(field, order);
+    }
+
+    @Override
+    public IOptionBuilder orderBy(String field) {
+        return new OptionBuilder(getQuery(), jdbcDataSource).orderBy(field);
+    }
+
+    @Override
+    public IOptionBuilder limit(int limitCount) {
+        return new OptionBuilder(getQuery(), jdbcDataSource).limit(limitCount);
+    }
+
+    @Override
+    public Object asType(Class clazz) {
+        try {
+            if (clazz == ITable.class || clazz == PostgisTable.class) {
+                return new PostgisTable(tableLocation, this, this.getStatement().unwrap(StatementWrapper.class), jdbcDataSource);
+            } else if (clazz == ISpatialTable.class || clazz == PostgisSpatialTable.class) {
+                return new PostgisSpatialTable(tableLocation, this, this.getStatement().unwrap(StatementWrapper.class), jdbcDataSource);
+            }
+        } catch (SQLException e) {
+            LOGGER.error("Unable to cast object.\n" + e.getLocalizedMessage());
+        }
+        return null;
+    }
+
+    @Override
+    public ITable getTable() {
+        return (ITable)asType(ITable.class);
+    }
+
+    @Override
+    public ISpatialTable getSpatialTable() {
+        return (ISpatialTable)asType(ISpatialTable.class);
     }
 
     /**

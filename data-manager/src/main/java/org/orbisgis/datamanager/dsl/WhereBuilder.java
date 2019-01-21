@@ -41,15 +41,15 @@ import org.orbisgis.datamanagerapi.dataset.ISpatialTable;
 import org.orbisgis.datamanagerapi.dataset.ITable;
 import org.orbisgis.datamanagerapi.dsl.IBuilderResult;
 import org.orbisgis.datamanagerapi.dsl.IConditionOrOptionBuilder;
-import org.orbisgis.datamanagerapi.dsl.IWhereBuilder;
+import org.orbisgis.datamanagerapi.dsl.IWhereBuilderOrOptionBuilder;
 
 /**
- * Implementation of IWhereBuilder
+ * Implementation of IWhereBuilderOrOptionBuilder
  *
  * @author Erwan Bocher (CNRS)
  * @author Sylvain PALOMINOS (UBS 2019)
  */
-public class WhereBuilder extends BuilderResult implements IWhereBuilder, IBuilderResult {
+public class WhereBuilder extends OptionBuilder implements IWhereBuilderOrOptionBuilder, IBuilderResult {
 
     private StringBuilder query;
     private JdbcDataSource dataSource;
@@ -61,6 +61,7 @@ public class WhereBuilder extends BuilderResult implements IWhereBuilder, IBuild
      * @param dataSource JdbcDataSource where the request will be executed.
      */
     public WhereBuilder(String request, JdbcDataSource dataSource){
+        super(request, dataSource);
         query = new StringBuilder();
         query.append(request).append(" ");
         this.dataSource = dataSource;

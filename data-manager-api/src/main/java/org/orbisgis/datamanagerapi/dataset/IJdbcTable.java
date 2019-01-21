@@ -39,7 +39,6 @@ package org.orbisgis.datamanagerapi.dataset;
 import groovy.lang.Closure;
 import groovy.lang.GroovyObject;
 import org.h2gis.utilities.TableLocation;
-import org.orbisgis.datamanagerapi.dsl.IWhereBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

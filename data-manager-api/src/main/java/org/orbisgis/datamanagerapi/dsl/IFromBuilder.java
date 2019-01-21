@@ -38,7 +38,7 @@ package org.orbisgis.datamanagerapi.dsl;
 
 /**
  * Interface defining methods for the SQL 'from' building. The request construction can be continued thanks to the
- * IWhereBuilder or its result can be get calling 'eachRow' to iterate on the resultSet or 'as ITable' to get the
+ * IWhereBuilderOrOptionBuilder or its result can be get calling 'eachRow' to iterate on the resultSet or 'as ITable' to get the
  * ITable object
  *
  * @author Erwan Bocher (CNRS)
@@ -53,5 +53,5 @@ public interface IFromBuilder {
      *
      * @return ISqlBuilder instance to continue building.
      */
-    IWhereBuilder from(String... tables);
+    IWhereBuilderOrOptionBuilder from(String... tables);
 }

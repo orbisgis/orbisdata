@@ -38,7 +38,7 @@ package org.orbisgis.datamanager.dsl;
 
 import org.orbisgis.datamanager.JdbcDataSource;
 import org.orbisgis.datamanagerapi.dsl.IFromBuilder;
-import org.orbisgis.datamanagerapi.dsl.IWhereBuilder;
+import org.orbisgis.datamanagerapi.dsl.IWhereBuilderOrOptionBuilder;
 
 /**
  * Implementation of IFromBuilder
@@ -64,7 +64,7 @@ public class FromBuilder implements IFromBuilder {
     }
 
     @Override
-    public IWhereBuilder from(String... tables) {
+    public IWhereBuilderOrOptionBuilder from(String... tables) {
         query.append("FROM ");
         for(String table : tables){
             query.append(table).append(", ");

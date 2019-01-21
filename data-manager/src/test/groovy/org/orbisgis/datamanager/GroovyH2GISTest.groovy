@@ -471,5 +471,17 @@ class GroovyH2GISTest {
         assertEquals(3, (int) values.get(2))
         assertEquals(2, (int) values.get(3))
         assertEquals(1, (int) values.get(4))
+
+        values = new ArrayList<>()
+
+        h2GIS.select("*") from "h2gis" orderBy "id", DESC eachRow {row ->
+            values.add row.getInt(1)
+        }
+        assertEquals(5,values.size())
+        assertEquals(5, (int) values.get(0))
+        assertEquals(4, (int) values.get(1))
+        assertEquals(3, (int) values.get(2))
+        assertEquals(2, (int) values.get(3))
+        assertEquals(1, (int) values.get(4))
     }
 }

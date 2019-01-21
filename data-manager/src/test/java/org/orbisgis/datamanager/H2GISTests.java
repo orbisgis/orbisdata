@@ -245,5 +245,30 @@ public class H2GISTests {
         assertEquals(3, (int) values2.get(2));
         assertEquals(2, (int) values2.get(3));
         assertEquals(1, (int) values2.get(4));
+
+        table = ((ITable)h2GIS
+                .select("*")
+                .from("h2gis")
+                .orderBy("id", DESC)
+                .asType(ITable.class));
+
+        ArrayList<Integer> values3 = new ArrayList<>();
+        table.eachRow(new Closure(null){
+            @Override
+            public Object call(Object argument) {
+                try {
+                    values3.add(((ITable)argument).getInt(1));
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+                return argument;
+            }
+        });
+        assertEquals(5,values3.size());
+        assertEquals(5, (int) values3.get(0));
+        assertEquals(4, (int) values3.get(1));
+        assertEquals(3, (int) values3.get(2));
+        assertEquals(2, (int) values3.get(3));
+        assertEquals(1, (int) values3.get(4));
     }
 }

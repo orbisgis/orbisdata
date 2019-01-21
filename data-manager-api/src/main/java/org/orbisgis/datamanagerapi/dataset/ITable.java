@@ -37,7 +37,7 @@
 package org.orbisgis.datamanagerapi.dataset;
 
 import groovy.lang.Closure;
-import org.orbisgis.datamanagerapi.dsl.IWhereBuilder;
+import org.orbisgis.datamanagerapi.dsl.IWhereBuilderOrOptionBuilder;
 
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
@@ -49,7 +49,7 @@ import java.util.Collection;
  * @author Erwan Bocher (CNRS)
  * @author Sylvain PALOMINOS (UBS 2018)
  */
-public interface ITable extends IDataSet, ResultSet, IWhereBuilder {
+public interface ITable extends IDataSet, ResultSet, IWhereBuilderOrOptionBuilder {
 
     /**
      * Apply the given closure to each row.

@@ -42,21 +42,12 @@ import groovy.text.SimpleTemplateEngine;
 import org.codehaus.groovy.runtime.InvokerHelper;
 import org.h2.util.ScriptReader;
 import org.h2gis.functions.io.utility.FileUtil;
-import org.h2gis.utilities.SFSUtilities;
-import org.h2gis.utilities.TableLocation;
 import org.h2gis.utilities.URIUtilities;
-import org.h2gis.utilities.wrapper.StatementWrapper;
 import org.orbisgis.datamanager.dsl.FromBuilder;
-import org.orbisgis.datamanager.h2gis.H2gisSpatialTable;
-import org.orbisgis.datamanager.h2gis.H2gisTable;
-import org.orbisgis.datamanager.postgis.PostgisSpatialTable;
-import org.orbisgis.datamanager.postgis.PostgisTable;
 import org.orbisgis.datamanagerapi.dataset.Database;
-import org.orbisgis.datamanagerapi.dataset.ITable;
 import org.orbisgis.datamanagerapi.datasource.IJdbcDataSource;
 import org.orbisgis.datamanagerapi.dsl.IFromBuilder;
 import org.orbisgis.datamanagerapi.dsl.ISelectBuilder;
-import org.orbisgis.datamanagerapi.dsl.IWhereBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -64,15 +55,10 @@ import javax.sql.DataSource;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.sql.Connection;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 
 /**
  * Abstract class used to implements the request builder methods (select, from ...) in order to give a base to all the

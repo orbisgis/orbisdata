@@ -36,8 +36,10 @@
  */
 package org.orbisgis.datamanager;
 
+import groovy.lang.MetaClass;
 import groovy.sql.Sql;
 import groovy.text.SimpleTemplateEngine;
+import org.codehaus.groovy.runtime.InvokerHelper;
 import org.h2.util.ScriptReader;
 import org.h2gis.functions.io.utility.FileUtil;
 import org.h2gis.utilities.SFSUtilities;
@@ -62,10 +64,13 @@ import javax.sql.DataSource;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
@@ -79,21 +84,28 @@ import java.util.UUID;
 public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, ISelectBuilder {
     private static final Logger LOGGER = LoggerFactory.getLogger(JdbcDataSource.class);
 
-    private StringBuilder query = new StringBuilder();
+    private Map<String, Object> propertyMap;
+    private MetaClass metaClass;
     private Database database;
 
     public JdbcDataSource(Sql parent, Database database) {
         super(parent);
+        propertyMap = new HashMap<>();
+        this.metaClass = InvokerHelper.getMetaClass(getClass());
         this.database = database;
     }
 
     public JdbcDataSource(DataSource dataSource, Database database) {
         super(dataSource);
+        propertyMap = new HashMap<>();
+        this.metaClass = InvokerHelper.getMetaClass(getClass());
         this.database = database;
     }
 
     public JdbcDataSource(Connection connection, Database database) {
         super(connection);
+        propertyMap = new HashMap<>();
+        this.metaClass = InvokerHelper.getMetaClass(getClass());
         this.database = database;
     }
 
@@ -103,7 +115,7 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, ISe
 
     @Override
     public IFromBuilder select(String... fields) {
-        query = new StringBuilder();
+        StringBuilder query = new StringBuilder();
         query.append("SELECT ");
         StringBuilder columns = new StringBuilder();
         if(fields.length > 0){
@@ -139,7 +151,7 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, ISe
     public void executeScript(String fileName, Map<String, String> bindings) {
         File file = URIUtilities.fileFromString(fileName);
         try {
-            if (FileUtil.isFileImportable(file, "sql")) {
+            if (FileUtil.isExtensionWellFormated(file, "sql")) {
                 SimpleTemplateEngine engine = null;
                 if (bindings != null && !bindings.isEmpty()) {
                     engine = new SimpleTemplateEngine();
@@ -162,5 +174,20 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, ISe
         } catch (SQLException | IOException | ClassNotFoundException e) {
             LOGGER.error("Unable to read the SQL file.\n" + e.getLocalizedMessage());
         }
+    }
+
+    @Override
+    public MetaClass getMetaClass() {
+        return metaClass;
+    }
+
+    @Override
+    public void setMetaClass(MetaClass metaClass) {
+        this.metaClass = metaClass;
+    }
+
+    @Override
+    public Map<String, Object> getPropertyMap(){
+        return propertyMap;
     }
 }

@@ -36,10 +36,15 @@
  */
 package org.orbisgis.datamanagerapi.datasource;
 
+import groovy.lang.GroovyObject;
 import org.orbisgis.datamanagerapi.dataset.ISpatialTable;
 import org.orbisgis.datamanagerapi.dataset.ITable;
 import org.orbisgis.datamanagerapi.dataset.ITableWrapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.Map;
 
@@ -49,7 +54,9 @@ import java.util.Map;
  * @author Erwan Bocher (CNRS)
  * @author Sylvain PALOMINOS (UBS 2018)
  */
-public interface IJdbcDataSource extends IDataSource {
+public interface IJdbcDataSource extends IDataSource, GroovyObject {
+
+    Logger LOGGER = LoggerFactory.getLogger(IJdbcDataSource.class);
 
     /**
      * Close the underlying datasource
@@ -195,4 +202,78 @@ public interface IJdbcDataSource extends IDataSource {
      * @param filePath the path of the file or URI
      */
     ITableWrapper link(String filePath);
+
+    /**
+     * Return the Map of properties.
+     *
+     * @return Map of the properties.
+     */
+    Map<String, Object> getPropertyMap();
+
+    @Override
+    default Object invokeMethod(String name, Object args) {
+        Method m = null;
+        try {
+            if(args == null) {
+                m = this.getClass().getDeclaredMethod(name);
+            }
+            else {
+                m = this.getClass().getDeclaredMethod(name, args.getClass());
+            }
+        } catch (NoSuchMethodException e) {
+            LOGGER.error("Unable to get a method named '" + name + "'.\n" + e.getLocalizedMessage());
+        }
+        if(m == null){
+            try {
+                String getName = "get" + name.substring(0,1).toUpperCase() + name.substring(1);
+                if(args == null) {
+                    m = this.getClass().getDeclaredMethod(getName);
+                }
+                else if(args instanceof Object[]){
+                    Object[] objects = (Object[])args;
+                    Class[] classes = new Class[objects.length];
+                    for(int i=0; i<objects.length; i++){
+                        classes[i] = objects[i].getClass();
+                    }
+                    m = this.getClass().getDeclaredMethod(getName, classes);
+                }
+                else {
+                    m = this.getClass().getDeclaredMethod(getName, args.getClass());
+                }
+            } catch (NoSuchMethodException e) {
+                LOGGER.error("Unable to get a method named '" + name + "'.\n" + e.getLocalizedMessage());
+            }
+        }
+        if(m == null){
+            return null;
+        }
+        try {
+            if(args == null) {
+                return m.invoke(this);
+            }
+            if(args instanceof Object[] && ((Object[])args).length == 1){
+                return m.invoke(this, ((Object[])args)[0]);
+            }
+            else {
+                return m.invoke(this, args);
+            }
+        } catch (IllegalArgumentException | IllegalAccessException | InvocationTargetException e) {
+            LOGGER.error("Unable to invoke the method named '" + name + "'.\n" + e.getLocalizedMessage());
+            return null;
+        }
+    }
+
+    @Override
+    default Object getProperty(String propertyName) {
+        Object obj = getPropertyMap().get(propertyName);
+        if(obj != null) {
+            return obj;
+        }
+        return invokeMethod(propertyName, null);
+    }
+
+    @Override
+    default void setProperty(String propertyName, Object newValue) {
+        getPropertyMap().put(propertyName, newValue);
+    }
 }

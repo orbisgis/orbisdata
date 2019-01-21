@@ -114,6 +114,14 @@ public interface IJdbcTable extends ITable, GroovyObject {
                 if(args == null) {
                     m = this.getClass().getDeclaredMethod(getName);
                 }
+                else if(args instanceof Object[]){
+                    Object[] objects = (Object[])args;
+                    Class[] classes = new Class[objects.length];
+                    for(int i=0; i<objects.length; i++){
+                        classes[i] = objects[i].getClass();
+                    }
+                    m = this.getClass().getDeclaredMethod(getName, classes);
+                }
                 else {
                     m = this.getClass().getDeclaredMethod(getName, args.getClass());
                 }
@@ -127,6 +135,9 @@ public interface IJdbcTable extends ITable, GroovyObject {
         try {
             if(args == null) {
                 return m.invoke(this);
+            }
+            if(args instanceof Object[] && ((Object[])args).length == 1){
+                return m.invoke(this, ((Object[])args)[0]);
             }
             else {
                 return m.invoke(this, args);

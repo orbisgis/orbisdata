@@ -1,0 +1,105 @@
+/*
+ * Bundle ProcessManager is part of the OrbisGIS platform
+ *
+ * OrbisGIS is a java GIS application dedicated to research in GIScience.
+ * OrbisGIS is developed by the GIS group of the DECIDE team of the
+ * Lab-STICC CNRS laboratory, see <http://www.lab-sticc.fr/>.
+ *
+ * The GIS group of the DECIDE team is located at :
+ *
+ * Laboratoire Lab-STICC – CNRS UMR 6285
+ * Equipe DECIDE
+ * UNIVERSITÉ DE BRETAGNE-SUD
+ * Institut Universitaire de Technologie de Vannes
+ * 8, Rue Montaigne - BP 561 56017 Vannes Cedex
+ *
+ * ProcessManager is distributed under GPL 3 license.
+ *
+ * Copyright (C) 2018 CNRS (Lab-STICC UMR CNRS 6285)
+ *
+ *
+ * ProcessManager is free software: you can redistribute it and/or modify it under the
+ * terms of the GNU General Public License as published by the Free Software
+ * Foundation, either version 3 of the License, or (at your option) any later
+ * version.
+ *
+ * ProcessManager is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+ * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * ProcessManager. If not, see <http://www.gnu.org/licenses/>.
+ *
+ * For more information, please consult: <http://www.orbisgis.org/>
+ * or contact directly:
+ * info_at_ orbisgis.org
+ */
+package org.orbisgis.processmanager
+
+import org.junit.jupiter.api.Test
+import org.locationtech.jts.geom.Geometry
+import org.locationtech.jts.io.WKTReader
+import org.orbisgis.datamanager.h2gis.H2GIS
+import org.orbisgis.datamanagerapi.dataset.ITable
+
+import static org.junit.jupiter.api.Assertions.assertEquals
+
+class TestProcess {
+
+    private static final ProcessFactory processFactory = new ProcessFactory()
+
+    @Test
+    void testSimpleProcess(){
+        def process = processFactory.create(
+                "title",
+                [inputA : String, inputB : String],
+                [outputA : String],
+                { inputA, inputB -> [outputA : inputA+inputB] }
+        )
+        process.execute([inputA : "tata", inputB : "toto"])
+        assertEquals "tatatoto", process.getResults().outputA
+    }
+
+    @Test
+    void testSimpleProcess2(){
+        def p = processFactory.create(
+                "OrbisGIS",
+                [inputA: String],
+                [outputA: String],
+                { inputA -> [outputA: inputA.trim] }
+        )
+        p.execute([inputA : 'OrbisGIS is nice'])
+    }
+
+    @Test
+    void testSimpleProcess3(){
+        def h2GIS = H2GIS.open([databaseName: './target/loadH2GIS'])
+        h2GIS.execute("""
+                DROP TABLE IF EXISTS h2gis, super;
+                CREATE TABLE h2gis (id int, the_geom point);
+                INSERT INTO h2gis VALUES (1, 'POINT(10 10)'::GEOMETRY), (2, 'POINT(1 1)'::GEOMETRY);
+        """)
+
+        def p = processFactory.create(
+                "With database",
+                [inputA: ITable],
+                [outputA: String],
+                { inputA -> [outputA: inputA.columnNames] }
+        )
+        p.execute([inputA : h2GIS.getSpatialTable("h2gis")])
+    }
+
+    @Test
+    void testSimpleProcess4(){
+        def p = processFactory.create(
+                "Create a buffer around a geometry",
+                [inputA: Geometry, distance: double],
+                [outputA: Geometry],
+                { inputA, distance ->
+                    [outputA: inputA.buffer(distance)]
+                }
+        )
+        p.execute([inputA : new WKTReader().read("POINT(10 1)")] )
+    }
+}
+

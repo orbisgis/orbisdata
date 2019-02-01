@@ -156,7 +156,8 @@ public class PostgisTable extends ResultSetWrapper implements IJdbcTable {
     @Override
     public boolean save(String filePath, String encoding) {
         try {
-            return IOMethods.saveAsFile(getStatement().getConnection(),false, getTableLocation().toString(false),filePath,encoding);
+            return IOMethods.saveAsFile(getStatement().getConnection(), getTableLocation().toString(false), filePath,
+                    encoding);
         } catch (SQLException e) {
             LOGGER.error("Cannot save the table.\n" + e.getLocalizedMessage());
             return false;

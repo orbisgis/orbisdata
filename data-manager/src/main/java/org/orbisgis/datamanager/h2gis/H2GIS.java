@@ -42,6 +42,7 @@ import org.h2gis.utilities.wrapper.ConnectionWrapper;
 import org.h2gis.utilities.wrapper.StatementWrapper;
 import org.orbisgis.datamanager.JdbcDataSource;
 import org.orbisgis.datamanagerapi.dataset.*;
+import org.osgi.service.jdbc.DataSourceFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -232,73 +233,90 @@ public class H2GIS extends JdbcDataSource {
 
     @Override
     public boolean save(String tableName, String filePath, String encoding) {
-        return IOMethods.saveAsFile(getConnection(), true, tableName, filePath, encoding);
+        return IOMethods.saveAsFile(getConnection(), tableName, filePath, encoding);
     }
 
     @Override
-    public ITableWrapper link(String filePath, String tableName, boolean delete) {
-        return new H2gisLinked(filePath, tableName, delete, this);
+    public ITable link(String filePath, String tableName, boolean delete) {
+        IOMethods.link(filePath, tableName, delete, this);
+        return getTable(tableName);
     }
 
     @Override
-    public ITableWrapper link(String filePath, String tableName) {
+    public ITable link(String filePath, String tableName) {
         return link(filePath, tableName, false);
     }
 
     @Override
-    public ITableWrapper link(String filePath, boolean delete) {
-        return new H2gisLinked(filePath, delete, this);
+    public ITable link(String filePath, boolean delete) {
+        final String name = URIUtilities.fileFromString(filePath).getName();
+        String tableName = name.substring(0, name.lastIndexOf(".")).toUpperCase();
+        if ("^[a-zA-Z][a-zA-Z0-9_]*$".matches(tableName)) {
+            return link(filePath, tableName, delete);
+        } else {
+            LOGGER.error("The file name contains unsupported characters");
+        }
+        return null;
     }
 
     @Override
-    public ITableWrapper link(String filePath) {
+    public ITable link(String filePath) {
         return link(filePath, false);
     }
 
     @Override
-    public ITableWrapper load(String filePath, String tableName, String encoding, boolean delete) {
-        return new H2gisLoad(filePath, tableName, encoding, delete, this);
+    public ITable load(String filePath, String tableName, String encoding, boolean delete) {
+        IOMethods.loadFile(filePath, tableName, encoding, delete, this);
+        return getTable(tableName);
     }
 
     @Override
-    public ITableWrapper load(Map<String, String> properties, String inputTableName) {
+    public ITable load(Map<String, String> properties, String inputTableName) {
         return load(properties, inputTableName, inputTableName, false);
     }
 
     @Override
-    public ITableWrapper load(Map<String, String> properties, String inputTableName, boolean delete) {
+    public ITable load(Map<String, String> properties, String inputTableName, boolean delete) {
         return load(properties, inputTableName, inputTableName, delete);
     }
 
     @Override
-    public ITableWrapper load(Map<String, String> properties, String inputTableName, String outputTableName) {
+    public ITable load(Map<String, String> properties, String inputTableName, String outputTableName) {
         return load(properties, inputTableName, outputTableName, false);
     }
 
     @Override
-    public ITableWrapper load(Map<String, String> properties, String inputTableName, String outputTableName, boolean delete) {
-        return new H2gisLoad(properties, inputTableName, outputTableName, delete, this);
+    public ITable load(Map<String, String> properties, String inputTableName, String outputTableName, boolean delete) {
+        IOMethods.loadTable(properties, inputTableName, outputTableName, delete, this);
+        return getTable(outputTableName);
 
     }
 
     @Override
-    public ITableWrapper load(String filePath, String tableName) {
+    public ITable load(String filePath, String tableName) {
         return load(filePath, tableName, null, false);
     }
 
     @Override
-    public ITableWrapper load(String filePath, String tableName, boolean delete) {
+    public ITable load(String filePath, String tableName, boolean delete) {
         return load(filePath, tableName, null, delete);
     }
 
     @Override
-    public ITableWrapper load(String filePath) {
+    public ITable load(String filePath) {
         return load(filePath, false);
     }
 
     @Override
-    public ITableWrapper load(String filePath, boolean delete) {
-        return new H2gisLoad(filePath, delete, this);
+    public ITable load(String filePath, boolean delete) {
+        final String name = URIUtilities.fileFromString(filePath).getName();
+        String tableName = name.substring(0, name.lastIndexOf(".")).toUpperCase();
+        if (tableName.matches("^[a-zA-Z][a-zA-Z0-9_]*$")) {
+            return load(filePath,tableName, null, delete);
+        } else {
+            LOGGER.error("Unsupported file characters");
+        }
+        return null;
     }
 
     /**

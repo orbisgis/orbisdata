@@ -171,7 +171,7 @@ public class PostgisSpatialTable extends SpatialResultSetWrapper implements ISpa
     }
 
     @Override
-    public Database getDataBase() {
+    public Database getDbType() {
         return dataBase;
     }
 

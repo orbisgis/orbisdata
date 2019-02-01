@@ -65,7 +65,7 @@ public interface IJdbcTable extends ITable, GroovyObject {
      *
      * @return The Database type
      */
-    Database getDataBase();
+    Database getDbType();
 
     /**
      * Return the Map of properties.
@@ -76,7 +76,7 @@ public interface IJdbcTable extends ITable, GroovyObject {
 
     @Override
     default String getLocation() {
-        return getTableLocation().toString(getDataBase().equals(Database.H2GIS));
+        return getTableLocation().toString(getDbType().equals(Database.H2GIS));
     }
 
     @Override

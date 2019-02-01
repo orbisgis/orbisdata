@@ -169,7 +169,7 @@ public class H2gisSpatialTable extends SpatialResultSetImpl implements ISpatialT
     }
 
     @Override
-    public Database getDataBase() {
+    public Database getDbType() {
         return dataBase;
     }
 

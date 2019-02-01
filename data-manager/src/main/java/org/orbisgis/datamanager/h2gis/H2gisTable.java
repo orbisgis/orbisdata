@@ -132,7 +132,7 @@ public class H2gisTable extends ResultSetWrapper implements IJdbcTable {
     }
 
     @Override
-    public Database getDataBase() {
+    public Database getDbType() {
         return dataBase;
     }
 

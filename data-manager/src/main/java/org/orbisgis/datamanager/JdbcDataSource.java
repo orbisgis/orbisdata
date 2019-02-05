@@ -44,7 +44,9 @@ import org.h2.util.ScriptReader;
 import org.h2gis.functions.io.utility.FileUtil;
 import org.h2gis.utilities.URIUtilities;
 import org.orbisgis.datamanager.dsl.FromBuilder;
+import org.orbisgis.datamanager.io.IOMethods;
 import org.orbisgis.datamanagerapi.dataset.DataBaseType;
+import org.orbisgis.datamanagerapi.dataset.ITable;
 import org.orbisgis.datamanagerapi.datasource.IJdbcDataSource;
 import org.orbisgis.datamanagerapi.dsl.IFromBuilder;
 import org.orbisgis.datamanagerapi.dsl.ISelectBuilder;
@@ -95,7 +97,7 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, ISe
         this.databaseType = databaseType;
     }
 
-    public DataBaseType getDataBase(){
+    public DataBaseType getDataBaseType(){
         return databaseType;
     }
 
@@ -175,5 +177,99 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, ISe
     @Override
     public Map<String, Object> getPropertyMap(){
         return propertyMap;
+    }
+
+
+    @Override
+    public boolean save(String tableName, String filePath) {
+        return save(tableName, filePath, null);
+    }
+
+    @Override
+    public boolean save(String tableName, String filePath, String encoding) {
+        return IOMethods.saveAsFile(getConnection(), tableName, filePath, encoding);
+    }
+
+    @Override
+    public ITable link(String filePath, String tableName, boolean delete) {
+        IOMethods.link(filePath, tableName, delete, this);
+        return getTable(tableName);
+    }
+
+    @Override
+    public ITable link(String filePath, String tableName) {
+        return link(filePath, tableName, false);
+    }
+
+    @Override
+    public ITable link(String filePath, boolean delete) {
+        final String name = URIUtilities.fileFromString(filePath).getName();
+        String tableName = name.substring(0, name.lastIndexOf(".")).toUpperCase();
+        if ("^[a-zA-Z][a-zA-Z0-9_]*$".matches(tableName)) {
+            return link(filePath, tableName, delete);
+        } else {
+            LOGGER.error("The file name contains unsupported characters");
+        }
+        return null;
+    }
+
+    @Override
+    public ITable link(String filePath) {
+        return link(filePath, false);
+    }
+
+    @Override
+    public ITable load(String filePath, String tableName, String encoding, boolean delete) {
+        IOMethods.loadFile(filePath, tableName, encoding, delete, this);
+        return getTable(tableName);
+    }
+
+    @Override
+    public ITable load(Map<String, String> properties, String inputTableName) {
+        return load(properties, inputTableName, inputTableName, false);
+    }
+
+    @Override
+    public ITable load(Map<String, String> properties, String inputTableName, boolean delete) {
+        return load(properties, inputTableName, inputTableName, delete);
+    }
+
+    @Override
+    public ITable load(Map<String, String> properties, String inputTableName, String outputTableName) {
+        return load(properties, inputTableName, outputTableName, false);
+    }
+
+    @Override
+    public ITable load(Map<String, String> properties, String inputTableName, String outputTableName, boolean delete) {
+        IOMethods.loadTable(properties, inputTableName, outputTableName, delete, this);
+        return getTable(outputTableName);
+
+    }
+
+    @Override
+    public ITable load(String filePath, String tableName) {
+        return load(filePath, tableName, null, false);
+    }
+
+    @Override
+    public ITable load(String filePath, String tableName, boolean delete) {
+        return load(filePath, tableName, null, delete);
+    }
+
+    @Override
+    public ITable load(String filePath) {
+        return load(filePath, false);
+    }
+
+    @Override
+    public ITable load(String filePath, boolean delete) {
+        final String name = URIUtilities.fileFromString(filePath).getName();
+        String tableName = name.substring(0, name.lastIndexOf(".")).toUpperCase();
+        if (tableName.matches("^[a-zA-Z][a-zA-Z0-9_]*$")) {
+            return load(filePath,tableName, null, delete);
+        } else {
+            LOGGER.error("Unsupported file characters");
+        }
+        return null;
     }
 }

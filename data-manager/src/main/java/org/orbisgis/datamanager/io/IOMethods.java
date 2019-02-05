@@ -15,6 +15,7 @@ import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.URIUtilities;
 import org.orbisgis.datamanager.JdbcDataSource;
 import org.orbisgis.datamanager.h2gis.H2GIS;
+import org.orbisgis.datamanagerapi.dataset.DataBaseType;
 import org.osgi.service.jdbc.DataSourceFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -176,10 +177,15 @@ public class IOMethods {
      * @param inputTableName the name of the table in the external database
      * @param outputTableName the name of the table in the H2GIS database
      * @param delete true to delete the table if exists
-     * @param dataSource the H2GIS database
+     * @param jdbcDataSource the database
      */
     public static void loadTable(Map<String, String> properties, String inputTableName, String outputTableName,
-                           boolean delete, H2GIS dataSource){
+                           boolean delete, JdbcDataSource jdbcDataSource){
+        if(jdbcDataSource.getDataBaseType() != DataBaseType.H2GIS){
+            LOGGER.error(jdbcDataSource.getDataBaseType().name()+" database not supported for table link.");
+            return;
+        }
+        H2GIS h2GIS = (H2GIS)jdbcDataSource;
         String user = properties.get(DataSourceFactory.JDBC_USER);
         String password = properties.get(DataSourceFactory.JDBC_PASSWORD);
         String driverName = "";
@@ -195,18 +201,18 @@ public class IOMethods {
                 if(!driverName.isEmpty()) {
                     if (delete) {
                         try {
-                            dataSource.execute("DROP TABLE IF EXISTS " + outputTableName);
+                            h2GIS.execute("DROP TABLE IF EXISTS " + outputTableName);
                         } catch (SQLException e) {
                             LOGGER.error("Cannot drop the table.\n" + e.getLocalizedMessage());
                         }
                     }
                     try {
                         String tmpTableName =  "TMP_"+ System.currentTimeMillis();
-                        dataSource.execute(String.format("CREATE LINKED TABLE %s('%s', '%s', '%s', '%s', '%s')",
+                        h2GIS.execute(String.format("CREATE LINKED TABLE %s('%s', '%s', '%s', '%s', '%s')",
                                 tmpTableName, driverName, jdbc_url, user, password, inputTableName));
-                        dataSource.execute(String.format("CREATE TABLE %s as SELECT * from %s", outputTableName,
+                        h2GIS.execute(String.format("CREATE TABLE %s as SELECT * from %s", outputTableName,
                                 tmpTableName));
-                        dataSource.execute("DROP TABLE IF EXISTS " + tmpTableName);
+                        h2GIS.execute("DROP TABLE IF EXISTS " + tmpTableName);
                     } catch (SQLException e) {
                         LOGGER.error("Cannot load the table.\n" + e.getLocalizedMessage());
                     }
@@ -230,9 +236,14 @@ public class IOMethods {
      * @param filePath the path of the file
      * @param tableName the name of the table created to store the file
      * @param delete true to delete the table if exists
-     * @param h2GIS the H2GIS database
+     * @param jdbcDataSource the database
      */
-    public static void link(String filePath, String tableName, boolean delete, H2GIS h2GIS) {
+    public static void link(String filePath, String tableName, boolean delete, JdbcDataSource jdbcDataSource) {
+        if(jdbcDataSource.getDataBaseType() != DataBaseType.H2GIS){
+            LOGGER.error(jdbcDataSource.getDataBaseType().name()+" database not supported for file link.");
+            return;
+        }
+        H2GIS h2GIS = (H2GIS)jdbcDataSource;
         if(delete){
             try {
                 h2GIS.execute("DROP TABLE IF EXISTS "+ tableName);

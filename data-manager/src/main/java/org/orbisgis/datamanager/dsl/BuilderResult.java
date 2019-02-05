@@ -101,7 +101,7 @@ public abstract class BuilderResult implements IBuilderResult {
             return null;
         }
         String name = "TABLE_"+ UUID.randomUUID().toString();
-        switch(getDataSource().getDataBase()) {
+        switch(getDataSource().getDataBaseType()) {
             case H2GIS:
                 if(!(statement instanceof StatementWrapper)){
                     LOGGER.error("The statement class not compatible with the database.");

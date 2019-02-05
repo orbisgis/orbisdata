@@ -311,6 +311,7 @@ class GroovyH2GISTest {
         """)
         h2GIS.save("externalTable", 'target/externalFile.shp' )
         def table = h2GIS.link('target/externalFile.shp', 'super',true) as ITable
+        println table.columnNames
         assertEquals("PK,THE_GEOM,ID", table.columnNames.join(","))
     }
 

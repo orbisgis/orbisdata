@@ -42,6 +42,6 @@ package org.orbisgis.datamanagerapi.dataset;
  * @author Erwan Bocher (CNRS)
  * @author Sylvain PALOMINOS (UBS 2018)
  */
-public enum Database {
+public enum DataBaseType {
     H2GIS, POSTGIS
 }

@@ -61,11 +61,11 @@ public interface IJdbcTable extends ITable, GroovyObject {
     TableLocation getTableLocation();
 
     /**
-     * Return the Database type of the JdbcTable.
+     * Return the DataBaseType type of the JdbcTable.
      *
-     * @return The Database type
+     * @return The DataBaseType type
      */
-    Database getDbType();
+    DataBaseType getDbType();
 
     /**
      * Return the Map of properties.
@@ -76,7 +76,7 @@ public interface IJdbcTable extends ITable, GroovyObject {
 
     @Override
     default String getLocation() {
-        return getTableLocation().toString(getDbType().equals(Database.H2GIS));
+        return getTableLocation().toString(getDbType().equals(DataBaseType.H2GIS));
     }
 
     @Override
@@ -99,10 +99,10 @@ public interface IJdbcTable extends ITable, GroovyObject {
         Method m = null;
         try {
             if(args == null) {
-                m = this.getClass().getDeclaredMethod(name);
+                m = this.getClass().getMethod(name);
             }
             else {
-                m = this.getClass().getDeclaredMethod(name, args.getClass());
+                m = this.getClass().getMethod(name, args.getClass());
             }
         } catch (NoSuchMethodException e) {
             LOGGER.error("Unable to get a method named '" + name + "'.\n" + e.getLocalizedMessage());
@@ -111,7 +111,7 @@ public interface IJdbcTable extends ITable, GroovyObject {
             try {
                 String getName = "get" + name.substring(0,1).toUpperCase() + name.substring(1);
                 if(args == null) {
-                    m = this.getClass().getDeclaredMethod(getName);
+                    m = this.getClass().getMethod(getName);
                 }
                 else if(args instanceof Object[]){
                     Object[] objects = (Object[])args;
@@ -119,10 +119,10 @@ public interface IJdbcTable extends ITable, GroovyObject {
                     for(int i=0; i<objects.length; i++){
                         classes[i] = objects[i].getClass();
                     }
-                    m = this.getClass().getDeclaredMethod(getName, classes);
+                    m = this.getClass().getMethod(getName, classes);
                 }
                 else {
-                    m = this.getClass().getDeclaredMethod(getName, args.getClass());
+                    m = this.getClass().getMethod(getName, args.getClass());
                 }
             } catch (NoSuchMethodException e) {
                 LOGGER.error("Unable to get a method named '" + name + "'.\n" + e.getLocalizedMessage());

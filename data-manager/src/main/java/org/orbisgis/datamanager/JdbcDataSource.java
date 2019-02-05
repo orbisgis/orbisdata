@@ -44,7 +44,7 @@ import org.h2.util.ScriptReader;
 import org.h2gis.functions.io.utility.FileUtil;
 import org.h2gis.utilities.URIUtilities;
 import org.orbisgis.datamanager.dsl.FromBuilder;
-import org.orbisgis.datamanagerapi.dataset.Database;
+import org.orbisgis.datamanagerapi.dataset.DataBaseType;
 import org.orbisgis.datamanagerapi.datasource.IJdbcDataSource;
 import org.orbisgis.datamanagerapi.dsl.IFromBuilder;
 import org.orbisgis.datamanagerapi.dsl.ISelectBuilder;
@@ -72,31 +72,31 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, ISe
 
     private Map<String, Object> propertyMap;
     private MetaClass metaClass;
-    private Database database;
+    private DataBaseType databaseType;
 
-    public JdbcDataSource(Sql parent, Database database) {
+    public JdbcDataSource(Sql parent, DataBaseType databaseType) {
         super(parent);
         propertyMap = new HashMap<>();
         this.metaClass = InvokerHelper.getMetaClass(getClass());
-        this.database = database;
+        this.databaseType = databaseType;
     }
 
-    public JdbcDataSource(DataSource dataSource, Database database) {
+    public JdbcDataSource(DataSource dataSource, DataBaseType databaseType) {
         super(dataSource);
         propertyMap = new HashMap<>();
         this.metaClass = InvokerHelper.getMetaClass(getClass());
-        this.database = database;
+        this.databaseType = databaseType;
     }
 
-    public JdbcDataSource(Connection connection, Database database) {
+    public JdbcDataSource(Connection connection, DataBaseType databaseType) {
         super(connection);
         propertyMap = new HashMap<>();
         this.metaClass = InvokerHelper.getMetaClass(getClass());
-        this.database = database;
+        this.databaseType = databaseType;
     }
 
-    public Database getDataBase(){
-        return database;
+    public DataBaseType getDataBase(){
+        return databaseType;
     }
 
     @Override

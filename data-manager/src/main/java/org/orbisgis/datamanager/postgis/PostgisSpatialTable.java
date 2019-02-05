@@ -36,57 +36,29 @@
  */
 package org.orbisgis.datamanager.postgis;
 
-import groovy.lang.MetaClass;
-import org.codehaus.groovy.runtime.InvokerHelper;
-import org.h2gis.utilities.SFSUtilities;
+import org.h2gis.postgis_jts.StatementWrapper;
 import org.h2gis.utilities.SpatialResultSetMetaData;
 import org.h2gis.utilities.TableLocation;
-import org.locationtech.jts.geom.Geometry;
 import org.orbisgis.datamanager.JdbcDataSource;
-import org.orbisgis.datamanager.dsl.ConditionOrOptionBuilder;
-import org.orbisgis.datamanager.dsl.OptionBuilder;
-import org.orbisgis.datamanager.dsl.WhereBuilder;
-import org.orbisgis.datamanager.io.IOMethods;
-import org.orbisgis.datamanagerapi.dataset.Database;
-import org.orbisgis.datamanagerapi.dataset.IJdbcTable;
+import org.orbisgis.datamanager.JdbcSpatialTable;
+import org.orbisgis.datamanagerapi.dataset.DataBaseType;
 import org.orbisgis.datamanagerapi.dataset.ISpatialTable;
-import org.h2gis.postgis_jts.ResultSetMetaDataWrapper;
-import org.h2gis.postgis_jts.StatementWrapper;
 import org.orbisgis.datamanagerapi.dataset.ITable;
-import org.orbisgis.datamanagerapi.dsl.IConditionOrOptionBuilder;
-import org.orbisgis.datamanagerapi.dsl.IOptionBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import org.h2gis.utilities.JDBCUtilities;
 
 /**
  * @author Erwan Bocher (CNRS)
  * @author Sylvain PALOMINOS (UBS 2018-2019)
  */
-public class PostgisSpatialTable extends SpatialResultSetWrapper implements ISpatialTable, IJdbcTable {
+public class PostgisSpatialTable extends JdbcSpatialTable {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PostgisSpatialTable.class);
 
-    /** Type of the database */
-    private Database dataBase;
-    /** Table location */
-    private TableLocation tableLocation;
-    /** MetaClass use for groovy methods/properties binding */
-    private MetaClass metaClass;
-    /** Map of the properties */
-    private Map<String, Object> propertyMap;
-    /** Filter query */
-    private StringBuilder query = new StringBuilder();
-    /** DataSource to execute query */
-    private JdbcDataSource jdbcDataSource;
+    private SpatialResultSetWrapper resultSetWrapper;
 
     /**
      * Main constructor.
@@ -96,69 +68,25 @@ public class PostgisSpatialTable extends SpatialResultSetWrapper implements ISpa
      * @param statement Statement used to request the database.
      */
     public PostgisSpatialTable(TableLocation tableLocation, ResultSet resultSet, StatementWrapper statement,
-                                  JdbcDataSource jdbcDataSource) {
-        super(resultSet, statement);
+                             JdbcDataSource jdbcDataSource) {
+        super(DataBaseType.POSTGIS, jdbcDataSource, tableLocation);
         try {
             resultSet.beforeFirst();
         } catch (SQLException e) {
             LOGGER.error("Unable to go before the first ResultSet row.\n" + e.getLocalizedMessage());
         }
-        this.tableLocation = tableLocation;
-        this.dataBase = Database.POSTGIS;
-        this.metaClass = InvokerHelper.getMetaClass(getClass());
-        this.propertyMap = new HashMap<>();
-        this.jdbcDataSource = jdbcDataSource;
+        resultSetWrapper = new SpatialResultSetWrapper(resultSet, statement);
     }
 
     @Override
-    public Geometry getGeometry(int columnIndex){
-        try {
-            return super.getGeometry(columnIndex);
-        } catch (SQLException e) {
-            LOGGER.error("Unable to get the geometry at '" + columnIndex + "'.\n" + e.getLocalizedMessage());
-        }
-        return null;
-    }
-
-    @Override
-    public Geometry getGeometry(String columnLabel){
-        try {
-            return super.getGeometry(columnLabel);
-        } catch (SQLException e) {
-            LOGGER.error("Unable to get the geometry of '" + columnLabel + "'.\n" + e.getLocalizedMessage());
-        }
-        return null;
-    }
-
-    @Override
-    public Geometry getGeometry(){
-        try {
-            return super.getGeometry();
-        } catch (SQLException e) {
-            LOGGER.error("Unable to get the geometry.\n" + e.getLocalizedMessage());
-        }
-        return null;
-    }
-
-    @Override
-    public void setProperty(String propertyName, Object newValue) {
-        propertyMap.put(propertyName, newValue);
-    }
-
-    @Override
-    public MetaClass getMetaClass() {
-        return metaClass;
-    }
-
-    @Override
-    public void setMetaClass(MetaClass metaClass) {
-        this.metaClass = metaClass;
+    protected ResultSet getResultSet() {
+        return resultSetWrapper;
     }
 
     @Override
     public SpatialResultSetMetaData getMetadata(){
         try {
-            return super.getMetaData().unwrap(SpatialResultSetMetaData.class);
+            return getResultSet().getMetaData().unwrap(SpatialResultSetMetaData.class);
         } catch (SQLException e) {
             LOGGER.error("Unable to get the metadata.\n" + e.getLocalizedMessage());
             return null;
@@ -166,151 +94,18 @@ public class PostgisSpatialTable extends SpatialResultSetWrapper implements ISpa
     }
 
     @Override
-    public TableLocation getTableLocation() {
-        return tableLocation;
-    }
-
-    @Override
-    public Database getDbType() {
-        return dataBase;
-    }
-
-    @Override
-    public Map<String, Object> getPropertyMap() {
-        return propertyMap;
-    }
-    
-    @Override
-    public Collection<String> getColumnNames() {
-        try {
-            return JDBCUtilities.getFieldNames(super.getMetaData());
-        } catch (SQLException e) {
-            LOGGER.error("Unable to get the column names.\n" + e.getLocalizedMessage());
-            return new ArrayList<>();
-        }
-    }
-
-    @Override
-    public boolean save(String filePath) {
-        return save(filePath, null);
-    }
-
-    @Override
-    public boolean save(String filePath, String encoding) {
-        try {
-            return IOMethods.saveAsFile(getStatement().getConnection(), getTableLocation().toString(false), filePath,
-                    encoding);
-        } catch (SQLException e) {
-            LOGGER.error("Cannot save the table.\n" + e.getLocalizedMessage());
-            return false;
-        }
-    }
-
-    private String getQuery(){
-        return "SELECT * FROM " + tableLocation.getTable().toUpperCase();
-    }
-
-    @Override
-    public IConditionOrOptionBuilder where(String condition) {
-        return new WhereBuilder(getQuery(), jdbcDataSource).where(condition);
-    }
-
-    @Override
-    public IOptionBuilder groupBy(String... fields) {
-        return new OptionBuilder(getQuery(), jdbcDataSource).groupBy(fields);
-    }
-
-    @Override
-    public IOptionBuilder orderBy(Map<String, Order> orderByMap) {
-        return new OptionBuilder(getQuery(), jdbcDataSource).orderBy(orderByMap);
-    }
-
-    @Override
-    public IOptionBuilder orderBy(String field, Order order) {
-        return new OptionBuilder(getQuery(), jdbcDataSource).orderBy(field, order);
-    }
-
-    @Override
-    public IOptionBuilder orderBy(String field) {
-        return new OptionBuilder(getQuery(), jdbcDataSource).orderBy(field);
-    }
-
-    @Override
-    public IOptionBuilder limit(int limitCount) {
-        return new OptionBuilder(getQuery(), jdbcDataSource).limit(limitCount);
-    }
-
-    @Override
     public Object asType(Class clazz) {
         try {
             if (clazz == ITable.class || clazz == PostgisTable.class) {
-                return new PostgisTable(tableLocation, this, (StatementWrapper)this.getStatement(), jdbcDataSource);
+                return new PostgisTable(getTableLocation(), this, (StatementWrapper)this.getStatement(),
+                        getJdbcDataSource());
             } else if (clazz == ISpatialTable.class || clazz == PostgisSpatialTable.class) {
-                return new PostgisSpatialTable(tableLocation, this, (StatementWrapper)this.getStatement(),
-                        jdbcDataSource);
+                return new PostgisSpatialTable(getTableLocation(), this, (StatementWrapper)this.getStatement(),
+                        getJdbcDataSource());
             }
         } catch (SQLException e) {
             LOGGER.error("Unable to cast object.\n" + e.getLocalizedMessage());
         }
         return null;
-    }
-
-    @Override
-    public ITable getTable() {
-        return (ITable)asType(ITable.class);
-    }
-
-    @Override
-    public ISpatialTable getSpatialTable() {
-        return (ISpatialTable)asType(ISpatialTable.class);
-    }
-
-    /**
-     * SpatialResultSetMetadata implementation compatible with postgis database.
-     */
-    //TODO move to the postgis-jts project.
-    private class SpatialResultSetMetaDataImpl extends ResultSetMetaDataWrapper implements SpatialResultSetMetaData {
-        private int firstGeometryFieldIndex = -1;
-        private StatementWrapper statement;
-
-        public SpatialResultSetMetaDataImpl(ResultSetMetaData resultSetMetaData, StatementWrapper statement) {
-            super(resultSetMetaData);
-            this.statement = statement;
-        }
-
-        public int getFirstGeometryFieldIndex() throws SQLException {
-            if (this.firstGeometryFieldIndex == -1) {
-                for(int idColumn = 1; idColumn <= this.getColumnCount(); ++idColumn) {
-                    if (this.getColumnTypeName(idColumn).equalsIgnoreCase("geometry")) {
-                        this.firstGeometryFieldIndex = idColumn;
-                        break;
-                    }
-                }
-            }
-
-            return this.firstGeometryFieldIndex;
-        }
-
-        public int getGeometryType() throws SQLException {
-            return this.getGeometryType(this.getFirstGeometryFieldIndex());
-        }
-
-        public int getGeometryType(int column) throws SQLException {
-            return SFSUtilities.getGeometryType(this.statement.getConnection(),
-                    new TableLocation(this.getCatalogName(column), this.getSchemaName(column),
-                            this.getTableName(column)), this.getColumnName(column));
-        }
-
-        public <T> T unwrap(Class<T> iface) throws SQLException {
-            if (iface.isInstance(this)) {
-                try {
-                    return iface.cast(this);
-                } catch (ClassCastException var3) {
-                    throw new SQLException(var3);
-                }
-            } else {
-                return super.unwrap(iface);
-            }
-        }
     }
 }

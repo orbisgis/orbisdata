@@ -7,7 +7,7 @@ import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.TableLocation;
 import org.orbisgis.datamanager.JdbcDataSource;
-import org.orbisgis.datamanagerapi.dataset.Database;
+import org.orbisgis.datamanagerapi.dataset.DataBaseType;
 import org.orbisgis.datamanagerapi.dataset.IDataSet;
 import org.orbisgis.datamanagerapi.dataset.ISpatialTable;
 import org.orbisgis.datamanagerapi.dataset.ITable;
@@ -46,7 +46,7 @@ public class POSTGIS extends JdbcDataSource {
      * @param connection Connection to the database.
      */
     private POSTGIS(Connection connection) {
-        super(connection, Database.POSTGIS);
+        super(connection, DataBaseType.POSTGIS);
         connectionWrapper = (ConnectionWrapper) connection;
     }
 

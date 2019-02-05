@@ -42,7 +42,6 @@ import org.h2gis.utilities.wrapper.ConnectionWrapper;
 import org.h2gis.utilities.wrapper.StatementWrapper;
 import org.orbisgis.datamanager.JdbcDataSource;
 import org.orbisgis.datamanagerapi.dataset.*;
-import org.osgi.service.jdbc.DataSourceFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -78,7 +77,7 @@ public class H2GIS extends JdbcDataSource {
      * @param connection Connection to the database.
      */
     private H2GIS(Connection connection) {
-        super(connection, Database.H2GIS);
+        super(connection, DataBaseType.H2GIS);
         connectionWrapper = (ConnectionWrapper) connection;
     }
 
@@ -127,7 +126,7 @@ public class H2GIS extends JdbcDataSource {
         try {
             isH2 = JDBCUtilities.isH2DataBase(connection.getMetaData());
         } catch (SQLException e) {
-            LOGGER.error("Unable to get Database metadata.\n" + e.getLocalizedMessage());
+            LOGGER.error("Unable to get DataBaseType metadata.\n" + e.getLocalizedMessage());
             return null;
         }
         boolean tableExists;

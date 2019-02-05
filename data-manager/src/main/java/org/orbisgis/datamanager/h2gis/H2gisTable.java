@@ -204,9 +204,10 @@ public class H2gisTable extends ResultSetWrapper implements IJdbcTable {
     public Object asType(Class clazz) {
         try {
             if (clazz == ITable.class || clazz == H2gisTable.class) {
-                return new H2gisTable(tableLocation, this, this.getStatement().unwrap(StatementWrapper.class), jdbcDataSource);
+                return new H2gisTable(tableLocation, this, (StatementWrapper)this.getStatement(), jdbcDataSource);
             } else if (clazz == ISpatialTable.class || clazz == PostgisSpatialTable.class) {
-                return new H2gisSpatialTable(tableLocation, this, this.getStatement().unwrap(StatementWrapper.class), jdbcDataSource);
+                return new H2gisSpatialTable(tableLocation, this, (StatementWrapper)this.getStatement(),
+                        jdbcDataSource);
             }
         } catch (SQLException e) {
             LOGGER.error("Unable to cast object.\n" + e.getLocalizedMessage());

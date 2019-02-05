@@ -202,9 +202,10 @@ public class PostgisTable extends ResultSetWrapper implements IJdbcTable {
     public Object asType(Class clazz) {
         try {
             if (clazz == ITable.class || clazz == PostgisTable.class) {
-                return new PostgisTable(tableLocation, this, this.getStatement().unwrap(StatementWrapper.class), jdbcDataSource);
+                return new PostgisTable(tableLocation, this, (StatementWrapper)this.getStatement(), jdbcDataSource);
             } else if (clazz == ISpatialTable.class || clazz == PostgisSpatialTable.class) {
-                return new PostgisSpatialTable(tableLocation, this, this.getStatement().unwrap(StatementWrapper.class), jdbcDataSource);
+                return new PostgisSpatialTable(tableLocation, this, (StatementWrapper)this.getStatement(),
+                        jdbcDataSource);
             }
         } catch (SQLException e) {
             LOGGER.error("Unable to cast object.\n" + e.getLocalizedMessage());

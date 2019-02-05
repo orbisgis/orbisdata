@@ -36,48 +36,26 @@
  */
 package org.orbisgis.datamanager.h2gis;
 
-import groovy.lang.MetaClass;
-import org.codehaus.groovy.runtime.InvokerHelper;
-import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.TableLocation;
 import org.h2gis.utilities.wrapper.ResultSetWrapper;
 import org.h2gis.utilities.wrapper.StatementWrapper;
 import org.orbisgis.datamanager.JdbcDataSource;
-import org.orbisgis.datamanager.dsl.ConditionOrOptionBuilder;
-import org.orbisgis.datamanager.dsl.OptionBuilder;
-import org.orbisgis.datamanager.dsl.WhereBuilder;
-import org.orbisgis.datamanager.io.IOMethods;
-import org.orbisgis.datamanager.postgis.PostgisSpatialTable;
-import org.orbisgis.datamanager.postgis.PostgisTable;
-import org.orbisgis.datamanagerapi.dataset.Database;
-import org.orbisgis.datamanagerapi.dataset.IJdbcTable;
+import org.orbisgis.datamanager.JdbcTable;
+import org.orbisgis.datamanagerapi.dataset.DataBaseType;
 import org.orbisgis.datamanagerapi.dataset.ISpatialTable;
 import org.orbisgis.datamanagerapi.dataset.ITable;
-import org.orbisgis.datamanagerapi.dsl.IConditionOrOptionBuilder;
-import org.orbisgis.datamanagerapi.dsl.IOptionBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.*;
 
-public class H2gisTable extends ResultSetWrapper implements IJdbcTable {
+public class H2gisTable extends JdbcTable {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(H2gisTable.class);
 
-    /** Type of the database */
-    private Database dataBase;
-    /** Table location */
-    private TableLocation tableLocation;
-    /** MetaClass use for groovy methods/properties binding */
-    private MetaClass metaClass;
-    /** Map of the properties */
-    private Map<String, Object> propertyMap;
-    /** DataSource to execute query */
-    private JdbcDataSource jdbcDataSource;
+    private ResultSetWrapper resultSetWrapper;
 
     /**
      * Main constructor.
@@ -88,38 +66,24 @@ public class H2gisTable extends ResultSetWrapper implements IJdbcTable {
      */
     public H2gisTable(TableLocation tableLocation, ResultSet resultSet, StatementWrapper statement,
                          JdbcDataSource jdbcDataSource) {
-        super(resultSet, statement);
+        super(DataBaseType.H2GIS, jdbcDataSource, tableLocation);
         try {
             resultSet.beforeFirst();
         } catch (SQLException e) {
             LOGGER.error("Unable to go before the first ResultSet row.\n" + e.getLocalizedMessage());
         }
-        this.tableLocation = tableLocation;
-        this.dataBase = Database.H2GIS;
-        this.metaClass = InvokerHelper.getMetaClass(getClass());
-        this.propertyMap = new HashMap<>();
-        this.jdbcDataSource = jdbcDataSource;
+        resultSetWrapper = new ResultSetWrapper(resultSet, statement);
     }
 
     @Override
-    public void setProperty(String propertyName, Object newValue) {
-        propertyMap.put(propertyName, newValue);
-    }
-
-    @Override
-    public MetaClass getMetaClass() {
-        return metaClass;
-    }
-
-    @Override
-    public void setMetaClass(MetaClass metaClass) {
-        this.metaClass = metaClass;
+    protected ResultSet getResultSet() {
+        return resultSetWrapper;
     }
 
     @Override
     public ResultSetMetaData getMetadata(){
         try {
-            return super.getMetaData();
+            return getResultSet().getMetaData();
         } catch (SQLException e) {
             LOGGER.error("Unable to get the metadata.\n" + e.getLocalizedMessage());
             return null;
@@ -127,101 +91,18 @@ public class H2gisTable extends ResultSetWrapper implements IJdbcTable {
     }
 
     @Override
-    public TableLocation getTableLocation() {
-        return tableLocation;
-    }
-
-    @Override
-    public Database getDbType() {
-        return dataBase;
-    }
-
-    @Override
-    public Map<String, Object> getPropertyMap() {
-        return propertyMap;
-    }
-    
-    @Override
-    public Collection<String> getColumnNames() {
-        try {
-            return JDBCUtilities.getFieldNames(super.getMetaData());
-        } catch (SQLException e) {
-            return new ArrayList<>();
-        }
-    }
-
-    @Override
-    public boolean save(String filePath) {
-        return save(filePath, null);
-    }
-
-    @Override
-    public boolean save(String filePath, String encoding) {
-        try {
-            return IOMethods.saveAsFile(getStatement().getConnection(), getTableLocation().toString(true),
-                    filePath,encoding);
-        } catch (SQLException e) {
-            LOGGER.error("Cannot save the table.\n" + e.getLocalizedMessage());
-            return false;
-        }
-    }
-
-    private String getQuery(){
-        return "SELECT * FROM " + tableLocation.getTable().toUpperCase();
-    }
-
-    @Override
-    public IConditionOrOptionBuilder where(String condition) {
-        return new WhereBuilder(getQuery(), jdbcDataSource).where(condition);
-    }
-
-    @Override
-    public IOptionBuilder groupBy(String... fields) {
-        return new OptionBuilder(getQuery(), jdbcDataSource).groupBy(fields);
-    }
-
-    @Override
-    public IOptionBuilder orderBy(Map<String, Order> orderByMap) {
-        return new OptionBuilder(getQuery(), jdbcDataSource).orderBy(orderByMap);
-    }
-
-    @Override
-    public IOptionBuilder orderBy(String field, Order order) {
-        return new OptionBuilder(getQuery(), jdbcDataSource).orderBy(field, order);
-    }
-
-    @Override
-    public IOptionBuilder orderBy(String field) {
-        return new OptionBuilder(getQuery(), jdbcDataSource).orderBy(field);
-    }
-
-    @Override
-    public IOptionBuilder limit(int limitCount) {
-        return new OptionBuilder(getQuery(), jdbcDataSource).limit(limitCount);
-    }
-
-    @Override
     public Object asType(Class clazz) {
         try {
             if (clazz == ITable.class || clazz == H2gisTable.class) {
-                return new H2gisTable(tableLocation, this, (StatementWrapper)this.getStatement(), jdbcDataSource);
-            } else if (clazz == ISpatialTable.class || clazz == PostgisSpatialTable.class) {
-                return new H2gisSpatialTable(tableLocation, this, (StatementWrapper)this.getStatement(),
-                        jdbcDataSource);
+                return new H2gisTable(getTableLocation(), this, (StatementWrapper)this.getStatement(),
+                        getJdbcDataSource());
+            } else if (clazz == ISpatialTable.class || clazz == H2gisSpatialTable.class) {
+                return new H2gisSpatialTable(getTableLocation(), this, (StatementWrapper)this.getStatement(),
+                        getJdbcDataSource());
             }
         } catch (SQLException e) {
             LOGGER.error("Unable to cast object.\n" + e.getLocalizedMessage());
         }
         return null;
-    }
-
-    @Override
-    public ITable getTable() {
-        return (ITable)asType(ITable.class);
-    }
-
-    @Override
-    public ISpatialTable getSpatialTable() {
-        return (ISpatialTable)asType(ISpatialTable.class);
     }
 }

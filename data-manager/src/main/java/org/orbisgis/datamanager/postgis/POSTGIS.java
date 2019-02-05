@@ -7,7 +7,7 @@ import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.TableLocation;
 import org.orbisgis.datamanager.JdbcDataSource;
-import org.orbisgis.datamanagerapi.dataset.Database;
+import org.orbisgis.datamanagerapi.dataset.DataBaseType;
 import org.orbisgis.datamanagerapi.dataset.IDataSet;
 import org.orbisgis.datamanagerapi.dataset.ISpatialTable;
 import org.orbisgis.datamanagerapi.dataset.ITable;
@@ -46,7 +46,7 @@ public class POSTGIS extends JdbcDataSource {
      * @param connection Connection to the database.
      */
     private POSTGIS(Connection connection) {
-        super(connection, Database.POSTGIS);
+        super(connection, DataBaseType.POSTGIS);
         connectionWrapper = (ConnectionWrapper) connection;
     }
 
@@ -162,105 +162,6 @@ public class POSTGIS extends JdbcDataSource {
             return getSpatialTable(dataSetName);
         }
         return getTable(dataSetName);
-    }
-
-    @Override
-    public boolean save(String tableName, String filePath) {
-        return save(tableName,filePath,null);
-    }
-
-    @Override
-    public boolean save(String tableName, String filePath, String encoding) {
-        return IOMethods.saveAsFile(getConnection(), tableName, filePath, encoding);
-    }
-
-    @Override
-    public ITable link(String filePath, String tableName, boolean delete) {
-        LOGGER.error("This feature is not supported");
-        return null;
-    }
-
-    @Override
-    public ITable link(String filePath, String tableName) {
-        LOGGER.error("This feature is not supported");
-        return null;
-    }
-
-    @Override
-    public ITable link(String filePath, boolean delete) {
-        LOGGER.error("This feature is not supported");
-        return null;
-    }
-
-    @Override
-    public ITable link(String filePath) {
-        LOGGER.error("This feature is not supported");
-        return null;
-    }
-
-    @Override
-    public ITable load(String filePath, String tableName, String encoding, boolean delete) {
-        IOMethods.loadFile(filePath, tableName, encoding, delete, this);
-        return getTable(tableName);
-    }
-
-    @Override
-    public ITable load(Map<String, String> properties, String tableName) {
-        LOGGER.error("This feature is not yet supported");
-        return null;
-    }
-
-    @Override
-    public ITable load(Map<String, String> properties, String inputTableName, String outputTableName) {
-        LOGGER.error("This feature is not yet supported");
-        return null;
-    }
-
-    @Override
-    public ITable load(Map<String, String> properties, String inputTableName, boolean delete) {
-        LOGGER.error("This feature is not yet supported");
-        return null;
-    }
-
-    @Override
-    public ITable load(Map<String, String> properties, String inputTableName, String outputTableName, boolean delete) {
-        LOGGER.error("This feature is not yet supported");
-        return null;
-    }
-
-    @Override
-    public ITable load(String filePath, String tableName) {
-        return load(filePath, tableName, null,false);
-    }
-
-    @Override
-    public ITable load(String filePath, String tableName, boolean delete) {
-        return load(filePath, tableName, null, delete);
-    }
-
-    @Override
-    public ITable load(String filePath,boolean delete) {
-        final String name = URIUtilities.fileFromString(filePath).getName();
-        String tableName = name.substring(0, name.lastIndexOf(".")).toUpperCase();
-        if (tableName.matches("^[a-zA-Z][a-zA-Z0-9_]*$")) {
-            return load(filePath,tableName, null, delete);
-        } else {
-            LOGGER.error("Unsupported file characters");
-        }
-        return null;
-    }
-
-    @Override
-    public ITable load(String filePath) {
-        return load(filePath, false);
-    }
-
-    /**
-     * Return the current ConnectionWrapper
-     * @return ConnectionWrapper
-     */
-    public ConnectionWrapper getConnectionWrapper() {
-        return connectionWrapper;
     }
 
 

@@ -42,7 +42,6 @@ import org.h2gis.utilities.wrapper.ConnectionWrapper;
 import org.h2gis.utilities.wrapper.StatementWrapper;
 import org.orbisgis.datamanager.JdbcDataSource;
 import org.orbisgis.datamanagerapi.dataset.*;
-import org.osgi.service.jdbc.DataSourceFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -78,7 +77,7 @@ public class H2GIS extends JdbcDataSource {
      * @param connection Connection to the database.
      */
     private H2GIS(Connection connection) {
-        super(connection, Database.H2GIS);
+        super(connection, DataBaseType.H2GIS);
         connectionWrapper = (ConnectionWrapper) connection;
     }
 
@@ -127,7 +126,7 @@ public class H2GIS extends JdbcDataSource {
         try {
             isH2 = JDBCUtilities.isH2DataBase(connection.getMetaData());
         } catch (SQLException e) {
-            LOGGER.error("Unable to get Database metadata.\n" + e.getLocalizedMessage());
+            LOGGER.error("Unable to get DataBaseType metadata.\n" + e.getLocalizedMessage());
             return null;
         }
         boolean tableExists;
@@ -224,107 +223,5 @@ public class H2GIS extends JdbcDataSource {
             return getSpatialTable(dataSetName);
         }
         return getTable(dataSetName);
-    }
-
-    @Override
-    public boolean save(String tableName, String filePath) {
-        return save(tableName, filePath, null);
-    }
-
-    @Override
-    public boolean save(String tableName, String filePath, String encoding) {
-        return IOMethods.saveAsFile(getConnection(), tableName, filePath, encoding);
-    }
-
-    @Override
-    public ITable link(String filePath, String tableName, boolean delete) {
-        IOMethods.link(filePath, tableName, delete, this);
-        return getTable(tableName);
-    }
-
-    @Override
-    public ITable link(String filePath, String tableName) {
-        return link(filePath, tableName, false);
-    }
-
-    @Override
-    public ITable link(String filePath, boolean delete) {
-        final String name = URIUtilities.fileFromString(filePath).getName();
-        String tableName = name.substring(0, name.lastIndexOf(".")).toUpperCase();
-        if ("^[a-zA-Z][a-zA-Z0-9_]*$".matches(tableName)) {
-            return link(filePath, tableName, delete);
-        } else {
-            LOGGER.error("The file name contains unsupported characters");
-        }
-        return null;
-    }
-
-    @Override
-    public ITable link(String filePath) {
-        return link(filePath, false);
-    }
-
-    @Override
-    public ITable load(String filePath, String tableName, String encoding, boolean delete) {
-        IOMethods.loadFile(filePath, tableName, encoding, delete, this);
-        return getTable(tableName);
-    }
-
-    @Override
-    public ITable load(Map<String, String> properties, String inputTableName) {
-        return load(properties, inputTableName, inputTableName, false);
-    }
-
-    @Override
-    public ITable load(Map<String, String> properties, String inputTableName, boolean delete) {
-        return load(properties, inputTableName, inputTableName, delete);
-    }
-
-    @Override
-    public ITable load(Map<String, String> properties, String inputTableName, String outputTableName) {
-        return load(properties, inputTableName, outputTableName, false);
-    }
-
-    @Override
-    public ITable load(Map<String, String> properties, String inputTableName, String outputTableName, boolean delete) {
-        IOMethods.loadTable(properties, inputTableName, outputTableName, delete, this);
-        return getTable(outputTableName);
-
-    }
-
-    @Override
-    public ITable load(String filePath, String tableName) {
-        return load(filePath, tableName, null, false);
-    }
-
-    @Override
-    public ITable load(String filePath, String tableName, boolean delete) {
-        return load(filePath, tableName, null, delete);
-    }
-
-    @Override
-    public ITable load(String filePath) {
-        return load(filePath, false);
-    }
-
-    @Override
-    public ITable load(String filePath, boolean delete) {
-        final String name = URIUtilities.fileFromString(filePath).getName();
-        String tableName = name.substring(0, name.lastIndexOf(".")).toUpperCase();
-        if (tableName.matches("^[a-zA-Z][a-zA-Z0-9_]*$")) {
-            return load(filePath,tableName, null, delete);
-        } else {
-            LOGGER.error("Unsupported file characters");
-        }
-        return null;
-    }
-
-    /**
-     * Return the current ConnectionWrapper
-     *
-     * @return ConnectionWrapper
-     */
-    public ConnectionWrapper getConnectionWrapper() {
-        return connectionWrapper;
     }
 }

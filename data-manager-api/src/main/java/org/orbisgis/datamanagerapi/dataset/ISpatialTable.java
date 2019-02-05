@@ -46,7 +46,7 @@ import org.locationtech.jts.geom.Geometry;
  * @author Erwan Bocher (CNRS)
  * @author Sylvain PALOMINOS (UBS 2018)
  */
-public interface ISpatialTable extends ITable, SpatialResultSet {
+public interface ISpatialTable extends IJdbcTable, SpatialResultSet {
 
     /**
      * Get the SpatialResultSetMetaData of the DataSet.

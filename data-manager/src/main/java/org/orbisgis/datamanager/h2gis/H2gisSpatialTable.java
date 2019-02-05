@@ -83,8 +83,6 @@ public class H2gisSpatialTable extends SpatialResultSetImpl implements ISpatialT
     private MetaClass metaClass;
     /** Map of the properties */
     private Map<String, Object> propertyMap;
-    /** Filter query */
-    private StringBuilder query = new StringBuilder();
     /** DataSource to execute query */
     private JdbcDataSource jdbcDataSource;
 
@@ -171,7 +169,7 @@ public class H2gisSpatialTable extends SpatialResultSetImpl implements ISpatialT
     }
 
     @Override
-    public Database getDataBase() {
+    public Database getDbType() {
         return dataBase;
     }
 
@@ -198,7 +196,8 @@ public class H2gisSpatialTable extends SpatialResultSetImpl implements ISpatialT
     @Override
     public boolean save(String filePath, String encoding) {
         try {
-            return IOMethods.saveAsFile(getStatement().getConnection(),true, getTableLocation().toString(true),filePath,encoding);
+            return IOMethods.saveAsFile(getStatement().getConnection(), getTableLocation().toString(true),
+                    filePath,encoding);
         } catch (SQLException e) {
             LOGGER.error("Cannot save the table.\n" + e.getLocalizedMessage());
             return false;
@@ -242,10 +241,11 @@ public class H2gisSpatialTable extends SpatialResultSetImpl implements ISpatialT
     @Override
     public Object asType(Class clazz) {
         try {
-            if (clazz == ITable.class || clazz == PostgisTable.class) {
-                return new PostgisTable(tableLocation, this, this.getStatement().unwrap(org.h2gis.postgis_jts.StatementWrapper.class), jdbcDataSource);
+            if (clazz == ITable.class || clazz == H2gisTable.class) {
+                return new H2gisTable(tableLocation, this, (StatementWrapper)this.getStatement(), jdbcDataSource);
             } else if (clazz == ISpatialTable.class || clazz == PostgisSpatialTable.class) {
-                return new PostgisSpatialTable(tableLocation, this, this.getStatement().unwrap(org.h2gis.postgis_jts.StatementWrapper.class), jdbcDataSource);
+                return new H2gisSpatialTable(tableLocation, this, (StatementWrapper)this.getStatement(),
+                        jdbcDataSource);
             }
         } catch (SQLException e) {
             LOGGER.error("Unable to cast object.\n" + e.getLocalizedMessage());

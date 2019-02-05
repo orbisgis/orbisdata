@@ -129,7 +129,7 @@ public class PostgisTable extends ResultSetWrapper implements IJdbcTable {
     }
 
     @Override
-    public Database getDataBase() {
+    public Database getDbType() {
         return dataBase;
     }
 
@@ -156,7 +156,8 @@ public class PostgisTable extends ResultSetWrapper implements IJdbcTable {
     @Override
     public boolean save(String filePath, String encoding) {
         try {
-            return IOMethods.saveAsFile(getStatement().getConnection(),false, getTableLocation().toString(false),filePath,encoding);
+            return IOMethods.saveAsFile(getStatement().getConnection(), getTableLocation().toString(false), filePath,
+                    encoding);
         } catch (SQLException e) {
             LOGGER.error("Cannot save the table.\n" + e.getLocalizedMessage());
             return false;
@@ -201,9 +202,10 @@ public class PostgisTable extends ResultSetWrapper implements IJdbcTable {
     public Object asType(Class clazz) {
         try {
             if (clazz == ITable.class || clazz == PostgisTable.class) {
-                return new PostgisTable(tableLocation, this, this.getStatement().unwrap(StatementWrapper.class), jdbcDataSource);
+                return new PostgisTable(tableLocation, this, (StatementWrapper)this.getStatement(), jdbcDataSource);
             } else if (clazz == ISpatialTable.class || clazz == PostgisSpatialTable.class) {
-                return new PostgisSpatialTable(tableLocation, this, this.getStatement().unwrap(StatementWrapper.class), jdbcDataSource);
+                return new PostgisSpatialTable(tableLocation, this, (StatementWrapper)this.getStatement(),
+                        jdbcDataSource);
             }
         } catch (SQLException e) {
             LOGGER.error("Unable to cast object.\n" + e.getLocalizedMessage());

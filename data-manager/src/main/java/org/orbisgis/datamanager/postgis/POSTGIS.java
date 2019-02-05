@@ -25,7 +25,6 @@ import org.h2gis.postgis_jts.StatementWrapper;
 import org.h2gis.postgis_jts_osgi.DataSourceFactoryImpl;
 import org.h2gis.utilities.URIUtilities;
 import org.orbisgis.datamanager.io.IOMethods;
-import org.orbisgis.datamanagerapi.dataset.ITableWrapper;
 
 /**
  * Implementation of the IJdbcDataSource interface dedicated to the usage of an postgres/postgis database.
@@ -60,13 +59,13 @@ public class POSTGIS extends JdbcDataSource {
     public static POSTGIS open(String fileName) {
         File file = URIUtilities.fileFromString(fileName);
         try {
-            if (FileUtil.isFileImportable(file, "properties")) {
+            if (FileUtil.isExtensionWellFormated(file, "properties")) {
                 Properties prop = new Properties();
                 FileInputStream fous = new FileInputStream(file);
                 prop.load(fous);
                 return open(prop);
             }
-        } catch (SQLException | IOException e) {
+        } catch (IOException e) {
             LOGGER.error("Unable to read the properties file.\n" + e.getLocalizedMessage());
             return null;
         }
@@ -172,79 +171,87 @@ public class POSTGIS extends JdbcDataSource {
 
     @Override
     public boolean save(String tableName, String filePath, String encoding) {
-        return IOMethods.saveAsFile(getConnection(), false, tableName, filePath, encoding);
+        return IOMethods.saveAsFile(getConnection(), tableName, filePath, encoding);
     }
 
     @Override
-    public ITableWrapper link(String filePath, String tableName, boolean delete) {
+    public ITable link(String filePath, String tableName, boolean delete) {
         LOGGER.error("This feature is not supported");
         return null;
     }
 
     @Override
-    public ITableWrapper link(String filePath, String tableName) {
+    public ITable link(String filePath, String tableName) {
         LOGGER.error("This feature is not supported");
         return null;
     }
 
     @Override
-    public ITableWrapper link(String filePath, boolean delete) {
+    public ITable link(String filePath, boolean delete) {
         LOGGER.error("This feature is not supported");
         return null;
     }
 
     @Override
-    public ITableWrapper link(String filePath) {
+    public ITable link(String filePath) {
         LOGGER.error("This feature is not supported");
         return null;
     }
 
     @Override
-    public ITableWrapper load(String filePath, String tableName, String encoding, boolean delete) {
-        return new PostgisLoad(filePath,tableName,encoding,delete, this);
+    public ITable load(String filePath, String tableName, String encoding, boolean delete) {
+        IOMethods.loadFile(filePath, tableName, encoding, delete, this);
+        return getTable(tableName);
     }
 
     @Override
-    public ITableWrapper load(Map<String, String> properties, String tableName) {
+    public ITable load(Map<String, String> properties, String tableName) {
         LOGGER.error("This feature is not yet supported");
         return null;
     }
 
     @Override
-    public ITableWrapper load(Map<String, String> properties, String inputTableName, String outputTableName) {
+    public ITable load(Map<String, String> properties, String inputTableName, String outputTableName) {
         LOGGER.error("This feature is not yet supported");
         return null;
     }
 
     @Override
-    public ITableWrapper load(Map<String, String> properties, String inputTableName, boolean delete) {
+    public ITable load(Map<String, String> properties, String inputTableName, boolean delete) {
         LOGGER.error("This feature is not yet supported");
         return null;
     }
 
     @Override
-    public ITableWrapper load(Map<String, String> properties, String inputTableName, String outputTableName, boolean delete) {
+    public ITable load(Map<String, String> properties, String inputTableName, String outputTableName, boolean delete) {
         LOGGER.error("This feature is not yet supported");
         return null;
     }
 
     @Override
-    public ITableWrapper load(String filePath, String tableName) {
+    public ITable load(String filePath, String tableName) {
         return load(filePath, tableName, null,false);
     }
 
     @Override
-    public ITableWrapper load(String filePath, String tableName, boolean delete) {
+    public ITable load(String filePath, String tableName, boolean delete) {
         return load(filePath, tableName, null, delete);
     }
 
     @Override
-    public ITableWrapper load(String filePath,boolean delete) {
-        return new PostgisLoad(filePath, delete, this);
+    public ITable load(String filePath,boolean delete) {
+        final String name = URIUtilities.fileFromString(filePath).getName();
+        String tableName = name.substring(0, name.lastIndexOf(".")).toUpperCase();
+        if (tableName.matches("^[a-zA-Z][a-zA-Z0-9_]*$")) {
+            return load(filePath,tableName, null, delete);
+        } else {
+            LOGGER.error("Unsupported file characters");
+        }
+        return null;
     }
 
     @Override
-    public ITableWrapper load(String filePath) {
+    public ITable load(String filePath) {
         return load(filePath, false);
     }
 

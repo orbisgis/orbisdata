@@ -39,6 +39,7 @@ package org.orbisgis.datamanager;
 import groovy.lang.Closure;
 import org.junit.jupiter.api.Test;
 import org.orbisgis.datamanager.h2gis.H2GIS;
+import org.orbisgis.datamanagerapi.dataset.IJdbcTable;
 import org.orbisgis.datamanagerapi.dataset.ISpatialTable;
 import org.orbisgis.datamanagerapi.dataset.ITable;
 import org.osgi.service.jdbc.DataSourceFactory;
@@ -207,8 +208,8 @@ public class H2GISTests {
             @Override
             public Object call(Object argument) {
                 try {
-                    values.add(((ITable)argument).getInt(1));
-                    values.add(((ITable)argument).getInt(2));
+                    values.add(((IJdbcTable)argument).getInt(1));
+                    values.add(((IJdbcTable)argument).getInt(2));
                 } catch (SQLException e) {
                     e.printStackTrace();
                 }
@@ -232,7 +233,7 @@ public class H2GISTests {
             @Override
             public Object call(Object argument) {
                 try {
-                    values2.add(((ITable)argument).getInt(1));
+                    values2.add(((IJdbcTable)argument).getInt(1));
                 } catch (SQLException e) {
                     e.printStackTrace();
                 }
@@ -257,7 +258,7 @@ public class H2GISTests {
             @Override
             public Object call(Object argument) {
                 try {
-                    values3.add(((ITable)argument).getInt(1));
+                    values3.add(((IJdbcTable)argument).getInt(1));
                 } catch (SQLException e) {
                     e.printStackTrace();
                 }

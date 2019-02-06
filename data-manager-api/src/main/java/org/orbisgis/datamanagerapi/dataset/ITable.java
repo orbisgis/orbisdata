@@ -49,7 +49,7 @@ import java.util.Collection;
  * @author Erwan Bocher (CNRS)
  * @author Sylvain PALOMINOS (UBS 2018)
  */
-public interface ITable extends IDataSet, ResultSet, IWhereBuilderOrOptionBuilder {
+public interface ITable extends IDataSet {
 
     /**
      * Apply the given closure to each row.
@@ -57,14 +57,6 @@ public interface ITable extends IDataSet, ResultSet, IWhereBuilderOrOptionBuilde
      * @param closure Closure to apply to each row.
      */
     void eachRow(Closure closure);
-
-    /**
-     * Get the ResultSetMetaData of the DataSet.
-     *
-     * @return The metadata object.
-     */
-    @Override
-    ResultSetMetaData getMetadata();
     
     /**
      * Get all column names from the underlying table

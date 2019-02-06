@@ -52,7 +52,7 @@ public interface IDataSet extends Iterable<Object> {
     String getLocation();
 
     /**
-     * Get the name of the DataSet.
+     * Get the human readable name of the DataSet.
      *
      * @return The name of the DataSet.
      */

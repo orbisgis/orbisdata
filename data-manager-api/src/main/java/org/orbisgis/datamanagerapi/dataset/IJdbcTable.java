@@ -39,16 +39,19 @@ package org.orbisgis.datamanagerapi.dataset;
 import groovy.lang.Closure;
 import groovy.lang.GroovyObject;
 import org.h2gis.utilities.TableLocation;
+import org.orbisgis.datamanagerapi.dsl.IWhereBuilderOrOptionBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.Iterator;
 import java.util.Map;
 
-public interface IJdbcTable extends ITable, GroovyObject {
+public interface IJdbcTable extends ITable, GroovyObject, ResultSet, IWhereBuilderOrOptionBuilder {
 
     Logger LOGGER = LoggerFactory.getLogger(IJdbcTable.class);
     String META_PROPERTY = "meta";
@@ -73,6 +76,14 @@ public interface IJdbcTable extends ITable, GroovyObject {
      * @return Map of the properties.
      */
     Map<String, Object> getPropertyMap();
+
+    /**
+     * Get the ResultSetMetaData of the DataSet.
+     *
+     * @return The metadata object.
+     */
+    @Override
+    ResultSetMetaData getMetadata();
 
     @Override
     default String getLocation() {

@@ -110,14 +110,8 @@ public class POSTGIS extends JdbcDataSource {
             LOGGER.error("Unable to create Statement.\n"+e.getLocalizedMessage());
             return null;
         }
-        ResultSet rs;
-        try {
-            rs = statement.executeQuery(String.format("SELECT * FROM %s", tableName));
-        } catch (SQLException e) {
-            LOGGER.error("Unable execute query.\n"+e.getLocalizedMessage());
-            return null;
-        }
-        return new PostgisTable(new TableLocation(tableName), rs, statement, this);
+        String query = String.format("SELECT * FROM %s", tableName);
+        return new PostgisTable(new TableLocation(tableName), query, statement, this);
     }
 
     @Override
@@ -129,14 +123,8 @@ public class POSTGIS extends JdbcDataSource {
             LOGGER.error("Unable to create Statement.\n"+e.getLocalizedMessage());
             return null;
         }
-        ResultSet rs;
-        try {
-            rs = statement.executeQuery(String.format("SELECT * FROM %s", tableName));
-        } catch (SQLException e) {
-            LOGGER.error("Unable execute query.\n"+e.getLocalizedMessage());
-            return null;
-        }
-        return new PostgisSpatialTable(new TableLocation(tableName), rs, statement, this);
+        String query = String.format("SELECT * FROM %s", tableName);
+        return new PostgisSpatialTable(new TableLocation(tableName), query, statement, this);
     }
 
     @Override

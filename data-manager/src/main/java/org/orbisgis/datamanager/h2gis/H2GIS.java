@@ -83,8 +83,10 @@ public class H2GIS extends JdbcDataSource {
 
     /**
      * Create an instance of H2GIS from properties
-     * @param fileName
-     * @return
+     *
+     * @param fileName .properties file containing the information for the DataBase opening.
+     *
+     * @return H2GIS object if the DataBase has been successfully open, null otherwise.
      */
     public static H2GIS open(String fileName) {
         File file = URIUtilities.fileFromString(fileName);
@@ -103,8 +105,10 @@ public class H2GIS extends JdbcDataSource {
 
     /**
      * Create an instance of H2GIS from properties
-     * @param properties
-     * @return
+     *
+     * @param properties Properties for the opening of the DataBase.
+     *
+     * @return H2GIS object if the DataBase has been successfully open, null otherwise.
      */
     public static H2GIS open(Properties properties) {
         Connection connection;
@@ -171,14 +175,8 @@ public class H2GIS extends JdbcDataSource {
             LOGGER.error("Unable to create Statement.\n"+e.getLocalizedMessage());
             return null;
         }
-        ResultSet rs;
-        try {
-            rs = statement.executeQuery(String.format("SELECT * FROM %s", tableName));
-        } catch (SQLException e) {
-            LOGGER.error("Unable execute query.\n"+e.getLocalizedMessage());
-            return null;
-        }
-        return new H2gisTable(new TableLocation(tableName), rs, statement, this);
+        String query = String.format("SELECT * FROM %s", tableName);
+        return new H2gisTable(new TableLocation(tableName), query, statement, this);
     }
 
     @Override
@@ -190,14 +188,8 @@ public class H2GIS extends JdbcDataSource {
             LOGGER.error("Unable to create Statement.\n"+e.getLocalizedMessage());
             return null;
         }
-        ResultSet rs;
-        try {
-            rs = statement.executeQuery(String.format("SELECT * FROM %s", tableName));
-        } catch (SQLException e) {
-            LOGGER.error("Unable execute query.\n"+e.getLocalizedMessage());
-            return null;
-        }
-        return new H2gisSpatialTable(new TableLocation(tableName), rs, statement, this);
+        String query = String.format("SELECT * FROM %s", tableName);
+        return new H2gisSpatialTable(new TableLocation(tableName), query, statement, this);
     }
 
     @Override

@@ -98,7 +98,7 @@ public interface IJdbcTable extends ITable, GroovyObject, ResultSet, IWhereBuild
     @Override
     default Iterator<Object> iterator() {
         return new ResultSetIterator(this);
-    }   
+    }
 
     @Override
     default void eachRow(Closure closure){

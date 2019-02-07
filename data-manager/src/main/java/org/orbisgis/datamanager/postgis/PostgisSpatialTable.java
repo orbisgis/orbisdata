@@ -58,29 +58,36 @@ public class PostgisSpatialTable extends JdbcSpatialTable {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PostgisSpatialTable.class);
 
-    private SpatialResultSetWrapper resultSetWrapper;
-
     /**
      * Main constructor.
      *
      * @param tableLocation TableLocation that identify the represented table.
-     * @param resultSet ResultSet containing the data of the table.
+     * @param baseQuery Query for the creation of the ResultSet
      * @param statement Statement used to request the database.
+     * @param jdbcDataSource DataSource to use for the creation of the resultSet.
      */
-    public PostgisSpatialTable(TableLocation tableLocation, ResultSet resultSet, StatementWrapper statement,
-                             JdbcDataSource jdbcDataSource) {
-        super(DataBaseType.POSTGIS, jdbcDataSource, tableLocation);
-        try {
-            resultSet.beforeFirst();
-        } catch (SQLException e) {
-            LOGGER.error("Unable to go before the first ResultSet row.\n" + e.getLocalizedMessage());
-        }
-        resultSetWrapper = new SpatialResultSetWrapper(resultSet, statement);
+    public PostgisSpatialTable(TableLocation tableLocation, String baseQuery, StatementWrapper statement,
+                               JdbcDataSource jdbcDataSource) {
+        super(DataBaseType.H2GIS, jdbcDataSource, tableLocation, statement, baseQuery);
     }
 
     @Override
-    protected ResultSet getResultSet() {
-        return resultSetWrapper;
+    protected ResultSet getResultSet(){
+        if(resultSet == null) {
+            try {
+                resultSet = getStatement().executeQuery(getBaseQuery());
+            } catch (SQLException e) {
+                LOGGER.error("Unable to execute the query '"+getBaseQuery()+"'.\n"+e.getLocalizedMessage());
+                return null;
+            }
+            try {
+                resultSet.beforeFirst();
+            } catch (SQLException e) {
+                LOGGER.error("Unable to go before the first ResultSet row.\n" + e.getLocalizedMessage());
+                return null;
+            }
+        }
+        return new SpatialResultSetWrapper(resultSet, (StatementWrapper) getStatement());
     }
 
     @Override
@@ -95,17 +102,14 @@ public class PostgisSpatialTable extends JdbcSpatialTable {
 
     @Override
     public Object asType(Class clazz) {
-        try {
-            if (clazz == ITable.class || clazz == PostgisTable.class) {
-                return new PostgisTable(getTableLocation(), this, (StatementWrapper)this.getStatement(),
-                        getJdbcDataSource());
-            } else if (clazz == ISpatialTable.class || clazz == PostgisSpatialTable.class) {
-                return new PostgisSpatialTable(getTableLocation(), this, (StatementWrapper)this.getStatement(),
-                        getJdbcDataSource());
-            }
-        } catch (SQLException e) {
-            LOGGER.error("Unable to cast object.\n" + e.getLocalizedMessage());
+        if (clazz == ITable.class || clazz == PostgisTable.class) {
+            return new PostgisTable(getTableLocation(), getBaseQuery(), (StatementWrapper)getStatement(),
+                    getJdbcDataSource());
+        } else if (clazz == ISpatialTable.class || clazz == PostgisSpatialTable.class) {
+            return new PostgisSpatialTable(getTableLocation(), getBaseQuery(), (StatementWrapper)getStatement(),
+                    getJdbcDataSource());
+        } else {
+            return null;
         }
-        return null;
     }
 }

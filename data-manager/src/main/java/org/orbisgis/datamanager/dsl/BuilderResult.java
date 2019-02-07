@@ -93,13 +93,6 @@ public abstract class BuilderResult implements IBuilderResult {
             LOGGER.error("Unable to create the StatementWrapper.\n" + e.getLocalizedMessage());
             return null;
         }
-        ResultSet resultSet;
-        try {
-            resultSet = statement.executeQuery(getQuery());
-        } catch (SQLException e) {
-            LOGGER.error("Unable to execute the query.\n" + e.getLocalizedMessage());
-            return null;
-        }
         String name = "TABLE_"+ UUID.randomUUID().toString();
         switch(getDataSource().getDataBaseType()) {
             case H2GIS:
@@ -108,11 +101,11 @@ public abstract class BuilderResult implements IBuilderResult {
                     break;
                 }
                 if(clazz == ISpatialTable.class) {
-                    return new H2gisSpatialTable(new TableLocation(name), resultSet, (StatementWrapper) statement,
+                    return new H2gisSpatialTable(new TableLocation(name), getQuery(), (StatementWrapper) statement,
                             getDataSource());
                 }
                 else{
-                    return new H2gisTable(new TableLocation(name), resultSet, (StatementWrapper) statement, getDataSource());
+                    return new H2gisTable(new TableLocation(name), getQuery(), (StatementWrapper) statement, getDataSource());
                 }
             case POSTGIS:
                 if(!(statement instanceof org.h2gis.postgis_jts.StatementWrapper)){
@@ -120,11 +113,11 @@ public abstract class BuilderResult implements IBuilderResult {
                     break;
                 }
                 if(clazz == ISpatialTable.class) {
-                    return new PostgisSpatialTable(new TableLocation(name), resultSet,
+                    return new PostgisSpatialTable(new TableLocation(name), getQuery(),
                             (org.h2gis.postgis_jts.StatementWrapper)statement, getDataSource());
                 }
                 else{
-                    return new PostgisTable(new TableLocation(name), resultSet,
+                    return new PostgisTable(new TableLocation(name), getQuery(),
                             (org.h2gis.postgis_jts.StatementWrapper)statement, getDataSource());
                 }
         }

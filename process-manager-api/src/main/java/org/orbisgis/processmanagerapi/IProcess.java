@@ -89,4 +89,13 @@ public interface IProcess {
      * @return A Map of the results with the output name as key and the output value as value.
      */
     Map<String, Object> getResults();
+
+    /**
+     * Return the process identifier.
+     *
+     * @return The process identifier.
+     */
+    String getIdentifier();
+    Map<String, Class> getInputs();
+    Map<String, Class> getOutputs();
 }

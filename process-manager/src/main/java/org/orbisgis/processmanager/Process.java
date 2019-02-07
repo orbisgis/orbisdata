@@ -44,6 +44,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 /**
  * Implementation of the IProcess interface dedicated to the local creation and execution of process (no link with
@@ -74,6 +75,8 @@ public class Process implements IProcess {
     private Map<String, Object> resultMap;
     /** Caster used to cast input object into the good class */
     private ICaster caster;
+    /** Unique identifier */
+    private String identifier;
 
     /**
      * Create a new Process with its title, description, keyword array, input map, output map, version
@@ -107,11 +110,12 @@ public class Process implements IProcess {
         this.closure = closure;
         this.resultMap = new HashMap<>();
         this.caster = caster;
+        this.identifier = UUID.randomUUID().toString();
     }
 
     @Override
     public boolean execute(Map<String, Object> inputDataMap) {
-        if(inputDataMap.size() != inputs.size()){
+        if(inputs != null && inputDataMap.size() != inputs.size()){
             LOGGER.error("The number of the input data map and the number of process input are different.");
             return false;
         }
@@ -170,5 +174,20 @@ public class Process implements IProcess {
     @Override
     public Map<String, Object> getResults() {
         return resultMap;
+    }
+
+    @Override
+    public String getIdentifier() {
+        return identifier;
+    }
+
+    @Override
+    public Map<String, Class> getInputs() {
+        return inputs;
+    }
+
+    @Override
+    public Map<String, Class> getOutputs() {
+        return outputs;
     }
 }

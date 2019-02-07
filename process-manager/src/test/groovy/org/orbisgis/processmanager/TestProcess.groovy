@@ -41,13 +41,25 @@ import org.locationtech.jts.geom.Geometry
 import org.locationtech.jts.io.WKTReader
 import org.orbisgis.datamanager.h2gis.H2GIS
 import org.orbisgis.datamanagerapi.dataset.ITable
+import org.orbisgis.processmanagerapi.IProcessFactory
+import org.orbisgis.processmanager.ProcessFactory
 
 import static org.junit.jupiter.api.Assertions.assertEquals
 import static org.junit.jupiter.api.Assertions.assertTrue
 
 class TestProcess {
 
-    private static final ProcessFactory processFactory = new ProcessFactory()
+    private static final IProcessFactory processFactory = new ProcessFactory()
+
+    @Test
+    void test() {
+        def outp1 = "fdfghdfgh"
+        def inp1 = "fdfghdfgh"
+        def outp2 = "fdfghdfgh"
+        def inp2 = "fdfghdfgh"
+        def var = [[out1: outp1, in1: inp1], [out2: outp2, in2: inp2]]
+        println var[0].getClass()
+    }
 
     @Test
     void testSimpleProcess(){
@@ -104,6 +116,16 @@ class TestProcess {
         )
         p.execute([inputA : new WKTReader().read("POINT(1 1)"), distance : 10] )
         assertTrue(p.results.outputA.equals(new WKTReader().read("POLYGON ((11 1, 10.807852804032304 -0.9509032201612824, 10.238795325112868 -2.826834323650898, 9.314696123025453 -4.555702330196022, 8.071067811865476 -6.071067811865475, 6.555702330196023 -7.314696123025453, 4.826834323650898 -8.238795325112868, 2.9509032201612833 -8.807852804032304, 1.0000000000000007 -9, -0.9509032201612819 -8.807852804032304, -2.826834323650897 -8.238795325112868, -4.55570233019602 -7.314696123025454, -6.071067811865475 -6.0710678118654755, -7.314696123025453 -4.555702330196022, -8.238795325112868 -2.8268343236508944, -8.807852804032306 -0.9509032201612773, -9 1.0000000000000075, -8.807852804032303 2.950903220161292, -8.238795325112862 4.826834323650909, -7.3146961230254455 6.555702330196034, -6.071067811865463 8.071067811865486, -4.555702330196008 9.314696123025463, -2.826834323650879 10.238795325112875, -0.9509032201612606 10.807852804032308, 1.0000000000000249 11, 2.950903220161309 10.807852804032299, 4.826834323650925 10.238795325112857, 6.555702330196048 9.314696123025435, 8.071067811865499 8.07106781186545, 9.314696123025472 6.555702330195993, 10.238795325112882 4.826834323650862, 10.807852804032311 2.9509032201612437, 11 1))")))
+    }
+
+    @Test
+    void testMapping(){
+        def pA = processFactory.create("pA", [inA1:String, inA2:String], [outA1:String], {inA1, inA2 ->[outA1:inA1+inA2]})
+        def pB = processFactory.create("pB", [inB1:String], [outB1:String], {inB1 ->[outB1:inB1+inB1]})
+
+        def mapper = new ProcessMapper([[outA1: pA, inB1: pB]])
+        assertTrue mapper.execute([inA1: "t", inA2: "a"])
+        assertEquals "tata", mapper.getResults().outB1
     }
 }
 

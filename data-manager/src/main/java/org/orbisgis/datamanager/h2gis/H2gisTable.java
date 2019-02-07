@@ -51,33 +51,25 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 
+/**
+ * @author Erwan Bocher (CNRS)
+ * @author Sylvain PALOMINOS (UBS 2018-2019)
+ */
 public class H2gisTable extends JdbcTable {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(H2gisTable.class);
-
-    private ResultSetWrapper resultSetWrapper;
 
     /**
      * Main constructor.
      *
      * @param tableLocation TableLocation that identify the represented table.
-     * @param resultSet ResultSet containing the data of the table.
+     * @param baseQuery Query for the creation of the ResultSet
      * @param statement Statement used to request the database.
+     * @param jdbcDataSource DataSource to use for the creation of the resultSet.
      */
-    public H2gisTable(TableLocation tableLocation, ResultSet resultSet, StatementWrapper statement,
-                         JdbcDataSource jdbcDataSource) {
-        super(DataBaseType.H2GIS, jdbcDataSource, tableLocation);
-        try {
-            resultSet.beforeFirst();
-        } catch (SQLException e) {
-            LOGGER.error("Unable to go before the first ResultSet row.\n" + e.getLocalizedMessage());
-        }
-        resultSetWrapper = new ResultSetWrapper(resultSet, statement);
-    }
-
-    @Override
-    protected ResultSet getResultSet() {
-        return resultSetWrapper;
+    public H2gisTable(TableLocation tableLocation, String baseQuery, StatementWrapper statement,
+                      JdbcDataSource jdbcDataSource) {
+        super(DataBaseType.H2GIS, jdbcDataSource, tableLocation, statement, baseQuery);
     }
 
     @Override
@@ -92,17 +84,14 @@ public class H2gisTable extends JdbcTable {
 
     @Override
     public Object asType(Class clazz) {
-        try {
-            if (clazz == ITable.class || clazz == H2gisTable.class) {
-                return new H2gisTable(getTableLocation(), this, (StatementWrapper)this.getStatement(),
-                        getJdbcDataSource());
-            } else if (clazz == ISpatialTable.class || clazz == H2gisSpatialTable.class) {
-                return new H2gisSpatialTable(getTableLocation(), this, (StatementWrapper)this.getStatement(),
-                        getJdbcDataSource());
-            }
-        } catch (SQLException e) {
-            LOGGER.error("Unable to cast object.\n" + e.getLocalizedMessage());
+        if (clazz == ITable.class || clazz == H2gisTable.class) {
+            return new H2gisTable(getTableLocation(), getBaseQuery(), (StatementWrapper)getStatement(),
+                    getJdbcDataSource());
+        } else if (clazz == ISpatialTable.class || clazz == H2gisSpatialTable.class) {
+            return new H2gisSpatialTable(getTableLocation(), getBaseQuery(), (StatementWrapper)getStatement(),
+                    getJdbcDataSource());
+        } else {
+            return null;
         }
-        return null;
     }
 }

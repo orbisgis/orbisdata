@@ -43,13 +43,28 @@ import org.orbisgis.datamanagerapi.dataset.DataBaseType;
 import org.orbisgis.datamanagerapi.dataset.ISpatialTable;
 
 import java.sql.SQLException;
+import java.sql.Statement;
 
 /**
  * Contains the methods which are in common to all the IJdbcTable subclasses.
+ *
+ * @author Erwan Bocher (CNRS)
+ * @author Sylvain PALOMINOS (UBS 2019)
  */
 public abstract class JdbcSpatialTable extends JdbcTable implements ISpatialTable  {
-    public JdbcSpatialTable(DataBaseType dataBaseType, JdbcDataSource jdbcDataSource, TableLocation tableLocation) {
-        super(dataBaseType, jdbcDataSource, tableLocation);
+
+    /**
+     * Main constructor.
+     *
+     * @param dataBaseType Type of the DataBase where this table comes from.
+     * @param tableLocation TableLocation that identify the represented table.
+     * @param baseQuery Query for the creation of the ResultSet
+     * @param statement Statement used to request the database.
+     * @param jdbcDataSource DataSource to use for the creation of the resultSet.
+     */
+    public JdbcSpatialTable(DataBaseType dataBaseType, JdbcDataSource jdbcDataSource, TableLocation tableLocation,
+                            Statement statement, String baseQuery) {
+        super(dataBaseType, jdbcDataSource, tableLocation, statement, baseQuery);
     }
 
     @Override

@@ -73,13 +73,38 @@ public abstract class JdbcTable implements IJdbcTable {
     private TableLocation tableLocation;
     /** Map of the properties */
     private Map<String, Object> propertyMap;
+    /** Statement */
+    private Statement statement;
+    /** Base SQL query for the creation of the ResultSet */
+    private String baseQuery;
 
-    public JdbcTable(DataBaseType dataBaseType, JdbcDataSource jdbcDataSource, TableLocation tableLocation){
+    /**
+     * Main constructor.
+     *
+     * @param dataBaseType Type of the DataBase where this table comes from.
+     * @param tableLocation TableLocation that identify the represented table.
+     * @param baseQuery Query for the creation of the ResultSet
+     * @param statement Statement used to request the database.
+     * @param jdbcDataSource DataSource to use for the creation of the resultSet.
+     */
+    public JdbcTable(DataBaseType dataBaseType, JdbcDataSource jdbcDataSource, TableLocation tableLocation,
+                     Statement statement, String baseQuery){
         this.metaClass = InvokerHelper.getMetaClass(getClass());
         this.dataBaseType = dataBaseType;
         this.jdbcDataSource = jdbcDataSource;
         this.tableLocation = tableLocation;
-        propertyMap = new HashMap<>();
+        this.propertyMap = new HashMap<>();
+        this.statement = statement;
+        this.baseQuery = baseQuery;
+    }
+
+    /**
+     * Return the base query for the creation of the ResultSet.
+     *
+     * @return The base query.
+     */
+    protected String getBaseQuery(){
+        return baseQuery;
     }
 
     /**
@@ -87,7 +112,22 @@ public abstract class JdbcTable implements IJdbcTable {
      *
      * @return The table ResultSet.
      */
-    protected abstract ResultSet getResultSet();
+    protected ResultSet getResultSet(){
+        ResultSet resultSet;
+        try {
+            resultSet = statement.executeQuery(baseQuery);
+        } catch (SQLException e) {
+            LOGGER.error("Unavble to execute the query '"+baseQuery+"'.\n"+e.getLocalizedMessage());
+            return null;
+        }
+        try {
+            resultSet.beforeFirst();
+        } catch (SQLException e) {
+            LOGGER.error("Unable to go before the first ResultSet row.\n" + e.getLocalizedMessage());
+            return null;
+        }
+        return resultSet;
+    }
 
     /**
      * Return the parent DataSource.
@@ -264,6 +304,9 @@ public abstract class JdbcTable implements IJdbcTable {
     }
 
     @Override
+    @Deprecated(
+            since = "1.2"
+    )
     public BigDecimal getBigDecimal(int i, int i1) throws SQLException {
         return getResultSet().getBigDecimal(i, i1);
     }
@@ -294,6 +337,9 @@ public abstract class JdbcTable implements IJdbcTable {
     }
 
     @Override
+    @Deprecated(
+            since = "1.2"
+    )
     public InputStream getUnicodeStream(int i) throws SQLException {
         return getResultSet().getUnicodeStream(i);
     }
@@ -344,6 +390,9 @@ public abstract class JdbcTable implements IJdbcTable {
     }
 
     @Override
+    @Deprecated(
+            since = "1.2"
+    )
     public BigDecimal getBigDecimal(String s, int i) throws SQLException {
         return getResultSet().getBigDecimal(s, i);
     }
@@ -374,6 +423,9 @@ public abstract class JdbcTable implements IJdbcTable {
     }
 
     @Override
+    @Deprecated(
+            since = "1.2"
+    )
     public InputStream getUnicodeStream(String s) throws SQLException {
         return getResultSet().getUnicodeStream(s);
     }
@@ -769,8 +821,8 @@ public abstract class JdbcTable implements IJdbcTable {
     }
 
     @Override
-    public Statement getStatement() throws SQLException {
-        return getResultSet().getStatement();
+    public Statement getStatement() {
+        return statement;
     }
 
     @Override

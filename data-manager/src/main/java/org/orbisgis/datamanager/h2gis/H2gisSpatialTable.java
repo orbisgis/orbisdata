@@ -74,6 +74,25 @@ public class H2gisSpatialTable extends JdbcSpatialTable {
     }
 
     @Override
+    protected ResultSet getResultSet(){
+        if(resultSet == null) {
+            try {
+                resultSet = getStatement().executeQuery(getBaseQuery());
+            } catch (SQLException e) {
+                LOGGER.error("Unable to execute the query '"+getBaseQuery()+"'.\n"+e.getLocalizedMessage());
+                return null;
+            }
+            try {
+                resultSet.beforeFirst();
+            } catch (SQLException e) {
+                LOGGER.error("Unable to go before the first ResultSet row.\n" + e.getLocalizedMessage());
+                return null;
+            }
+        }
+        return new SpatialResultSetImpl(resultSet, (StatementWrapper) getStatement());
+    }
+
+    @Override
     public SpatialResultSetMetaData getMetadata(){
         try {
             return getResultSet().getMetaData().unwrap(SpatialResultSetMetaData.class);

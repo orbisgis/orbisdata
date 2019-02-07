@@ -92,7 +92,6 @@ class GroovyH2GISTest {
         def concat = ""
         h2GIS.getSpatialTable "h2gis" eachRow { row -> concat += "$row.id $row.the_geom $row.geometry\n" }
         assertEquals("1 POINT (10 10) POINT (10 10)\n2 POINT (1 1) POINT (1 1)\n", concat)
-        println(concat)
     }
 
     @Test
@@ -160,7 +159,6 @@ class GroovyH2GISTest {
         def concat = ""
         h2GIS.getSpatialTable "h2gis_imported" eachRow { row -> concat += "$row.id $row.the_geom $row.geometry\n" }
         assertEquals("1 POINT (10 10) POINT (10 10)\n2 POINT (1 1) POINT (1 1)\n", concat)
-        println(concat)
     }
 
     @Test
@@ -177,7 +175,6 @@ class GroovyH2GISTest {
         def concat = ""
         h2GIS.getSpatialTable "h2gis_imported" eachRow { row -> concat += "$row.id $row.the_geom $row.geometry\n" }
         assertEquals("1 POINT (10 10) POINT (10 10)\n2 POINT (1 1) POINT (1 1)\n", concat)
-        println(concat)
     }
 
     @Test
@@ -193,7 +190,6 @@ class GroovyH2GISTest {
         def concat = ""
         h2GIS.getSpatialTable "h2gis_imported" eachRow { row -> concat += "$row.id $row.the_geom $row.geometry\n" }
         assertEquals("1 POINT (10 10) POINT (10 10)\n2 POINT (1 1) POINT (1 1)\n", concat)
-        println(concat)
     }
 
     @Test
@@ -209,7 +205,6 @@ class GroovyH2GISTest {
         def concat = ""
         h2GIS.getSpatialTable "h2gis_imported" eachRow { row -> concat += "$row.id $row.the_geom $row.geometry\n" }
         assertEquals("1 POINT (10 10) POINT (10 10)\n2 POINT (1 1) POINT (1 1)\n", concat)
-        println(concat)
     }
     @Test
     void exportImportGeoJsonShapeFile() {
@@ -226,7 +221,6 @@ class GroovyH2GISTest {
         def concat = ""
         h2GIS.getSpatialTable "h2gis_imported" eachRow { row -> concat += "$row.id $row.the_geom $row.geometry\n" }
         assertEquals("1 POINT (10 10) POINT (10 10)\n2 POINT (1 1) POINT (1 1)\n", concat)
-        println(concat)
     }
 
     @Test
@@ -243,7 +237,6 @@ class GroovyH2GISTest {
         h2GIS.getSpatialTable "h2gis_imported" eachRow { row ->
             concat += "$row.id $row.the_geom\n" }
         assertEquals("1 POINT (10 10)\n2 POINT (1 1)\n", concat)
-        println(concat)
     }
 
     @Test
@@ -345,7 +338,6 @@ class GroovyH2GISTest {
         def concat = ""
         h2GIS.spatialTable "super" eachRow { row -> concat += "$row.id $row.the_geom $row.geometry\n" }
         assertEquals("1 POINT (10 10) POINT (10 10)\n2 POINT (1 1) POINT (1 1)\n", concat)
-        println(concat)
     }
 
     @Test
@@ -363,7 +355,6 @@ class GroovyH2GISTest {
         def concat = ""
         h2GIS.getSpatialTable "super" eachRow { row -> concat += "$row.id $row.the_geom $row.geometry\n" }
         assertEquals("1 POINT (10 10) POINT (10 10)\n2 POINT (1 1) POINT (1 1)\n", concat)
-        println(concat)
     }
 
     @Test
@@ -381,7 +372,6 @@ class GroovyH2GISTest {
         def concat = ""
         h2GIS.getSpatialTable "super" eachRow { row -> concat += "$row.id $row.the_geom $row.geometry\n" }
         assertEquals("1 POINT (10 10) POINT (10 10)\n2 POINT (1 1) POINT (1 1)\n", concat)
-        println(concat)
     }
     
     @Test
@@ -403,7 +393,6 @@ class GroovyH2GISTest {
             assertTrue "$row.the_geom".startsWith("POLYGON ((")
             assertTrue "$row.geometry".startsWith("POLYGON ((")
         }
-        println(concat)
     }
 
 
@@ -412,8 +401,6 @@ class GroovyH2GISTest {
         def h2GIS = H2GIS.open([databaseName: './target/loadH2GIS'])
         def bbox = "(47.63538867628185,-2.126747667789459,47.63620380562177,-2.1253328025341034)"
         def queryURL = "[timeout:900];(node[\"building\"]${bbox};way[\"building\"]${bbox};relation[\"building\"]${bbox};);out;"
-
-        println(queryURL)
 
         def outputOSMFile = new File("target/map.osm")
 
@@ -425,13 +412,11 @@ class GroovyH2GISTest {
 
         connection.setRequestMethod("GET")
 
-        println "Executing query... $queryURL"
         //Save the result in a file
         if (connection.responseCode == 200) {
-            println "Downloading the OSM data from overpass api"
             outputOSMFile << connection.inputStream
         } else {
-            println "Cannot execute the query"
+            fail()
         }
         h2GIS.load(outputOSMFile.absolutePath, 'map', true)
         assertTrue(h2GIS.tableNames.count{it.startsWith('LOADH2GIS.PUBLIC.MAP')}==11 )

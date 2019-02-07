@@ -73,6 +73,25 @@ public class H2gisTable extends JdbcTable {
     }
 
     @Override
+    protected ResultSet getResultSet(){
+        if(resultSet == null) {
+            try {
+                resultSet = getStatement().executeQuery(getBaseQuery());
+            } catch (SQLException e) {
+                LOGGER.error("Unable to execute the query '"+getBaseQuery()+"'.\n"+e.getLocalizedMessage());
+                return null;
+            }
+            try {
+                resultSet.beforeFirst();
+            } catch (SQLException e) {
+                LOGGER.error("Unable to go before the first ResultSet row.\n" + e.getLocalizedMessage());
+                return null;
+            }
+        }
+        return resultSet;
+    }
+
+    @Override
     public ResultSetMetaData getMetadata(){
         try {
             return getResultSet().getMetaData();

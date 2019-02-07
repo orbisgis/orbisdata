@@ -43,10 +43,7 @@ import org.h2gis.utilities.TableLocation;
 import org.orbisgis.datamanager.dsl.OptionBuilder;
 import org.orbisgis.datamanager.dsl.WhereBuilder;
 import org.orbisgis.datamanager.io.IOMethods;
-import org.orbisgis.datamanagerapi.dataset.DataBaseType;
-import org.orbisgis.datamanagerapi.dataset.IJdbcTable;
-import org.orbisgis.datamanagerapi.dataset.ISpatialTable;
-import org.orbisgis.datamanagerapi.dataset.ITable;
+import org.orbisgis.datamanagerapi.dataset.*;
 import org.orbisgis.datamanagerapi.dsl.IConditionOrOptionBuilder;
 import org.orbisgis.datamanagerapi.dsl.IOptionBuilder;
 
@@ -77,6 +74,8 @@ public abstract class JdbcTable implements IJdbcTable {
     private Statement statement;
     /** Base SQL query for the creation of the ResultSet */
     private String baseQuery;
+    /** Cached resultSet */
+    protected ResultSet resultSet;
 
     /**
      * Main constructor.
@@ -112,22 +111,7 @@ public abstract class JdbcTable implements IJdbcTable {
      *
      * @return The table ResultSet.
      */
-    protected ResultSet getResultSet(){
-        ResultSet resultSet;
-        try {
-            resultSet = statement.executeQuery(baseQuery);
-        } catch (SQLException e) {
-            LOGGER.error("Unavble to execute the query '"+baseQuery+"'.\n"+e.getLocalizedMessage());
-            return null;
-        }
-        try {
-            resultSet.beforeFirst();
-        } catch (SQLException e) {
-            LOGGER.error("Unable to go before the first ResultSet row.\n" + e.getLocalizedMessage());
-            return null;
-        }
-        return resultSet;
-    }
+    protected abstract ResultSet getResultSet();
 
     /**
      * Return the parent DataSource.
@@ -228,11 +212,6 @@ public abstract class JdbcTable implements IJdbcTable {
     }
 
     @Override
-    public Object asType(Class clazz) {
-        return null;
-    }
-
-    @Override
     public ITable getTable() {
         return (ITable)asType(ITable.class);
     }
@@ -304,9 +283,7 @@ public abstract class JdbcTable implements IJdbcTable {
     }
 
     @Override
-    @Deprecated(
-            since = "1.2"
-    )
+    @Deprecated
     public BigDecimal getBigDecimal(int i, int i1) throws SQLException {
         return getResultSet().getBigDecimal(i, i1);
     }
@@ -337,9 +314,7 @@ public abstract class JdbcTable implements IJdbcTable {
     }
 
     @Override
-    @Deprecated(
-            since = "1.2"
-    )
+    @Deprecated
     public InputStream getUnicodeStream(int i) throws SQLException {
         return getResultSet().getUnicodeStream(i);
     }
@@ -390,9 +365,7 @@ public abstract class JdbcTable implements IJdbcTable {
     }
 
     @Override
-    @Deprecated(
-            since = "1.2"
-    )
+    @Deprecated
     public BigDecimal getBigDecimal(String s, int i) throws SQLException {
         return getResultSet().getBigDecimal(s, i);
     }
@@ -423,9 +396,7 @@ public abstract class JdbcTable implements IJdbcTable {
     }
 
     @Override
-    @Deprecated(
-            since = "1.2"
-    )
+    @Deprecated
     public InputStream getUnicodeStream(String s) throws SQLException {
         return getResultSet().getUnicodeStream(s);
     }

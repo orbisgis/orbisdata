@@ -15,7 +15,7 @@
  *
  * DataManager API  is distributed under GPL 3 license.
  *
- * Copyright (C) 2018 CNRS (Lab-STICC UMR CNRS 6285)
+ * Copyright (C) 2019 CNRS (Lab-STICC UMR CNRS 6285)
  *
  *
  * DataManager API  is free software: you can redistribute it and/or modify it under the
@@ -41,10 +41,10 @@ import org.h2gis.utilities.SpatialResultSetMetaData;
 import org.locationtech.jts.geom.Geometry;
 
 /**
- * Extension of ITable. A ISpatialTable is a specialisation of ITable with at least one Geometry column.
+ * Extension of {@link ITable}. A {@link ISpatialTable} is a specialisation with at least one Geometry column.
  *
  * @author Erwan Bocher (CNRS)
- * @author Sylvain PALOMINOS (UBS 2018)
+ * @author Sylvain PALOMINOS (UBS 2018-2019)
  */
 public interface ISpatialTable extends IJdbcTable, SpatialResultSet {
 

@@ -15,7 +15,7 @@
  *
  * DataManager API  is distributed under GPL 3 license.
  *
- * Copyright (C) 2018 CNRS (Lab-STICC UMR CNRS 6285)
+ * Copyright (C) 2019 CNRS (Lab-STICC UMR CNRS 6285)
  *
  *
  * DataManager API  is free software: you can redistribute it and/or modify it under the
@@ -42,15 +42,16 @@ import org.orbisgis.datamanagerapi.dataset.IDataSet;
  * Raw source of data.
  *
  * @author Erwan Bocher (CNRS)
- * @author Sylvain PALOMINOS (UBS 2018)
+ * @author Sylvain PALOMINOS (UBS 2018-2019)
  */
 public interface IDataSource {
+
     /**
-     * Return the IDataSet implementation corresponding to the given name.
+     * Return the {@link IDataSet} implementation corresponding to the given name.
      *
-     * @param name Name of the IDataSet.
+     * @param name Name of the {@link IDataSet}.
      *
-     * @return The implementation of IDataSet corresponding to the given name.
+     * @return The implementation of {@link IDataSet} corresponding to the given name.
      */
     IDataSet getDataSet(String name);
 }

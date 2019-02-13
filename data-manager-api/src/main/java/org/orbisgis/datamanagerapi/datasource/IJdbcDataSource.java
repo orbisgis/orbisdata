@@ -15,7 +15,7 @@
  *
  * DataManager API  is distributed under GPL 3 license.
  *
- * Copyright (C) 2018 CNRS (Lab-STICC UMR CNRS 6285)
+ * Copyright (C) 2019 CNRS (Lab-STICC UMR CNRS 6285)
  *
  *
  * DataManager API  is free software: you can redistribute it and/or modify it under the
@@ -39,7 +39,6 @@ package org.orbisgis.datamanagerapi.datasource;
 import groovy.lang.GroovyObject;
 import org.orbisgis.datamanagerapi.dataset.ISpatialTable;
 import org.orbisgis.datamanagerapi.dataset.ITable;
-import org.orbisgis.datamanagerapi.dataset.ITable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,204 +48,237 @@ import java.util.Collection;
 import java.util.Map;
 
 /**
- * Extension of the IDataSource interface dedicated to the usage of a JDBC database.
+ * Extension of the {@link IDataSource} interface dedicated to the usage of a JDBC database as a data source.
  *
  * @author Erwan Bocher (CNRS)
- * @author Sylvain PALOMINOS (UBS 2018)
+ * @author Sylvain PALOMINOS (UBS 2018-2019)
  */
 public interface IJdbcDataSource extends IDataSource, GroovyObject {
 
+    /** Interface {@link Logger} */
     Logger LOGGER = LoggerFactory.getLogger(IJdbcDataSource.class);
 
     /**
-     * Close the underlying datasource
+     * Close the underlying database.
      */
     void close();
 
     /**
-     * Return a {@link ITable} by name
-     * @param tableName Name of the table
-     * @return
+     * Return the {@link ITable} contained by the database with the given name.
+     *
+     * @param tableName Name of the requested table.
+     *
+     * @return The {@link ITable} with the given name or null if no table is found.
      */
     ITable getTable(String tableName);
 
     /**
-     * Return a {@link ISpatialTable} by name
-     * @param tableName Name of the table
-     * @return
+     * Return a {@link ISpatialTable} contained by the database with the given name.
+     *
+     * @param tableName Name of the requested table.
+     *
+     * @return The {@link ISpatialTable} with the given name or null if no table is found.
      */
     ISpatialTable getSpatialTable(String tableName);
 
     /**
-     * Get all table names from the underlying datasource.
-     * @return
+     * Get all table names from the underlying database.
+     *
+     * @return A {@link Collection} containing the names of all the available tables.
      */
     Collection<String> getTableNames();
-    
-    
+
     /**
-     * Load a file to the database
-     * @param filePath the path of the file or URI
+     * Load a file into the database.
+     *
+     * @param filePath Path of the file or its URI.
      */
     ITable load(String filePath);
 
-
     /**
-     * Load a file to the database
-     * @param filePath the path of the file or URI
-     * @param delete true to delete the table if exists
+     * Load a file into the database.
+     *
+     * @param filePath Path of the file or its URI.
+     * @param delete True to delete the table if exists, false otherwise.
      */
     ITable load(String filePath, boolean delete);
-    
-    
+
     /**
-     * Load a file to the database
-     * @param filePath the path of the file or URI
-     * @param tableName the name of the table 
+     * Load a file to the database.
+     *
+     * @param filePath Path of the file or its URI.
+     * @param tableName Name of the table.
      */
     ITable load(String filePath, String tableName);
 
-
     /**
-     * Load a file to the database
-     * @param filePath the path of the file or URI
-     * @param tableName the name of the table
-     * @param delete true to delete the table if exists
+     * Load a file to the database.
+     *
+     * @param filePath Path of the file or its URI.
+     * @param tableName Name of the table.
+     * @param delete True to delete the table if exists, false otherwise.
      */
     ITable load(String filePath, String tableName, boolean delete);
     
     /**
-     * Load a file to the database
-     * @param filePath the path of the file or URI
-     * @param tableName the name of the table 
-     * @param encoding Encoding property.
-     * @param delete true to delete the table if exists
+     * Load a file to the database.
+     *
+     * @param filePath Path of the file or its URI
+     * @param tableName Name of the table
+     * @param encoding Encoding of the loaded file.
+     * @param delete True to delete the table if exists, false otherwise.
      */
     ITable load(String filePath, String tableName, String encoding, boolean delete);
 
-
     /**
-     * Load a table from another database
-     * @param properties to connect to the database
-     * @param inputTableName the name of the table we want to import
+     * Load a table from another database.
+     *
+     * @param properties to connect to the database.
+     * @param inputTableName the name of the table we want to import.
      */
     ITable load(Map<String, String> properties, String inputTableName);
 
 
     /**
-     * Load a table from another database
-     * @param properties to connect to the database
-     * @param inputTableName the name of the table we want to import
-     * @param outputTableName the name of the imported table
+     * Load a table from another database.
+     *
+     * @param properties Properties used to connect to the database.
+     * @param inputTableName Name of the table to import.
+     * @param outputTableName Name of the imported table in the database.
      */
     ITable load(Map<String, String> properties, String inputTableName,String outputTableName);
 
     /**
-     * Load a table from another database
-     * @param properties to connect to the database
-     * @param inputTableName the name of the table we want to import     *
-     * @param delete true to delete the outputTableName if exists
+     * Load a table from another database.
+     *
+     * @param properties Properties used to connect to the database.
+     * @param inputTableName Name of the table to import.
+     * @param delete True to delete the outputTableName if exists, false otherwise.
      */
     ITable load(Map<String, String> properties, String inputTableName, boolean delete);
 
     /**
-     * Load a table from another database
-     * @param properties to connect to the database
-     * @param inputTableName the name of the table we want to import
-     * @param outputTableName the name of the imported table
-     * @param delete true to delete the outputTableName if exists
+     * Load a table from another database.
+     *
+     * @param properties Properties used to connect to the database.
+     * @param inputTableName Name of the table to import.
+     * @param outputTableName Name of the imported table in the database.
+     * @param delete True to delete the outputTableName if exists, false otherwise.
      */
     ITable load(Map<String, String> properties, String inputTableName, String outputTableName, boolean delete);
     
     /**
-     * Save a table to a file
-     * true is the file has been saved
-     * @param tableName the name of the table   
-     * @param filePath the path of the file to be saved
+     * Save a table into a file.
+     *
+     * @param tableName Name of the table to save.
+     * @param filePath Path of the file where the table will be saved.
+     *
+     * @return True if the file has been successfully saved, false otherwise.
      */
     boolean save(String tableName, String filePath);
 
     /**
-     * Save a table to a file
-     * @param tableName the name of the table
-     * @param filePath the path of the file to be saved
-     * @param encoding Encoding property.
+     * Save a table into a file.
+     *
+     * @param tableName Name of the table to save.
+     * @param filePath Path of the file where the table will be saved.
+     * @param encoding Encoding of the file.
+     *
+     * @return True if the file has been successfully saved, false otherwise.
      */
     boolean save(String tableName, String filePath, String encoding);
 
 
     /**
-     * Link a file to the database
-     * @param filePath the path of the file or URI
-     * @param tableName the name of the table
-     * @param delete true to delete the table if exists
+     * Link a file to the database.
+     *
+     * @param filePath Path or URI of the file to link.
+     * @param tableName Name of the database table.
+     * @param delete True to delete the table if exists, false otherwise.
+     *
+     * @return A {@link ITable} representing the linked file.
      */
     ITable link(String filePath, String tableName, boolean delete);
 
     /**
-     * Link a file to the database
-     * @param filePath the path of the file or URI
-     * @param tableName the name of the table
+     * Link a file to the database.
+     *
+     * @param filePath Path or URI of the file to link.
+     * @param tableName Name of the database table.
+     *
+     * @return A {@link ITable} representing the linked file.
      */
     ITable link(String filePath, String tableName);
 
     /**
-     * Link a file to the database
-     * @param filePath the path of the file or URI
-     * @param delete true to delete the table if exists
+     * Link a file to the database.
+     *
+     * @param filePath Path or URI of the file to link.
+     * @param delete True to delete the table if exists, false otherwise.
+     *
+     * @return A {@link ITable} representing the linked file.
      */
     ITable link(String filePath,  boolean delete);
 
     /**
-     * Link a file to the database
-     * @param filePath the path of the file or URI
+     * Link a file to the database.
+     *
+     * @param filePath Path or URI of the file to link.
+     *
+     * @return A {@link ITable} representing the linked file.
      */
     ITable link(String filePath);
 
     /**
-     * Return the Map of properties.
+     * Return the {@link Map} of the properties.
      *
-     * @return Map of the properties.
+     * @return {@link Map} of the properties.
      */
     Map<String, Object> getPropertyMap();
 
     @Override
     default Object invokeMethod(String name, Object args) {
         Method m = null;
+        //First try the get the method with the given name
         try {
             if(args == null) {
-                m = this.getClass().getDeclaredMethod(name);
+                m = this.getClass().getMethod(name);
             }
             else {
-                m = this.getClass().getDeclaredMethod(name, args.getClass());
+                m = this.getClass().getMethod(name, args.getClass());
             }
         } catch (NoSuchMethodException e) {
-            LOGGER.error("Unable to get a method named '" + name + "'.\n" + e.getLocalizedMessage());
+            LOGGER.debug("Unable to get a method named '" + name + "'.\n" + e.getLocalizedMessage());
         }
+        //It no method found, try to get the the methods named 'get'+givenName
         if(m == null){
             try {
                 String getName = "get" + name.substring(0,1).toUpperCase() + name.substring(1);
+                //If arguments are null, get the method without arguments
                 if(args == null) {
-                    m = this.getClass().getDeclaredMethod(getName);
+                    m = this.getClass().getMethod(getName);
                 }
+                //If the arguments are an object array, try to get the methods with the argument class array
                 else if(args instanceof Object[]){
                     Object[] objects = (Object[])args;
                     Class[] classes = new Class[objects.length];
                     for(int i=0; i<objects.length; i++){
                         classes[i] = objects[i].getClass();
                     }
-                    m = this.getClass().getDeclaredMethod(getName, classes);
+                    m = this.getClass().getMethod(getName, classes);
                 }
+                //Otherwise get the method with the argument
                 else {
-                    m = this.getClass().getDeclaredMethod(getName, args.getClass());
+                    m = this.getClass().getMethod(getName, args.getClass());
                 }
             } catch (NoSuchMethodException e) {
-                LOGGER.error("Unable to get a method named '" + name + "'.\n" + e.getLocalizedMessage());
+                LOGGER.debug("Unable to get a method named '" + name + "'.\n" + e.getLocalizedMessage());
             }
         }
         if(m == null){
             return null;
         }
+        //Try to call the found method
         try {
             if(args == null) {
                 return m.invoke(this);
@@ -257,7 +289,7 @@ public interface IJdbcDataSource extends IDataSource, GroovyObject {
             else {
                 return m.invoke(this, args);
             }
-        } catch (IllegalArgumentException | IllegalAccessException | InvocationTargetException e) {
+        } catch (IllegalAccessException | InvocationTargetException e) {
             LOGGER.error("Unable to invoke the method named '" + name + "'.\n" + e.getLocalizedMessage());
             return null;
         }

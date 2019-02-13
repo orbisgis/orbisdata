@@ -42,7 +42,6 @@ import org.locationtech.jts.io.WKTReader
 import org.orbisgis.datamanager.h2gis.H2GIS
 import org.orbisgis.datamanagerapi.dataset.ITable
 import org.orbisgis.processmanagerapi.IProcessFactory
-import org.orbisgis.processmanager.ProcessFactory
 
 import static org.junit.jupiter.api.Assertions.assertEquals
 import static org.junit.jupiter.api.Assertions.assertTrue
@@ -50,17 +49,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue
 class TestProcess {
 
     private static final IProcessFactory processFactory = new ProcessFactory()
-
-    @Test
-    void test() {
-        def outp1 = "fdfghdfgh"
-        def inp1 = "fdfghdfgh"
-        def outp2 = "fdfghdfgh"
-        def inp2 = "fdfghdfgh"
-        def var = [[out1: outp1, in1: inp1], [out2: outp2, in2: inp2]]
-        println var[0].getClass()
-    }
-
     @Test
     void testSimpleProcess(){
         def process = processFactory.create(

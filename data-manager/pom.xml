@@ -69,6 +69,14 @@
             <groupId>org.orbisgis</groupId>
             <artifactId>postgis-jts-osgi</artifactId>
         </dependency>
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+        </dependency>
     </dependencies>
 
     <!-- Build Settings -->

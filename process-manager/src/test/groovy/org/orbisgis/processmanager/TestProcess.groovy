@@ -118,6 +118,11 @@ class TestProcess {
         assertEquals "B", process.getResults().outputA
     }
 
+    /**
+     *  --> -----      ----
+     *     |  pA | -> | pB |-->
+     *  --> -----      ----
+     */
     @Test
     void testMapping(){
         def pA = processFactory.create("pA", [inA1:String, inA2:String], [outA1:String], {inA1, inA2 ->[outA1:inA1+inA2]})
@@ -128,6 +133,17 @@ class TestProcess {
         assertEquals "tata", mapper.getResults().outB1
     }
 
+    /**
+     *   --> ----
+     *      | pB | -----> ---- -->
+     *  |--> ----        | pC |
+     *  |            |--> ---- -->
+     *  |------------|
+     *               |
+     *  --> ----     |
+     *     | pA | ---|
+     *  --> ----
+     */
     @Test
     void testMapping2(){
         def pA = processFactory.create("pA", [inA1:String], [outA1:String], {inA1 ->[outA1:inA1.toUpperCase()]})
@@ -141,6 +157,15 @@ class TestProcess {
         assertEquals "bAA", mapper.getResults().outC2
     }
 
+    /**
+     *          --> ----
+     *             | pC |
+     * --> ---- --> ---- --> ---- -->
+     *    | pA |            | pD |
+     * --> ---- --> ---- --> ---- -->
+     *             | pB |
+     *          --> ----
+     */
     @Test
     void testMapping3(){
         def pA = processFactory.create("pA", [inA1:String], [outA1:String], {inA1 ->[outA1:inA1.toUpperCase()]})

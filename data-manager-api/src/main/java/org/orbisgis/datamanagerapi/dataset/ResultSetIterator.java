@@ -15,7 +15,7 @@
  *
  * DataManager is distributed under GPL 3 license.
  *
- * Copyright (C) 2018 CNRS (Lab-STICC UMR CNRS 6285)
+ * Copyright (C) 2019 CNRS (Lab-STICC UMR CNRS 6285)
  *
  *
  * DataManager is free software: you can redistribute it and/or modify it under the
@@ -47,10 +47,11 @@ import java.util.Iterator;
  * Iterator dedicated to the iteration on a {@link ResultSet}.
  *
  * @author Erwan Bocher (CNRS)
- * @author Sylvain PALOMINOS (UBS 2018)
+ * @author Sylvain PALOMINOS (UBS 2018-2019)
  */
 public class ResultSetIterator implements Iterator<Object> {
 
+    /** Class {@link Logger} */
     private static final Logger LOGGER = LoggerFactory.getLogger(ResultSetIterator.class);
 
     /** Iterated ResultSet */

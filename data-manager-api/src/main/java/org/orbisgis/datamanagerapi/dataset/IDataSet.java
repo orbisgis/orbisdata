@@ -15,7 +15,7 @@
  *
  * DataManager API  is distributed under GPL 3 license.
  *
- * Copyright (C) 2018 CNRS (Lab-STICC UMR CNRS 6285)
+ * Copyright (C) 2019 CNRS (Lab-STICC UMR CNRS 6285)
  *
  *
  * DataManager API  is free software: you can redistribute it and/or modify it under the
@@ -37,29 +37,30 @@
 package org.orbisgis.datamanagerapi.dataset;
 
 /**
- * Raw set of data.
+ * Raw collection of data, no matter its structure.
  *
  * @author Erwan Bocher (CNRS)
- * @author Sylvain PALOMINOS (UBS 2018)
+ * @author Sylvain PALOMINOS (UBS 2018-2019)
  */
 public interface IDataSet extends Iterable<Object> {
 
     /**
-     * Get the location of the table. The return object can be anything allowing to locate the data (URI, URL, Path ...)
+     * Get the location of {@link IDataSet}.
+     * The returned {@link String} can be anything to locate the data (URI, URL, file path ...)
      *
      * @return The location of the data.
      */
     String getLocation();
 
     /**
-     * Get the human readable name of the DataSet.
+     * Get the human readable name of the {@link IDataSet}.
      *
-     * @return The name of the DataSet.
+     * @return The name of the {@link IDataSet}.
      */
     String getName();
 
     /**
-     * Get the metadata object of the DataSet.
+     * Get the metadata object of the {@link IDataSet}.
      *
      * @return The metadata object.
      */

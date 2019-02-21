@@ -15,7 +15,7 @@
  *
  * DataManager API  is distributed under GPL 3 license.
  *
- * Copyright (C) 2018 CNRS (Lab-STICC UMR CNRS 6285)
+ * Copyright (C) 2019 CNRS (Lab-STICC UMR CNRS 6285)
  *
  *
  * DataManager API  is free software: you can redistribute it and/or modify it under the
@@ -47,7 +47,7 @@ import java.util.Collection;
  * Implementation of the IDataSet interface. A table is a 2D (column/line) representation of data.
  *
  * @author Erwan Bocher (CNRS)
- * @author Sylvain PALOMINOS (UBS 2018)
+ * @author Sylvain PALOMINOS (UBS 2018-2019)
  */
 public interface ITable extends IDataSet {
 
@@ -60,7 +60,8 @@ public interface ITable extends IDataSet {
     
     /**
      * Get all column names from the underlying table
-     * @return 
+     *
+     * @return A collection containing the name of the columns
      */
     Collection<String> getColumnNames();
 

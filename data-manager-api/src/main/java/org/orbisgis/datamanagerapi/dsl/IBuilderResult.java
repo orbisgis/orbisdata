@@ -42,7 +42,8 @@ import org.orbisgis.datamanagerapi.dataset.ISpatialTable;
 import org.orbisgis.datamanagerapi.dataset.ITable;
 
 /**
- * Define the methods use to get the result of a SQL request.
+ * Define the methods use to get the result of a SQL request built throw the {@link org.orbisgis.datamanagerapi.dsl}
+ * package interfaces.
  *
  * @author Erwan Bocher (CNRS)
  * @author Sylvain PALOMINOS (UBS 2019)
@@ -65,7 +66,17 @@ public interface IBuilderResult {
      */
     Object asType(Class clazz);
 
+    /**
+     * Return the {@link ITable} representing the result of the SQL query.
+     *
+     * @return The {@link ITable} representing the result of the SQL query.
+     */
     ITable getTable();
 
+    /**
+     * Return the {@link ISpatialTable} representing the result of the SQL query.
+     *
+     * @return The {@link ISpatialTable} representing the result of the SQL query.
+     */
     ISpatialTable getSpatialTable();
 }

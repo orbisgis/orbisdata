@@ -49,6 +49,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue
 class TestProcess {
 
     private static final IProcessFactory processFactory = new ProcessFactory()
+
     @Test
     void testSimpleProcess(){
         def process = processFactory.create(
@@ -105,7 +106,23 @@ class TestProcess {
         p.execute([inputA : new WKTReader().read("POINT(1 1)"), distance : 10] )
         assertTrue(p.results.outputA.equals(new WKTReader().read("POLYGON ((11 1, 10.807852804032304 -0.9509032201612824, 10.238795325112868 -2.826834323650898, 9.314696123025453 -4.555702330196022, 8.071067811865476 -6.071067811865475, 6.555702330196023 -7.314696123025453, 4.826834323650898 -8.238795325112868, 2.9509032201612833 -8.807852804032304, 1.0000000000000007 -9, -0.9509032201612819 -8.807852804032304, -2.826834323650897 -8.238795325112868, -4.55570233019602 -7.314696123025454, -6.071067811865475 -6.0710678118654755, -7.314696123025453 -4.555702330196022, -8.238795325112868 -2.8268343236508944, -8.807852804032306 -0.9509032201612773, -9 1.0000000000000075, -8.807852804032303 2.950903220161292, -8.238795325112862 4.826834323650909, -7.3146961230254455 6.555702330196034, -6.071067811865463 8.071067811865486, -4.555702330196008 9.314696123025463, -2.826834323650879 10.238795325112875, -0.9509032201612606 10.807852804032308, 1.0000000000000249 11, 2.950903220161309 10.807852804032299, 4.826834323650925 10.238795325112857, 6.555702330196048 9.314696123025435, 8.071067811865499 8.07106781186545, 9.314696123025472 6.555702330195993, 10.238795325112882 4.826834323650862, 10.807852804032311 2.9509032201612437, 11 1))")))
     }
+    @Test
+    void testSimpleProcess5(){
+        def process = processFactory.create(
+                "title",
+                [inputA : String[]],
+                [outputA : String],
+                { inputA -> [outputA : inputA[1]] }
+        )
+        process.execute([inputA :["A", "B", "C"]])
+        assertEquals "B", process.getResults().outputA
+    }
 
+    /**
+     *  --> -----      ----
+     *     |  pA | -> | pB |-->
+     *  --> -----      ----
+     */
     @Test
     void testMapping(){
         def pA = processFactory.create("pA", [inA1:String, inA2:String], [outA1:String], {inA1, inA2 ->[outA1:inA1+inA2]})
@@ -114,6 +131,54 @@ class TestProcess {
         def mapper = new ProcessMapper([[outA1: pA, inB1: pB]])
         assertTrue mapper.execute([inA1: "t", inA2: "a"])
         assertEquals "tata", mapper.getResults().outB1
+    }
+
+    /**
+     *   --> ----
+     *      | pB | -----> ---- -->
+     *  |--> ----        | pC |
+     *  |            |--> ---- -->
+     *  |------------|
+     *               |
+     *  --> ----     |
+     *     | pA | ---|
+     *  --> ----
+     */
+    @Test
+    void testMapping2(){
+        def pA = processFactory.create("pA", [inA1:String], [outA1:String], {inA1 ->[outA1:inA1.toUpperCase()]})
+        def pB = processFactory.create("pB", [inB1:String, inB2:String], [outB1:String], {inB1, inB2 ->[outB1:inB2+inB1]})
+        def pC = processFactory.create("pC", [inC1:String, inC2:String], [outC1:String, outC2:String],
+                {inC1, inC2 ->[outC1:inC1+inC2, outC2:inC2+inC1]})
+
+        def mapper = new ProcessMapper([[outA1: pA, inB1: pB], [outB1:pB, inC2:pC], [outA1:pA, inC1:pC]])
+        assertTrue mapper.execute([inA1: "a", inB2: "b"])
+        assertEquals "AbA", mapper.getResults().outC1
+        assertEquals "bAA", mapper.getResults().outC2
+    }
+
+    /**
+     *          --> ----
+     *             | pC |
+     * --> ---- --> ---- --> ---- -->
+     *    | pA |            | pD |
+     * --> ---- --> ---- --> ---- -->
+     *             | pB |
+     *          --> ----
+     */
+    @Test
+    void testMapping3(){
+        def pA = processFactory.create("pA", [inA1:String], [outA1:String], {inA1 ->[outA1:inA1.toUpperCase()]})
+        def pB = processFactory.create("pB", [inB1:String, inB2:String], [outB1:String], {inB1, inB2 ->[outB1:inB2+inB1]})
+        def pC = processFactory.create("pC", [inC1:String, inC2:String], [outC1:String],
+                {inC1, inC2 ->[outC1:inC1+inC2]})
+        def pD = processFactory.create("pD", [inD1:String, inD2:String], [outD1:String, outD2:String],
+                {inD1, inD2 ->[outD1:inD1.toLowerCase(), outD2:inD2+inD1]})
+
+        def mapper = new ProcessMapper([[outA1: pA, inB1: pB], [outA1:pA, inC1:pC], [outB1:pB, inD1:pD], [outC1:pC, inD2:pD]])
+        assertTrue mapper.execute([inA1: "a", inB2: "b", inC2: "c"])
+        assertEquals "ba", mapper.getResults().outD1
+        assertEquals "AcbA", mapper.getResults().outD2
     }
 }
 

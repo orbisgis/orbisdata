@@ -15,7 +15,7 @@
  *
  * DataManager API  is distributed under GPL 3 license.
  *
- * Copyright (C) 2018 CNRS (Lab-STICC UMR CNRS 6285)
+ * Copyright (C) 2019 CNRS (Lab-STICC UMR CNRS 6285)
  *
  *
  * DataManager API  is free software: you can redistribute it and/or modify it under the
@@ -51,36 +51,43 @@ import java.sql.SQLException;
 import java.util.Iterator;
 import java.util.Map;
 
+/**
+ * Extension of the {@link ITable} specially dedicated to the JDBC databases thanks to the extension of the
+ * {@link ResultSet} interface. It also extends the {@link IWhereBuilderOrOptionBuilder} for the SQL requesting and
+ * the {@link GroovyObject} to simplify the methods calling (i.e. .tableLocation instead of .getTableLocation() )
+ */
 public interface IJdbcTable extends ITable, GroovyObject, ResultSet, IWhereBuilderOrOptionBuilder {
 
+    /** Interface {@link Logger} */
     Logger LOGGER = LoggerFactory.getLogger(IJdbcTable.class);
+    /** {@link String} name of the metadata property use in the {@link #getProperty(String)} method */
     String META_PROPERTY = "meta";
 
     /**
-     * Return the TableLocation of the JdbcTable.
+     * Return the {@link TableLocation} of the {@link IJdbcTable}.
      *
-     * @return The TableLocation.
+     * @return The {@link TableLocation}.
      */
     TableLocation getTableLocation();
 
     /**
-     * Return the DataBaseType type of the JdbcTable.
+     * Return the DataBaseType type of the {@link IJdbcTable}.
      *
      * @return The DataBaseType type
      */
     DataBaseType getDbType();
 
     /**
-     * Return the Map of properties.
+     * Return the {@link Map} of properties.
      *
-     * @return Map of the properties.
+     * @return {@link Map} of the properties.
      */
     Map<String, Object> getPropertyMap();
 
     /**
-     * Get the ResultSetMetaData of the DataSet.
+     * Get the {@link ResultSetMetaData} wrapping the metadata of the {@link IJdbcTable}.
      *
-     * @return The metadata object.
+     * @return The {@link ResultSetMetaData} object.
      */
     @Override
     ResultSetMetaData getMetadata();
@@ -108,6 +115,7 @@ public interface IJdbcTable extends ITable, GroovyObject, ResultSet, IWhereBuild
     @Override
     default Object invokeMethod(String name, Object args) {
         Method m = null;
+        //First try the get the method with the given name
         try {
             if(args == null) {
                 m = this.getClass().getMethod(name);
@@ -116,14 +124,17 @@ public interface IJdbcTable extends ITable, GroovyObject, ResultSet, IWhereBuild
                 m = this.getClass().getMethod(name, args.getClass());
             }
         } catch (NoSuchMethodException e) {
-            LOGGER.error("Unable to get a method named '" + name + "'.\n" + e.getLocalizedMessage());
+            LOGGER.debug("Unable to get a method named '" + name + "'.\n" + e.getLocalizedMessage());
         }
+        //It no method found, try to get the the methods named 'get'+givenName
         if(m == null){
             try {
                 String getName = "get" + name.substring(0,1).toUpperCase() + name.substring(1);
+                //If arguments are null, get the method without arguments
                 if(args == null) {
                     m = this.getClass().getMethod(getName);
                 }
+                //If the arguments are an object array, try to get the methods with the argument class array
                 else if(args instanceof Object[]){
                     Object[] objects = (Object[])args;
                     Class[] classes = new Class[objects.length];
@@ -132,16 +143,18 @@ public interface IJdbcTable extends ITable, GroovyObject, ResultSet, IWhereBuild
                     }
                     m = this.getClass().getMethod(getName, classes);
                 }
+                //Otherwise get the method with the argument
                 else {
                     m = this.getClass().getMethod(getName, args.getClass());
                 }
             } catch (NoSuchMethodException e) {
-                LOGGER.error("Unable to get a method named '" + name + "'.\n" + e.getLocalizedMessage());
+                LOGGER.debug("Unable to get a method named '" + name + "'.\n" + e.getLocalizedMessage());
             }
         }
         if(m == null){
             return null;
         }
+        //Try to call the found method
         try {
             if(args == null) {
                 return m.invoke(this);
@@ -160,14 +173,16 @@ public interface IJdbcTable extends ITable, GroovyObject, ResultSet, IWhereBuild
 
     @Override
     default Object getProperty(String propertyName) {
+        //First test the predefined properties
         if(propertyName.equals(META_PROPERTY)){
             return getMetadata();
         }
+
         Object obj = null;
         try {
             obj = getObject(propertyName);
         } catch (SQLException e) {
-            LOGGER.warn("Unable to find the column '" + propertyName + "'.\n" + e.getLocalizedMessage());
+            LOGGER.debug("Unable to find the column '" + propertyName + "'.\n" + e.getLocalizedMessage());
         }
         if(obj != null) {
             return obj;

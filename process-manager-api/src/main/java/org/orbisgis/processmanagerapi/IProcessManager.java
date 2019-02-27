@@ -36,6 +36,8 @@
  */
 package org.orbisgis.processmanagerapi;
 
+import java.util.List;
+
 /**
  * This interface defines the methods dedicated to the process and process factory managing.
  *
@@ -43,6 +45,13 @@ package org.orbisgis.processmanagerapi;
  * @author Sylvain PALOMINOS (UBS 2019)
  */
 public interface IProcessManager {
+
+    /**
+     * Return the list of the factory identifiers.
+     *
+     * @return The list of the factory identifier.
+     */
+    List<String> factoryIds();
 
     /**
      * Returns the process factory with the given identifier.

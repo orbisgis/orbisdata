@@ -40,8 +40,12 @@ import org.orbisgis.processmanagerapi.IProcess;
 import org.orbisgis.processmanagerapi.IProcessFactory;
 import org.orbisgis.processmanagerapi.IProcessManager;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+
+import static java.util.stream.Collectors.toList;
 
 /**
  * Implementation of IProcessManager as a singleton.
@@ -74,6 +78,11 @@ public class ProcessManager implements IProcessManager {
             instance = new ProcessManager();
         }
         return instance;
+    }
+
+    @Override
+    public List<String> factoryIds() {
+        return processFactoryMap.entrySet().stream().map(Map.Entry::getKey).collect(toList());
     }
 
     @Override

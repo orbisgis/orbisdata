@@ -38,6 +38,7 @@ package org.orbisgis.processmanagerapi;
 
 import groovy.lang.Closure;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -47,6 +48,29 @@ import java.util.Map;
  * @author Sylvain PALOMINOS (UBS 2019)
  */
 public interface IProcessFactory {
+
+    /**
+     * Return true if the process creation is locked, false otherwise.
+     *
+     * @return True if the process creation is locked, false otherwise.
+     */
+    boolean isLocked();
+
+    /**
+     * Return true if the factory if the default one, false otherwise.
+     *
+     * @return True if the factory if the default one, false otherwise.
+     */
+    boolean isDefault();
+
+    /**
+     * Returns the process with the given identifier.
+     *
+     * @param processId Identifier of the process to get.
+     *
+     * @return The process with the given identifier,
+     */
+    IProcess process(String processId);
 
     /**
      * Create a new Process with its title, description, keyword array, input map, output map, version

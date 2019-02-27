@@ -110,7 +110,7 @@ public class Process implements IProcess {
         this.closure = closure;
         this.resultMap = new HashMap<>();
         this.caster = caster;
-        this.identifier = UUID.randomUUID().toString();
+        this.identifier = title;
     }
 
     @Override

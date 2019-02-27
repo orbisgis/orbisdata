@@ -36,15 +36,46 @@
  */
 package org.orbisgis.processmanagerapi;
 
-import java.util.Map;
-import java.util.Set;
+/**
+ * This interface defines the methods dedicated to the process and process factory managing.
+ *
+ * @author Erwan Bocher (CNRS)
+ * @author Sylvain PALOMINOS (UBS 2019)
+ */
+public interface IProcessManager {
 
-public interface IProcessMapper {
+    /**
+     * Returns the process factory with the given identifier.
+     *
+     * @param identifier Identifier of the factory.
+     *
+     * @return The process factory with the given identifier.
+     */
+    IProcessFactory factory(String identifier);
 
-    Set<String> getInputNames();
-    Set<String> getOutputNames();
-    Map<String, Class> getInputDefinitions();
-    Map<String, Class> getOutputDefinitions();
-    boolean execute(Map<String, Object> inputDataMap);
-    Map<String, Object> getResults();
+    /**
+     * Returns the default process factory.
+     *
+     * @return The default process factory.
+     */
+    IProcessFactory factory();
+
+    /**
+     * Returns the process with the given identifier from the default factory.
+     *
+     * @param processId Identifier of the process to get.
+     *
+     * @return The process with the given identifier from the default factory.
+     */
+    IProcess process(String processId);
+
+    /**
+     * Returns the process with the given identifier from the factory with the given identifier.
+     *
+     * @param processId Identifier of the process to get.
+     * @param factoryId Identifier of the factory.
+     *
+     * @return The process with the given identifier from the factory with the given identifier.
+     */
+    IProcess process(String processId, String factoryId);
 }

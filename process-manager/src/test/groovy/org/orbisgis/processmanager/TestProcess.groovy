@@ -41,19 +41,20 @@ import org.locationtech.jts.geom.Geometry
 import org.locationtech.jts.io.WKTReader
 import org.orbisgis.datamanager.h2gis.H2GIS
 import org.orbisgis.datamanagerapi.dataset.ITable
-import org.orbisgis.processmanagerapi.IProcessFactory
+import org.orbisgis.processmanagerapi.IProcessManager
 
 import static org.junit.jupiter.api.Assertions.assertEquals
 import static org.junit.jupiter.api.Assertions.assertTrue
 
 class TestProcess {
 
-    private static final IProcessFactory processFactory = new ProcessFactory()
+    private static final IProcessManager processManager = ProcessManager.getProcessManager()
+
 
     @Test
     void testSimpleProcess(){
-        def process = processFactory.create(
-                "title",
+        def process = processManager.factory("test").create(
+                "simple process",
                 [inputA : String, inputB : String],
                 [outputA : String],
                 { inputA, inputB -> [outputA : inputA+inputB] }
@@ -63,14 +64,14 @@ class TestProcess {
     }
 
     @Test
-    void testSimpleProcess2(){
-        def p = processFactory.create(
+    void testSimpleProcess2() {
+        def p = processManager.factory("test").create(
                 "OrbisGIS",
                 [inputA: String],
                 [outputA: String],
                 { inputA -> [outputA: inputA.replace("OrbisGIS", "Bretagne")] }
         )
-        p.execute([inputA : 'OrbisGIS is nice'])
+        p.execute([inputA: 'OrbisGIS is nice'])
         assertTrue(p.results.outputA.equals("Bretagne is nice"))
     }
 
@@ -83,7 +84,7 @@ class TestProcess {
                 INSERT INTO h2gis VALUES (1, 'POINT(10 10)'::GEOMETRY), (2, 'POINT(1 1)'::GEOMETRY);
         """)
 
-        def p = processFactory.create(
+        def p = processManager.factory("test").create(
                 "With database",
                 [inputA: ITable],
                 [outputA: String],
@@ -95,7 +96,7 @@ class TestProcess {
 
     @Test
     void testSimpleProcess4(){
-        def p = processFactory.create(
+        def p = processManager.factory("test").create(
                 "Create a buffer around a geometry",
                 [inputA: Geometry, distance: double],
                 [outputA: Geometry],
@@ -108,8 +109,8 @@ class TestProcess {
     }
     @Test
     void testSimpleProcess5(){
-        def process = processFactory.create(
-                "title",
+        def process = processManager.factory("test").create(
+                "Array",
                 [inputA : String[]],
                 [outputA : String],
                 { inputA -> [outputA : inputA[1]] }
@@ -125,8 +126,8 @@ class TestProcess {
      */
     @Test
     void testMapping(){
-        def pA = processFactory.create("pA", [inA1:String, inA2:String], [outA1:String], {inA1, inA2 ->[outA1:inA1+inA2]})
-        def pB = processFactory.create("pB", [inB1:String], [outB1:String], {inB1 ->[outB1:inB1+inB1]})
+        def pA = processManager.factory("map1").create("pA", [inA1:String, inA2:String], [outA1:String], {inA1, inA2 ->[outA1:inA1+inA2]})
+        def pB = processManager.factory("map1").create("pB", [inB1:String], [outB1:String], {inB1 ->[outB1:inB1+inB1]})
 
         def mapper = new ProcessMapper([[outA1: pA, inB1: pB]])
         assertTrue mapper.execute([inA1: "t", inA2: "a"])
@@ -146,9 +147,9 @@ class TestProcess {
      */
     @Test
     void testMapping2(){
-        def pA = processFactory.create("pA", [inA1:String], [outA1:String], {inA1 ->[outA1:inA1.toUpperCase()]})
-        def pB = processFactory.create("pB", [inB1:String, inB2:String], [outB1:String], {inB1, inB2 ->[outB1:inB2+inB1]})
-        def pC = processFactory.create("pC", [inC1:String, inC2:String], [outC1:String, outC2:String],
+        def pA = processManager.factory("map2").create("pA", [inA1:String], [outA1:String], {inA1 ->[outA1:inA1.toUpperCase()]})
+        def pB = processManager.factory("map2").create("pB", [inB1:String, inB2:String], [outB1:String], {inB1, inB2 ->[outB1:inB2+inB1]})
+        def pC = processManager.factory("map2").create("pC", [inC1:String, inC2:String], [outC1:String, outC2:String],
                 {inC1, inC2 ->[outC1:inC1+inC2, outC2:inC2+inC1]})
 
         def mapper = new ProcessMapper([[outA1: pA, inB1: pB], [outB1:pB, inC2:pC], [outA1:pA, inC1:pC]])
@@ -168,11 +169,11 @@ class TestProcess {
      */
     @Test
     void testMapping3(){
-        def pA = processFactory.create("pA", [inA1:String], [outA1:String], {inA1 ->[outA1:inA1.toUpperCase()]})
-        def pB = processFactory.create("pB", [inB1:String, inB2:String], [outB1:String], {inB1, inB2 ->[outB1:inB2+inB1]})
-        def pC = processFactory.create("pC", [inC1:String, inC2:String], [outC1:String],
+        def pA = processManager.factory("map3").create("pA", [inA1:String], [outA1:String], {inA1 ->[outA1:inA1.toUpperCase()]})
+        def pB = processManager.factory("map3").create("pB", [inB1:String, inB2:String], [outB1:String], {inB1, inB2 ->[outB1:inB2+inB1]})
+        def pC = processManager.factory("map3").create("pC", [inC1:String, inC2:String], [outC1:String],
                 {inC1, inC2 ->[outC1:inC1+inC2]})
-        def pD = processFactory.create("pD", [inD1:String, inD2:String], [outD1:String, outD2:String],
+        def pD = processManager.factory("map3").create("pD", [inD1:String, inD2:String], [outD1:String, outD2:String],
                 {inD1, inD2 ->[outD1:inD1.toLowerCase(), outD2:inD2+inD1]})
 
         def mapper = new ProcessMapper([[outA1: pA, inB1: pB], [outA1:pA, inC1:pC], [outB1:pB, inD1:pD], [outC1:pC, inD2:pD]])

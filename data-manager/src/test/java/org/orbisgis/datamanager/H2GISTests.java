@@ -60,6 +60,12 @@ import static org.orbisgis.datamanagerapi.dsl.IOptionBuilder.Order.DESC;
  * @author Sylvain PALOMINOS (UBS 2018)
  */
 public class H2GISTests {
+
+    @Test
+    public void openH2GIS(){
+        assertNotNull(H2GIS.open("./target/openH2GIS1"));
+        assertNotNull(H2GIS.open("./target/openH2GIS2", "sa", "sa"));
+    }
     
     
     @Test

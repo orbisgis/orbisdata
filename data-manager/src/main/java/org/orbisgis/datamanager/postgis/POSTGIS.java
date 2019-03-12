@@ -53,11 +53,12 @@ public class POSTGIS extends JdbcDataSource {
     
     /**
      * Create an instance of POSTGIS from file
-     * @param fileName
-     * @return
+     *
+     * @param file .properties file containing the information for the DataBase opening.
+     *
+     * @return POSTGIS object if the DataBase has been successfully open, null otherwise.
      */
-    public static POSTGIS open(String fileName) {
-        File file = URIUtilities.fileFromString(fileName);
+    public static POSTGIS open(File file) {
         try {
             if (FileUtil.isExtensionWellFormated(file, "properties")) {
                 Properties prop = new Properties();
@@ -74,8 +75,10 @@ public class POSTGIS extends JdbcDataSource {
     
     /**
      * Create an instance of POSTGIS from properties
-     * @param properties
-     * @return 
+     *
+     * @param properties Properties for the opening of the DataBase.
+     *
+     * @return POSTGIS object if the DataBase has been successfully open, null otherwise.
      */
     public static POSTGIS open(Properties properties) {
         Connection connection;
@@ -99,6 +102,36 @@ public class POSTGIS extends JdbcDataSource {
         properties.forEach(props::put);
         return open(props);
         
+    }
+
+    /**
+     * Open the POSTGIS database at the given path and return the corresponding POSTGIS object.
+     *
+     * @param path Path of the database to open.
+     *
+     * @return An instantiated POSTGIS object wrapping the Sql object connected to the database.
+     */
+    public static POSTGIS open(String path) {
+        Map<String, String> map = new HashMap<>();
+        map.put("databaseName", path);
+        return open(map);
+    }
+
+    /**
+     * Open the POSTGIS database at the given path and return the corresponding POSTGIS object.
+     *
+     * @param path Path of the database to open.
+     * @param user User of the database.
+     * @param password Password for the user.
+     *
+     * @return An instantiated POSTGIS object wrapping the Sql object connected to the database.
+     */
+    public static POSTGIS open(String path, String user, String password) {
+        Map<String, String> map = new HashMap<>();
+        map.put("databaseName", path);
+        map.put("user", user);
+        map.put("password", password);
+        return open(map);
     }
 
     @Override

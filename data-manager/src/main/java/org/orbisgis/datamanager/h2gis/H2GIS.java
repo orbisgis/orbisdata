@@ -83,12 +83,11 @@ public class H2GIS extends JdbcDataSource {
     /**
      * Create an instance of H2GIS from properties
      *
-     * @param fileName .properties file containing the information for the DataBase opening.
+     * @param file .properties file containing the information for the DataBase opening.
      *
      * @return H2GIS object if the DataBase has been successfully open, null otherwise.
      */
-    public static H2GIS open(String fileName) {
-        File file = URIUtilities.fileFromString(fileName);
+    public static H2GIS open(File file) {
         try {
             if (FileUtil.isExtensionWellFormated(file, "properties")) {
                 Properties prop = new Properties();
@@ -163,6 +162,36 @@ public class H2GIS extends JdbcDataSource {
         Properties props = new Properties();
         properties.forEach(props::put);
         return open(props);
+    }
+
+    /**
+     * Open the H2GIS database at the given path and return the corresponding H2GIS object.
+     *
+     * @param path Path of the database to open.
+     *
+     * @return An instantiated H2GIS object wrapping the Sql object connected to the database.
+     */
+    public static H2GIS open(String path) {
+        Map<String, String> map = new HashMap<>();
+        map.put("databaseName", path);
+        return open(map);
+    }
+
+    /**
+     * Open the H2GIS database at the given path and return the corresponding H2GIS object.
+     *
+     * @param path Path of the database to open.
+     * @param user User of the database.
+     * @param password Password for the user.
+     *
+     * @return An instantiated H2GIS object wrapping the Sql object connected to the database.
+     */
+    public static H2GIS open(String path, String user, String password) {
+        Map<String, String> map = new HashMap<>();
+        map.put("databaseName", path);
+        map.put("user", user);
+        map.put("password", password);
+        return open(map);
     }
 
     @Override

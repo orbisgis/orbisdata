@@ -36,12 +36,9 @@
  */
 package org.orbisgis.datamanager
 
-import org.h2gis.functions.io.utility.FileUtil
 import org.junit.jupiter.api.Test
 import org.orbisgis.datamanager.h2gis.H2GIS
-import org.orbisgis.datamanagerapi.dataset.ISpatialTable
 import org.orbisgis.datamanagerapi.dataset.ITable
-import org.osgi.service.jdbc.DataSourceFactory
 
 import java.sql.SQLException
 
@@ -50,21 +47,26 @@ import static org.orbisgis.datamanagerapi.dsl.IOptionBuilder.Order.DESC
 
 class GroovyH2GISTest {
 
+    @Test
+    void openH2GIS(){
+        assertNotNull H2GIS.open("./target/openH2GIS1")
+        assertNotNull H2GIS.open("./target/openH2GIS2", "sa", "sa")
+    }
 
     @Test
     void loadH2GIS() {
         def h2GIS = H2GIS.open([databaseName: './target/loadH2GIS'])
-        assertNotNull(h2GIS)
+        assertNotNull h2GIS
     }
     
     @Test
     void loadH2GISFromFile() {
-        Properties properties = new Properties();
+        Properties properties = new Properties()
         properties.setProperty('databaseName' ,'./target/loadH2GIS')
         File propertiesFile = new File('target/config.properties')
-        OutputStream out = new FileOutputStream(propertiesFile);
-        properties.store(out, "H2GIS properties file");
-        def h2GIS = H2GIS.open('target/config.properties')
+        OutputStream out = new FileOutputStream(propertiesFile)
+        properties.store(out, "H2GIS properties file")
+        def h2GIS = H2GIS.open(new File('target/config.properties'))
         assertNotNull(h2GIS)
     }
 

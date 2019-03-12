@@ -61,12 +61,12 @@ class GroovyH2GISTest {
     
     @Test
     void loadH2GISFromFile() {
-        Properties properties = new Properties();
+        Properties properties = new Properties()
         properties.setProperty('databaseName' ,'./target/loadH2GIS')
         File propertiesFile = new File('target/config.properties')
-        OutputStream out = new FileOutputStream(propertiesFile);
-        properties.store(out, "H2GIS properties file");
-        def h2GIS = H2GIS.open('target/config.properties')
+        OutputStream out = new FileOutputStream(propertiesFile)
+        properties.store(out, "H2GIS properties file")
+        def h2GIS = H2GIS.open(new File('target/config.properties'))
         assertNotNull(h2GIS)
     }
 

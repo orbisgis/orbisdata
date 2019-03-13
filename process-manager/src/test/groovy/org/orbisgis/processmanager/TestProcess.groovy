@@ -94,7 +94,7 @@ class TestProcess {
         assertTrue(p.results.outputA.equals(["ID", "THE_GEOM"]))
     }
 
-    @Test
+    /*@Test
     void testSimpleProcess4(){
         def p = processManager.factory("test").create(
                 "Create a buffer around a geometry",
@@ -118,7 +118,7 @@ class TestProcess {
                 "10.807852804032299, 4.826834323650925 10.238795325112857, 6.555702330196048 9.314696123025435, " +
                 "8.071067811865499 8.07106781186545, 9.314696123025472 6.555702330195993, 10.238795325112882 " +
                 "4.826834323650862, 10.807852804032311 2.9509032201612437, 11 1))")
-    }
+    }*/
     @Test
     void testSimpleProcess5(){
         def process = processManager.factory("test").create(

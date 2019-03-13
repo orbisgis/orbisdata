@@ -95,19 +95,21 @@ public class ProcessMapper implements IProcessMapper {
 
         //Get all th inputs and outputs of the processes.
         for (IProcess process : processList) {
-            process.getInputs().forEach((key, value) -> {
-                boolean isBetween = false;
-                for(Map.Entry<ProcessOutput, ProcessInput> entry : inOutMap.entrySet()) {
-                    if (entry.getValue().getInput().equals(key) &&
-                            entry.getValue().getProcessId().equals(process.getIdentifier())) {
-                        isBetween = true;
+            if(process.getInputs() != null) {
+                process.getInputs().forEach((key, value) -> {
+                    boolean isBetween = false;
+                    for (Map.Entry<ProcessOutput, ProcessInput> entry : inOutMap.entrySet()) {
+                        if (entry.getValue().getInput().equals(key) &&
+                                entry.getValue().getProcessId().equals(process.getIdentifier())) {
+                            isBetween = true;
+                        }
                     }
-                }
-                if (!isBetween) {
-                    inputs.put(key, value);
-                    availableIn.add(new ProcessInput(key, process.getIdentifier()));
-                }
-            });
+                    if (!isBetween) {
+                        inputs.put(key, value);
+                        availableIn.add(new ProcessInput(key, process.getIdentifier()));
+                    }
+                });
+            }
             process.getOutputs().forEach((key, value) -> {
                 boolean isBetween = false;
                 for(Map.Entry<ProcessOutput, ProcessInput> entry : inOutMap.entrySet()) {
@@ -133,18 +135,20 @@ public class ProcessMapper implements IProcessMapper {
             for (Iterator<IProcess> iterator = processes.iterator(); iterator.hasNext(); ) {
                 IProcess process = iterator.next();
                 boolean isAllInput = true;
-                for (String input : process.getInputs().keySet()) {
-                    boolean isInputAvailable = false;
-                    for (ProcessInput processInput : availableIn) {
-                        if (processInput.getInput().equals(input) &&
-                                processInput.getProcessId().equals(process.getIdentifier())) {
-                            isInputAvailable = true;
+                if(process.getInputs() != null) {
+                    for (String input : process.getInputs().keySet()) {
+                        boolean isInputAvailable = false;
+                        for (ProcessInput processInput : availableIn) {
+                            if (processInput.getInput().equals(input) &&
+                                    processInput.getProcessId().equals(process.getIdentifier())) {
+                                isInputAvailable = true;
+                                break;
+                            }
+                        }
+                        if (!isInputAvailable) {
+                            isAllInput = false;
                             break;
                         }
-                    }
-                    if (!isInputAvailable) {
-                        isAllInput = false;
-                        break;
                     }
                 }
                 if (isAllInput) {
@@ -192,7 +196,7 @@ public class ProcessMapper implements IProcessMapper {
 
     @Override
     public boolean execute(Map<String, Object> inputDataMap) {
-        Map<String, Object> dataMap = new HashMap<>(inputDataMap);
+        Map<String, Object> dataMap = inputDataMap == null ?  new HashMap<>() : new HashMap<>(inputDataMap);
         if(inputs != null && dataMap.size() != inputs.size()){
             LOGGER.error("The number of the input data map and the number of process input are different.");
             return false;
@@ -200,8 +204,10 @@ public class ProcessMapper implements IProcessMapper {
         for(List<IProcess> processes : executionTree){
             for(IProcess process : processes){
                 Map<String, Object> processInData = new HashMap<>();
-                for(String in : process.getInputs().keySet()){
-                    processInData.put(in, dataMap.get(in));
+                if(process.getInputs() != null) {
+                    for (String in : process.getInputs().keySet()) {
+                        processInData.put(in, dataMap.get(in));
+                    }
                 }
                 process.execute(processInData);
                 for(String key : process.getResults().keySet()){

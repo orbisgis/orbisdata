@@ -40,7 +40,6 @@ import org.orbisgis.processmanagerapi.IProcess;
 import org.orbisgis.processmanagerapi.IProcessFactory;
 import org.orbisgis.processmanagerapi.IProcessManager;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -93,6 +92,10 @@ public class ProcessManager implements IProcessManager {
         return processFactoryMap.get(identifier);
     }
 
+    public static IProcessFactory createFactory(String identifier){
+        return getProcessManager().factory(identifier);
+    }
+
     @Override
     public IProcessFactory factory(){
         return processFactoryMap
@@ -102,6 +105,10 @@ public class ProcessManager implements IProcessManager {
                 .filter(IProcessFactory::isDefault)
                 .findFirst()
                 .orElse(null);
+    }
+
+    public static IProcessFactory createFactory(){
+        return getProcessManager().factory();
     }
 
     @Override

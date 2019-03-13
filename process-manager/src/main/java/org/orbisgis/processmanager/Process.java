@@ -97,7 +97,7 @@ public class Process implements IProcess {
      */
     public Process(String title, String description, String[] keywords, Map<String, Class> inputs,
                    Map<String, Class> outputs, String version, Closure closure, ICaster caster){
-        if(closure.getMaximumNumberOfParameters() != inputs.size()){
+        if(inputs != null && closure.getMaximumNumberOfParameters() != inputs.size()){
             LOGGER.error("The number of the closure parameters and the number of process input names are different.");
             return;
         }

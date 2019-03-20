@@ -37,15 +37,19 @@
 package org.orbisgis.processmanagerapi;
 
 import java.util.Map;
-import java.util.Set;
 
-public interface IProcessMapper {
+/**
+ *
+ *
+ * @author Erwan Bocher (CNRS)
+ * @author Sylvain PALOMINOS (UBS 2019)
+ */
+public interface IMapperIn {
 
-    Set<String> getInputNames();
-    Set<String> getOutputNames();
-    Map<String, Class> getInputDefinitions();
-    Map<String, Class> getOutputDefinitions();
-    boolean execute(Map<String, Object> inputDataMap);
-    Map<String, Object> getResults();
-    IMapperIn out(Map<String, IProcess> map);
+    /**
+     * Set the input of the link
+     *
+     * @param map Map containing the input as key, the output as value.
+     */
+    void in(Map<String, IProcess> map);
 }

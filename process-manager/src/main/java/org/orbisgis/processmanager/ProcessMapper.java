@@ -36,6 +36,7 @@
  */
 package org.orbisgis.processmanager;
 
+import org.orbisgis.processmanagerapi.IMapperIn;
 import org.orbisgis.processmanagerapi.IProcess;
 import org.orbisgis.processmanagerapi.IProcessMapper;
 import org.slf4j.Logger;
@@ -60,8 +61,13 @@ public class ProcessMapper implements IProcessMapper {
     private Map<String, Class> outputs;
     private List<List<IProcess>> executionTree;
     private Map<String, Object> results;
+    private List<Link> linkingList;
 
-    public ProcessMapper(List<Map<String, IProcess>> linkingMap){
+    public ProcessMapper(){
+        linkingList = new ArrayList<>();
+    }
+
+    private void link(){
         processList = new ArrayList<>();
         inOutMap = new HashMap<>();
         inputs = new HashMap<>();
@@ -72,17 +78,11 @@ public class ProcessMapper implements IProcessMapper {
         List<ProcessInput> availableIn = new ArrayList<>();
 
         //Build the map linking the inputs and outputs.
-        linkingMap.forEach(map -> {
-            if (map.size() != 2) {
-                LOGGER.error("The linking map should contains pairs of <String, IProcess>");
-                return;
-            }
-            Iterator<String> i1 = map.keySet().iterator();
-            String output = i1.next();
-            String input = i1.next();
-            Iterator<IProcess> i2 = map.values().iterator();
-            IProcess outputProcess = i2.next();
-            IProcess inputProcess = i2.next();
+        linkingList.forEach(link -> {
+            String output = link.getOutName();
+            String input = link.getInName();
+            IProcess outputProcess = link.getOutProcess();
+            IProcess inputProcess = link.getInProcess();
             if (getProcess(outputProcess.getIdentifier()) == null) {
                 processList.add(outputProcess);
             }
@@ -196,6 +196,8 @@ public class ProcessMapper implements IProcessMapper {
 
     @Override
     public boolean execute(Map<String, Object> inputDataMap) {
+        link();
+
         Map<String, Object> dataMap = inputDataMap == null ?  new HashMap<>() : new HashMap<>(inputDataMap);
         if(inputs != null && dataMap.size() != inputs.size()){
             LOGGER.error("The number of the input data map and the number of process input are different.");
@@ -231,6 +233,25 @@ public class ProcessMapper implements IProcessMapper {
     @Override
     public Map<String, Object> getResults() {
         return results;
+    }
+
+    @Override
+    public IMapperIn out(Map<String, IProcess> map) {
+        if (map == null || map.isEmpty()) {
+            LOGGER.error("The output is null or empty");
+            return new MapperIn();
+        }
+        else if (map.size() != 1) {
+            LOGGER.error("The output should contains one value");
+            return new MapperIn();
+        }
+        else {
+            Link link = new Link();
+            linkingList.add(link);
+            Map.Entry<String, IProcess> entry = map.entrySet().iterator().next();
+            link.setOut(entry.getKey(), entry.getValue());
+            return new MapperIn();
+        }
     }
 
     private IProcess getProcess(String identifier){
@@ -276,5 +297,54 @@ public class ProcessMapper implements IProcessMapper {
         }
 
         @Override public String toString(){return input+":"+processId;}
+    }
+
+    private class MapperIn implements IMapperIn{
+        @Override
+        public void in(Map<String, IProcess> map) {
+            if (map == null || map.isEmpty()) {
+                LOGGER.error("The input is null or empty");
+            }
+            else if (map.size() != 1) {
+                LOGGER.error("The input should contains one value");
+            }
+            else {
+                Map.Entry<String, IProcess> entry = map.entrySet().iterator().next();
+                linkingList.get(linkingList.size() - 1).setIn(entry.getKey(), entry.getValue());
+            }
+        }
+    }
+
+    private class Link {
+        private String inName;
+        private IProcess inProcess;
+        private String outName;
+        private IProcess outProcess;
+
+        void setIn(String inName, IProcess inProcess){
+            this.inName = inName;
+            this.inProcess = inProcess;
+        }
+
+        void setOut(String outName, IProcess outProcess){
+            this.outName = outName;
+            this.outProcess = outProcess;
+        }
+
+        String getInName(){
+            return inName;
+        }
+
+        String getOutName(){
+            return outName;
+        }
+
+        IProcess getInProcess(){
+            return inProcess;
+        }
+
+        IProcess getOutProcess(){
+            return outProcess;
+        }
     }
 }

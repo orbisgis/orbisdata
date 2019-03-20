@@ -37,6 +37,8 @@
 package org.orbisgis.processmanager;
 
 import groovy.lang.Closure;
+import groovy.lang.MetaClass;
+import org.codehaus.groovy.runtime.InvokerHelper;
 import org.orbisgis.processmanagerapi.ICaster;
 import org.orbisgis.processmanagerapi.IProcess;
 import org.slf4j.Logger;
@@ -77,6 +79,8 @@ public class Process implements IProcess {
     private ICaster caster;
     /** Unique identifier */
     private String identifier;
+    /** MetaClass use for groovy methods/properties binding */
+    private MetaClass metaClass;
 
     /**
      * Create a new Process with its title, description, keyword array, input map, output map, version
@@ -111,6 +115,7 @@ public class Process implements IProcess {
         this.resultMap = new HashMap<>();
         this.caster = caster;
         this.identifier = title;
+        this.metaClass = InvokerHelper.getMetaClass(getClass());
     }
 
     @Override

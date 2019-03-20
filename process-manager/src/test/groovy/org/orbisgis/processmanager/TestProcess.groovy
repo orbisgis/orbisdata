@@ -94,7 +94,7 @@ class TestProcess {
         assertTrue(p.results.outputA.equals(["ID", "THE_GEOM"]))
     }
 
-    /*@Test
+    @Test
     void testSimpleProcess4(){
         def p = processManager.factory("test").create(
                 "Create a buffer around a geometry",
@@ -118,7 +118,8 @@ class TestProcess {
                 "10.807852804032299, 4.826834323650925 10.238795325112857, 6.555702330196048 9.314696123025435, " +
                 "8.071067811865499 8.07106781186545, 9.314696123025472 6.555702330195993, 10.238795325112882 " +
                 "4.826834323650862, 10.807852804032311 2.9509032201612437, 11 1))")
-    }*/
+    }
+
     @Test
     void testSimpleProcess5(){
         def process = processManager.factory("test").create(
@@ -141,7 +142,8 @@ class TestProcess {
         def pA = processManager.factory("map1").create("pA", [inA1:String, inA2:String], [outA1:String], {inA1, inA2 ->[outA1:inA1+inA2]})
         def pB = processManager.factory("map1").create("pB", [inB1:String], [outB1:String], {inB1 ->[outB1:inB1+inB1]})
 
-        def mapper = new ProcessMapper([[outA1: pA, inB1: pB]])
+        def mapper = new ProcessMapper()
+        mapper.out(outA1:pA).in(inB1:pB)
         assertTrue mapper.execute([inA1: "t", inA2: "a"])
         assertEquals "tata", mapper.getResults().outB1
     }
@@ -155,7 +157,7 @@ class TestProcess {
      *               |
      *  --> ----     |
      *     | pA | ---|
-     *  --> ----
+     *      ----
      */
     @Test
     void testMapping2(){
@@ -164,7 +166,11 @@ class TestProcess {
         def pC = processManager.factory("map2").create("pC", [inC1:String, inC2:String], [outC1:String, outC2:String],
                 {inC1, inC2 ->[outC1:inC1+inC2, outC2:inC2+inC1]})
 
-        def mapper = new ProcessMapper([[outA1: pA, inB1: pB], [outB1:pB, inC2:pC], [outA1:pA, inC1:pC]])
+        def mapper = new ProcessMapper()
+        mapper.out(outA1:pA).in(inB1:pB)
+        mapper.out(outB1:pB).in(inC2:pC)
+        mapper.out(outA1:pA).in(inC1:pC)
+
         assertTrue mapper.execute([inA1: "a", inB2: "b"])
         assertEquals "AbA", mapper.getResults().outC1
         assertEquals "bAA", mapper.getResults().outC2
@@ -188,7 +194,12 @@ class TestProcess {
         def pD = processManager.factory("map3").create("pD", [inD1:String, inD2:String], [outD1:String, outD2:String],
                 {inD1, inD2 ->[outD1:inD1.toLowerCase(), outD2:inD2+inD1]})
 
-        def mapper = new ProcessMapper([[outA1: pA, inB1: pB], [outA1:pA, inC1:pC], [outB1:pB, inD1:pD], [outC1:pC, inD2:pD]])
+        def mapper = new ProcessMapper()
+        mapper.out(outA1: pA).in(inB1: pB)
+        mapper.out(outA1: pA).in(inC1: pC)
+        mapper.out(outB1: pB).in(inD1: pD)
+        mapper.out(outC1: pC).in(inD2: pD)
+
         assertTrue mapper.execute([inA1: "a", inB2: "b", inC2: "c"])
         assertEquals "ba", mapper.getResults().outD1
         assertEquals "AcbA", mapper.getResults().outD2

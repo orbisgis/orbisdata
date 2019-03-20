@@ -36,7 +36,6 @@
  */
 package org.orbisgis.processmanager;
 
-import org.orbisgis.processmanagerapi.IMapperIn;
 import org.orbisgis.processmanagerapi.IProcess;
 import org.orbisgis.processmanagerapi.IProcessMapper;
 import org.slf4j.Logger;
@@ -236,21 +235,21 @@ public class ProcessMapper implements IProcessMapper {
     }
 
     @Override
-    public IMapperIn out(Map<String, IProcess> map) {
+    public void link(Map<String, IProcess> map) {
         if (map == null || map.isEmpty()) {
-            LOGGER.error("The output is null or empty");
-            return new MapperIn();
+            LOGGER.error("The in/output is null or empty");
         }
-        else if (map.size() != 1) {
-            LOGGER.error("The output should contains one value");
-            return new MapperIn();
+        else if (map.size() != 2) {
+            LOGGER.error("The in/output should contains two value");
         }
         else {
             Link link = new Link();
             linkingList.add(link);
-            Map.Entry<String, IProcess> entry = map.entrySet().iterator().next();
+            Iterator<Map.Entry<String, IProcess>> it = map.entrySet().iterator();
+            Map.Entry<String, IProcess> entry = it.next();
             link.setOut(entry.getKey(), entry.getValue());
-            return new MapperIn();
+            entry = it.next();
+            link.setIn(entry.getKey(), entry.getValue());
         }
     }
 
@@ -297,22 +296,6 @@ public class ProcessMapper implements IProcessMapper {
         }
 
         @Override public String toString(){return input+":"+processId;}
-    }
-
-    private class MapperIn implements IMapperIn{
-        @Override
-        public void in(Map<String, IProcess> map) {
-            if (map == null || map.isEmpty()) {
-                LOGGER.error("The input is null or empty");
-            }
-            else if (map.size() != 1) {
-                LOGGER.error("The input should contains one value");
-            }
-            else {
-                Map.Entry<String, IProcess> entry = map.entrySet().iterator().next();
-                linkingList.get(linkingList.size() - 1).setIn(entry.getKey(), entry.getValue());
-            }
-        }
     }
 
     private class Link {

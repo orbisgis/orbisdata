@@ -66,7 +66,7 @@ public class Caster implements ICaster {
             castElementMap.put(clazz, castElement);
         }
         else{
-            LOGGER.error("There is already a cast element with the class name '"+clazz+"'.");
+            LOGGER.debug("There is already a cast element with the class name '"+clazz+"'.");
         }
     }
 

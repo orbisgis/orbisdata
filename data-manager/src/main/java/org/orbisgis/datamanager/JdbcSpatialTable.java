@@ -36,14 +36,19 @@
  */
 package org.orbisgis.datamanager;
 
+import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.SpatialResultSet;
 import org.h2gis.utilities.TableLocation;
 import org.locationtech.jts.geom.Geometry;
 import org.orbisgis.datamanagerapi.dataset.DataBaseType;
 import org.orbisgis.datamanagerapi.dataset.ISpatialTable;
 
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Contains the methods which are in common to all the IJdbcTable subclasses.
@@ -105,5 +110,30 @@ public abstract class JdbcSpatialTable extends JdbcTable implements ISpatialTabl
     @Override
     public void updateGeometry(String s, Geometry geometry) throws SQLException {
         ((SpatialResultSet)getResultSet()).updateGeometry(s, geometry);
+    }
+
+    @Override
+    public Map<String, String> getGeometryTypes() {
+        try {
+            Map<String, String> map = new HashMap<>();
+            PreparedStatement geomStatement = SFSUtilities.prepareInformationSchemaStatement(getJdbcDataSource().getConnection(),getTableLocation().getCatalog(),getTableLocation().getSchema(),
+                    getTableLocation().getTable(), "geometry_columns", "");
+            ResultSet geomResultSet = geomStatement.executeQuery();
+            boolean isH2 = getDbType() == DataBaseType.H2GIS;
+            while(geomResultSet.next()) {
+                String fieldName = geomResultSet.getString("F_GEOMETRY_COLUMN");
+                String type;
+                if(isH2) {
+                    type = SFSUtilities.getGeometryTypeNameFromCode(geomResultSet.getInt("GEOMETRY_TYPE"));
+                } else {
+                    type = geomResultSet.getString("type").toLowerCase();
+                }
+                map.put(fieldName, type);
+            }
+            return map;
+        } catch (SQLException e) {
+            LOGGER.error("Unable to get the geometry types.\n" + e.getLocalizedMessage());
+            return null;
+        }
     }
 }

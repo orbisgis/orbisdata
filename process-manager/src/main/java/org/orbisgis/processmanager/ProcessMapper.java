@@ -60,8 +60,13 @@ public class ProcessMapper implements IProcessMapper {
     private Map<String, Class> outputs;
     private List<List<IProcess>> executionTree;
     private Map<String, Object> results;
+    private List<Link> linkingList;
 
-    public ProcessMapper(List<Map<String, IProcess>> linkingMap){
+    public ProcessMapper(){
+        linkingList = new ArrayList<>();
+    }
+
+    private void link(){
         processList = new ArrayList<>();
         inOutMap = new HashMap<>();
         inputs = new HashMap<>();
@@ -72,17 +77,11 @@ public class ProcessMapper implements IProcessMapper {
         List<ProcessInput> availableIn = new ArrayList<>();
 
         //Build the map linking the inputs and outputs.
-        linkingMap.forEach(map -> {
-            if (map.size() != 2) {
-                LOGGER.error("The linking map should contains pairs of <String, IProcess>");
-                return;
-            }
-            Iterator<String> i1 = map.keySet().iterator();
-            String output = i1.next();
-            String input = i1.next();
-            Iterator<IProcess> i2 = map.values().iterator();
-            IProcess outputProcess = i2.next();
-            IProcess inputProcess = i2.next();
+        linkingList.forEach(link -> {
+            String output = link.getOutName();
+            String input = link.getInName();
+            IProcess outputProcess = link.getOutProcess();
+            IProcess inputProcess = link.getInProcess();
             if (getProcess(outputProcess.getIdentifier()) == null) {
                 processList.add(outputProcess);
             }
@@ -196,6 +195,8 @@ public class ProcessMapper implements IProcessMapper {
 
     @Override
     public boolean execute(Map<String, Object> inputDataMap) {
+        link();
+
         Map<String, Object> dataMap = inputDataMap == null ?  new HashMap<>() : new HashMap<>(inputDataMap);
         if(inputs != null && dataMap.size() != inputs.size()){
             LOGGER.error("The number of the input data map and the number of process input are different.");
@@ -231,6 +232,25 @@ public class ProcessMapper implements IProcessMapper {
     @Override
     public Map<String, Object> getResults() {
         return results;
+    }
+
+    @Override
+    public void link(Map<String, IProcess> map) {
+        if (map == null || map.isEmpty()) {
+            LOGGER.error("The in/output is null or empty");
+        }
+        else if (map.size() != 2) {
+            LOGGER.error("The in/output should contains two value");
+        }
+        else {
+            Link link = new Link();
+            linkingList.add(link);
+            Iterator<Map.Entry<String, IProcess>> it = map.entrySet().iterator();
+            Map.Entry<String, IProcess> entry = it.next();
+            link.setOut(entry.getKey(), entry.getValue());
+            entry = it.next();
+            link.setIn(entry.getKey(), entry.getValue());
+        }
     }
 
     private IProcess getProcess(String identifier){
@@ -276,5 +296,38 @@ public class ProcessMapper implements IProcessMapper {
         }
 
         @Override public String toString(){return input+":"+processId;}
+    }
+
+    private class Link {
+        private String inName;
+        private IProcess inProcess;
+        private String outName;
+        private IProcess outProcess;
+
+        void setIn(String inName, IProcess inProcess){
+            this.inName = inName;
+            this.inProcess = inProcess;
+        }
+
+        void setOut(String outName, IProcess outProcess){
+            this.outName = outName;
+            this.outProcess = outProcess;
+        }
+
+        String getInName(){
+            return inName;
+        }
+
+        String getOutName(){
+            return outName;
+        }
+
+        IProcess getInProcess(){
+            return inProcess;
+        }
+
+        IProcess getOutProcess(){
+            return outProcess;
+        }
     }
 }

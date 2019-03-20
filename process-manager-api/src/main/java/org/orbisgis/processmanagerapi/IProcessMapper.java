@@ -47,4 +47,5 @@ public interface IProcessMapper {
     Map<String, Class> getOutputDefinitions();
     boolean execute(Map<String, Object> inputDataMap);
     Map<String, Object> getResults();
+    void link(Map<String, IProcess> map);
 }

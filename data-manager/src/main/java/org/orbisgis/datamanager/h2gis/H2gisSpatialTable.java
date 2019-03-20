@@ -36,6 +36,7 @@
  */
 package org.orbisgis.datamanager.h2gis;
 
+import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.SpatialResultSetMetaData;
 import org.h2gis.utilities.TableLocation;
 import org.h2gis.utilities.wrapper.ResultSetWrapper;
@@ -51,6 +52,7 @@ import org.slf4j.LoggerFactory;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Map;
 
 /**
  * @author Erwan Bocher (CNRS)
@@ -101,6 +103,7 @@ public class H2gisSpatialTable extends JdbcSpatialTable {
             return null;
         }
     }
+
 
     @Override
     public Object asType(Class clazz) {

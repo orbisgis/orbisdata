@@ -40,6 +40,8 @@ import org.h2gis.utilities.SpatialResultSet;
 import org.h2gis.utilities.SpatialResultSetMetaData;
 import org.locationtech.jts.geom.Geometry;
 
+import java.util.Map;
+
 /**
  * Extension of {@link ITable}. A {@link ISpatialTable} is a specialisation with at least one Geometry column.
  *
@@ -64,4 +66,10 @@ public interface ISpatialTable extends IJdbcTable, SpatialResultSet {
 
     @Override
     Geometry getGeometry();
+
+    /**
+     * Returns a map containing the field names as key and the SFS geometry type as well known name.
+     * @return field names and geometry types
+     */
+    Map<String, String> getGeometryTypes();
 }

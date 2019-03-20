@@ -38,6 +38,7 @@ package org.orbisgis.datamanager
 
 import org.junit.jupiter.api.Test
 import org.orbisgis.datamanager.h2gis.H2GIS
+import org.orbisgis.datamanagerapi.dataset.ISpatialTable
 import org.orbisgis.datamanagerapi.dataset.ITable
 
 import java.sql.SQLException
@@ -470,5 +471,18 @@ class GroovyH2GISTest {
         assertEquals(3, (int) values.get(2))
         assertEquals(2, (int) values.get(3))
         assertEquals(1, (int) values.get(4))
+    }
+
+    @Test
+    void geometryTypes() {
+        def h2GIS = H2GIS.open([databaseName: './target/secondH2GIS', user:'sa', password:'sa'])
+        h2GIS.execute("""
+                DROP TABLE IF EXISTS externalTable;
+                CREATE TABLE externalTable (id int, the_geom point);
+                INSERT INTO externalTable VALUES (1, 'POINT(10 10)'::GEOMETRY), (2, 'POINT(1 1)'::GEOMETRY);
+        """)
+        h2GIS.save("externalTable", 'target/externalFile.shp' )
+        def table = h2GIS.link('target/externalFile.shp', 'super',true) as ISpatialTable
+        assert (table.geometryTypes.toString()== "[THE_GEOM:MULTIPOINT]")
     }
 }

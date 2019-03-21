@@ -37,11 +37,15 @@
 package org.orbisgis.datamanager
 
 import org.junit.jupiter.api.Test
+import org.locationtech.jts.geom.Geometry
+import org.locationtech.jts.geom.Point
 import org.orbisgis.datamanager.h2gis.H2GIS
 import org.orbisgis.datamanagerapi.dataset.ISpatialTable
 import org.orbisgis.datamanagerapi.dataset.ITable
+import org.osgi.service.jdbc.DataSourceFactory
 
 import java.sql.SQLException
+import java.sql.Time
 
 import static org.junit.jupiter.api.Assertions.*
 import static org.orbisgis.datamanagerapi.dsl.IOptionBuilder.Order.DESC
@@ -52,6 +56,27 @@ class GroovyH2GISTest {
     void openH2GIS(){
         assertNotNull H2GIS.open("./target/openH2GIS1")
         assertNotNull H2GIS.open("./target/openH2GIS2", "sa", "sa")
+    }
+
+    @Test
+    void testColumnsType() throws SQLException {
+        def h2GIS = H2GIS.open([databaseName: './target/loadH2GIS'])
+        assertNotNull h2GIS
+        h2GIS.execute("DROP TABLE IF EXISTS TYPES")
+        h2GIS.execute("CREATE TABLE TYPES (colint INT, colreal REAL, colint2 MEDIUMINT, coltime TIME, " +
+                "colvarchar VARCHAR2, colbool boolean, coltiny tinyint, colpoint POINT, colgeom GEOMETRY)")
+        assertTrue(h2GIS.getTable("TYPES").hasColumn("colint", Integer.class))
+        assertFalse(h2GIS.getTable("TYPES").hasColumn("colint", Short.class))
+        assertTrue(h2GIS.getTable("TYPES").hasColumns(
+                [colint:Integer.class,
+                 colreal:Float.class,
+                 colint2:Integer.class,
+                 coltime:Time.class,
+                 colvarchar:String.class,
+                 colbool:Boolean.class,
+                 coltiny:Byte.class,
+                 colpoint:Point.class,
+                 colgeom:Geometry.class]))
     }
 
     @Test

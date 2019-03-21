@@ -38,6 +38,7 @@ package org.orbisgis.datamanagerapi.dataset;
 
 import groovy.lang.Closure;
 import java.util.Collection;
+import java.util.Map;
 
 /**
  * Implementation of the IDataSet interface. A table is a 2D (column/line) representation of data.
@@ -60,6 +61,25 @@ public interface ITable extends IDataSet {
      * @return A collection containing the name of the columns
      */
     Collection<String> getColumnNames();
+
+    /**
+     * Return true if the table contains a column with the given name with the given type.
+     *
+     * @param columnName Name of the column to check.
+     * @param clazz Class of the column to check.
+     *
+     * @return True if the column is found, false otherwise.
+     */
+    boolean hasColumn(String columnName, Class clazz);
+
+    /**
+     * Return true if the table contains all the column describes in the given Map.
+     *
+     * @param columnMap Map containing the columns with the column name as key and the column type as value.
+     *
+     * @return True if the columns are found, false otherwise.
+     */
+    boolean hasColumns(Map<String, Class> columnMap);
 
     /**
      * Save the table to a file

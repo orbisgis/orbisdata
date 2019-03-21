@@ -38,8 +38,11 @@ package org.orbisgis.datamanager;
 
 import groovy.lang.MetaClass;
 import org.codehaus.groovy.runtime.InvokerHelper;
+import org.h2.value.DataType;
 import org.h2gis.utilities.JDBCUtilities;
+import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.TableLocation;
+import org.locationtech.jts.geom.Geometry;
 import org.orbisgis.datamanager.dsl.OptionBuilder;
 import org.orbisgis.datamanager.dsl.WhereBuilder;
 import org.orbisgis.datamanager.io.IOMethods;
@@ -159,6 +162,52 @@ public abstract class JdbcTable implements IJdbcTable {
         } catch (SQLException e) {
             return new ArrayList<>();
         }
+    }
+
+    @Override
+    public boolean hasColumn(String columnName, Class clazz){
+        boolean hasField;
+        try {
+            hasField = JDBCUtilities.hasField(jdbcDataSource.getConnection(), getLocation(), columnName);
+        } catch (SQLException e) {
+            LOGGER.error("Unable to get the index of the column '"+columnName+"'\n"+e.getLocalizedMessage());
+            return false;
+        }
+        if(!hasField){
+            return false;
+        }
+
+        if(Geometry.class.isAssignableFrom(clazz)){
+            String str = null;
+            try {
+                str = SFSUtilities.getGeometryTypeNameFromCode(
+                        SFSUtilities.getGeometryType(jdbcDataSource.getConnection(), tableLocation, columnName));
+            } catch (SQLException e) {
+                LOGGER.error("Unable to get the geometric type of the column '" + columnName + "'\n" + e.getLocalizedMessage());
+            }
+            return clazz.getSimpleName().equalsIgnoreCase(str);
+        }
+        else {
+            ResultSet rs;
+            int type = DataType.getTypeFromClass(clazz);
+            boolean hasGoodType = false;
+            try {
+                rs = jdbcDataSource.getConnection().getMetaData().getColumns(tableLocation.getCatalog(null),
+                        tableLocation.getSchema(null), tableLocation.getTable(), null);
+                while (rs.next() && !hasGoodType) {
+                    hasGoodType = DataType.convertSQLTypeToValueType(rs.getInt("DATA_TYPE")) == type &&
+                            rs.getString("COLUMN_NAME").equalsIgnoreCase(columnName);
+                }
+            } catch (SQLException e) {
+                LOGGER.error("Unable to get the type of the column '" + columnName + "'\n" + e.getLocalizedMessage());
+            }
+            return hasGoodType;
+        }
+    }
+
+    @Override
+    public boolean hasColumns(Map<String, Class> columnMap){
+        return columnMap.entrySet().stream().allMatch(entry -> hasColumn(entry.getKey(), entry.getValue()));
     }
 
     @Override

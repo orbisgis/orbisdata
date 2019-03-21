@@ -38,6 +38,8 @@ package org.orbisgis.datamanager;
 
 import groovy.lang.Closure;
 import org.junit.jupiter.api.Test;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.Point;
 import org.orbisgis.datamanager.h2gis.H2GIS;
 import org.orbisgis.datamanagerapi.dataset.IJdbcTable;
 import org.orbisgis.datamanagerapi.dataset.ISpatialTable;
@@ -45,6 +47,7 @@ import org.orbisgis.datamanagerapi.dataset.ITable;
 import org.osgi.service.jdbc.DataSourceFactory;
 
 import java.sql.SQLException;
+import java.sql.Time;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -65,6 +68,30 @@ public class H2GISTests {
     public void openH2GIS(){
         assertNotNull(H2GIS.open("./target/openH2GIS1"));
         assertNotNull(H2GIS.open("./target/openH2GIS2", "sa", "sa"));
+    }
+
+    @Test
+    public void testColumnsType() throws SQLException {
+        Map<String, String> map = new HashMap<>();
+        map.put(DataSourceFactory.JDBC_DATABASE_NAME, "../../target/loadH2GIS");
+        H2GIS h2GIS = H2GIS.open(map);
+        assertNotNull(h2GIS);
+        h2GIS.execute("DROP TABLE IF EXISTS TYPES");
+        h2GIS.execute("CREATE TABLE TYPES (colint INT, colreal REAL, colint2 MEDIUMINT, coltime TIME, " +
+                "colvarchar VARCHAR2, colbool boolean, coltiny tinyint, colpoint POINT, colgeom GEOMETRY)");
+        assertTrue(h2GIS.getTable("TYPES").hasColumn("colint", Integer.class));
+        assertFalse(h2GIS.getTable("TYPES").hasColumn("colint", Short.class));
+        Map<String, Class> columns = new HashMap<>();
+        columns.put("colint", Integer.class);
+        columns.put("colreal", Float.class);
+        columns.put("colint2", Integer.class);
+        columns.put("coltime", Time.class);
+        columns.put("colvarchar", String.class);
+        columns.put("colbool", Boolean.class);
+        columns.put("coltiny", Byte.class);
+        columns.put("colpoint", Point.class);
+        columns.put("colgeom", Geometry.class);
+        assertTrue(h2GIS.getTable("TYPES").hasColumns(columns));
     }
     
     

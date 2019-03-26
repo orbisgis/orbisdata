@@ -5,7 +5,11 @@
     <modelVersion>4.0.0</modelVersion>
 
     <!-- The Basics -->
-    <groupId>org.orbisgis</groupId>
+    <parent>
+        <groupId>org.orbisgis</groupId>
+        <artifactId>orbisgis-nexus</artifactId>
+        <version>3</version>
+    </parent>
     <artifactId>orbisdata</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>pom</packaging>

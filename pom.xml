@@ -27,6 +27,7 @@
         <buildNumber>${maven.build.timestamp}</buildNumber>
         <maven.compiler.target>8</maven.compiler.target>
         <maven.compiler.source>8</maven.compiler.source>
+        <site.basedir>${project.basedir}</site.basedir>
     </properties>
 
     <!-- Build Settings -->
@@ -51,6 +52,10 @@
             <plugin>
                 <groupId>org.codehaus.gmavenplus</groupId>
                 <artifactId>gmavenplus-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
             </plugin>
         </plugins>
     </build>

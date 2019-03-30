@@ -99,16 +99,26 @@
     <scm>
         <connection>scm:git:git://github.com/orbisgis/orbisdata</connection>
     </scm>
-    <repositories>
-        <repository>
-            <id>orbisgis-nexus</id>
-            <name>OrbisGIS nexus repository</name>
-            <url>http://nexus.orbisgis.org/content/repositories/osgi-maven</url>
-        </repository>
-        <repository>
-            <id>orbisgis-nexus-snapshot</id>
-            <name>OrbisGIS nexus snapshot repository</name>
-            <url>http://nexus.orbisgis.org/content/repositories/osgi-maven-snapshot</url>
-        </repository>
-    </repositories>
+
+    <reporting>
+        <plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>versions-maven-plugin</artifactId>
+                <reportSets>
+                    <reportSet>
+                        <reports>
+                            <report>dependency-updates-report</report>
+                            <report>plugin-updates-report</report>
+                            <report>property-updates-report</report>
+                        </reports>
+                    </reportSet>
+                </reportSets>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-report-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </reporting>
 </project>

@@ -1,6 +1,6 @@
 language: java
 jdk:
-  - oraclejdk11
-  - openjdk11
+  - oraclejdk8
+  - openjdk8
 
 script: mvn clean install

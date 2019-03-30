@@ -144,4 +144,12 @@
             </plugin>
         </plugins>
     </reporting>
+
+    <distributionManagement>
+        <site>
+            <id>orbisgis-devs-website</id>
+            <name>Devs Website</name>
+            <url>file:/var/www/html/${project.artifactId}</url>
+        </site>
+    </distributionManagement>
 </project>

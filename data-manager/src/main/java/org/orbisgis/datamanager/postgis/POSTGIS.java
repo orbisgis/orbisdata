@@ -18,6 +18,7 @@ import org.slf4j.LoggerFactory;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.*;
 import org.h2gis.functions.io.utility.FileUtil;
 import org.h2gis.postgis_jts.ConnectionWrapper;
@@ -136,6 +137,15 @@ public class POSTGIS extends JdbcDataSource {
 
     @Override
     public ITable getTable(String tableName) {
+        try {
+            if(!JDBCUtilities.tableExists(connectionWrapper,
+                    TableLocation.parse(tableName, getDataBaseType().equals(DataBaseType.H2GIS)).getTable())){
+                return null;
+            }
+        } catch (SQLException e) {
+            LOGGER.error("Unable to find table.\n"+e.getLocalizedMessage());
+            return null;
+        }
         StatementWrapper statement;
         try {
             statement = (StatementWrapper)connectionWrapper.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);
@@ -149,6 +159,15 @@ public class POSTGIS extends JdbcDataSource {
 
     @Override
     public ISpatialTable getSpatialTable(String tableName) {
+        try {
+            if(!JDBCUtilities.tableExists(connectionWrapper,
+                    TableLocation.parse(tableName, getDataBaseType().equals(DataBaseType.H2GIS)).getTable())){
+                return null;
+            }
+        } catch (SQLException e) {
+            LOGGER.error("Unable to find table.\n"+e.getLocalizedMessage());
+            return null;
+        }
         StatementWrapper statement;
         try {
             statement = (StatementWrapper)connectionWrapper.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);

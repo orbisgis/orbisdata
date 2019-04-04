@@ -73,6 +73,11 @@ public abstract class JdbcSpatialTable extends JdbcTable implements ISpatialTabl
     }
 
     @Override
+    public boolean isSpatial(){
+        return true;
+    }
+
+    @Override
     public Geometry getGeometry(int columnIndex){
         try {
             return ((SpatialResultSet)getResultSet()).getGeometry(columnIndex);

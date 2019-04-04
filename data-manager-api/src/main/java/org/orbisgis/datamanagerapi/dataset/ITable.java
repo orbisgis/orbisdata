@@ -38,6 +38,7 @@ package org.orbisgis.datamanagerapi.dataset;
 
 import groovy.lang.Closure;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -73,6 +74,15 @@ public interface ITable extends IDataSet {
     boolean hasColumn(String columnName, Class clazz);
 
     /**
+     * Return true if the table contains a column with the given name
+     *
+     * @param columnName Name of the column to check.
+     *
+     * @return True if the column is found, false otherwise.
+     */
+    boolean hasColumn(String columnName);
+
+    /**
      * Return true if the table contains all the column describes in the given Map.
      *
      * @param columnMap Map containing the columns with the column name as key and the column type as value.
@@ -80,6 +90,47 @@ public interface ITable extends IDataSet {
      * @return True if the columns are found, false otherwise.
      */
     boolean hasColumns(Map<String, Class> columnMap);
+
+    /**
+     * Return true if the table contains all the column describes in the given List.
+     *
+     * @param columnList List containing the columns with the column name as key and the column type as value.
+     *
+     * @return True if the columns are found, false otherwise.
+     */
+    boolean hasColumns(List<String> columnList);
+
+    /**
+     * Return the count of columns.
+     *
+     * @return The count of columns.
+     */
+    int getColumnCount();
+
+    /**
+     * Return the count of lines or -1 if not able to find the table.
+     *
+     * @return The count of lines or -1 if not able to find the table.
+     */
+    int getRowCount();
+
+    /**
+     * Return true if the table is empty (no lines), false otherwise.
+     *
+     * @return True if the table is empty (no lines), false otherwise.
+     */
+    boolean isEmpty();
+
+    /**
+     * Return a collection of all the unique values of the table. This method can take a lot of time and resources
+     * according the the table size. If no values are found, return an epty collection. If an error occurred, return
+     * null.
+     *
+     * @param column Name of the column to request.
+     *
+     * @return A collection of all the unique values of the table.
+     */
+    Collection<String> getUniqueValues(String column);
 
     /**
      * Save the table to a file

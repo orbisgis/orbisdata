@@ -71,9 +71,9 @@ public interface IJdbcTable extends ITable, GroovyObject, ResultSet, IWhereBuild
     TableLocation getTableLocation();
 
     /**
-     * Return the DataBaseType type of the {@link IJdbcTable}.
+     * Return the {@link DataBaseType} type of the {@link IJdbcTable}.
      *
-     * @return The DataBaseType type
+     * @return The {@link DataBaseType} type
      */
     DataBaseType getDbType();
 
@@ -93,23 +93,23 @@ public interface IJdbcTable extends ITable, GroovyObject, ResultSet, IWhereBuild
     ResultSetMetaData getMetadata();
 
     /**
-     * Return true if the table is spatial.
+     * Return true if the {@link ITable} is spatial.
      *
-     * @return True if the table is spatial.
+     * @return True if the {@link ITable} is spatial.
      */
     boolean isSpatial();
 
     /**
-     * Return true if the table is a linked one.
+     * Return true if the {@link ITable} is a linked one.
      *
-     * @return True if the table is a linked one.
+     * @return True if the {@link ITable} is a linked one.
      */
     boolean isLinked();
 
     /**
-     * Return true if the table is a temporary one.
+     * Return true if the {@link ITable} is a temporary one.
      *
-     * @return True if the table is a temporary one.
+     * @return True if the {@link ITable} is a temporary one.
      */
     boolean isTemporary();
 

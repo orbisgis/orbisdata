@@ -51,7 +51,7 @@ import java.util.Map;
 public interface ISpatialTable extends IJdbcTable, SpatialResultSet {
 
     /**
-     * Get the SpatialResultSetMetaData of the DataSet.
+     * Get the {@link SpatialResultSetMetaData} of the {@link ISpatialTable}.
      *
      * @return The metadata object.
      */
@@ -68,8 +68,8 @@ public interface ISpatialTable extends IJdbcTable, SpatialResultSet {
     Geometry getGeometry();
 
     /**
-     * Returns a map containing the field names as key and the SFS geometry type as well known name.
-     * @return field names and geometry types
+     * Returns a {@link Map} containing the field names as key and the SFS geometry type (well known name) as value.
+     * @return The field names as key and geometry types as value.
      */
     Map<String, String> getGeometryTypes();
 }

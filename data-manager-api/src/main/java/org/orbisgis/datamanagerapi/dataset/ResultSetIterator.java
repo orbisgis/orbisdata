@@ -54,9 +54,9 @@ public class ResultSetIterator implements Iterator<Object> {
     /** Class {@link Logger} */
     private static final Logger LOGGER = LoggerFactory.getLogger(ResultSetIterator.class);
 
-    /** Iterated ResultSet */
+    /** Iterated {@link ResultSet} */
     private ResultSet resultSet;
-    /** Count of ResultSet row */
+    /** Count of {@link ResultSet} row */
     private int rowCount = 0;
 
     /**

@@ -242,21 +242,6 @@ public abstract class JdbcTable implements IJdbcTable {
     }
 
     @Override
-    public boolean hasColumns(List<String> columnList){
-        return getColumnNames().containsAll(columnList);
-    }
-
-    @Override
-    public boolean hasColumns(Map<String, Class> columnMap){
-        return columnMap.entrySet().stream().allMatch(entry -> hasColumn(entry.getKey(), entry.getValue()));
-    }
-
-    @Override
-    public int getColumnCount(){
-        return getColumnNames().size();
-    }
-
-    @Override
     public int getRowCount(){
         try {
             return JDBCUtilities.getRowCount(jdbcDataSource.getConnection(),
@@ -268,11 +253,6 @@ public abstract class JdbcTable implements IJdbcTable {
     }
 
     @Override
-    public boolean isEmpty(){
-        return getRowCount() == 0;
-    }
-
-    @Override
     public Collection<String> getUniqueValues(String column){
         try {
             return JDBCUtilities.getUniqueFieldValues(jdbcDataSource.getConnection(),
@@ -281,11 +261,6 @@ public abstract class JdbcTable implements IJdbcTable {
             LOGGER.error("Unable to request unique values fo the column '"+column+"'.\n"+e.getLocalizedMessage());
         }
         return null;
-    }
-
-    @Override
-    public boolean save(String filePath) {
-        return save(filePath, null);
     }
 
     @Override

@@ -198,10 +198,10 @@ public class ProcessMapper implements IProcessMapper {
         link();
 
         Map<String, Object> dataMap = inputDataMap == null ?  new HashMap<>() : new HashMap<>(inputDataMap);
-        if(inputs != null && dataMap.size() != inputs.size()){
+        /*if(inputs != null && dataMap.size() != inputs.size()){
             LOGGER.error("The number of the input data map and the number of process input are different.");
             return false;
-        }
+        }*/
         for(List<IProcess> processes : executionTree){
             for(IProcess process : processes){
                 Map<String, Object> processInData = new HashMap<>();

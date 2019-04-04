@@ -42,7 +42,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Implementation of the IDataSet interface. A table is a 2D (column/line) representation of data.
+ * Extension of the {@link IDataSet} interface. A {@link ITable} is a 2D (column/line) representation of raw data.
  *
  * @author Erwan Bocher (CNRS)
  * @author Sylvain PALOMINOS (UBS 2018-2019)
@@ -50,21 +50,22 @@ import java.util.Map;
 public interface ITable extends IDataSet {
 
     /**
-     * Apply the given closure to each row.
+     * Apply the given {@link Closure} to each row.
      *
-     * @param closure Closure to apply to each row.
+     * @param closure {@link Closure} to apply to each row.
      */
     void eachRow(Closure closure);
     
     /**
-     * Get all column names from the underlying table
+     * Get all column names from the underlying table. If there isn't any column, return an empty {@link Collection}.
+     * If an error occurs on requesting the column, return null.
      *
-     * @return A collection containing the name of the columns
+     * @return A {@link Collection} containing the name of the column
      */
     Collection<String> getColumnNames();
 
     /**
-     * Return true if the table contains a column with the given name with the given type.
+     * Return true if the {@link ITable} contains a column with the given name with the given type.
      *
      * @param columnName Name of the column to check.
      * @param clazz Class of the column to check.
@@ -74,7 +75,7 @@ public interface ITable extends IDataSet {
     boolean hasColumn(String columnName, Class clazz);
 
     /**
-     * Return true if the table contains a column with the given name
+     * Return true if the {@link ITable} contains a column with the given name
      *
      * @param columnName Name of the column to check.
      *
@@ -83,67 +84,81 @@ public interface ITable extends IDataSet {
     boolean hasColumn(String columnName);
 
     /**
-     * Return true if the table contains all the column describes in the given Map.
+     * Return true if the {@link ITable} contains all the column describes in the given {@link Map}.
      *
-     * @param columnMap Map containing the columns with the column name as key and the column type as value.
+     * @param columnMap {@link Map} containing the columns with the column name as key and the column type as value.
      *
      * @return True if the columns are found, false otherwise.
      */
-    boolean hasColumns(Map<String, Class> columnMap);
+    default boolean hasColumns(Map<String, Class> columnMap){
+        return columnMap.entrySet().stream().allMatch(entry -> hasColumn(entry.getKey(), entry.getValue()));
+    }
 
     /**
-     * Return true if the table contains all the column describes in the given List.
+     * Return true if the {@link ITable} contains all the column describes in the given {@link List}.
      *
-     * @param columnList List containing the columns with the column name as key and the column type as value.
+     * @param columnList {@link List} containing the columns with the column name as key and the column type as value.
      *
      * @return True if the columns are found, false otherwise.
      */
-    boolean hasColumns(List<String> columnList);
+    default boolean hasColumns(List<String> columnList){
+        return getColumnNames().containsAll(columnList);
+    }
 
     /**
      * Return the count of columns.
      *
      * @return The count of columns.
      */
-    int getColumnCount();
+    default int getColumnCount(){
+        return getColumnNames().size();
+    }
 
     /**
-     * Return the count of lines or -1 if not able to find the table.
+     * Return the count of lines or -1 if not able to find the {@link ITable}.
      *
-     * @return The count of lines or -1 if not able to find the table.
+     * @return The count of lines or -1 if not able to find the {@link ITable}.
      */
     int getRowCount();
 
     /**
-     * Return true if the table is empty (no lines), false otherwise.
+     * Return true if the {@link ITable} is empty (no lines), false otherwise.
      *
-     * @return True if the table is empty (no lines), false otherwise.
+     * @return True if the {@link ITable} is empty (no lines), false otherwise.
      */
-    boolean isEmpty();
+    default boolean isEmpty(){
+        return getRowCount() == 0;
+    }
 
     /**
-     * Return a collection of all the unique values of the table. This method can take a lot of time and resources
-     * according the the table size. If no values are found, return an epty collection. If an error occurred, return
-     * null.
+     * Return a {@link Collection} of all the unique values of the {@link ITable}. This method can take a lot of time and
+     * resources according the the table size. If no values are found, return an empty collection. If an error occurred,
+     * return null.
      *
      * @param column Name of the column to request.
      *
-     * @return A collection of all the unique values of the table.
+     * @return A {@link Collection} of all the unique values of the {@link ITable}.
      */
     Collection<String> getUniqueValues(String column);
 
     /**
-     * Save the table to a file
-     * @param filePath the path of the file to be saved
-     * @return true is the file has been saved
+     * Save the {@link ITable} into a file.
+     *
+     * @param filePath Path of the file to be saved.
+     *
+     * @return True is the file has been saved, false otherwise.
      */
-    boolean save(String filePath);
+    default boolean save(String filePath) {
+        return save(filePath, null);
+    }
 
     /**
-     * Save the table to a file
-     * @param filePath the path of the file to be saved
-     * @param encoding Encoding property.
-     * @return true is the file has been saved
+     * Save the {@link ITable} into a file.
+     *
+     * @param filePath Path of the file to be saved.
+     * @param encoding Encoding of the file.
+     *
+     * @return True is the file has been saved, false otherwise.
      */
     boolean save(String filePath, String encoding);
     

@@ -156,11 +156,47 @@ public abstract class JdbcTable implements IJdbcTable {
     }
 
     @Override
+    public boolean isSpatial(){
+        return true;
+    }
+
+    @Override
+    public boolean isLinked(){
+        try {
+            return JDBCUtilities.isLinkedTable(jdbcDataSource.getConnection(), getTableLocation().toString());
+        } catch (SQLException e) {
+            LOGGER.error("Unable to get the type of the table '"+getTableLocation().getTable()+".\n"+e.getLocalizedMessage());
+        }
+        return false;
+    }
+
+    @Override
+    public boolean isTemporary(){
+        try {
+            return JDBCUtilities.isTemporaryTable(jdbcDataSource.getConnection(), getTableLocation().toString());
+        } catch (SQLException e) {
+            LOGGER.error("Unable to get the type of the table '"+getTableLocation().getTable()+".\n"+e.getLocalizedMessage());
+        }
+        return false;
+    }
+
+    @Override
     public Collection<String> getColumnNames() {
         try {
             return JDBCUtilities.getFieldNames(getResultSet().getMetaData());
         } catch (SQLException e) {
-            return new ArrayList<>();
+            LOGGER.error("Unable to get the collection of columns names");
+            return null;
+        }
+    }
+
+    @Override
+    public boolean hasColumn(String columnName){
+        try {
+            return JDBCUtilities.hasField(jdbcDataSource.getConnection(), getLocation(), columnName);
+        } catch (SQLException e) {
+            LOGGER.error("Unable to get find the column '"+columnName+"'\n"+e.getLocalizedMessage());
+            return false;
         }
     }
 
@@ -206,8 +242,45 @@ public abstract class JdbcTable implements IJdbcTable {
     }
 
     @Override
+    public boolean hasColumns(List<String> columnList){
+        return getColumnNames().containsAll(columnList);
+    }
+
+    @Override
     public boolean hasColumns(Map<String, Class> columnMap){
         return columnMap.entrySet().stream().allMatch(entry -> hasColumn(entry.getKey(), entry.getValue()));
+    }
+
+    @Override
+    public int getColumnCount(){
+        return getColumnNames().size();
+    }
+
+    @Override
+    public int getRowCount(){
+        try {
+            return JDBCUtilities.getRowCount(jdbcDataSource.getConnection(),
+                    getTableLocation().toString(getDbType().equals(DataBaseType.H2GIS)));
+        } catch (SQLException e) {
+            LOGGER.error("Unable to get the row count on "+tableLocation.toString()+".\n"+e.getLocalizedMessage());
+            return -1;
+        }
+    }
+
+    @Override
+    public boolean isEmpty(){
+        return getRowCount() == 0;
+    }
+
+    @Override
+    public Collection<String> getUniqueValues(String column){
+        try {
+            return JDBCUtilities.getUniqueFieldValues(jdbcDataSource.getConnection(),
+                    getTableLocation().getTable(), column);
+        } catch (SQLException e) {
+            LOGGER.error("Unable to request unique values fo the column '"+column+"'.\n"+e.getLocalizedMessage());
+        }
+        return null;
     }
 
     @Override

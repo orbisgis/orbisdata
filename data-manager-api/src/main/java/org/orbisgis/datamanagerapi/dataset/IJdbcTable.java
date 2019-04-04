@@ -92,6 +92,27 @@ public interface IJdbcTable extends ITable, GroovyObject, ResultSet, IWhereBuild
     @Override
     ResultSetMetaData getMetadata();
 
+    /**
+     * Return true if the table is spatial.
+     *
+     * @return True if the table is spatial.
+     */
+    boolean isSpatial();
+
+    /**
+     * Return true if the table is a linked one.
+     *
+     * @return True if the table is a linked one.
+     */
+    boolean isLinked();
+
+    /**
+     * Return true if the table is a temporary one.
+     *
+     * @return True if the table is a temporary one.
+     */
+    boolean isTemporary();
+
     @Override
     default String getLocation() {
         return getTableLocation().toString(getDbType().equals(DataBaseType.H2GIS));

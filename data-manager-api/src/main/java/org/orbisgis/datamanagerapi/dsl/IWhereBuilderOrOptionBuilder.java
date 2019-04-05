@@ -36,11 +36,13 @@
  */
 package org.orbisgis.datamanagerapi.dsl;
 
+import org.orbisgis.datamanagerapi.dataset.ITable;
+
 /**
  * Interface defining methods for the SQL 'from' building. The request construction can be continued thanks to the
- * IConditionOrOptionBuilder or the IOptionBuilder or its result can be get calling 'eachRow' to iterate on the resultSet or 'as ITable' to
- * get the ITable object.
- * As the IConditionOrOptionBuilder extends IOptionBuilder the result of the where method ca be
+ * {@link IConditionOrOptionBuilder} or the {@link IOptionBuilder} or its result can be get calling 'eachRow' to
+ * iterate on the resultSet or 'as ITable' to get the {@link ITable} object.
+ * As the {@link IConditionOrOptionBuilder} extends {@link IOptionBuilder} the result of the where method ca be
  * used to add condition (using AND or OR) or to set options (Like LIMIT, GROUP BY, ...).
  *
  * @author Erwan Bocher (CNRS)
@@ -53,7 +55,7 @@ public interface IWhereBuilderOrOptionBuilder extends IOptionBuilder {
      *
      * @param condition Condition to use for for the selection.
      *
-     * @return ISqlBuilder instance to continue building.
+     * @return {@link IConditionOrOptionBuilder} instance to continue building.
      */
     IConditionOrOptionBuilder where(String condition);
 }

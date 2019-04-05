@@ -15,7 +15,7 @@
  *
  * DataManager API  is distributed under GPL 3 license.
  *
- * Copyright (C) 2018 CNRS (Lab-STICC UMR CNRS 6285)
+ * Copyright (C) 2019 CNRS (Lab-STICC UMR CNRS 6285)
  *
  *
  * DataManager API  is free software: you can redistribute it and/or modify it under the
@@ -36,12 +36,15 @@
  */
 package org.orbisgis.datamanagerapi.dsl;
 
+import org.orbisgis.datamanagerapi.dataset.ITable;
+
 /**
- * Interface defining methods for the SQL 'where' condition building. The request construction can be continued thanks to the
- * IConditionOrOptionBuilder or its result can be get calling 'eachRow' to iterate on the resultSet or 'as ITable' to get the
- * ITable object.
- * The methods inherited from IOptionBuilder allow to set option returning an IOptionBuilder while
- * IConditionOrOptionBuilder own methods allow to add where condition returning an IConditionOrOptionBuilder.
+ * Interface defining methods for the SQL 'where' condition building. The request construction can be continued thanks
+ * to the {@link IConditionOrOptionBuilder} or its result can be get calling 'eachRow' to iterate on the resultSet or
+ * 'as ITable' to get the {@link ITable} object.
+ * The methods inherited from IOptionBuilder allow to set option returning an {@link IOptionBuilder} while
+ * {@link IConditionOrOptionBuilder} own methods allow to add where condition returning an
+ * {@link IConditionOrOptionBuilder}.
  *
  * @author Erwan Bocher (CNRS)
  * @author Sylvain PALOMINOS (UBS 2019)
@@ -49,20 +52,20 @@ package org.orbisgis.datamanagerapi.dsl;
 public interface IConditionOrOptionBuilder extends IOptionBuilder {
 
     /**
-     * Add a 'and' condition for the selection.
+     * Add a 'AND' condition for the selection.
      *
      * @param condition Condition to add for for the selection.
      *
-     * @return ISqlBuilder instance to continue building.
+     * @return {@link IConditionOrOptionBuilder} instance to continue building.
      */
     IConditionOrOptionBuilder and(String condition);
 
     /**
-     * Add a 'or' condition for the selection.
+     * Add a 'OR' condition for the selection.
      *
      * @param condition Condition to add for for the selection.
      *
-     * @return ISqlBuilder instance to continue building.
+     * @return {@link IConditionOrOptionBuilder} instance to continue building.
      */
     IConditionOrOptionBuilder or(String condition);
 }

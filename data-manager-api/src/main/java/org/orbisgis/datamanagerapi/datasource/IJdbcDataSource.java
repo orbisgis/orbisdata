@@ -44,6 +44,7 @@ import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.net.URI;
 import java.util.Collection;
 import java.util.Map;
 
@@ -91,14 +92,14 @@ public interface IJdbcDataSource extends IDataSource, GroovyObject {
     /**
      * Load a file into the database.
      *
-     * @param filePath Path of the file or its URI.
+     * @param filePath Path of the file or its {@link URI}.
      */
     ITable load(String filePath);
 
     /**
      * Load a file into the database.
      *
-     * @param filePath Path of the file or its URI.
+     * @param filePath Path of the file or its {@link URI}.
      * @param delete True to delete the table if exists, false otherwise.
      */
     ITable load(String filePath, boolean delete);
@@ -106,7 +107,7 @@ public interface IJdbcDataSource extends IDataSource, GroovyObject {
     /**
      * Load a file to the database.
      *
-     * @param filePath Path of the file or its URI.
+     * @param filePath Path of the file or its {@link URI}.
      * @param tableName Name of the table.
      */
     ITable load(String filePath, String tableName);
@@ -114,7 +115,7 @@ public interface IJdbcDataSource extends IDataSource, GroovyObject {
     /**
      * Load a file to the database.
      *
-     * @param filePath Path of the file or its URI.
+     * @param filePath Path of the file or its {@link URI}.
      * @param tableName Name of the table.
      * @param delete True to delete the table if exists, false otherwise.
      */
@@ -123,7 +124,7 @@ public interface IJdbcDataSource extends IDataSource, GroovyObject {
     /**
      * Load a file to the database.
      *
-     * @param filePath Path of the file or its URI
+     * @param filePath Path of the file or its {@link URI}
      * @param tableName Name of the table
      * @param encoding Encoding of the loaded file.
      * @param delete True to delete the table if exists, false otherwise.
@@ -192,7 +193,7 @@ public interface IJdbcDataSource extends IDataSource, GroovyObject {
     /**
      * Link a file to the database.
      *
-     * @param filePath Path or URI of the file to link.
+     * @param filePath Path of the file or its {@link URI}
      * @param tableName Name of the database table.
      * @param delete True to delete the table if exists, false otherwise.
      *
@@ -203,7 +204,7 @@ public interface IJdbcDataSource extends IDataSource, GroovyObject {
     /**
      * Link a file to the database.
      *
-     * @param filePath Path or URI of the file to link.
+     * @param filePath Path of the file or its {@link URI}
      * @param tableName Name of the database table.
      *
      * @return A {@link ITable} representing the linked file.
@@ -213,7 +214,7 @@ public interface IJdbcDataSource extends IDataSource, GroovyObject {
     /**
      * Link a file to the database.
      *
-     * @param filePath Path or URI of the file to link.
+     * @param filePath Path of the file or its {@link URI}
      * @param delete True to delete the table if exists, false otherwise.
      *
      * @return A {@link ITable} representing the linked file.

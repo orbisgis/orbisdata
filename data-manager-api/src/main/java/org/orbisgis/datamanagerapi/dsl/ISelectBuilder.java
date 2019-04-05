@@ -15,7 +15,7 @@
  *
  * DataManager API  is distributed under GPL 3 license.
  *
- * Copyright (C) 2018 CNRS (Lab-STICC UMR CNRS 6285)
+ * Copyright (C) 2019 CNRS (Lab-STICC UMR CNRS 6285)
  *
  *
  * DataManager API  is free software: you can redistribute it and/or modify it under the
@@ -40,7 +40,7 @@ package org.orbisgis.datamanagerapi.dsl;
 
 /**
  * Interface defining methods for the SQL 'select' building. The request construction can be continued thanks to the
- * IFromBuilder.
+ * {@link IFromBuilder}.
  *
  * @author Erwan Bocher (CNRS)
  * @author Sylvain PALOMINOS (UBS 2019)
@@ -52,7 +52,7 @@ public interface ISelectBuilder {
      *
      * @param fields Array of the fields to select.
      *
-     * @return ISqlBuilder instance to continue building.
+     * @return {@link IFromBuilder} instance to continue building.
      */
     IFromBuilder select(String... fields);
 }

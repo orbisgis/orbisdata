@@ -125,7 +125,12 @@ public interface IJdbcTable extends ITable, GroovyObject, ResultSet, IWhereBuild
 
     @Override
     default Iterator<Object> iterator() {
-        return new ResultSetIterator(this);
+        try {
+            return new ResultSetIterator(this);
+        } catch (SQLException e) {
+            LOGGER.error(e.getLocalizedMessage());
+            return new ResultSetIterator();
+        }
     }
 
     @Override

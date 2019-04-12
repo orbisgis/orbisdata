@@ -15,7 +15,7 @@
  *
  * DataManager API  is distributed under GPL 3 license.
  *
- * Copyright (C) 2018 CNRS (Lab-STICC UMR CNRS 6285)
+ * Copyright (C) 2019 CNRS (Lab-STICC UMR CNRS 6285)
  *
  *
  * DataManager API  is free software: you can redistribute it and/or modify it under the
@@ -51,14 +51,14 @@ import org.orbisgis.datamanagerapi.dataset.ITable;
 public interface IBuilderResult {
 
     /**
-     * Apply the given closure on each row of the result of the SQL request.
+     * Apply the given {@link Closure} on each row of the result of the SQL request.
      *
-     * @param closure Closure to apply to each row.
+     * @param closure {@link Closure} to apply to each row.
      */
     void eachRow(Closure closure);
 
     /**
-     * Convert the result of the SQL request into a ITable or ISpatialTable.
+     * Convert the result of the SQL request into a {@link ITable} or {@link ISpatialTable}.
      *
      * @param clazz New class of the result.
      *

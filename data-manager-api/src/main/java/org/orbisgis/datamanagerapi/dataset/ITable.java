@@ -65,7 +65,7 @@ public interface ITable extends IDataSet {
     Collection<String> getColumnNames();
 
     /**
-     * Return true if the {@link ITable} contains a column with the given name with the given type.
+     * Return true if the {@link ITable} contains a column with the given name with the given type (case sensible).
      *
      * @param columnName Name of the column to check.
      * @param clazz Class of the column to check.
@@ -75,16 +75,18 @@ public interface ITable extends IDataSet {
     boolean hasColumn(String columnName, Class clazz);
 
     /**
-     * Return true if the {@link ITable} contains a column with the given name
+     * Return true if the {@link ITable} contains a column with the given name (case sensible).
      *
      * @param columnName Name of the column to check.
      *
      * @return True if the column is found, false otherwise.
      */
-    boolean hasColumn(String columnName);
+    default boolean hasColumn(String columnName){
+        return getColumnNames().contains(columnName);
+    }
 
     /**
-     * Return true if the {@link ITable} contains all the column describes in the given {@link Map}.
+     * Return true if the {@link ITable} contains all the column describes in the given {@link Map} (case sensible).
      *
      * @param columnMap {@link Map} containing the columns with the column name as key and the column type as value.
      *
@@ -95,7 +97,7 @@ public interface ITable extends IDataSet {
     }
 
     /**
-     * Return true if the {@link ITable} contains all the column describes in the given {@link List}.
+     * Return true if the {@link ITable} contains all the column describes in the given {@link List} (case sensible).
      *
      * @param columnList {@link List} containing the columns with the column name as key and the column type as value.
      *

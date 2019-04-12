@@ -136,11 +136,6 @@ public abstract class JdbcTable implements IJdbcTable {
     }
 
     @Override
-    public Map<String, Object> getPropertyMap() {
-        return propertyMap;
-    }
-
-    @Override
     public void setProperty(String propertyName, Object newValue) {
         propertyMap.put(propertyName, newValue);
     }

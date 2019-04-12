@@ -1,5 +1,5 @@
 /*
- * Bundle DataManager is part of the OrbisGIS platform
+ * Bundle DataManager API is part of the OrbisGIS platform
  *
  * OrbisGIS is a java GIS application dedicated to research in GIScience.
  * OrbisGIS is developed by the GIS group of the DECIDE team of the
@@ -13,22 +13,22 @@
  * Institut Universitaire de Technologie de Vannes
  * 8, Rue Montaigne - BP 561 56017 Vannes Cedex
  *
- * DataManager is distributed under GPL 3 license.
+ * DataManager API is distributed under GPL 3 license.
  *
  * Copyright (C) 2019 CNRS (Lab-STICC UMR CNRS 6285)
  *
  *
- * DataManager is free software: you can redistribute it and/or modify it under the
+ * DataManager API is free software: you can redistribute it and/or modify it under the
  * terms of the GNU General Public License as published by the Free Software
  * Foundation, either version 3 of the License, or (at your option) any later
  * version.
  *
- * DataManager is distributed in the hope that it will be useful, but WITHOUT ANY
+ * DataManager API is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
  * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License along with
- * DataManager. If not, see <http://www.gnu.org/licenses/>.
+ * DataManager API. If not, see <http://www.gnu.org/licenses/>.
  *
  * For more information, please consult: <http://www.orbisgis.org/>
  * or contact directly:
@@ -59,47 +59,50 @@ public class ResultSetIterator implements Iterator<Object> {
     /** Count of {@link ResultSet} row */
     private int rowCount = 0;
 
+    public ResultSetIterator(){
+        this.resultSet = null;
+        LOGGER.warn("There is no ResultSet so there will no data.");
+    }
+
     /**
      * Main constructor.
      *
-     * @param resultSet ResultSet to iterate.
+     * @param resultSet {@link ResultSet} to iterate.
      */
-    public ResultSetIterator(ResultSet resultSet){
+    public ResultSetIterator(ResultSet resultSet) throws SQLException {
         this.resultSet = resultSet;
         try {
             this.resultSet.last();
-        } catch (SQLException e) {
-            LOGGER.error("Unable to go to the last ResultSet row.\n" + e.getLocalizedMessage());
-            return;
-        }
-        try {
             rowCount = resultSet.getRow();
-        } catch (SQLException e) {
-            LOGGER.error("Unable to get ResultSet row.\n" + e.getLocalizedMessage());
-            return;
-        }
-        try {
             this.resultSet.beforeFirst();
         } catch (SQLException e) {
-            LOGGER.error("Unable to go before the first ResultSet row.\n" + e.getLocalizedMessage());
+            LOGGER.error("Unable to query the ResultSet.\n" + e.getLocalizedMessage());
+            throw e;
         }
     }
 
     @Override
     public boolean hasNext() {
+        if(resultSet == null) {
+            return false;
+        }
         int row = 0;
         try {
             row = resultSet.getRow();
         } catch (SQLException e) {
             LOGGER.error("Unable to get ResultSet row.\n" + e.getLocalizedMessage());
+            return false;
         }
         return row < rowCount;
     }
 
     @Override
-    public Object next() {
+    public ResultSet next() {
+        if(resultSet == null) {
+            return null;
+        }
         try {
-            if(!resultSet.next()){
+            if (!resultSet.next()) {
                 LOGGER.error("Unable to move to the next row.");
             }
         } catch (SQLException e) {

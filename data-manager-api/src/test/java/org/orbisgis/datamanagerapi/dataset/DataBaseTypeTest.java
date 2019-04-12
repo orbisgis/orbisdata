@@ -34,26 +34,23 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.datamanagerapi.dsl;
+package org.orbisgis.datamanagerapi.dataset;
 
-import org.orbisgis.datamanagerapi.dataset.ITable;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
- * Interface defining methods for the SQL 'from' building. The request construction can be continued thanks to the
- * {@link IWhereBuilderOrOptionBuilder} or its result can be get calling 'eachRow' to iterate on the resultSet or
- * 'as ITable' to get the {@link ITable} object
+ * Test class dedicated to the {@link DataBaseType} enum.
  *
  * @author Erwan Bocher (CNRS)
  * @author Sylvain PALOMINOS (UBS 2019)
  */
-public interface IFromBuilder {
+public class DataBaseTypeTest {
 
-    /**
-     * Indicates the table use for the selection.
-     *
-     * @param tables Array of the table use for the selection.
-     *
-     * @return {@link IWhereBuilderOrOptionBuilder} instance to continue building.
-     */
-    IWhereBuilderOrOptionBuilder from(String... tables);
+    @Test
+    public void simpleTest(){
+        assertEquals("H2GIS", DataBaseType.H2GIS.name());
+        assertEquals("POSTGIS", DataBaseType.POSTGIS.name());
+    }
 }

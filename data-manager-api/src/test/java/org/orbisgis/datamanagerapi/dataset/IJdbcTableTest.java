@@ -51,6 +51,7 @@ import java.net.URL;
 import java.sql.*;
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -61,7 +62,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * @author Erwan Bocher (CNRS)
  * @author Sylvain PALOMINOS (UBS 2019)
  */
-public class IJdbcTableTest {
+class IJdbcTableTest {
 
     private static final String LOCATION = "caTAlog.schEma.TAbLe";
 
@@ -69,7 +70,7 @@ public class IJdbcTableTest {
      * Test the {@link IJdbcTable#getLocation()} method.
      */
     @Test
-    public void testGetLocation(){
+    void testGetLocation(){
         assertEquals("catalog.schema.\"table\"", new DummyJdbcTable(DataBaseType.POSTGIS, LOCATION, true).getLocation());
         assertEquals(LOCATION.toUpperCase(), new DummyJdbcTable(DataBaseType.H2GIS, LOCATION, true).getLocation());
     }
@@ -78,7 +79,7 @@ public class IJdbcTableTest {
      * Test the {@link IJdbcTable#getName()} method.
      */
     @Test
-    public void testGetName(){
+    void testGetName(){
         assertEquals(LOCATION.toLowerCase().substring(LOCATION.lastIndexOf(".")+1),
                 new DummyJdbcTable(DataBaseType.POSTGIS, LOCATION, true).getName());
         assertEquals(LOCATION.toUpperCase().substring(LOCATION.lastIndexOf(".")+1),
@@ -89,7 +90,7 @@ public class IJdbcTableTest {
      * Test the {@link IJdbcTable#invokeMethod(String, Object)} method.
      */
     @Test
-    public void testInvokeMethod(){
+    void testInvokeMethod(){
         IJdbcTable table = new DummyJdbcTable(DataBaseType.H2GIS, LOCATION, true);
         assertEquals(table.getLocation(), table.invokeMethod("getLocation", null));
         assertEquals(table.getLocation(), table.invokeMethod("location", null));
@@ -107,7 +108,7 @@ public class IJdbcTableTest {
      * Test the {@link IJdbcTable#getProperty(String)} method.
      */
     @Test
-    public void testGetProperty(){
+    void testGetProperty(){
         IJdbcTable table = new DummyJdbcTable(DataBaseType.H2GIS, LOCATION, true);
         assertEquals(table.getLocation(), table.getProperty("getLocation"));
         assertEquals(table.getLocation(), table.getProperty("location"));
@@ -120,7 +121,7 @@ public class IJdbcTableTest {
      * Test the {@link IJdbcTable#iterator()} method.
      */
     @Test
-    public void testIterator() throws SQLException {
+    void testIterator() throws SQLException {
         IJdbcTable table = new DummyJdbcTable(DataBaseType.H2GIS, LOCATION, true);
         ResultSetIterator it = (ResultSetIterator)table.iterator();
         assertNotNull(it);
@@ -138,7 +139,7 @@ public class IJdbcTableTest {
      * Test the {@link IJdbcTable#eachRow(Closure)} method.
      */
     @Test
-    public void testEachRow() {
+    void testEachRow() {
         IJdbcTable table = new DummyJdbcTable(DataBaseType.H2GIS, LOCATION, true);
         final String[] result = {""};
         table.eachRow(new Closure(this) {
@@ -149,6 +150,28 @@ public class IJdbcTableTest {
             }
         });
         assertEquals("string0.2", result[0]);
+    }
+
+    /**
+     * Test the {@link IJdbcTable} methods with {@link SQLException} thrown.
+     */
+    @Test
+    void testSQLException() {
+        DummyJdbcTable table = new DummyJdbcTable(DataBaseType.H2GIS, LOCATION, true);
+
+        table.setException(true);
+        Iterator it = table.iterator();
+        assertFalse(it.hasNext());
+
+        table.setException(false);
+        it = table.iterator();
+        table.setException(true);
+        assertFalse(it.hasNext());
+        assertNotNull(it.next());
+
+        assertNull(table.getProperty("data"));
+
+        assertNull(table.invokeMethod("dupMethod", null));
     }
 
     /**
@@ -166,6 +189,8 @@ public class IJdbcTableTest {
         private Object[] data = new Object[]{"string", 0.2};
         /** True if iterable, false otherwise. */
         private boolean isIterable;
+        /** True if throws exception, false otherwise. */
+        private boolean sqlException = false;
 
         /**
          * Main constructor.
@@ -174,15 +199,24 @@ public class IJdbcTableTest {
          * @param location Fake data location.
          * @param isIterable True if iterable, false otherwise.
          */
-        public DummyJdbcTable(DataBaseType databaseType, String location, boolean isIterable){
+        DummyJdbcTable(DataBaseType databaseType, String location, boolean isIterable){
             this.location = TableLocation.parse(location, databaseType.equals(DataBaseType.H2GIS));
             this.databaseType = databaseType;
             this.isIterable = isIterable;
         }
 
+        /**
+         * True if throws exception, false otherwise.
+         * @param sqlException True if throws exception, false otherwise.
+         */
+        void setException(boolean sqlException){
+            this.sqlException = sqlException;
+        }
+
         private void getPrivateMethod(){}
         public Object[] arrayMethod(Object[] array){return array;}
         public Object[] getParametersMethod(String param1, Double param2){return new Object[]{param1, param2};}
+        public void dupMethod() throws IllegalAccessException {throw new IllegalAccessException();}
 
         @Override public TableLocation getTableLocation() {return location;}
         @Override public DataBaseType getDbType() {return databaseType;}
@@ -193,7 +227,14 @@ public class IJdbcTableTest {
         @Override public void setProperty(String s, Object o) {}
         @Override public MetaClass getMetaClass() {return null;}
         @Override public void setMetaClass(MetaClass metaClass) {}
-        @Override public boolean next() throws SQLException {return rowIndex++<data.length;}
+        @Override public boolean next() throws SQLException {
+            if(!sqlException) {
+                return rowIndex++ < data.length;
+            }
+            else{
+                throw new SQLException();
+            }
+        }
         @Override public void close() throws SQLException {}
         @Override public boolean wasNull() throws SQLException {return false;}
         @Override public String getString(int i) throws SQLException {return null;}
@@ -234,6 +275,9 @@ public class IJdbcTableTest {
         @Override public ResultSetMetaData getMetaData() throws SQLException {return null;}
         @Override public Object getObject(int i) {return data[rowIndex-1];}
         @Override public Object getObject(String s) throws SQLException {
+            if(sqlException){
+                throw new SQLException();
+            }
             if(s.equals("data")){
                 return data;
             }
@@ -258,7 +302,14 @@ public class IJdbcTableTest {
             rowIndex = data.length;
             return true;
         }
-        @Override public int getRow() throws SQLException {return rowIndex;}
+        @Override public int getRow() throws SQLException {
+            if(!sqlException) {
+                return rowIndex;
+            }
+            else{
+                throw new SQLException();
+            }
+        }
         @Override public boolean absolute(int i) throws SQLException {return false;}
         @Override public boolean relative(int i) throws SQLException {return false;}
         @Override public boolean previous() throws SQLException {return false;}

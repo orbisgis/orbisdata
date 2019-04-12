@@ -91,6 +91,7 @@ public class ResultSetIterator implements Iterator<Object> {
             row = resultSet.getRow();
         } catch (SQLException e) {
             LOGGER.error("Unable to get ResultSet row.\n" + e.getLocalizedMessage());
+            return false;
         }
         return row < rowCount;
     }

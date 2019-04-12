@@ -48,6 +48,9 @@ import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Test class dedicated to {@link ResultSetIterator}.
+ *
+ * @author Erwan Bocher (CNRS)
+ * @author Sylvain PALOMINOS 'UBS 2019)
  */
 class ResultSetIteratorTest {
 
@@ -124,6 +127,8 @@ class ResultSetIteratorTest {
         assertEquals(4, tmp.getInt(1));
         assertEquals("tutu", tmp.getString(2));
         assertEquals(9.2555, tmp.getDouble(3));
+
+        assertNotNull(resultSetIterator.next());
     }
 
     @Test

@@ -96,7 +96,7 @@ public class ResultSetIterator implements Iterator<Object> {
     }
 
     @Override
-    public Object next() {
+    public ResultSet next() {
         if(resultSet == null) {
             return null;
         }

@@ -49,7 +49,6 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.Iterator;
-import java.util.Map;
 
 /**
  * Extension of the {@link ITable} specially dedicated to the JDBC databases thanks to the extension of the
@@ -76,13 +75,6 @@ public interface IJdbcTable extends ITable, GroovyObject, ResultSet, IWhereBuild
      * @return The {@link DataBaseType} type
      */
     DataBaseType getDbType();
-
-    /**
-     * Return the {@link Map} of properties.
-     *
-     * @return {@link Map} of the properties.
-     */
-    Map<String, Object> getPropertyMap();
 
     /**
      * Get the {@link ResultSetMetaData} wrapping the metadata of the {@link IJdbcTable}.
@@ -169,10 +161,6 @@ public interface IJdbcTable extends ITable, GroovyObject, ResultSet, IWhereBuild
                     }
                     m = this.getClass().getMethod(getName, classes);
                 }
-                //Otherwise get the method with the argument
-                else {
-                    m = this.getClass().getMethod(getName, args.getClass());
-                }
             } catch (NoSuchMethodException e) {
                 LOGGER.debug("Unable to get a method named '" + name + "'.\n" + e.getLocalizedMessage());
             }
@@ -185,11 +173,13 @@ public interface IJdbcTable extends ITable, GroovyObject, ResultSet, IWhereBuild
             if(args == null) {
                 return m.invoke(this);
             }
-            if(args instanceof Object[] && ((Object[])args).length == 1){
-                return m.invoke(this, ((Object[])args)[0]);
-            }
             else {
-                return m.invoke(this, args);
+                if(m.getParameterCount() == 1) {
+                    return m.invoke(this, args);
+                }
+                else{
+                    return m.invoke(this, (Object[])args);
+                }
             }
         } catch (IllegalAccessException | InvocationTargetException e) {
             LOGGER.error("Unable to invoke the method named '" + name + "'.\n" + e.getLocalizedMessage());
@@ -210,10 +200,6 @@ public interface IJdbcTable extends ITable, GroovyObject, ResultSet, IWhereBuild
         } catch (SQLException e) {
             LOGGER.debug("Unable to find the column '" + propertyName + "'.\n" + e.getLocalizedMessage());
         }
-        if(obj != null) {
-            return obj;
-        }
-        obj = getPropertyMap().get(propertyName);
         if(obj != null) {
             return obj;
         }

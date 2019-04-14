@@ -1,6 +1,13 @@
-# OrbisData
-OrbisData is a library providing a unique access point to query, manage 
-and retrieve data dedicated to Groovy scripting.
+
+# OrbisData 
+[![GitHub](https://img.shields.io/github/license/orbisgis/orbisdata.svg)](https://github.com/orbisgis/orbisdata/blob/master/docs/LICENSE) 
+[![Build Stat](https://img.shields.io/jenkins/s/http/jenkins-ng.orbisgis.org/job/orbisdata.svg)](http://jenkins-ng.orbisgis.org/job/orbisdata) 
+[![Build Test](https://img.shields.io/jenkins/t/http/jenkins-ng.orbisgis.org/job/orbisdata.svg)](https://jenkins-ng.orbisgis.org/job/orbisdata/test_results_analyzer/) 
+[![Test Cover](https://img.shields.io/jenkins/j/http/jenkins-ng.orbisgis.org/job/orbisdata.svg)](https://jenkins-ng.orbisgis.org/job/orbisdata/jacoco/)
+[![Code Quali](https://img.shields.io/codeclimate/maintainability/orbisgis/orbisdata.svg)](https://codeclimate.com/github/orbisgis/orbisdata)
+
+OrbisData is a library providing a unique access point to query, manage and retrieve data dedicated to Groovy scripting.
+
 
 It is based on Groovy specific syntax and aims to provide an elegant and 
 fluent framework to work with geospatial data.

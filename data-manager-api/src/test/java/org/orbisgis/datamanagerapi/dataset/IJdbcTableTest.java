@@ -39,7 +39,6 @@ package org.orbisgis.datamanagerapi.dataset;
 import groovy.lang.Closure;
 import groovy.lang.MetaClass;
 import org.h2gis.utilities.TableLocation;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.orbisgis.datamanagerapi.dsl.IConditionOrOptionBuilder;
 import org.orbisgis.datamanagerapi.dsl.IOptionBuilder;
@@ -63,7 +62,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * @author Erwan Bocher (CNRS)
  * @author Sylvain PALOMINOS (UBS 2019)
  */
-class IJdbcTableTest {
+public class IJdbcTableTest {
 
     private static final String LOCATION = "caTAlog.schEma.TAbLe";
 
@@ -71,8 +70,7 @@ class IJdbcTableTest {
      * Test the {@link IJdbcTable#getLocation()} method.
      */
     @Test
-    @Disabled
-    void testGetLocation(){
+    public void testGetLocation(){
         assertEquals("catalog.schema.\"table\"", new DummyJdbcTable(DataBaseType.POSTGIS, LOCATION, true).getLocation());
         assertEquals(LOCATION.toUpperCase(), new DummyJdbcTable(DataBaseType.H2GIS, LOCATION, true).getLocation());
     }
@@ -81,8 +79,7 @@ class IJdbcTableTest {
      * Test the {@link IJdbcTable#getName()} method.
      */
     @Test
-    @Disabled
-    void testGetName(){
+    public void testGetName(){
         assertEquals(LOCATION.toLowerCase().substring(LOCATION.lastIndexOf(".")+1),
                 new DummyJdbcTable(DataBaseType.POSTGIS, LOCATION, true).getName());
         assertEquals(LOCATION.toUpperCase().substring(LOCATION.lastIndexOf(".")+1),
@@ -93,8 +90,7 @@ class IJdbcTableTest {
      * Test the {@link IJdbcTable#invokeMethod(String, Object)} method.
      */
     @Test
-    @Disabled
-    void testInvokeMethod(){
+    public void testInvokeMethod(){
         IJdbcTable table = new DummyJdbcTable(DataBaseType.H2GIS, LOCATION, true);
         assertEquals(table.getLocation(), table.invokeMethod("getLocation", null));
         assertEquals(table.getLocation(), table.invokeMethod("location", null));
@@ -117,8 +113,7 @@ class IJdbcTableTest {
      * Test the {@link IJdbcTable#getProperty(String)} method.
      */
     @Test
-    @Disabled
-    void testGetProperty(){
+    public void testGetProperty(){
         IJdbcTable table = new DummyJdbcTable(DataBaseType.H2GIS, LOCATION, true);
         assertEquals(table.getLocation(), table.getProperty("getLocation"));
         assertEquals(table.getLocation(), table.getProperty("location"));
@@ -131,8 +126,7 @@ class IJdbcTableTest {
      * Test the {@link IJdbcTable#iterator()} method.
      */
     @Test
-    @Disabled
-    void testIterator() throws SQLException {
+    public void testIterator() throws SQLException {
         IJdbcTable table = new DummyJdbcTable(DataBaseType.H2GIS, LOCATION, true);
         ResultSetIterator it = (ResultSetIterator)table.iterator();
         assertNotNull(it);
@@ -150,8 +144,7 @@ class IJdbcTableTest {
      * Test the {@link IJdbcTable#eachRow(Closure)} method.
      */
     @Test
-    @Disabled
-    void testEachRow() {
+    public void testEachRow() {
         IJdbcTable table = new DummyJdbcTable(DataBaseType.H2GIS, LOCATION, true);
         final String[] result = {""};
         table.eachRow(new Closure(this) {
@@ -168,8 +161,7 @@ class IJdbcTableTest {
      * Test the {@link IJdbcTable} methods with {@link SQLException} thrown.
      */
     @Test
-    @Disabled
-    void testSQLException() {
+    public void testSQLException() {
         DummyJdbcTable table = new DummyJdbcTable(DataBaseType.H2GIS, LOCATION, true);
 
         table.setException(true);
@@ -226,7 +218,7 @@ class IJdbcTableTest {
             this.sqlException = sqlException;
         }
 
-        private void getPrivateMethod(){}
+        private void getPrivateMethod(){/*Does nothing*/}
         public Object[] arrayMethod(Object[] array){return array;}
         public Object[] getParametersMethod(String param1, Double param2){return new Object[]{param1, param2};}
         public Object[] getParametersMethod(Object param1, Object param2){return new Object[]{param1, param2};}
@@ -239,9 +231,9 @@ class IJdbcTableTest {
         @Override public boolean isSpatial() {return false;}
         @Override public boolean isLinked() {return false;}
         @Override public boolean isTemporary() {return false;}
-        @Override public void setProperty(String s, Object o) {}
+        @Override public void setProperty(String s, Object o) {/*Does nothing*/}
         @Override public MetaClass getMetaClass() {return null;}
-        @Override public void setMetaClass(MetaClass metaClass) {}
+        @Override public void setMetaClass(MetaClass metaClass) {/*Does nothing*/}
         @Override public boolean next() throws SQLException {
             if(!sqlException) {
                 return rowIndex++ < data.length;
@@ -250,7 +242,7 @@ class IJdbcTableTest {
                 throw new SQLException();
             }
         }
-        @Override public void close() throws SQLException {}
+        @Override public void close() throws SQLException {/*Does nothing*/}
         @Override public boolean wasNull() throws SQLException {return false;}
         @Override public String getString(int i) throws SQLException {return null;}
         @Override public boolean getBoolean(int i) throws SQLException {return false;}
@@ -285,7 +277,7 @@ class IJdbcTableTest {
         @Override public InputStream getUnicodeStream(String s) throws SQLException {return null;}
         @Override public InputStream getBinaryStream(String s) throws SQLException {return null;}
         @Override public SQLWarning getWarnings() throws SQLException {return null;}
-        @Override public void clearWarnings() throws SQLException {}
+        @Override public void clearWarnings() throws SQLException {/*Does nothing*/}
         @Override public String getCursorName() throws SQLException {return null;}
         @Override public ResultSetMetaData getMetaData() throws SQLException {return null;}
         @Override public Object getObject(int i) {return data[rowIndex-1];}
@@ -308,7 +300,7 @@ class IJdbcTableTest {
         @Override public boolean isFirst() throws SQLException {return false;}
         @Override public boolean isLast() throws SQLException {return false;}
         @Override public void beforeFirst() throws SQLException {rowIndex = 0;}
-        @Override public void afterLast() throws SQLException {}
+        @Override public void afterLast() throws SQLException {/*Does nothing*/}
         @Override public boolean first() throws SQLException {return false;}
         @Override public boolean last() throws SQLException {
             if(!isIterable){
@@ -328,60 +320,60 @@ class IJdbcTableTest {
         @Override public boolean absolute(int i) throws SQLException {return false;}
         @Override public boolean relative(int i) throws SQLException {return false;}
         @Override public boolean previous() throws SQLException {return false;}
-        @Override public void setFetchDirection(int i) throws SQLException {}
+        @Override public void setFetchDirection(int i) throws SQLException {/*Does nothing*/}
         @Override public int getFetchDirection() throws SQLException {return 0;}
-        @Override public void setFetchSize(int i) throws SQLException {}
+        @Override public void setFetchSize(int i) throws SQLException {/*Does nothing*/}
         @Override public int getFetchSize() throws SQLException {return 0;}
         @Override public int getType() throws SQLException {return 0;}
         @Override public int getConcurrency() throws SQLException {return 0;}
         @Override public boolean rowUpdated() throws SQLException {return false;}
         @Override public boolean rowInserted() throws SQLException {return false;}
         @Override public boolean rowDeleted() throws SQLException {return false;}
-        @Override public void updateNull(int i) throws SQLException {}
-        @Override public void updateBoolean(int i, boolean b) throws SQLException {}
-        @Override public void updateByte(int i, byte b) throws SQLException {}
-        @Override public void updateShort(int i, short i1) throws SQLException {}
-        @Override public void updateInt(int i, int i1) throws SQLException {}
-        @Override public void updateLong(int i, long l) throws SQLException {}
-        @Override public void updateFloat(int i, float v) throws SQLException {}
-        @Override public void updateDouble(int i, double v) throws SQLException {}
-        @Override public void updateBigDecimal(int i, BigDecimal bigDecimal) throws SQLException {}
-        @Override public void updateString(int i, String s) throws SQLException {}
-        @Override public void updateBytes(int i, byte[] bytes) throws SQLException {}
-        @Override public void updateDate(int i, Date date) throws SQLException {}
-        @Override public void updateTime(int i, Time time) throws SQLException {}
-        @Override public void updateTimestamp(int i, Timestamp timestamp) throws SQLException {}
-        @Override public void updateAsciiStream(int i, InputStream inputStream, int i1) throws SQLException {}
-        @Override public void updateBinaryStream(int i, InputStream inputStream, int i1) throws SQLException {}
-        @Override public void updateCharacterStream(int i, Reader reader, int i1) throws SQLException {}
-        @Override public void updateObject(int i, Object o, int i1) throws SQLException {}
-        @Override public void updateObject(int i, Object o) throws SQLException {}
-        @Override public void updateNull(String s) throws SQLException {}
-        @Override public void updateBoolean(String s, boolean b) throws SQLException {}
-        @Override public void updateByte(String s, byte b) throws SQLException {}
-        @Override public void updateShort(String s, short i) throws SQLException {}
-        @Override public void updateInt(String s, int i) throws SQLException {}
-        @Override public void updateLong(String s, long l) throws SQLException {}
-        @Override public void updateFloat(String s, float v) throws SQLException {}
-        @Override public void updateDouble(String s, double v) throws SQLException {}
-        @Override public void updateBigDecimal(String s, BigDecimal bigDecimal) throws SQLException {}
-        @Override public void updateString(String s, String s1) throws SQLException {}
-        @Override public void updateBytes(String s, byte[] bytes) throws SQLException {}
-        @Override public void updateDate(String s, Date date) throws SQLException {}
-        @Override public void updateTime(String s, Time time) throws SQLException {}
-        @Override public void updateTimestamp(String s, Timestamp timestamp) throws SQLException {}
-        @Override public void updateAsciiStream(String s, InputStream inputStream, int i) throws SQLException {}
-        @Override public void updateBinaryStream(String s, InputStream inputStream, int i) throws SQLException {}
-        @Override public void updateCharacterStream(String s, Reader reader, int i) throws SQLException {}
-        @Override public void updateObject(String s, Object o, int i) throws SQLException {}
-        @Override public void updateObject(String s, Object o) throws SQLException {}
-        @Override public void insertRow() throws SQLException {}
-        @Override public void updateRow() throws SQLException {}
-        @Override public void deleteRow() throws SQLException {}
-        @Override public void refreshRow() throws SQLException {}
-        @Override public void cancelRowUpdates() throws SQLException {}
-        @Override public void moveToInsertRow() throws SQLException {}
-        @Override public void moveToCurrentRow() throws SQLException {}
+        @Override public void updateNull(int i) throws SQLException {/*Does nothing*/}
+        @Override public void updateBoolean(int i, boolean b) throws SQLException {/*Does nothing*/}
+        @Override public void updateByte(int i, byte b) throws SQLException {/*Does nothing*/}
+        @Override public void updateShort(int i, short i1) throws SQLException {/*Does nothing*/}
+        @Override public void updateInt(int i, int i1) throws SQLException {/*Does nothing*/}
+        @Override public void updateLong(int i, long l) throws SQLException {/*Does nothing*/}
+        @Override public void updateFloat(int i, float v) throws SQLException {/*Does nothing*/}
+        @Override public void updateDouble(int i, double v) throws SQLException {/*Does nothing*/}
+        @Override public void updateBigDecimal(int i, BigDecimal bigDecimal) throws SQLException {/*Does nothing*/}
+        @Override public void updateString(int i, String s) throws SQLException {/*Does nothing*/}
+        @Override public void updateBytes(int i, byte[] bytes) throws SQLException {/*Does nothing*/}
+        @Override public void updateDate(int i, Date date) throws SQLException {/*Does nothing*/}
+        @Override public void updateTime(int i, Time time) throws SQLException {/*Does nothing*/}
+        @Override public void updateTimestamp(int i, Timestamp timestamp) throws SQLException {/*Does nothing*/}
+        @Override public void updateAsciiStream(int i, InputStream inputStream, int i1) throws SQLException {/*Does nothing*/}
+        @Override public void updateBinaryStream(int i, InputStream inputStream, int i1) throws SQLException {/*Does nothing*/}
+        @Override public void updateCharacterStream(int i, Reader reader, int i1) throws SQLException {/*Does nothing*/}
+        @Override public void updateObject(int i, Object o, int i1) throws SQLException {/*Does nothing*/}
+        @Override public void updateObject(int i, Object o) throws SQLException {/*Does nothing*/}
+        @Override public void updateNull(String s) throws SQLException {/*Does nothing*/}
+        @Override public void updateBoolean(String s, boolean b) throws SQLException {/*Does nothing*/}
+        @Override public void updateByte(String s, byte b) throws SQLException {/*Does nothing*/}
+        @Override public void updateShort(String s, short i) throws SQLException {/*Does nothing*/}
+        @Override public void updateInt(String s, int i) throws SQLException {/*Does nothing*/}
+        @Override public void updateLong(String s, long l) throws SQLException {/*Does nothing*/}
+        @Override public void updateFloat(String s, float v) throws SQLException {/*Does nothing*/}
+        @Override public void updateDouble(String s, double v) throws SQLException {/*Does nothing*/}
+        @Override public void updateBigDecimal(String s, BigDecimal bigDecimal) throws SQLException {/*Does nothing*/}
+        @Override public void updateString(String s, String s1) throws SQLException {/*Does nothing*/}
+        @Override public void updateBytes(String s, byte[] bytes) throws SQLException {/*Does nothing*/}
+        @Override public void updateDate(String s, Date date) throws SQLException {/*Does nothing*/}
+        @Override public void updateTime(String s, Time time) throws SQLException {/*Does nothing*/}
+        @Override public void updateTimestamp(String s, Timestamp timestamp) throws SQLException {/*Does nothing*/}
+        @Override public void updateAsciiStream(String s, InputStream inputStream, int i) throws SQLException {/*Does nothing*/}
+        @Override public void updateBinaryStream(String s, InputStream inputStream, int i) throws SQLException {/*Does nothing*/}
+        @Override public void updateCharacterStream(String s, Reader reader, int i) throws SQLException {/*Does nothing*/}
+        @Override public void updateObject(String s, Object o, int i) throws SQLException {/*Does nothing*/}
+        @Override public void updateObject(String s, Object o) throws SQLException {/*Does nothing*/}
+        @Override public void insertRow() throws SQLException {/*Does nothing*/}
+        @Override public void updateRow() throws SQLException {/*Does nothing*/}
+        @Override public void deleteRow() throws SQLException {/*Does nothing*/}
+        @Override public void refreshRow() throws SQLException {/*Does nothing*/}
+        @Override public void cancelRowUpdates() throws SQLException {/*Does nothing*/}
+        @Override public void moveToInsertRow() throws SQLException {/*Does nothing*/}
+        @Override public void moveToCurrentRow() throws SQLException {/*Does nothing*/}
         @Override public Statement getStatement() throws SQLException {return null;}
         @Override public Object getObject(int i, Map<String, Class<?>> map) throws SQLException {return null;}
         @Override public Ref getRef(int i) throws SQLException {return null;}
@@ -401,62 +393,62 @@ class IJdbcTableTest {
         @Override public Timestamp getTimestamp(String s, Calendar calendar) throws SQLException {return null;}
         @Override public URL getURL(int i) throws SQLException {return null;}
         @Override public URL getURL(String s) throws SQLException {return null;}
-        @Override public void updateRef(int i, Ref ref) throws SQLException {}
-        @Override public void updateRef(String s, Ref ref) throws SQLException {}
-        @Override public void updateBlob(int i, Blob blob) throws SQLException {}
-        @Override public void updateBlob(String s, Blob blob) throws SQLException {}
-        @Override public void updateClob(int i, Clob clob) throws SQLException {}
-        @Override public void updateClob(String s, Clob clob) throws SQLException {}
-        @Override public void updateArray(int i, Array array) throws SQLException {}
-        @Override public void updateArray(String s, Array array) throws SQLException {}
+        @Override public void updateRef(int i, Ref ref) throws SQLException {/*Does nothing*/}
+        @Override public void updateRef(String s, Ref ref) throws SQLException {/*Does nothing*/}
+        @Override public void updateBlob(int i, Blob blob) throws SQLException {/*Does nothing*/}
+        @Override public void updateBlob(String s, Blob blob) throws SQLException {/*Does nothing*/}
+        @Override public void updateClob(int i, Clob clob) throws SQLException {/*Does nothing*/}
+        @Override public void updateClob(String s, Clob clob) throws SQLException {/*Does nothing*/}
+        @Override public void updateArray(int i, Array array) throws SQLException {/*Does nothing*/}
+        @Override public void updateArray(String s, Array array) throws SQLException {/*Does nothing*/}
         @Override public RowId getRowId(int i) throws SQLException {return null;}
         @Override public RowId getRowId(String s) throws SQLException {return null;}
-        @Override public void updateRowId(int i, RowId rowId) throws SQLException {}
-        @Override public void updateRowId(String s, RowId rowId) throws SQLException {}
+        @Override public void updateRowId(int i, RowId rowId) throws SQLException {/*Does nothing*/}
+        @Override public void updateRowId(String s, RowId rowId) throws SQLException {/*Does nothing*/}
         @Override public int getHoldability() throws SQLException {return 0;}
         @Override public boolean isClosed() throws SQLException {return false;}
-        @Override public void updateNString(int i, String s) throws SQLException {}
-        @Override public void updateNString(String s, String s1) throws SQLException {}
-        @Override public void updateNClob(int i, NClob nClob) throws SQLException {}
-        @Override public void updateNClob(String s, NClob nClob) throws SQLException {}
+        @Override public void updateNString(int i, String s) throws SQLException {/*Does nothing*/}
+        @Override public void updateNString(String s, String s1) throws SQLException {/*Does nothing*/}
+        @Override public void updateNClob(int i, NClob nClob) throws SQLException {/*Does nothing*/}
+        @Override public void updateNClob(String s, NClob nClob) throws SQLException {/*Does nothing*/}
         @Override public NClob getNClob(int i) throws SQLException {return null;}
         @Override public NClob getNClob(String s) throws SQLException {return null;}
         @Override public SQLXML getSQLXML(int i) throws SQLException {return null;}
         @Override public SQLXML getSQLXML(String s) throws SQLException {return null;}
-        @Override public void updateSQLXML(int i, SQLXML sqlxml) throws SQLException {}
-        @Override public void updateSQLXML(String s, SQLXML sqlxml) throws SQLException {}
+        @Override public void updateSQLXML(int i, SQLXML sqlxml) throws SQLException {/*Does nothing*/}
+        @Override public void updateSQLXML(String s, SQLXML sqlxml) throws SQLException {/*Does nothing*/}
         @Override public String getNString(int i) throws SQLException {return null;}
         @Override public String getNString(String s) throws SQLException {return null;}
         @Override public Reader getNCharacterStream(int i) throws SQLException {return null;}
         @Override public Reader getNCharacterStream(String s) throws SQLException {return null;}
-        @Override public void updateNCharacterStream(int i, Reader reader, long l) throws SQLException {}
-        @Override public void updateNCharacterStream(String s, Reader reader, long l) throws SQLException {}
-        @Override public void updateAsciiStream(int i, InputStream inputStream, long l) throws SQLException {}
-        @Override public void updateBinaryStream(int i, InputStream inputStream, long l) throws SQLException {}
-        @Override public void updateCharacterStream(int i, Reader reader, long l) throws SQLException {}
-        @Override public void updateAsciiStream(String s, InputStream inputStream, long l) throws SQLException {}
-        @Override public void updateBinaryStream(String s, InputStream inputStream, long l) throws SQLException {}
-        @Override public void updateCharacterStream(String s, Reader reader, long l) throws SQLException {}
-        @Override public void updateBlob(int i, InputStream inputStream, long l) throws SQLException {}
-        @Override public void updateBlob(String s, InputStream inputStream, long l) throws SQLException {}
-        @Override public void updateClob(int i, Reader reader, long l) throws SQLException {}
-        @Override public void updateClob(String s, Reader reader, long l) throws SQLException {}
-        @Override public void updateNClob(int i, Reader reader, long l) throws SQLException {}
-        @Override public void updateNClob(String s, Reader reader, long l) throws SQLException {}
-        @Override public void updateNCharacterStream(int i, Reader reader) throws SQLException {}
-        @Override public void updateNCharacterStream(String s, Reader reader) throws SQLException {}
-        @Override public void updateAsciiStream(int i, InputStream inputStream) throws SQLException {}
-        @Override public void updateBinaryStream(int i, InputStream inputStream) throws SQLException {}
-        @Override public void updateCharacterStream(int i, Reader reader) throws SQLException {}
-        @Override public void updateAsciiStream(String s, InputStream inputStream) throws SQLException {}
-        @Override public void updateBinaryStream(String s, InputStream inputStream) throws SQLException {}
-        @Override public void updateCharacterStream(String s, Reader reader) throws SQLException {}
-        @Override public void updateBlob(int i, InputStream inputStream) throws SQLException {}
-        @Override public void updateBlob(String s, InputStream inputStream) throws SQLException {}
-        @Override public void updateClob(int i, Reader reader) throws SQLException {}
-        @Override public void updateClob(String s, Reader reader) throws SQLException {}
-        @Override public void updateNClob(int i, Reader reader) throws SQLException {}
-        @Override public void updateNClob(String s, Reader reader) throws SQLException {}
+        @Override public void updateNCharacterStream(int i, Reader reader, long l) throws SQLException {/*Does nothing*/}
+        @Override public void updateNCharacterStream(String s, Reader reader, long l) throws SQLException {/*Does nothing*/}
+        @Override public void updateAsciiStream(int i, InputStream inputStream, long l) throws SQLException {/*Does nothing*/}
+        @Override public void updateBinaryStream(int i, InputStream inputStream, long l) throws SQLException {/*Does nothing*/}
+        @Override public void updateCharacterStream(int i, Reader reader, long l) throws SQLException {/*Does nothing*/}
+        @Override public void updateAsciiStream(String s, InputStream inputStream, long l) throws SQLException {/*Does nothing*/}
+        @Override public void updateBinaryStream(String s, InputStream inputStream, long l) throws SQLException {/*Does nothing*/}
+        @Override public void updateCharacterStream(String s, Reader reader, long l) throws SQLException {/*Does nothing*/}
+        @Override public void updateBlob(int i, InputStream inputStream, long l) throws SQLException {/*Does nothing*/}
+        @Override public void updateBlob(String s, InputStream inputStream, long l) throws SQLException {/*Does nothing*/}
+        @Override public void updateClob(int i, Reader reader, long l) throws SQLException {/*Does nothing*/}
+        @Override public void updateClob(String s, Reader reader, long l) throws SQLException {/*Does nothing*/}
+        @Override public void updateNClob(int i, Reader reader, long l) throws SQLException {/*Does nothing*/}
+        @Override public void updateNClob(String s, Reader reader, long l) throws SQLException {/*Does nothing*/}
+        @Override public void updateNCharacterStream(int i, Reader reader) throws SQLException {/*Does nothing*/}
+        @Override public void updateNCharacterStream(String s, Reader reader) throws SQLException {/*Does nothing*/}
+        @Override public void updateAsciiStream(int i, InputStream inputStream) throws SQLException {/*Does nothing*/}
+        @Override public void updateBinaryStream(int i, InputStream inputStream) throws SQLException {/*Does nothing*/}
+        @Override public void updateCharacterStream(int i, Reader reader) throws SQLException {/*Does nothing*/}
+        @Override public void updateAsciiStream(String s, InputStream inputStream) throws SQLException {/*Does nothing*/}
+        @Override public void updateBinaryStream(String s, InputStream inputStream) throws SQLException {/*Does nothing*/}
+        @Override public void updateCharacterStream(String s, Reader reader) throws SQLException {/*Does nothing*/}
+        @Override public void updateBlob(int i, InputStream inputStream) throws SQLException {/*Does nothing*/}
+        @Override public void updateBlob(String s, InputStream inputStream) throws SQLException {/*Does nothing*/}
+        @Override public void updateClob(int i, Reader reader) throws SQLException {/*Does nothing*/}
+        @Override public void updateClob(String s, Reader reader) throws SQLException {/*Does nothing*/}
+        @Override public void updateNClob(int i, Reader reader) throws SQLException {/*Does nothing*/}
+        @Override public void updateNClob(String s, Reader reader) throws SQLException {/*Does nothing*/}
         @Override public <T> T getObject(int i, Class<T> aClass) throws SQLException {return null;}
         @Override public <T> T getObject(String s, Class<T> aClass) throws SQLException {return null;}
         @Override public <T> T unwrap(Class<T> aClass) throws SQLException {return null;}

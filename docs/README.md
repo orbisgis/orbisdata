@@ -6,9 +6,7 @@
 [![codecov](https://img.shields.io/codecov/c/github/orbisgis/orbisdata.svg)](https://codecov.io/gh/orbisgis/orbisdata) 
 [![Codacy Badge](https://img.shields.io/codacy/grade/1f9411230c7449c29a64f8c857695b7d.svg)](https://www.codacy.com/app/orbisgis/orbisdata?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=orbisgis/orbisdata&amp;utm_campaign=Badge_Grade) 
 
-
 OrbisData is a library providing a unique access point to query, manage and retrieve data dedicated to Groovy scripting.
-
 
 It is based on Groovy specific syntax and aims to provide an elegant and 
 fluent framework to work with geospatial data.
@@ -98,7 +96,6 @@ Using Grab annotation :
 @Grab(group='org.orbisgis', module='process-manager', version='1.0-SNAPSHOT')
 @Grab(group='org.orbisgis', module='process-manager-api', version='1.0-SNAPSHOT')
 ```
-
 
 ## Contributing
 

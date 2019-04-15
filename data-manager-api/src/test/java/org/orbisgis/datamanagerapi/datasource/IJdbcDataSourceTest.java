@@ -37,7 +37,6 @@
 package org.orbisgis.datamanagerapi.datasource;
 
 import groovy.lang.MetaClass;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.orbisgis.datamanagerapi.dataset.IDataSet;
 import org.orbisgis.datamanagerapi.dataset.ISpatialTable;
@@ -55,14 +54,13 @@ import static org.junit.jupiter.api.Assertions.*;
  * @author Erwan Bocher (CNRS)
  * @author Sylvain PALOMINOS (UBS 2019)
  */
-class IJdbcDataSourceTest {
+public class IJdbcDataSourceTest {
 
     /**
      * Test the {@link IJdbcDataSource#invokeMethod(String, Object)} method.
      */
     @Test
-    @Disabled
-    void testInvokeMethod(){
+    public void testInvokeMethod(){
         IJdbcDataSource ds = new IJdbcDataSourceTest.DummyDataSource();
         ds.setProperty("prop1", "value1");
         assertEquals("value1", ds.invokeMethod("getProperty", "prop1"));
@@ -84,8 +82,7 @@ class IJdbcDataSourceTest {
      * Test the {@link IJdbcDataSource#getProperty(String)} and {@link IJdbcDataSource#setProperty(String, Object)} method.
      */
     @Test
-    @Disabled
-    void testGetProperty(){
+    public void testGetProperty(){
         IJdbcDataSource ds = new IJdbcDataSourceTest.DummyDataSource();
 
         ds.setProperty("prop1", "value1");
@@ -100,7 +97,7 @@ class IJdbcDataSourceTest {
      * Test the {@link IJdbcDataSource} methods with {@link Exception} thrown.
      */
     @Test
-    void testSQLException() {
+    public void testSQLException() {
         IJdbcDataSource ds = new IJdbcDataSourceTest.DummyDataSource();
 
         assertNull(ds.invokeMethod("dupMethod", null));
@@ -112,7 +109,7 @@ class IJdbcDataSourceTest {
      */
     private class DummyDataSource implements IJdbcDataSource {
         private HashMap map;
-        DummyDataSource(){this.map = new HashMap();}
+        private DummyDataSource(){this.map = new HashMap();}
         public boolean noArg(){return true;}
         public Object[] arrayMethod(Object[] array){return array;}
         public Object[] getParametersMethod(String param1, Double param2){return new Object[]{param1, param2};}
@@ -120,7 +117,7 @@ class IJdbcDataSourceTest {
         public String getParameterMethod(String param1){return param1;}
         public void dupMethod() throws IllegalAccessException {throw new IllegalAccessException();}
 
-        @Override public void close() {}
+        @Override public void close() {/*Does nothing*/}
         @Override public ITable getTable(String tableName) { return null;}
         @Override public ISpatialTable getSpatialTable(String tableName) {return null;}
         @Override public Collection<String> getTableNames() {return null;}
@@ -141,7 +138,7 @@ class IJdbcDataSourceTest {
         @Override public ITable link(String filePath) {return null;}
         @Override public Map<String, Object> getPropertyMap() {return map;}
         @Override public MetaClass getMetaClass() {return null;}
-        @Override public void setMetaClass(MetaClass metaClass) {}
+        @Override public void setMetaClass(MetaClass metaClass) {/*Does nothing*/}
         @Override public IDataSet getDataSet(String name) {return null;}
     }
 }

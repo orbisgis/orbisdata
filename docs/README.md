@@ -3,8 +3,9 @@
 [![GitHub](https://img.shields.io/github/license/orbisgis/orbisdata.svg)](https://github.com/orbisgis/orbisdata/blob/master/docs/LICENSE) 
 [![Build Stat](https://img.shields.io/jenkins/s/http/jenkins-ng.orbisgis.org/job/orbisdata.svg)](http://jenkins-ng.orbisgis.org/job/orbisdata) 
 [![Build Test](https://img.shields.io/jenkins/t/http/jenkins-ng.orbisgis.org/job/orbisdata.svg)](https://jenkins-ng.orbisgis.org/job/orbisdata/test_results_analyzer/) 
-[![Test Cover](https://img.shields.io/jenkins/j/http/jenkins-ng.orbisgis.org/job/orbisdata.svg)](https://jenkins-ng.orbisgis.org/job/orbisdata/jacoco/)
-[![Code Quali](https://img.shields.io/codeclimate/maintainability/orbisgis/orbisdata.svg)](https://codeclimate.com/github/orbisgis/orbisdata)
+[![codecov](https://img.shields.io/codecov/c/github/orbisgis/orbisdata.svg)](https://codecov.io/gh/orbisgis/orbisdata) 
+[![Codacy Badge](https://img.shields.io/codacy/grade/1f9411230c7449c29a64f8c857695b7d.svg)](https://www.codacy.com/app/orbisgis/orbisdata?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=orbisgis/orbisdata&amp;utm_campaign=Badge_Grade) 
+
 
 OrbisData is a library providing a unique access point to query, manage and retrieve data dedicated to Groovy scripting.
 

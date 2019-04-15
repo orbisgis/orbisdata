@@ -1,0 +1,2 @@
+# orbisdata
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/d57dc841c3c84d07bd58803c1d03c2cd)](https://app.codacy.com/app/orbisgis/orbisdata?utm_source=github.com&utm_medium=referral&utm_content=orbisgis/orbisdata&utm_campaign=Badge_Grade_Settings)

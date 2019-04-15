@@ -1,6 +1,6 @@
 
 # OrbisData 
-[![GitHub](https://img.shields.io/github/license/orbisgis/orbisdata.svg)](https://github.com/orbisgis/orbisdata/blob/master/docs/LICENSE) 
+[![GitHub](https://img.shields.io/github/license/orbisgis/orbisdata.svg)](https://github.com/orbisgis/orbisdata/blob/master/docs/LICENSE.md) 
 [![Build Stat](https://img.shields.io/jenkins/s/http/jenkins-ng.orbisgis.org/job/orbisdata.svg)](http://jenkins-ng.orbisgis.org/job/orbisdata) 
 [![Build Test](https://img.shields.io/jenkins/t/http/jenkins-ng.orbisgis.org/job/orbisdata.svg)](https://jenkins-ng.orbisgis.org/job/orbisdata/test_results_analyzer/) 
 [![codecov](https://img.shields.io/codecov/c/github/orbisgis/orbisdata.svg)](https://codecov.io/gh/orbisgis/orbisdata) 

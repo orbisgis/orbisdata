@@ -1,0 +1,47 @@
+# Contributing
+
+Before contributing via a pull request, please create an issue describing 
+your changes to start a discussion.
+
+## Pull Request
+
+In you pull request indicate the following information : 
+ - The modified modules
+ - A description of the changes 
+ - The dependency update
+
+Before creating a pull request, ensure that your code is :
+ - Documented (source and test).
+ - Covered by tests.
+ - Respecting our coding style.
+ 
+### Coding style
+
+In this section is described the coding style of this project.
+
+#### Architecture
+
+Each module is divided in two part, the API and the implementation.
+The packages name for a module names `Spatial library` should be 
+`org.orbisgis.spatiallibraryapi` and `org.orbisgis.spatiallibrary` with 
+space removed. All the interfaces should start with a `I` like 
+`ISpatialInterface`.
+
+#### Classes
+
+Each class should start with a header which template can be found 
+[here](HEADER.md). The author declaration should be follow the pattern 
+`@author Name Structure`.
+
+#### Tests
+
+Tests should written in Groovy and Java (same test for each languages) 
+and all the test methods should be documented. The frameword used for 
+test is [JUnit 5](https://junit.org/junit5/docs/current/user-guide/). 
+Each class named `SpatialClass` should have its test class named 
+`SpatialClassTest`.
+Test should follow the following pattern :
+ - Initialization of the data
+ - Checking using the assertions that the data are well set
+ - Processing of the data with the method to test
+ - Checking using the assertion the output of the method to test.

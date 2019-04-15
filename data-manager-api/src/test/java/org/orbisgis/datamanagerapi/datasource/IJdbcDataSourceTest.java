@@ -65,12 +65,16 @@ public class IJdbcDataSourceTest {
         ds.setProperty("prop1", "value1");
         assertEquals("value1", ds.invokeMethod("getProperty", "prop1"));
         assertTrue((Boolean) ds.invokeMethod("noArg", null));
+        assertTrue((Boolean) ds.invokeMethod("getNoArg", null));
         assertArrayEquals(new Object[]{"string", 0.2}, (Object[])ds.invokeMethod("arrayMethod", new Object[]{"string", 0.2}));
+        assertArrayEquals(new Object[]{"string", 0.2}, (Object[])ds.invokeMethod("getArrayMethod", new Object[]{"string", 0.2}));
         assertArrayEquals(new Object[]{"string", 0.2}, (Object[])ds.invokeMethod("getParametersMethod", new Object[]{"string", 0.2}));
         assertArrayEquals(new Object[]{"string", 0.2}, (Object[])ds.invokeMethod("parametersMethod", new Object[]{"string", 0.2}));
         assertArrayEquals(new Object[]{"string", "0.2"}, (Object[])ds.invokeMethod("getParametersMethod", new Object[]{"string", "0.2"}));
         assertArrayEquals(new Object[]{"string", "0.2"}, (Object[])ds.invokeMethod("parametersMethod", new Object[]{"string", "0.2"}));
+        assertEquals("string", ds.invokeMethod("getParameterMethod", new Object[]{"string"}));
         assertEquals("string", ds.invokeMethod("getParameterMethod", "string"));
+        assertEquals("string", ds.invokeMethod("parameterMethod", new Object[]{"string"}));
         assertEquals("string", ds.invokeMethod("parameterMethod", "string"));
 
         assertNull(ds.invokeMethod("setProperty", new String[]{"tata"}));
@@ -110,8 +114,8 @@ public class IJdbcDataSourceTest {
     private class DummyDataSource implements IJdbcDataSource {
         private HashMap map;
         private DummyDataSource(){this.map = new HashMap();}
-        public boolean noArg(){return true;}
-        public Object[] arrayMethod(Object[] array){return array;}
+        public boolean getNoArg(){return true;}
+        public Object[] getArrayMethod(Object[] array){return array;}
         public Object[] getParametersMethod(String param1, Double param2){return new Object[]{param1, param2};}
         public Object[] getParametersMethod(Object param1, Object param2){return new Object[]{param1, param2};}
         public String getParameterMethod(String param1){return param1;}

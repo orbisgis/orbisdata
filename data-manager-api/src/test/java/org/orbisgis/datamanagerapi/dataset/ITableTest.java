@@ -286,7 +286,7 @@ public class ITableTest {
                     .orElse(1)-1;
         }
 
-        @Override public void eachRow(Closure closure) {}
+        @Override public void eachRow(Closure closure) {/*Does nothing*/}
         @Override public Collection<String> getUniqueValues(String column) {return null;}
         @Override public boolean save(String filePath, String encoding) {return true;}
         @Override public String getLocation() {return null;}

@@ -251,6 +251,9 @@ public interface IJdbcDataSource extends IDataSource, GroovyObject {
                 if(!args.getClass().isArray()){
                     m = this.getClass().getMethod(name, args.getClass());
                 }
+                else if(((Object[])args).length==1){
+                    m = this.getClass().getMethod(name, ((Object[])args)[0].getClass());
+                }
                 //If the arguments are an object array, try to get the methods with the argument class array
                 else {
                     List<Class> list = Stream.of((Object[])args).map(Object::getClass).collect(Collectors.toList());
@@ -290,6 +293,9 @@ public interface IJdbcDataSource extends IDataSource, GroovyObject {
                     if(!args.getClass().isArray()){
                         m = this.getClass().getMethod(getName, args.getClass());
                     }
+                    else if(((Object[])args).length==1){
+                        m = this.getClass().getMethod(getName, ((Object[])args)[0].getClass());
+                    }
                     //If the arguments are an object array, try to get the methods with the argument class array
                     else {
                         List<Class> list = Stream.of((Object[])args).map(Object::getClass).collect(Collectors.toList());
@@ -328,7 +334,12 @@ public interface IJdbcDataSource extends IDataSource, GroovyObject {
             }
             else {
                 if(m.getParameterCount() == 1) {
-                    return m.invoke(this, args);
+                    if(args.getClass().isArray() && ((Object[])args).length==1){
+                        return m.invoke(this, ((Object[])args)[0]);
+                    }
+                    else {
+                        return m.invoke(this, args);
+                    }
                 }
                 else{
                     return m.invoke(this, (Object[])args);

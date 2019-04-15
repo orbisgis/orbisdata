@@ -48,7 +48,11 @@ import java.lang.reflect.Method;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Extension of the {@link ITable} specially dedicated to the JDBC databases thanks to the extension of the
@@ -135,11 +139,40 @@ public interface IJdbcTable extends ITable, GroovyObject, ResultSet, IWhereBuild
         Method m = null;
         //First try the get the method with the given name
         try {
+            //If arguments are null, get the method without arguments
             if(args == null) {
                 m = this.getClass().getMethod(name);
             }
             else {
-                m = this.getClass().getMethod(name, args.getClass());
+                if(!args.getClass().isArray()){
+                    m = this.getClass().getMethod(name, args.getClass());
+                }
+                else if(((Object[])args).length==1){
+                    m = this.getClass().getMethod(name, ((Object[])args)[0].getClass());
+                }
+                //If the arguments are an object array, try to get the methods with the argument class array
+                else {
+                    List<Class> list = Stream.of((Object[])args).map(Object::getClass).collect(Collectors.toList());
+                    try {
+                        m = this.getClass().getMethod(name, list.toArray(new Class[]{}));
+                    } catch (NoSuchMethodException e) {
+                        LOGGER.debug("Unable to get a method named '" + name + "'.\n" + e.getLocalizedMessage());
+                    }
+                    if(m == null) {
+                        try {
+                            List<Class> objList = new ArrayList<>();
+                            for (int i = 0; i < list.size(); i++) {
+                                objList.add(Object.class);
+                            }
+                            m = this.getClass().getMethod(name, objList.toArray(new Class[]{}));
+                        } catch (NoSuchMethodException e) {
+                            LOGGER.debug("Unable to get a method named '" + name + "'.\n" + e.getLocalizedMessage());
+                        }
+                        if(m == null) {
+                            m = this.getClass().getMethod(name, args.getClass());
+                        }
+                    }
+                }
             }
         } catch (NoSuchMethodException e) {
             LOGGER.debug("Unable to get a method named '" + name + "'.\n" + e.getLocalizedMessage());
@@ -152,14 +185,36 @@ public interface IJdbcTable extends ITable, GroovyObject, ResultSet, IWhereBuild
                 if(args == null) {
                     m = this.getClass().getMethod(getName);
                 }
-                //If the arguments are an object array, try to get the methods with the argument class array
-                else if(args instanceof Object[]){
-                    Object[] objects = (Object[])args;
-                    Class[] classes = new Class[objects.length];
-                    for(int i=0; i<objects.length; i++){
-                        classes[i] = objects[i].getClass();
+                else {
+                    if(!args.getClass().isArray()){
+                        m = this.getClass().getMethod(getName, args.getClass());
                     }
-                    m = this.getClass().getMethod(getName, classes);
+                    else if(((Object[])args).length==1){
+                        m = this.getClass().getMethod(getName, ((Object[])args)[0].getClass());
+                    }
+                    //If the arguments are an object array, try to get the methods with the argument class array
+                    else {
+                        List<Class> list = Stream.of((Object[])args).map(Object::getClass).collect(Collectors.toList());
+                        try {
+                            m = this.getClass().getMethod(getName, list.toArray(new Class[]{}));
+                        } catch (NoSuchMethodException e) {
+                            LOGGER.debug("Unable to get a method named '" + getName + "'.\n" + e.getLocalizedMessage());
+                        }
+                        if(m == null) {
+                            try {
+                                List<Class> objList = new ArrayList<>();
+                                for (int i = 0; i < list.size(); i++) {
+                                    objList.add(Object.class);
+                                }
+                                m = this.getClass().getMethod(getName, objList.toArray(new Class[]{}));
+                            } catch (NoSuchMethodException e) {
+                                LOGGER.debug("Unable to get a method named '" + getName + "'.\n" + e.getLocalizedMessage());
+                            }
+                            if(m == null) {
+                                m = this.getClass().getMethod(getName, args.getClass());
+                            }
+                        }
+                    }
                 }
             } catch (NoSuchMethodException e) {
                 LOGGER.debug("Unable to get a method named '" + name + "'.\n" + e.getLocalizedMessage());
@@ -175,7 +230,12 @@ public interface IJdbcTable extends ITable, GroovyObject, ResultSet, IWhereBuild
             }
             else {
                 if(m.getParameterCount() == 1) {
-                    return m.invoke(this, args);
+                    if(args.getClass().isArray() && ((Object[])args).length==1){
+                        return m.invoke(this, ((Object[])args)[0]);
+                    }
+                    else {
+                        return m.invoke(this, args);
+                    }
                 }
                 else{
                     return m.invoke(this, (Object[])args);

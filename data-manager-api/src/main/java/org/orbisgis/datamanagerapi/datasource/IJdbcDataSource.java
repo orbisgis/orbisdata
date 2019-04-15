@@ -45,8 +45,9 @@ import org.slf4j.LoggerFactory;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URI;
-import java.util.Collection;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Extension of the {@link IDataSource} interface dedicated to the usage of a JDBC database as a data source.
@@ -101,7 +102,7 @@ public interface IJdbcDataSource extends IDataSource, GroovyObject {
      *
      * @param filePath Path of the file or its {@link URI}.
      * @param delete True to delete the table if exists, false otherwise.
-     */
+ */
     ITable load(String filePath, boolean delete);
 
     /**
@@ -242,11 +243,40 @@ public interface IJdbcDataSource extends IDataSource, GroovyObject {
         Method m = null;
         //First try the get the method with the given name
         try {
+            //If arguments are null, get the method without arguments
             if(args == null) {
                 m = this.getClass().getMethod(name);
             }
             else {
-                m = this.getClass().getMethod(name, args.getClass());
+                if(!args.getClass().isArray()){
+                    m = this.getClass().getMethod(name, args.getClass());
+                }
+                else if(((Object[])args).length==1){
+                    m = this.getClass().getMethod(name, ((Object[])args)[0].getClass());
+                }
+                //If the arguments are an object array, try to get the methods with the argument class array
+                else {
+                    List<Class> list = Stream.of((Object[])args).map(Object::getClass).collect(Collectors.toList());
+                    try {
+                        m = this.getClass().getMethod(name, list.toArray(new Class[]{}));
+                    } catch (NoSuchMethodException e) {
+                        LOGGER.debug("Unable to get a method named '" + name + "'.\n" + e.getLocalizedMessage());
+                    }
+                    if(m == null) {
+                        try {
+                            List<Class> objList = new ArrayList<>();
+                            for (int i = 0; i < list.size(); i++) {
+                                objList.add(Object.class);
+                            }
+                            m = this.getClass().getMethod(name, objList.toArray(new Class[]{}));
+                        } catch (NoSuchMethodException e) {
+                            LOGGER.debug("Unable to get a method named '" + name + "'.\n" + e.getLocalizedMessage());
+                        }
+                        if(m == null) {
+                            m = this.getClass().getMethod(name, args.getClass());
+                        }
+                    }
+                }
             }
         } catch (NoSuchMethodException e) {
             LOGGER.debug("Unable to get a method named '" + name + "'.\n" + e.getLocalizedMessage());
@@ -259,18 +289,36 @@ public interface IJdbcDataSource extends IDataSource, GroovyObject {
                 if(args == null) {
                     m = this.getClass().getMethod(getName);
                 }
-                //If the arguments are an object array, try to get the methods with the argument class array
-                else if(args instanceof Object[]){
-                    Object[] objects = (Object[])args;
-                    Class[] classes = new Class[objects.length];
-                    for(int i=0; i<objects.length; i++){
-                        classes[i] = objects[i].getClass();
-                    }
-                    m = this.getClass().getMethod(getName, classes);
-                }
-                //Otherwise get the method with the argument
                 else {
-                    m = this.getClass().getMethod(getName, args.getClass());
+                    if(!args.getClass().isArray()){
+                        m = this.getClass().getMethod(getName, args.getClass());
+                    }
+                    else if(((Object[])args).length==1){
+                        m = this.getClass().getMethod(getName, ((Object[])args)[0].getClass());
+                    }
+                    //If the arguments are an object array, try to get the methods with the argument class array
+                    else {
+                        List<Class> list = Stream.of((Object[])args).map(Object::getClass).collect(Collectors.toList());
+                        try {
+                            m = this.getClass().getMethod(getName, list.toArray(new Class[]{}));
+                        } catch (NoSuchMethodException e) {
+                            LOGGER.debug("Unable to get a method named '" + getName + "'.\n" + e.getLocalizedMessage());
+                        }
+                        if(m == null) {
+                            try {
+                                List<Class> objList = new ArrayList<>();
+                                for (int i = 0; i < list.size(); i++) {
+                                    objList.add(Object.class);
+                                }
+                                m = this.getClass().getMethod(getName, objList.toArray(new Class[]{}));
+                            } catch (NoSuchMethodException e) {
+                                LOGGER.debug("Unable to get a method named '" + getName + "'.\n" + e.getLocalizedMessage());
+                            }
+                            if(m == null) {
+                                m = this.getClass().getMethod(getName, args.getClass());
+                            }
+                        }
+                    }
                 }
             } catch (NoSuchMethodException e) {
                 LOGGER.debug("Unable to get a method named '" + name + "'.\n" + e.getLocalizedMessage());
@@ -284,11 +332,18 @@ public interface IJdbcDataSource extends IDataSource, GroovyObject {
             if(args == null) {
                 return m.invoke(this);
             }
-            if(args instanceof Object[] && ((Object[])args).length == 1){
-                return m.invoke(this, ((Object[])args)[0]);
-            }
             else {
-                return m.invoke(this, args);
+                if(m.getParameterCount() == 1) {
+                    if(args.getClass().isArray() && ((Object[])args).length==1){
+                        return m.invoke(this, ((Object[])args)[0]);
+                    }
+                    else {
+                        return m.invoke(this, args);
+                    }
+                }
+                else{
+                    return m.invoke(this, (Object[])args);
+                }
             }
         } catch (IllegalAccessException | InvocationTargetException e) {
             LOGGER.error("Unable to invoke the method named '" + name + "'.\n" + e.getLocalizedMessage());

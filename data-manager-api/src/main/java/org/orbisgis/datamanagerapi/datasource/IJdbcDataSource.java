@@ -102,7 +102,7 @@ public interface IJdbcDataSource extends IDataSource, GroovyObject {
      *
      * @param filePath Path of the file or its {@link URI}.
      * @param delete True to delete the table if exists, false otherwise.
-     */
+ */
     ITable load(String filePath, boolean delete);
 
     /**

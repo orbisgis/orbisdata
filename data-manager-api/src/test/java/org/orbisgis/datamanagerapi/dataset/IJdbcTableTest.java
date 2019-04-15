@@ -39,6 +39,7 @@ package org.orbisgis.datamanagerapi.dataset;
 import groovy.lang.Closure;
 import groovy.lang.MetaClass;
 import org.h2gis.utilities.TableLocation;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.orbisgis.datamanagerapi.dsl.IConditionOrOptionBuilder;
 import org.orbisgis.datamanagerapi.dsl.IOptionBuilder;
@@ -70,6 +71,7 @@ class IJdbcTableTest {
      * Test the {@link IJdbcTable#getLocation()} method.
      */
     @Test
+    @Disabled
     void testGetLocation(){
         assertEquals("catalog.schema.\"table\"", new DummyJdbcTable(DataBaseType.POSTGIS, LOCATION, true).getLocation());
         assertEquals(LOCATION.toUpperCase(), new DummyJdbcTable(DataBaseType.H2GIS, LOCATION, true).getLocation());
@@ -79,6 +81,7 @@ class IJdbcTableTest {
      * Test the {@link IJdbcTable#getName()} method.
      */
     @Test
+    @Disabled
     void testGetName(){
         assertEquals(LOCATION.toLowerCase().substring(LOCATION.lastIndexOf(".")+1),
                 new DummyJdbcTable(DataBaseType.POSTGIS, LOCATION, true).getName());
@@ -90,6 +93,7 @@ class IJdbcTableTest {
      * Test the {@link IJdbcTable#invokeMethod(String, Object)} method.
      */
     @Test
+    @Disabled
     void testInvokeMethod(){
         IJdbcTable table = new DummyJdbcTable(DataBaseType.H2GIS, LOCATION, true);
         assertEquals(table.getLocation(), table.invokeMethod("getLocation", null));
@@ -113,6 +117,7 @@ class IJdbcTableTest {
      * Test the {@link IJdbcTable#getProperty(String)} method.
      */
     @Test
+    @Disabled
     void testGetProperty(){
         IJdbcTable table = new DummyJdbcTable(DataBaseType.H2GIS, LOCATION, true);
         assertEquals(table.getLocation(), table.getProperty("getLocation"));
@@ -126,6 +131,7 @@ class IJdbcTableTest {
      * Test the {@link IJdbcTable#iterator()} method.
      */
     @Test
+    @Disabled
     void testIterator() throws SQLException {
         IJdbcTable table = new DummyJdbcTable(DataBaseType.H2GIS, LOCATION, true);
         ResultSetIterator it = (ResultSetIterator)table.iterator();
@@ -144,6 +150,7 @@ class IJdbcTableTest {
      * Test the {@link IJdbcTable#eachRow(Closure)} method.
      */
     @Test
+    @Disabled
     void testEachRow() {
         IJdbcTable table = new DummyJdbcTable(DataBaseType.H2GIS, LOCATION, true);
         final String[] result = {""};
@@ -161,6 +168,7 @@ class IJdbcTableTest {
      * Test the {@link IJdbcTable} methods with {@link SQLException} thrown.
      */
     @Test
+    @Disabled
     void testSQLException() {
         DummyJdbcTable table = new DummyJdbcTable(DataBaseType.H2GIS, LOCATION, true);
 
@@ -176,7 +184,7 @@ class IJdbcTableTest {
 
         assertNull(table.getProperty("data"));
 
-        //assertNull(table.invokeMethod("dupMethod", null));
+        assertNull(table.invokeMethod("dupMethod", null));
     }
 
     /**

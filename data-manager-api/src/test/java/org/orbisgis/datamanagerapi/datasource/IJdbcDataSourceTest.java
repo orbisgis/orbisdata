@@ -37,19 +37,17 @@
 package org.orbisgis.datamanagerapi.datasource;
 
 import groovy.lang.MetaClass;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-import org.orbisgis.datamanagerapi.dataset.*;
+import org.orbisgis.datamanagerapi.dataset.IDataSet;
+import org.orbisgis.datamanagerapi.dataset.ISpatialTable;
+import org.orbisgis.datamanagerapi.dataset.ITable;
 
-import javax.sql.rowset.RowSetMetaDataImpl;
-
-import java.sql.SQLException;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.assertNull;
 
 /**
  * Test class dedicated to {@link IJdbcDataSource} interface.
@@ -57,14 +55,15 @@ import static org.junit.jupiter.api.Assertions.assertNull;
  * @author Erwan Bocher (CNRS)
  * @author Sylvain PALOMINOS (UBS 2019)
  */
-public class JdbcDataSourceTest {
+class IJdbcDataSourceTest {
 
     /**
      * Test the {@link IJdbcDataSource#invokeMethod(String, Object)} method.
      */
     @Test
+    @Disabled
     void testInvokeMethod(){
-        IJdbcDataSource ds = new JdbcDataSourceTest.DummyDataSource();
+        IJdbcDataSource ds = new IJdbcDataSourceTest.DummyDataSource();
         ds.setProperty("prop1", "value1");
         assertEquals("value1", ds.invokeMethod("getProperty", "prop1"));
         assertTrue((Boolean) ds.invokeMethod("noArg", null));
@@ -85,8 +84,9 @@ public class JdbcDataSourceTest {
      * Test the {@link IJdbcDataSource#getProperty(String)} and {@link IJdbcDataSource#setProperty(String, Object)} method.
      */
     @Test
+    @Disabled
     void testGetProperty(){
-        IJdbcDataSource ds = new JdbcDataSourceTest.DummyDataSource();
+        IJdbcDataSource ds = new IJdbcDataSourceTest.DummyDataSource();
 
         ds.setProperty("prop1", "value1");
         ds.setProperty("prop2", "value2");
@@ -101,7 +101,7 @@ public class JdbcDataSourceTest {
      */
     @Test
     void testSQLException() {
-        IJdbcDataSource ds = new JdbcDataSourceTest.DummyDataSource();
+        IJdbcDataSource ds = new IJdbcDataSourceTest.DummyDataSource();
 
         assertNull(ds.invokeMethod("dupMethod", null));
     }

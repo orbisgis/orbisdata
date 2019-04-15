@@ -94,12 +94,15 @@ public class IJdbcTableTest {
         IJdbcTable table = new DummyJdbcTable(DataBaseType.H2GIS, LOCATION, true);
         assertEquals(table.getLocation(), table.invokeMethod("getLocation", null));
         assertEquals(table.getLocation(), table.invokeMethod("location", null));
+        assertArrayEquals(new Object[]{"string", 0.2}, (Object[])table.invokeMethod("getArrayMethod", new Object[]{"string", 0.2}));
         assertArrayEquals(new Object[]{"string", 0.2}, (Object[])table.invokeMethod("arrayMethod", new Object[]{"string", 0.2}));
         assertArrayEquals(new Object[]{"string", 0.2}, (Object[])table.invokeMethod("getParametersMethod", new Object[]{"string", 0.2}));
         assertArrayEquals(new Object[]{"string", 0.2}, (Object[])table.invokeMethod("parametersMethod", new Object[]{"string", 0.2}));
         assertArrayEquals(new Object[]{"string", "0.2"}, (Object[])table.invokeMethod("getParametersMethod", new Object[]{"string", "0.2"}));
         assertArrayEquals(new Object[]{"string", "0.2"}, (Object[])table.invokeMethod("parametersMethod", new Object[]{"string", "0.2"}));
+        assertEquals("string", table.invokeMethod("getParameterMethod", new Object[]{"string"}));
         assertEquals("string", table.invokeMethod("getParameterMethod", "string"));
+        assertEquals("string", table.invokeMethod("parameterMethod", new Object[]{"string"}));
         assertEquals("string", table.invokeMethod("parameterMethod", "string"));
         assertEquals(RowSetMetaDataImpl.class, table.invokeMethod("metadata", null).getClass());
 
@@ -204,7 +207,7 @@ public class IJdbcTableTest {
          * @param location Fake data location.
          * @param isIterable True if iterable, false otherwise.
          */
-        DummyJdbcTable(DataBaseType databaseType, String location, boolean isIterable){
+        private DummyJdbcTable(DataBaseType databaseType, String location, boolean isIterable){
             this.location = TableLocation.parse(location, databaseType.equals(DataBaseType.H2GIS));
             this.databaseType = databaseType;
             this.isIterable = isIterable;
@@ -214,12 +217,12 @@ public class IJdbcTableTest {
          * True if throws exception, false otherwise.
          * @param sqlException True if throws exception, false otherwise.
          */
-        void setException(boolean sqlException){
+        private void setException(boolean sqlException){
             this.sqlException = sqlException;
         }
 
         private void getPrivateMethod(){/*Does nothing*/}
-        public Object[] arrayMethod(Object[] array){return array;}
+        public Object[] getArrayMethod(Object[] array){return array;}
         public Object[] getParametersMethod(String param1, Double param2){return new Object[]{param1, param2};}
         public Object[] getParametersMethod(Object param1, Object param2){return new Object[]{param1, param2};}
         public String getParameterMethod(String param1){return param1;}
@@ -285,7 +288,7 @@ public class IJdbcTableTest {
             if(sqlException){
                 throw new SQLException();
             }
-            if(s.equals("data")){
+            if("data".equals(s)){
                 return data;
             }
             return null;

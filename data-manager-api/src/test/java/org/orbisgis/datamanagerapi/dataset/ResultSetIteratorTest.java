@@ -52,7 +52,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * @author Erwan Bocher (CNRS)
  * @author Sylvain PALOMINOS 'UBS 2019)
  */
-class ResultSetIteratorTest {
+public class ResultSetIteratorTest {
 
     /** Connection used to get a {@link ResultSet}. */
     private static Connection connection;
@@ -64,7 +64,7 @@ class ResultSetIteratorTest {
      * @throws ClassNotFoundException Exception get if the H2/H2GIS classes are not found.
      */
     @BeforeAll
-    static void initialisation() throws SQLException, ClassNotFoundException {
+    public static void initialisation() throws SQLException, ClassNotFoundException {
         connection = H2GISDBFactory.createSpatialDataBase("./target/resultsetiterator");
         connection.createStatement().execute("CREATE TABLE TEST (col1 int, col2 varchar, col3 double)");
         connection.createStatement().execute("INSERT INTO TEST VALUES(1, 'tata', 5.5689)");
@@ -91,48 +91,43 @@ class ResultSetIteratorTest {
      * @throws SQLException Exception thrown by SQL requests.
      */
     @Test
-    void resultSetIteratorTest() throws SQLException {
-        ResultSet tmp;
-        Object obj;
+    public void resultSetIteratorTest() throws SQLException {
+        ResultSet obj;
         ResultSetIterator resultSetIterator = new ResultSetIterator(getResultSet());
 
         assertTrue(resultSetIterator.hasNext());
         obj = resultSetIterator.next();
-        assertTrue(obj instanceof ResultSet);
-        tmp = (ResultSet) obj;
-        assertEquals(1, tmp.getInt(1));
-        assertEquals("tata", tmp.getString(2));
-        assertEquals(5.5689, tmp.getDouble(3));
+        assertNotNull(obj);
+        assertEquals(1, obj.getInt(1));
+        assertEquals("tata", obj.getString(2));
+        assertEquals(5.5689, obj.getDouble(3));
 
         assertTrue(resultSetIterator.hasNext());
         obj = resultSetIterator.next();
-        assertTrue(obj instanceof ResultSet);
-        tmp = (ResultSet) obj;
-        assertEquals(2, tmp.getInt(1));
-        assertEquals("toto", tmp.getString(2));
-        assertEquals(7.2635, tmp.getDouble(3));
+        assertNotNull(obj);
+        assertEquals(2, obj.getInt(1));
+        assertEquals("toto", obj.getString(2));
+        assertEquals(7.2635, obj.getDouble(3));
 
         assertTrue(resultSetIterator.hasNext());
         obj = resultSetIterator.next();
-        assertTrue(obj instanceof ResultSet);
-        tmp = (ResultSet) obj;
-        assertEquals(3, tmp.getInt(1));
-        assertEquals("titi", tmp.getString(2));
-        assertEquals(1.7362, tmp.getDouble(3));
+        assertNotNull(obj);
+        assertEquals(3, obj.getInt(1));
+        assertEquals("titi", obj.getString(2));
+        assertEquals(1.7362, obj.getDouble(3));
 
         assertTrue(resultSetIterator.hasNext());
         obj = resultSetIterator.next();
-        assertTrue(obj instanceof ResultSet);
-        tmp = (ResultSet) obj;
-        assertEquals(4, tmp.getInt(1));
-        assertEquals("tutu", tmp.getString(2));
-        assertEquals(9.2555, tmp.getDouble(3));
+        assertNotNull(obj);
+        assertEquals(4, obj.getInt(1));
+        assertEquals("tutu", obj.getString(2));
+        assertEquals(9.2555, obj.getDouble(3));
 
         assertNotNull(resultSetIterator.next());
     }
 
     @Test
-    void emptyResultSetIteratorTest(){
+    public void emptyResultSetIteratorTest(){
         ResultSetIterator resultSetIterator = new ResultSetIterator();
         assertFalse(resultSetIterator.hasNext());
         assertNull(resultSetIterator.next());

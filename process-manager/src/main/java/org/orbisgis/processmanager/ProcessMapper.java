@@ -196,7 +196,6 @@ public class ProcessMapper implements IProcessMapper {
     @Override
     public boolean execute(Map<String, Object> inputDataMap) {
         link();
-
         Map<String, Object> dataMap = inputDataMap == null ?  new HashMap<>() : new HashMap<>(inputDataMap);
         /*if(inputs != null && dataMap.size() != inputs.size()){
             LOGGER.error("The number of the input data map and the number of process input are different.");
@@ -207,7 +206,21 @@ public class ProcessMapper implements IProcessMapper {
                 Map<String, Object> processInData = new HashMap<>();
                 if(process.getInputs() != null) {
                     for (String in : process.getInputs().keySet()) {
-                        processInData.put(in, dataMap.get(in));
+                        //Try to get the data directly from the out of a process
+                        Object data = dataMap.get(in);
+                        //Get the link between the input 'in' and a process output if exists
+                        for(Link link : linkingList){
+                            if(link.getInProcess().getIdentifier().equals(process.getIdentifier()) &&
+                                    link.getInName().equals(in)){
+                                //get the process with the output linked to 'in'
+                                for(IProcess p : processList){
+                                    if(p.getIdentifier().equals(link.getOutProcess().getIdentifier())){
+                                        data = p.getResults().get(link.getOutName());
+                                    }
+                                }
+                            }
+                        }
+                        processInData.put(in, data);
                     }
                 }
                 process.execute(processInData);
@@ -216,7 +229,7 @@ public class ProcessMapper implements IProcessMapper {
                     for(Map.Entry<ProcessOutput, ProcessInput> entry : inOutMap.entrySet()){
                         if(entry.getKey().getOutput().equals(key) &&
                                 entry.getKey().getProcessId().equals(process.getIdentifier())){
-                            dataMap.put(entry.getValue().getInput(), process.getResults().get(key));
+                            //dataMap.put(entry.getValue().getInput(), process.getResults().get(key));
                             isBetween = true;
                         }
                     }
@@ -257,7 +270,6 @@ public class ProcessMapper implements IProcessMapper {
         return processList.stream().filter(process -> process.getIdentifier().equals(identifier)).findFirst().orElse(null);
     }
 
-    //TODO remove that as the process id and inoutput will be merged as string
     private class ProcessOutput{
         private String output;
         private String processId;

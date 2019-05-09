@@ -46,7 +46,6 @@ import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 
 /**
  * Implementation of the IProcess interface dedicated to the local creation and execution of process (no link with
@@ -120,6 +119,7 @@ public class Process implements IProcess {
 
     @Override
     public boolean execute(Map<String, Object> inputDataMap) {
+        LOGGER.info("Starting to execute the process : "+ title);
         if(inputs != null && inputDataMap.size() != inputs.size()){
             LOGGER.error("The number of the input data map and the number of process input are different.");
             return false;

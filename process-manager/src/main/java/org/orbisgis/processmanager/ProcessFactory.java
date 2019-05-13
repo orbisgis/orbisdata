@@ -114,7 +114,7 @@ public class ProcessFactory implements IProcessFactory {
                 process = new Process(title, description, keywords, inputs, outputs, version, closure, caster);
                 processList.add(process);
             }
-            return process;
+            return process.newInstance();
         }
         else{
             return null;

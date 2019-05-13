@@ -54,25 +54,34 @@ public class ProcessMapper implements IProcessMapper {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ProcessMapper.class);
 
-    private List<IProcess> processList;
     private Map<ProcessOutput, ProcessInput> inOutMap;
     private Map<String, Class> inputs;
     private Map<String, Class> outputs;
-    private List<List<IProcess>> executionTree;
+    private List<List<String>> executionTree;
     private Map<String, Object> results;
     private List<Link> linkingList;
+    private Map<String, IProcess> processMap;
 
     public ProcessMapper(){
         linkingList = new ArrayList<>();
     }
 
+    private String getUuidOfProcess(IProcess process){
+        for(Map.Entry<String, IProcess> entry : processMap.entrySet()){
+            if(entry.getValue().equals(process)){
+                return entry.getKey();
+            }
+        }
+        return null;
+    }
+
     private void link(){
-        processList = new ArrayList<>();
         inOutMap = new HashMap<>();
         inputs = new HashMap<>();
         outputs = new HashMap<>();
         executionTree = new ArrayList<>();
         results = new HashMap<>();
+        processMap = new HashMap<>();
 
         List<ProcessInput> availableIn = new ArrayList<>();
 
@@ -82,30 +91,31 @@ public class ProcessMapper implements IProcessMapper {
             String input = link.getInName();
             IProcess outputProcess = link.getOutProcess();
             IProcess inputProcess = link.getInProcess();
-            if (getProcess(outputProcess.getIdentifier()) == null) {
-                processList.add(outputProcess);
+            if (!processMap.values().contains(outputProcess)) {
+                processMap.put(UUID.randomUUID().toString(), outputProcess);
             }
-            if (getProcess(inputProcess.getIdentifier()) == null) {
-                processList.add(inputProcess);
+            if (!processMap.values().contains(inputProcess)) {
+                processMap.put(UUID.randomUUID().toString(), inputProcess);
             }
-            inOutMap.put(new ProcessOutput(output, outputProcess.getIdentifier()),
-                    new ProcessInput(input, inputProcess.getIdentifier()));
+            inOutMap.put(new ProcessOutput(output, getUuidOfProcess(outputProcess)),
+                    new ProcessInput(input, getUuidOfProcess(inputProcess)));
         });
 
-        //Get all th inputs and outputs of the processes.
-        for (IProcess process : processList) {
+        //Get all the inputs and outputs of the processes.
+        for (String uuid : processMap.keySet()) {
+            IProcess process = processMap.get(uuid);
             if(process.getInputs() != null) {
                 process.getInputs().forEach((key, value) -> {
                     boolean isBetween = false;
                     for (Map.Entry<ProcessOutput, ProcessInput> entry : inOutMap.entrySet()) {
                         if (entry.getValue().getInput().equals(key) &&
-                                entry.getValue().getProcessId().equals(process.getIdentifier())) {
+                                entry.getValue().getProcessId().equals(uuid)) {
                             isBetween = true;
                         }
                     }
                     if (!isBetween) {
                         inputs.put(key, value);
-                        availableIn.add(new ProcessInput(key, process.getIdentifier()));
+                        availableIn.add(new ProcessInput(key, uuid));
                     }
                 });
             }
@@ -113,7 +123,7 @@ public class ProcessMapper implements IProcessMapper {
                 boolean isBetween = false;
                 for(Map.Entry<ProcessOutput, ProcessInput> entry : inOutMap.entrySet()) {
                     if (entry.getKey().getOutput().equals(key) &&
-                            entry.getKey().getProcessId().equals(process.getIdentifier())) {
+                            entry.getKey().getProcessId().equals(uuid)) {
                         isBetween = true;
                     }
                 }
@@ -124,22 +134,23 @@ public class ProcessMapper implements IProcessMapper {
         }
 
         //Build the execution tree
-        List<IProcess> processes = new ArrayList<>(processList);
+        List<String> processes = new ArrayList<>(processMap.keySet());
         int i = 0;
         List<ProcessInput> newIn = new ArrayList<>();
         do {
             availableIn.addAll(newIn);
             newIn = new ArrayList<>();
             executionTree.add(new ArrayList<>());
-            for (Iterator<IProcess> iterator = processes.iterator(); iterator.hasNext(); ) {
-                IProcess process = iterator.next();
+            for (Iterator<String> iterator = processes.iterator(); iterator.hasNext(); ) {
+                String uuid = iterator.next();
+                IProcess process = processMap.get(uuid);
                 boolean isAllInput = true;
                 if(process.getInputs() != null) {
                     for (String input : process.getInputs().keySet()) {
                         boolean isInputAvailable = false;
                         for (ProcessInput processInput : availableIn) {
                             if (processInput.getInput().equals(input) &&
-                                    processInput.getProcessId().equals(process.getIdentifier())) {
+                                    processInput.getProcessId().equals(uuid)) {
                                 isInputAvailable = true;
                                 break;
                             }
@@ -151,11 +162,11 @@ public class ProcessMapper implements IProcessMapper {
                     }
                 }
                 if (isAllInput) {
-                    executionTree.get(i).add(process);
+                    executionTree.get(i).add(uuid);
                     for (String name : process.getOutputs().keySet()) {
                         for (Map.Entry<ProcessOutput, ProcessInput> entry : inOutMap.entrySet()) {
                             if (entry.getKey().getOutput().equals(name) &&
-                                    entry.getKey().getProcessId().equals(process.getIdentifier())) {
+                                    entry.getKey().getProcessId().equals(uuid)) {
                                 newIn.add(entry.getValue());
                             }
                         }
@@ -168,7 +179,7 @@ public class ProcessMapper implements IProcessMapper {
 
         if(!processes.isEmpty()){
             LOGGER.error("Unable to link the processes '"+
-                    processes.stream().map(IProcess::getTitle).collect(Collectors.joining(","))+"'");
+                    processes.stream().map(s -> processMap.get(s).getTitle()).collect(Collectors.joining(","))+"'");
         }
     }
 
@@ -201,8 +212,9 @@ public class ProcessMapper implements IProcessMapper {
             LOGGER.error("The number of the input data map and the number of process input are different.");
             return false;
         }*/
-        for(List<IProcess> processes : executionTree){
-            for(IProcess process : processes){
+        for(List<String> uuids : executionTree){
+            for(String uuid : uuids){
+                IProcess process = processMap.get(uuid);
                 Map<String, Object> processInData = new HashMap<>();
                 if(process.getInputs() != null) {
                     for (String in : process.getInputs().keySet()) {
@@ -210,12 +222,12 @@ public class ProcessMapper implements IProcessMapper {
                         Object data = dataMap.get(in);
                         //Get the link between the input 'in' and a process output if exists
                         for(Link link : linkingList){
-                            if(link.getInProcess().getIdentifier().equals(process.getIdentifier()) &&
+                            if(uuid.equals(getUuidOfProcess(link.getInProcess())) &&
                                     link.getInName().equals(in)){
                                 //get the process with the output linked to 'in'
-                                for(IProcess p : processList){
-                                    if(p.getIdentifier().equals(link.getOutProcess().getIdentifier())){
-                                        data = p.getResults().get(link.getOutName());
+                                for(String id : processMap.keySet()){
+                                    if(id.equals(getUuidOfProcess(link.getOutProcess()))){
+                                        data = processMap.get(id).getResults().get(link.getOutName());
                                     }
                                 }
                             }
@@ -228,7 +240,7 @@ public class ProcessMapper implements IProcessMapper {
                     boolean isBetween = false;
                     for(Map.Entry<ProcessOutput, ProcessInput> entry : inOutMap.entrySet()){
                         if(entry.getKey().getOutput().equals(key) &&
-                                entry.getKey().getProcessId().equals(process.getIdentifier())){
+                                entry.getKey().getProcessId().equals(uuid)){
                             //dataMap.put(entry.getValue().getInput(), process.getResults().get(key));
                             isBetween = true;
                         }
@@ -267,7 +279,15 @@ public class ProcessMapper implements IProcessMapper {
     }
 
     private IProcess getProcess(String identifier){
-        return processList.stream().filter(process -> process.getIdentifier().equals(identifier)).findFirst().orElse(null);
+        if (processMap.isEmpty()) {
+            return null;
+        }
+        return processMap.values()
+                .stream()
+                .filter(iProcess -> iProcess.getIdentifier().equals(identifier))
+                .findFirst()
+                .orElse(null);
+
     }
 
     private class ProcessOutput{

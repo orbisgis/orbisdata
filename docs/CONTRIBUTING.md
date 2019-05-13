@@ -36,8 +36,24 @@ Each class should start with a header which template can be found
 #### Tests
 
 Tests should written in Groovy and Java (same test for each languages) 
-and all the test methods should be documented. The frameword used for 
-test is [JUnit 5](https://junit.org/junit5/docs/current/user-guide/). 
+and all the test methods should be documented. The test classes should 
+start with :
+``` java
+/**
+ * Test class dedicated to {@link BaseClass} interface/class.
+ *
+ * @author ...
+ * @author ...
+ */
+```
+and all the test methods should start with :
+``` java
+/**
+ * Test the {@link methodToTest} method/constructor.
+ */
+```
+The framework used for test is 
+[JUnit 5](https://junit.org/junit5/docs/current/user-guide/). 
 Each class named `SpatialClass` should have its test class named 
 `SpatialClassTest`.
 Test should follow the following pattern :

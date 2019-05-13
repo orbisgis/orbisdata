@@ -152,7 +152,7 @@ public abstract class JdbcTable implements IJdbcTable {
 
     @Override
     public boolean isSpatial(){
-        return true;
+        return false;
     }
 
     @Override
@@ -187,24 +187,12 @@ public abstract class JdbcTable implements IJdbcTable {
 
     @Override
     public boolean hasColumn(String columnName){
-        try {
-            return JDBCUtilities.hasField(jdbcDataSource.getConnection(), getLocation(), columnName);
-        } catch (SQLException e) {
-            LOGGER.error("Unable to get find the column '"+columnName+"'\n"+e.getLocalizedMessage());
-            return false;
-        }
+        return getColumnNames().contains(TableLocation.capsIdentifier(columnName, getDbType().equals(DataBaseType.H2GIS)));
     }
 
     @Override
     public boolean hasColumn(String columnName, Class clazz){
-        boolean hasField;
-        try {
-            hasField = JDBCUtilities.hasField(jdbcDataSource.getConnection(), getLocation(), columnName);
-        } catch (SQLException e) {
-            LOGGER.error("Unable to get the index of the column '"+columnName+"'\n"+e.getLocalizedMessage());
-            return false;
-        }
-        if(!hasField){
+        if(!hasColumn(columnName)){
             return false;
         }
 
@@ -224,9 +212,11 @@ public abstract class JdbcTable implements IJdbcTable {
             boolean hasGoodType = false;
             try {
                 rs = jdbcDataSource.getConnection().getMetaData().getColumns(tableLocation.getCatalog(null),
-                        tableLocation.getSchema(null), tableLocation.getTable(), null);
+                        tableLocation.getSchema(null), TableLocation.capsIdentifier(tableLocation.getTable(),
+                                getDbType().equals(DataBaseType.H2GIS)), null);
                 while (rs.next() && !hasGoodType) {
-                    hasGoodType = DataType.convertSQLTypeToValueType(rs.getInt("DATA_TYPE")) == type &&
+                    hasGoodType = (DataType.convertSQLTypeToValueType(rs.getInt("DATA_TYPE")) == type ||
+                            rs.getInt("DATA_TYPE") == type)&&
                             rs.getString("COLUMN_NAME").equalsIgnoreCase(columnName);
                 }
             } catch (SQLException e) {

@@ -204,5 +204,25 @@ class TestProcess {
         assertEquals "ba", mapper.getResults().outD1
         assertEquals "AcbA", mapper.getResults().outD2
     }
+
+    /**
+     *  --> -----  |--> ----  |--> ----
+     *     |  pA |-|   | pA |-|   | pA |-->
+     *  --> -----  |--> ----  |--> ----
+     */
+    @Test
+    void testMapping4(){
+        def pA1 = processManager.factory("map1").create("pA", [inA1:String, inA2:String], [outA1:String], {inA1, inA2 ->[outA1:inA1+inA2]})
+        def pA2 = processManager.factory("map1").create("pA", [inA1:String, inA2:String], [outA1:String], {inA1, inA2 ->[outA1:inA1+inA2]})
+        def pA3 = processManager.factory("map1").create("pA", [inA1:String, inA2:String], [outA1:String], {inA1, inA2 ->[outA1:inA1+inA2]})
+
+        def mapper = new ProcessMapper()
+        mapper.link(outA1:pA1, inA1:pA2)
+        mapper.link(outA1:pA1, inA2:pA2)
+        mapper.link(outA1:pA2, inA1:pA3)
+        mapper.link(outA1:pA2, inA2:pA3)
+        assertTrue mapper.execute([inA1: "t", inA2: "a"])
+        assertEquals "tatatata", mapper.getResults().outA1
+    }
 }
 

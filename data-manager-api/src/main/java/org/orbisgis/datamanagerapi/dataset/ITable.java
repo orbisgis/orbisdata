@@ -104,7 +104,7 @@ public interface ITable extends IDataSet {
      * @return True if the columns are found, false otherwise.
      */
     default boolean hasColumns(List<String> columnList){
-        return getColumnNames().containsAll(columnList);
+        return columnList.stream().allMatch(this::hasColumn);
     }
 
     /**

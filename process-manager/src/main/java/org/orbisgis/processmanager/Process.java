@@ -46,7 +46,6 @@ import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 
 /**
  * Implementation of the IProcess interface dedicated to the local creation and execution of process (no link with
@@ -99,7 +98,7 @@ public class Process implements IProcess {
      * @param closure Closure containing the code to execute on the process execution.
      * @param caster Caster used to cast input object into the good class.
      */
-    public Process(String title, String description, String[] keywords, Map<String, Class> inputs,
+    Process(String title, String description, String[] keywords, Map<String, Class> inputs,
                    Map<String, Class> outputs, String version, Closure closure, ICaster caster){
         if(inputs != null && closure.getMaximumNumberOfParameters() != inputs.size()){
             LOGGER.error("The number of the closure parameters and the number of process input names are different.");
@@ -116,6 +115,11 @@ public class Process implements IProcess {
         this.caster = caster;
         this.identifier = title;
         this.metaClass = InvokerHelper.getMetaClass(getClass());
+    }
+
+    @Override
+    public IProcess newInstance() {
+        return new Process(title, description, keywords, inputs, outputs, version, closure, caster);
     }
 
     @Override

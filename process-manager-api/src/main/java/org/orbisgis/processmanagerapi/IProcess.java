@@ -47,6 +47,13 @@ import java.util.Map;
 public interface IProcess {
 
     /**
+     * Return a new instance of the process.
+     *
+     * @return A process new instance.
+     */
+    IProcess newInstance();
+
+    /**
      * Execute the process with the given inputs.
      *
      * @param inputDataMap Map of the inputs with the name as key and the input value as value.

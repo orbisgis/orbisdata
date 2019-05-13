@@ -1,0 +1,387 @@
+/*
+ * Bundle DataManager is part of the OrbisGIS platform
+ *
+ * OrbisGIS is a java GIS application dedicated to research in GIScience.
+ * OrbisGIS is developed by the GIS group of the DECIDE team of the
+ * Lab-STICC CNRS laboratory, see <http://www.lab-sticc.fr/>.
+ *
+ * The GIS group of the DECIDE team is located at :
+ *
+ * Laboratoire Lab-STICC – CNRS UMR 6285
+ * Equipe DECIDE
+ * UNIVERSITÉ DE BRETAGNE-SUD
+ * Institut Universitaire de Technologie de Vannes
+ * 8, Rue Montaigne - BP 561 56017 Vannes Cedex
+ *
+ * DataManager is distributed under GPL 3 license.
+ *
+ * Copyright (C) 2018 CNRS (Lab-STICC UMR CNRS 6285)
+ *
+ *
+ * DataManager is free software: you can redistribute it and/or modify it under the
+ * terms of the GNU General Public License as published by the Free Software
+ * Foundation, either version 3 of the License, or (at your option) any later
+ * version.
+ *
+ * DataManager is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+ * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * DataManager. If not, see <http://www.gnu.org/licenses/>.
+ *
+ * For more information, please consult: <http://www.orbisgis.org/>
+ * or contact directly:
+ * info_at_ orbisgis.org
+ */
+package org.orbisgis.datamanager;
+
+import groovy.lang.MetaClass;
+import groovy.sql.Sql;
+import org.codehaus.groovy.runtime.InvokerHelper;
+import org.h2gis.functions.factory.H2GISDBFactory;
+import org.h2gis.utilities.JDBCUtilities;
+import org.h2gis.utilities.TableLocation;
+import org.h2gis.utilities.wrapper.ConnectionWrapper;
+import org.h2gis.utilities.wrapper.StatementWrapper;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.locationtech.jts.awt.PointShapeFactory;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.Point;
+import org.orbisgis.datamanager.h2gis.H2gisSpatialTable;
+import org.orbisgis.datamanagerapi.dataset.*;
+
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+/**
+ * Test class dedicated to {@link JdbcTable} class.
+ *
+ * @author Erwan Bocher (CNRS)
+ * @author Sylvain PALOMINOS (UBS 2019)
+ */
+//TODO test with a postgis database
+public class JdbcTableTest {
+
+    /** Database connection */
+    private static Connection connection;
+    /** Linked database connection */
+    private static Connection connectionLinked;
+    /** Connection statement */
+    private static Statement statement;
+    /** Dummy data source */
+    private static DummyJdbcDataSource dataSource;
+    /** Table location */
+    private static TableLocation tableLocation;
+    /** Linked table location */
+    private static TableLocation linkedLocation;
+    /** Temporary table location */
+    private static TableLocation tempLocation;
+
+    private static final String BASE_DATABASE = JdbcTableTest.class.getSimpleName();
+    private static final String TABLE_NAME = "orbisgis";
+    private static final String BASE_QUERY = "SELECT * FROM "+TABLE_NAME;
+    private static final String TEMP_NAME = "tempTable";
+    private static final String TEMP_QUERY = "SELECT * FROM "+TEMP_NAME;
+    private static final String LINKED_DATABASE = JdbcTableTest.class.getSimpleName()+"_linked";
+    private static final String LINKED_NAME = "linkedTable";
+    private static final String LINKED_QUERY = "SELECT * FROM "+LINKED_NAME;
+
+    private static final String COL_THE_GEOM = "the_geom";
+    private static final String COL_THE_GEOM2 = "the_geom2";
+    private static final String COL_ID = "id";
+    private static final String COL_VALUE = "value";
+    private static final String COL_MEANING = "meaning";
+
+    /**
+     * Initialization of the database.
+     */
+    @BeforeAll
+    public static void init(){
+        try {
+            connection = H2GISDBFactory.createSpatialDataBase(BASE_DATABASE);
+            connectionLinked = H2GISDBFactory.createSpatialDataBase(LINKED_DATABASE);
+        } catch (SQLException|ClassNotFoundException e) {
+            fail(e);
+        }
+        Sql sql = new Sql(connection);
+        dataSource = new DummyJdbcDataSource(sql, DataBaseType.H2GIS);
+    }
+
+    /**
+     * Set the database with some data.
+     */
+    @BeforeEach
+    public void prepareDB(){
+        try {
+            Statement statementLinked = connectionLinked.createStatement();
+            statementLinked.execute("DROP TABLE IF EXISTS "+TABLE_NAME);
+            statementLinked.execute("CREATE TABLE "+TABLE_NAME+" ("+COL_THE_GEOM+" GEOMETRY, "+COL_THE_GEOM2+" POINT," +
+                    COL_ID+" INTEGER, "+COL_VALUE+" FLOAT, "+COL_MEANING+" VARCHAR)");
+            statementLinked.execute("INSERT INTO "+TABLE_NAME+" VALUES ('POINT(0 0)', 'POINT(1 1)', 1, 2.3, 'Simple points')");
+            statementLinked.execute("INSERT INTO "+TABLE_NAME+" VALUES ('POINT(0 1 2)', 'POINT(10 11 12)', 2, 0.568, '3D point')");
+
+            statement = connection.createStatement();
+            statement.execute("DROP TABLE IF EXISTS "+TABLE_NAME+","+LINKED_NAME+","+TEMP_NAME);
+            statement.execute("CREATE TABLE "+TABLE_NAME+" ("+COL_THE_GEOM+" GEOMETRY, "+COL_THE_GEOM2+" POINT," +
+                    COL_ID+" INTEGER, "+COL_VALUE+" FLOAT, "+COL_MEANING+" VARCHAR)");
+            statement.execute("INSERT INTO "+TABLE_NAME+" VALUES ('POINT(0 0)', 'POINT(1 1)', 1, 2.3, 'Simple points')");
+            statement.execute("INSERT INTO "+TABLE_NAME+" VALUES ('POINT(0 1 2)', 'POINT(10 11 12)', 2, 0.568, '3D point')");
+            statement.execute("CREATE LINKED TABLE "+LINKED_NAME+"('org.h2.Driver','jdbc:h2:./target/test-resources/dbH2"+LINKED_DATABASE+
+                    "','sa','sa','"+TABLE_NAME+"')");
+            statement.execute("CREATE TEMPORARY TABLE "+TEMP_NAME+" ("+COL_THE_GEOM+" GEOMETRY, "+COL_THE_GEOM2+" POINT," +
+                    COL_ID+" INTEGER, "+COL_VALUE+" FLOAT, "+COL_MEANING+" VARCHAR)");
+
+            tableLocation = new TableLocation(TABLE_NAME);
+            linkedLocation = new TableLocation(LINKED_NAME);
+            tempLocation = new TableLocation(TEMP_NAME);
+        } catch (Exception e) {
+            fail(e);
+        }
+    }
+
+    /**
+     * Returns a {@link DummyJdbcTable} for test purpose.
+     * @return A {@link DummyJdbcTable} for test purpose.
+     */
+    private DummyJdbcTable getTable(){
+        return new DummyJdbcTable(DataBaseType.H2GIS, dataSource, tableLocation, statement, BASE_QUERY);
+    }
+
+    /**
+     * Returns a linked {@link DummyJdbcTable} for test purpose.
+     * @return A linked {@link DummyJdbcTable} for test purpose.
+     */
+    private DummyJdbcTable getLinkedTable(){
+        return new DummyJdbcTable(DataBaseType.H2GIS, dataSource, linkedLocation, statement, LINKED_QUERY);
+    }
+
+    /**
+     * Returns a temporary {@link DummyJdbcTable} for test purpose.
+     * @return A temporary {@link DummyJdbcTable} for test purpose.
+     */
+    private DummyJdbcTable getTempTable(){
+        return new DummyJdbcTable(DataBaseType.H2GIS, dataSource, tempLocation, statement, TEMP_QUERY);
+    }
+
+    /**
+     * Test the {@link JdbcTable#JdbcTable(DataBaseType, JdbcDataSource, TableLocation, Statement, String)} constructor.
+     */
+    @Test
+    public void testConstructor(){
+        assertNotNull(getTable());
+    }
+
+    /**
+     * Test the {@link JdbcTable#getBaseQuery()} method.
+     */
+    @Test
+    public void testGetBaseQuery(){
+        assertEquals(BASE_QUERY, getTable().getBaseQuery());
+    }
+
+    /**
+     * Test the {@link JdbcTable#getJdbcDataSource()} method.
+     */
+    @Test
+    public void testGetJdbcDataSource(){
+        assertEquals(dataSource, getTable().getJdbcDataSource());
+    }
+
+    /**
+     * Test the {@link JdbcTable#getTableLocation()} method.
+     */
+    @Test
+    public void testGetTableLocation(){
+        assertEquals(tableLocation, getTable().getTableLocation());
+    }
+
+    /**
+     * Test the {@link JdbcTable#getDbType()} method.
+     */
+    @Test
+    public void testGetDbType(){
+        assertEquals(DataBaseType.H2GIS, getTable().getDbType());
+    }
+
+    /**
+     * Test the {@link JdbcTable#setProperty(String, Object)} method.
+     */
+    @Test
+    public void testSetProperty(){
+        String propertyKey = "key";
+        String propertyValue = "value";
+        IJdbcTable table = getTable();
+        table.setProperty(propertyKey, propertyValue);
+    }
+
+    /**
+     * Test the {@link JdbcTable#getMetaClass()} method.
+     */
+    @Test
+    public void testGetMetaClass(){
+        assertEquals(InvokerHelper.getMetaClass(DummyJdbcTable.class), getTable().getMetaClass());
+    }
+
+    /**
+     * Test the {@link JdbcTable#setMetaClass(MetaClass)} method.
+     */
+    @Test
+    public void testSetMetaClass(){
+        DummyJdbcTable table = getTable();
+        MetaClass metaClass = InvokerHelper.getMetaClass(JdbcTableTest.class);
+        table.setMetaClass(metaClass);
+        assertEquals(metaClass, table.getMetaClass());
+    }
+
+    /**
+     * Test the {@link JdbcTable#isSpatial()} method.
+     */
+    @Test
+    public void testIsSpatial(){
+        assertFalse(getTable().isSpatial());
+        assertFalse(getLinkedTable().isSpatial());
+        assertFalse(getTempTable().isSpatial());
+    }
+
+    /**
+     * Test the {@link JdbcTable#isLinked()} method.
+     */
+    @Test
+    public void testIsLinked(){
+        assertFalse(getTable().isLinked());
+        assertTrue(getLinkedTable().isLinked());
+        assertFalse(getTempTable().isLinked());
+    }
+
+    /**
+     * Test the {@link JdbcTable#isTemporary()} ()} method.
+     */
+    @Test
+    public void testIsTemporary(){
+        assertFalse(getTable().isTemporary());
+        assertFalse(getLinkedTable().isTemporary());
+        assertTrue(getTempTable().isTemporary());
+    }
+
+    /**
+     * Test the {@link JdbcTable#getColumnNames()} method.
+     */
+    @Test
+    public void testGetColumnNames(){
+        List<String> colList = new ArrayList<>();
+        colList.add(TableLocation.capsIdentifier(COL_THE_GEOM, true));
+        colList.add(TableLocation.capsIdentifier(COL_THE_GEOM2, true));
+        colList.add(TableLocation.capsIdentifier(COL_ID, true));
+        colList.add(TableLocation.capsIdentifier(COL_VALUE, true));
+        colList.add(TableLocation.capsIdentifier(COL_MEANING, true));
+        assertEquals(colList, getTable().getColumnNames());
+    }
+
+    /**
+     * Test the {@link JdbcTable#hasColumn(String)} method.
+     */
+    @Test
+    public void testHasColumn(){
+        ITable t = getTable();
+        assertTrue(t.hasColumn(COL_THE_GEOM.toUpperCase()));
+        assertTrue(t.hasColumn(COL_THE_GEOM.toLowerCase()));
+        assertTrue(t.hasColumn(COL_THE_GEOM2));
+        assertFalse(t.hasColumn("the_geom3"));
+        assertTrue(t.hasColumn(COL_ID));
+        assertTrue(t.hasColumn(COL_VALUE));
+        assertTrue(t.hasColumn(COL_MEANING));
+    }
+
+    /**
+     * Test the {@link JdbcTable#hasColumn(String, Class)} method.
+     */
+    @Test
+    public void testHasColumnWithClass(){
+        ITable t = getTable();
+        assertTrue(t.hasColumn(COL_THE_GEOM.toUpperCase(), Geometry.class));
+        assertTrue(t.hasColumn(COL_THE_GEOM.toLowerCase(), Geometry.class));
+        assertFalse(t.hasColumn(COL_THE_GEOM2, Geometry.class));
+        assertTrue(t.hasColumn(COL_THE_GEOM2, Point.class));
+        assertTrue(t.hasColumn(COL_ID, Integer.class));
+        assertFalse(t.hasColumn(COL_ID, Long.class));
+        assertTrue(t.hasColumn(COL_VALUE, Float.class));
+        assertTrue(t.hasColumn(COL_VALUE, Double.class));
+        assertFalse(t.hasColumn(COL_VALUE, Integer.class));
+        assertTrue(t.hasColumn(COL_MEANING));
+    }
+
+
+    /**
+     * Simple implementation of the {@link JdbcTable} abstract class for test purpose.
+     */
+    private class DummyJdbcTable extends JdbcTable{
+
+        private DummyJdbcTable(DataBaseType dataBaseType, JdbcDataSource jdbcDataSource, TableLocation tableLocation,
+                              Statement statement, String baseQuery) {
+            super(dataBaseType, jdbcDataSource, tableLocation, statement, baseQuery);
+        }
+
+        @Override protected ResultSet getResultSet() {
+            if(resultSet == null) {
+                try {
+                    resultSet = getStatement().executeQuery(getBaseQuery());
+                } catch (SQLException e) {
+                    LOGGER.error("Unable to execute the query '"+getBaseQuery()+"'.\n"+e.getLocalizedMessage());
+                    return null;
+                }
+                try {
+                    resultSet.beforeFirst();
+                } catch (SQLException e) {
+                    LOGGER.error("Unable to go before the first ResultSet row.\n" + e.getLocalizedMessage());
+                    return null;
+                }
+            }
+            return resultSet;}
+        @Override public ResultSetMetaData getMetadata() {return null;}
+        @Override public Object asType(Class clazz) {return null;}
+    }
+
+    /**
+     * Simple implementation of the {@link JdbcDataSource} abstract class for test purpose.
+     */
+    private static class DummyJdbcDataSource extends JdbcDataSource {
+
+        private DummyJdbcDataSource(Sql parent, DataBaseType databaseType) {
+            super(parent, databaseType);
+        }
+
+        @Override public ITable getTable(String tableName) {return null;}
+        @Override public ISpatialTable getSpatialTable(String tableName) {
+            try {
+                if(!JDBCUtilities.tableExists(connection,
+                        TableLocation.parse(tableName, getDataBaseType().equals(DataBaseType.H2GIS)).getTable())){
+                    return null;
+                }
+            } catch (SQLException e) {
+                return null;
+            }
+            Statement statement;
+            try {
+                statement = connection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);
+            } catch (SQLException e) {
+                return null;
+            }
+            String query = String.format("SELECT * FROM %s", tableName);
+            return new H2gisSpatialTable(new TableLocation(tableName), query, new StatementWrapper(statement, new ConnectionWrapper(connection)), this);}
+        @Override public Collection<String> getTableNames() {
+            try {
+                return JDBCUtilities.getTableNames(connection.getMetaData(), null, null, null, null);
+            } catch (SQLException e) {
+
+                }
+        return null;}
+        @Override public IDataSet getDataSet(String name) {return null;}
+    }
+}

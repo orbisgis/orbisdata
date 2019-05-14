@@ -61,15 +61,30 @@ public class ProcessMapper implements IProcessMapper {
     private Map<String, Object> results;
     private List<Link> linkingList;
     private Map<String, IProcess> processMap;
+    private Map<String, List<Map<String, IProcess>>> aliases;
 
     public ProcessMapper(){
         linkingList = new ArrayList<>();
+        aliases = new HashMap<>();
     }
 
     private String getUuidOfProcess(IProcess process){
         for(Map.Entry<String, IProcess> entry : processMap.entrySet()){
             if(entry.getValue().equals(process)){
                 return entry.getKey();
+            }
+        }
+        return null;
+    }
+
+    private String getAlias(String inputOrOutput, IProcess process){
+        for(Map.Entry<String, List<Map<String, IProcess>>> list : aliases.entrySet()){
+            for(Map<String, IProcess> map : list.getValue()) {
+                for (Map.Entry<String, IProcess> entry : map.entrySet()) {
+                    if (entry.getKey().equals(inputOrOutput) && entry.getValue().equals(process)) {
+                        return list.getKey();
+                    }
+                }
             }
         }
         return null;
@@ -114,6 +129,7 @@ public class ProcessMapper implements IProcessMapper {
                         }
                     }
                     if (!isBetween) {
+
                         inputs.put(key, value);
                         availableIn.add(new ProcessInput(key, uuid));
                     }
@@ -219,7 +235,14 @@ public class ProcessMapper implements IProcessMapper {
                 if(process.getInputs() != null) {
                     for (String in : process.getInputs().keySet()) {
                         //Try to get the data directly from the out of a process
-                        Object data = dataMap.get(in);
+                        String alias = getAlias(in, process);
+                        Object data;
+                        if(alias != null){
+                            data = dataMap.get(alias);
+                        }
+                        else {
+                            data = dataMap.get(in);
+                        }
                         //Get the link between the input 'in' and a process output if exists
                         for(Link link : linkingList){
                             if(uuid.equals(getUuidOfProcess(link.getInProcess())) &&
@@ -241,12 +264,17 @@ public class ProcessMapper implements IProcessMapper {
                     for(Map.Entry<ProcessOutput, ProcessInput> entry : inOutMap.entrySet()){
                         if(entry.getKey().getOutput().equals(key) &&
                                 entry.getKey().getProcessId().equals(uuid)){
-                            //dataMap.put(entry.getValue().getInput(), process.getResults().get(key));
                             isBetween = true;
                         }
                     }
                     if(!isBetween){
-                        results.put(key, process.getResults().get(key));
+                        String alias = getAlias(key, process);
+                        if(alias != null){
+                            results.put(alias, process.getResults().get(key));
+                        }
+                        else {
+                            results.put(key, process.getResults().get(key));
+                        }
                     }
                 }
             }
@@ -275,6 +303,17 @@ public class ProcessMapper implements IProcessMapper {
             link.setOut(entry.getKey(), entry.getValue());
             entry = it.next();
             link.setIn(entry.getKey(), entry.getValue());
+        }
+    }
+
+    @Override
+    public void alias(Map<String, IProcess> inputsOrOutputs, String alias) {
+        List<Map<String, IProcess>> list = aliases.get(alias);
+        if(list != null ) {
+            aliases.get(alias).add(inputsOrOutputs);
+        }
+        else {
+            aliases.put(alias, new ArrayList<>(Collections.singleton(inputsOrOutputs)));
         }
     }
 

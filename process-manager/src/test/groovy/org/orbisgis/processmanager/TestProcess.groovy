@@ -45,6 +45,7 @@ import org.orbisgis.processmanagerapi.IProcessManager
 
 import static org.junit.jupiter.api.Assertions.assertEquals
 import static org.junit.jupiter.api.Assertions.assertTrue
+import static org.junit.jupiter.api.Assertions.assertFalse
 
 class TestProcess {
 
@@ -212,9 +213,9 @@ class TestProcess {
      */
     @Test
     void testMapping4(){
-        def pA1 = processManager.factory("map1").create("pA", [inA1:String, inA2:String], [outA1:String], {inA1, inA2 ->[outA1:inA1+inA2]})
-        def pA2 = processManager.factory("map1").create("pA", [inA1:String, inA2:String], [outA1:String], {inA1, inA2 ->[outA1:inA1+inA2]})
-        def pA3 = processManager.factory("map1").create("pA", [inA1:String, inA2:String], [outA1:String], {inA1, inA2 ->[outA1:inA1+inA2]})
+        def pA1 = processManager.factory("map4").create("pA", [inA1:String, inA2:String], [outA1:String], {inA1, inA2 ->[outA1:inA1+inA2]})
+        def pA2 = processManager.factory("map4").create("pA", [inA1:String, inA2:String], [outA1:String], {inA1, inA2 ->[outA1:inA1+inA2]})
+        def pA3 = processManager.factory("map4").create("pA", [inA1:String, inA2:String], [outA1:String], {inA1, inA2 ->[outA1:inA1+inA2]})
 
         def mapper = new ProcessMapper()
         mapper.link(outA1:pA1, inA1:pA2)
@@ -223,6 +224,43 @@ class TestProcess {
         mapper.link(outA1:pA2, inA2:pA3)
         assertTrue mapper.execute([inA1: "t", inA2: "a"])
         assertEquals "tatatata", mapper.getResults().outA1
+    }
+
+    /**
+     *  --> -----  |--> ----
+     *     |  pA |-|   | pB |--->
+     *  --> -----  |--> ----
+     *
+     *  --> -----  |--> ----
+     *     |  pA |-|   | pB |--->
+     *  --> -----  |--> ----
+     */
+    @Test
+    void testMapping5(){
+        def pA1 = processManager.factory("map5").create("pA", [inA1:String, inA2:String], [outA1:String], {inA1, inA2 ->[outA1:inA1+inA2]})
+        def pA2 = processManager.factory("map5").create("pA", [inA1:String, inA2:String], [outA1:String], {inA1, inA2 ->[outA1:inA1+inA2]})
+        def pB1 = processManager.factory("map5").create("pB", [inB1:String, inB2:String], [outB1:String], {inB1, inB2 ->[outB1:inB1+" or "+inB2]})
+        def pB2 = processManager.factory("map5").create("pB", [inB1:String, inB2:String], [outB1:String], {inB1, inB2 ->[outB1:inB1+" or "+inB2]})
+
+        def mapper = new ProcessMapper()
+
+        mapper.link(outA1:pA1, inB1:pB1)
+        mapper.link(outA1:pA1, inB2:pB1)
+        mapper.link(outA1:pA2, inB1:pB2)
+        mapper.link(outA1:pA2, inB2:pB2)
+
+        mapper.alias(inA1:pA1, "commonInput")
+        mapper.alias(inA1:pA2, "commonInput")
+        mapper.alias(inA2:pA1, "inputD")
+        mapper.alias(inA2:pA2, "inputK")
+
+        mapper.alias(outB1:pB1, "outD")
+        mapper.alias(outB1:pB2, "outK")
+
+        assertTrue mapper.execute([inputD: "D", inputK: "K", commonInput: "common"])
+        assertFalse mapper.getResults().containsKey("outB1")
+        assertEquals "commonD or commonD", mapper.getResults().outD
+        assertEquals "commonK or commonK", mapper.getResults().outK
     }
 }
 

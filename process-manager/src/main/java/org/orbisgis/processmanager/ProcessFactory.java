@@ -106,10 +106,12 @@ public class ProcessFactory implements IProcessFactory {
     public IProcess create(String title, String description, String[] keywords, Map<String, Class> inputs,
                                   Map<String, Class> outputs, String version, Closure closure) {
         if(!isLocked()) {
-            IProcess process = processList.stream()
+            //TODO implements a isSame methods in IProcess
+            IProcess process = null;
+            /*IProcess process = processList.stream()
                     .filter(iProcess -> iProcess.getIdentifier().equals(title))
                     .findAny()
-                    .orElse(null);
+                    .orElse(null);*/
             if(process == null) {
                 process = new Process(title, description, keywords, inputs, outputs, version, closure, caster);
                 processList.add(process);

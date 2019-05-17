@@ -211,17 +211,6 @@ public class JdbcTableTest {
     }
 
     /**
-     * Test the {@link JdbcTable#setProperty(String, Object)} method.
-     */
-    @Test
-    public void testSetProperty(){
-        String propertyKey = "key";
-        String propertyValue = "value";
-        IJdbcTable table = getTable();
-        table.setProperty(propertyKey, propertyValue);
-    }
-
-    /**
      * Test the {@link JdbcTable#getMetaClass()} method.
      */
     @Test

@@ -123,8 +123,7 @@ public class IJdbcDataSourceTest {
     private class DummyDataSource implements IJdbcDataSource {
         private Object prop1;
         private Object prop2;
-        private HashMap map;
-        private DummyDataSource(){this.map = new HashMap();}
+        private DummyDataSource(){}
         public boolean getNoArg(){return true;}
         public Object[] getArrayMethod(Object[] array){return array;}
         public Object[] getParametersMethod(String param1, Double param2){return new Object[]{param1, param2};}
@@ -151,7 +150,6 @@ public class IJdbcDataSourceTest {
         @Override public ITable link(String filePath, String tableName) {return null;}
         @Override public ITable link(String filePath, boolean delete) {return null;}
         @Override public ITable link(String filePath) {return null;}
-        @Override public Map<String, Object> getPropertyMap() {return map;}
         @Override public MetaClass getMetaClass() {return InvokerHelper.getMetaClass(DummyDataSource.class);}
         @Override public void setMetaClass(MetaClass metaClass) {/*Does nothing*/}
         @Override public IDataSet getDataSet(String name) {return null;}

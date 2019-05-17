@@ -59,7 +59,6 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -72,27 +71,23 @@ import java.util.Map;
 public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, ISelectBuilder {
     private static final Logger LOGGER = LoggerFactory.getLogger(JdbcDataSource.class);
 
-    private Map<String, Object> propertyMap;
     private MetaClass metaClass;
     private DataBaseType databaseType;
 
     public JdbcDataSource(Sql parent, DataBaseType databaseType) {
         super(parent);
-        propertyMap = new HashMap<>();
         this.metaClass = InvokerHelper.getMetaClass(getClass());
         this.databaseType = databaseType;
     }
 
     public JdbcDataSource(DataSource dataSource, DataBaseType databaseType) {
         super(dataSource);
-        propertyMap = new HashMap<>();
         this.metaClass = InvokerHelper.getMetaClass(getClass());
         this.databaseType = databaseType;
     }
 
     public JdbcDataSource(Connection connection, DataBaseType databaseType) {
         super(connection);
-        propertyMap = new HashMap<>();
         this.metaClass = InvokerHelper.getMetaClass(getClass());
         this.databaseType = databaseType;
     }
@@ -173,12 +168,6 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, ISe
     public void setMetaClass(MetaClass metaClass) {
         this.metaClass = metaClass;
     }
-
-    @Override
-    public Map<String, Object> getPropertyMap(){
-        return propertyMap;
-    }
-
 
     @Override
     public boolean save(String tableName, String filePath) {

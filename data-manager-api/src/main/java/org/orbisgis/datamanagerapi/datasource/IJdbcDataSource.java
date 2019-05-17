@@ -233,13 +233,6 @@ public interface IJdbcDataSource extends IDataSource, GroovyObject {
      */
     ITable link(String filePath);
 
-    /**
-     * Return the {@link Map} of the properties.
-     *
-     * @return {@link Map} of the properties.
-     */
-    Map<String, Object> getPropertyMap();
-
     @Override
     default Object invokeMethod(String name, Object args) {
         try {

@@ -71,8 +71,6 @@ public abstract class JdbcTable implements IJdbcTable {
     private JdbcDataSource jdbcDataSource;
     /** Table location */
     private TableLocation tableLocation;
-    /** Map of the properties */
-    private Map<String, Object> propertyMap;
     /** Statement */
     private Statement statement;
     /** Base SQL query for the creation of the ResultSet */
@@ -95,7 +93,6 @@ public abstract class JdbcTable implements IJdbcTable {
         this.dataBaseType = dataBaseType;
         this.jdbcDataSource = jdbcDataSource;
         this.tableLocation = tableLocation;
-        this.propertyMap = new HashMap<>();
         this.statement = statement;
         this.baseQuery = baseQuery;
     }
@@ -133,11 +130,6 @@ public abstract class JdbcTable implements IJdbcTable {
     @Override
     public DataBaseType getDbType() {
         return dataBaseType;
-    }
-
-    @Override
-    public void setProperty(String propertyName, Object newValue) {
-        propertyMap.put(propertyName, newValue);
     }
 
     @Override

@@ -46,6 +46,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 /**
  * Implementation of the IProcess interface dedicated to the local creation and execution of process (no link with
@@ -113,7 +114,7 @@ public class Process implements IProcess {
         this.closure = closure;
         this.resultMap = new HashMap<>();
         this.caster = caster;
-        this.identifier = title;
+        this.identifier = UUID.randomUUID().toString();
         this.metaClass = InvokerHelper.getMetaClass(getClass());
     }
 

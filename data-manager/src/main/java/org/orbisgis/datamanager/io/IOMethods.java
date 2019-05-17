@@ -84,7 +84,9 @@ public class IOMethods {
                 driverFunction = new DBFDriverFunction();
             }
             else if (FileUtil.isExtensionWellFormated(fileToSave, "kml") ||FileUtil.isExtensionWellFormated(fileToSave, "kmz")) {
-                LOGGER.warn("Encoding is not yet supported for this file format");
+                if( encoding != null && !encoding.isEmpty()) {
+                    LOGGER.warn("Encoding is not yet supported for this file format");
+                }
                 KMLWriterDriver driver = new KMLWriterDriver(connection, isH2?tableName.toUpperCase():tableName, fileToSave);
                 driver.write(new EmptyProgressVisitor());
                 return true;
@@ -134,7 +136,9 @@ public class IOMethods {
                 driverFunction = new DBFDriverFunction();
             }
             else if (FileUtil.isExtensionWellFormated(fileToImport, "tsv")) {
-                LOGGER.warn("Encoding is not yet supported for this file format");
+                if( encoding != null && !encoding.isEmpty()) {
+                    LOGGER.warn("Encoding is not yet supported for this file format");
+                }
                 encoding = null;
                 delete = false;
                 driverFunction = new TSVDriverFunction();
@@ -142,12 +146,16 @@ public class IOMethods {
             else if (FileUtil.isExtensionWellFormated(fileToImport, "osm") ||
                         FileUtil.isExtensionWellFormated(fileToImport, "gz") ||
                         FileUtil.isExtensionWellFormated(fileToImport, "bz")) {
-                LOGGER.warn("Encoding is not yet supported for this file format");
+                if( encoding != null && !encoding.isEmpty()) {
+                    LOGGER.warn("Encoding is not yet supported for this file format");
+                }
                 encoding = null;
                 driverFunction = new OSMDriverFunction();
             }
             else if (FileUtil.isExtensionWellFormated(fileToImport, "gpx")) {
-                LOGGER.warn("Encoding is not yet supported for this file format");
+                if( encoding != null && !encoding.isEmpty()) {
+                    LOGGER.warn("Encoding is not yet supported for this file format");
+                }
                 encoding = null;
                 driverFunction = new GPXDriverFunction();
             }

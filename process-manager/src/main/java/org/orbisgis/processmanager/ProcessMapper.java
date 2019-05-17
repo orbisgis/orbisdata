@@ -45,11 +45,13 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 /**
- * Implementation of IProcessMapper.
+ * Implementation of IProcessMapper. This class should not be used will using a IProcess executing and mapping
+ * processes is easier.
  *
  * @author Erwan Bocher (CNRS)
  * @author Sylvain PALOMINOS (UBS 2019)
  */
+@Deprecated
 public class ProcessMapper implements IProcessMapper {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ProcessMapper.class);

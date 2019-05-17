@@ -37,6 +37,10 @@
 package org.orbisgis.datamanagerapi.datasource;
 
 import groovy.lang.MetaClass;
+import groovy.lang.MissingMethodException;
+import groovy.lang.MissingPropertyException;
+import org.codehaus.groovy.runtime.InvokerHelper;
+import org.codehaus.groovy.runtime.InvokerInvocationException;
 import org.junit.jupiter.api.Test;
 import org.orbisgis.datamanagerapi.dataset.IDataSet;
 import org.orbisgis.datamanagerapi.dataset.ISpatialTable;
@@ -77,9 +81,9 @@ public class IJdbcDataSourceTest {
         assertEquals("string", ds.invokeMethod("parameterMethod", new Object[]{"string"}));
         assertEquals("string", ds.invokeMethod("parameterMethod", "string"));
 
-        assertNull(ds.invokeMethod("setProperty", new String[]{"tata"}));
+        assertThrows(MissingMethodException.class, () -> ds.invokeMethod("setProperty", new String[]{"tata"}));
         assertNull(ds.invokeMethod("getProperty", null));
-        assertNull(ds.invokeMethod("notAMethod", null));
+        assertThrows(MissingMethodException.class, () -> ds.invokeMethod("notAMethod", null));
     }
 
     /**
@@ -94,24 +98,31 @@ public class IJdbcDataSourceTest {
 
         assertEquals("value1", ds.getProperty("prop1"));
         assertEquals("value2", ds.getProperty("prop2"));
-        assertNull(ds.getProperty("databaseType"));
+        assertNull(ds.getProperty(null));
+        assertThrows(MissingPropertyException.class, () -> ds.getProperty("databaseType"));
     }
 
     /**
      * Test the {@link IJdbcDataSource} methods with {@link Exception} thrown.
      */
     @Test
-    public void testSQLException() {
+    public void testMethodThrowingException() {
         IJdbcDataSource ds = new IJdbcDataSourceTest.DummyDataSource();
-
-        assertNull(ds.invokeMethod("dupMethod", null));
+        assertThrows(InvokerInvocationException.class, () -> ds.invokeMethod("dupMethod", null));
     }
+
+    /**
+     * Simple implementation of Exception
+     */
+    private class DummyException extends Exception{}
 
 
     /**
      * Simple implementation of the {@link IJdbcDataSource} interface.
      */
     private class DummyDataSource implements IJdbcDataSource {
+        private Object prop1;
+        private Object prop2;
         private HashMap map;
         private DummyDataSource(){this.map = new HashMap();}
         public boolean getNoArg(){return true;}
@@ -119,7 +130,7 @@ public class IJdbcDataSourceTest {
         public Object[] getParametersMethod(String param1, Double param2){return new Object[]{param1, param2};}
         public Object[] getParametersMethod(Object param1, Object param2){return new Object[]{param1, param2};}
         public String getParameterMethod(String param1){return param1;}
-        public void dupMethod() throws IllegalAccessException {throw new IllegalAccessException();}
+        public void dupMethod() throws DummyException {throw new DummyException();}
 
         @Override public void close() {/*Does nothing*/}
         @Override public ITable getTable(String tableName) { return null;}
@@ -141,7 +152,7 @@ public class IJdbcDataSourceTest {
         @Override public ITable link(String filePath, boolean delete) {return null;}
         @Override public ITable link(String filePath) {return null;}
         @Override public Map<String, Object> getPropertyMap() {return map;}
-        @Override public MetaClass getMetaClass() {return null;}
+        @Override public MetaClass getMetaClass() {return InvokerHelper.getMetaClass(DummyDataSource.class);}
         @Override public void setMetaClass(MetaClass metaClass) {/*Does nothing*/}
         @Override public IDataSet getDataSet(String name) {return null;}
     }

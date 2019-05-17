@@ -38,6 +38,10 @@ package org.orbisgis.datamanagerapi.dataset;
 
 import groovy.lang.Closure;
 import groovy.lang.MetaClass;
+import groovy.lang.MissingMethodException;
+import groovy.lang.MissingPropertyException;
+import org.codehaus.groovy.runtime.InvokerHelper;
+import org.codehaus.groovy.runtime.InvokerInvocationException;
 import org.h2gis.utilities.TableLocation;
 import org.junit.jupiter.api.Test;
 import org.orbisgis.datamanagerapi.dsl.IConditionOrOptionBuilder;
@@ -106,8 +110,8 @@ public class IJdbcTableTest {
         assertEquals("string", table.invokeMethod("parameterMethod", "string"));
         assertEquals(RowSetMetaDataImpl.class, table.invokeMethod("metadata", null).getClass());
 
-        assertNull(table.invokeMethod("getLocation", new String[]{"tata", "toto"}));
-        assertNull(table.invokeMethod("location", new String[]{"tata", "toto"}));
+        assertThrows(MissingMethodException.class, () -> table.invokeMethod("getLocation", new String[]{"tata", "toto"}));
+        assertThrows(MissingMethodException.class, () -> table.invokeMethod("location", new String[]{"tata", "toto"}));
         assertNull(table.invokeMethod("getPrivateMethod", null));
         assertNull(table.invokeMethod("privateMethod", null));
     }
@@ -118,11 +122,23 @@ public class IJdbcTableTest {
     @Test
     public void testGetProperty(){
         IJdbcTable table = new DummyJdbcTable(DataBaseType.H2GIS, LOCATION, true);
-        assertEquals(table.getLocation(), table.getProperty("getLocation"));
+        assertThrows(MissingPropertyException.class, () -> table.getProperty("getLocation"));
         assertEquals(table.getLocation(), table.getProperty("location"));
         assertEquals(RowSetMetaDataImpl.class, table.getProperty("meta").getClass());
         assertArrayEquals(new Object[]{"string", 0.2}, (Object[])table.getProperty("data"));
-        assertNull(table.getProperty("databaseType"));
+        assertEquals("tutu", table.getProperty("privateData"));
+        assertNull(table.getProperty(null));
+    }
+
+    /**
+     * Test the {@link IJdbcTable#setProperty(String, Object)} method.
+     */
+    @Test
+    public void testSetProperty(){
+        IJdbcTable table = new DummyJdbcTable(DataBaseType.H2GIS, LOCATION, true);
+        assertThrows(MissingPropertyException.class, () -> table.setProperty("getLocation", "tata"));
+        table.setProperty("privateData", "toto");
+        assertEquals("toto", table.getProperty("privateData"));
     }
 
     /**
@@ -177,10 +193,15 @@ public class IJdbcTableTest {
         assertFalse(it.hasNext());
         assertNotNull(it.next());
 
-        assertNull(table.getProperty("data"));
+        assertNotNull(table.getProperty("data"));
 
-        assertNull(table.invokeMethod("dupMethod", null));
+        assertThrows(InvokerInvocationException.class, () -> table.invokeMethod("dupMethod", null));
     }
+
+    /**
+     * Simple implementation of Exception
+     */
+    private class DummyException extends Exception{}
 
     /**
      * Simple implementation of the {@link IJdbcTable} interface.
@@ -199,6 +220,8 @@ public class IJdbcTableTest {
         private boolean isIterable;
         /** True if throws exception, false otherwise. */
         private boolean sqlException = false;
+        /** Private data. */
+        private Object privateData = "tutu";
 
         /**
          * Main constructor.
@@ -234,8 +257,7 @@ public class IJdbcTableTest {
         @Override public boolean isSpatial() {return false;}
         @Override public boolean isLinked() {return false;}
         @Override public boolean isTemporary() {return false;}
-        @Override public void setProperty(String s, Object o) {/*Does nothing*/}
-        @Override public MetaClass getMetaClass() {return null;}
+        @Override public MetaClass getMetaClass() {return InvokerHelper.getMetaClass(DummyJdbcTable.class);}
         @Override public void setMetaClass(MetaClass metaClass) {/*Does nothing*/}
         @Override public boolean next() throws SQLException {
             if(!sqlException) {

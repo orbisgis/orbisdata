@@ -416,8 +416,7 @@ class GroovyH2GISTest {
         h2GIS.executeScript("target/myscript.sql", [BINIOU:'h2gis', DISTANCE:10])
         def concat = ""
         h2GIS.getSpatialTable "super" eachRow { row ->
-            concat += "$row.id $row.the_geom $row.geometry\n"
-            assertNull row.id
+            concat += "$row.the_geom $row.geometry\n"
             assertTrue "$row.the_geom".startsWith("POLYGON ((")
             assertTrue "$row.geometry".startsWith("POLYGON ((")
         }

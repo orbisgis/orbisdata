@@ -156,13 +156,14 @@ public interface IJdbcTable extends ITable, GroovyObject, ResultSet, IWhereBuild
         if(propertyName.equals(META_PROPERTY)){
             return getMetadata();
         }
-        try {
-            Object obj = getObject(propertyName);
-            if(obj != null){
-                return obj;
+        if(getColumnNames()!= null &&
+                (getColumnNames().contains(propertyName.toLowerCase()) || getColumnNames().contains(propertyName.toUpperCase()))
+                || "id".equals(propertyName)) {
+            try {
+                return getObject(propertyName);
+            } catch (SQLException e) {
+                LOGGER.debug("Unable to find the column '" + propertyName + "'.\n" + e.getLocalizedMessage());
             }
-        } catch (SQLException e) {
-            LOGGER.debug("Unable to find the column '" + propertyName + "'.\n" + e.getLocalizedMessage());
         }
         return getMetaClass().getProperty(this, propertyName);
     }

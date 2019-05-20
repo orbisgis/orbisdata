@@ -509,4 +509,28 @@ class GroovyH2GISTest {
         def table = h2GIS.link('target/externalFile.shp', 'super',true) as ISpatialTable
         assert (table.geometryTypes.toString()== "[THE_GEOM:MULTIPOINT]")
     }
+    
+    @Test
+    void importOSMFile() {
+        H2GIS h2GIS = H2GIS.open([databaseName: './target/loadH2GIS'])
+        String osmFile = new File(getClass().getResource("saint_jean.osm").toURI()).absolutePath
+        h2GIS.execute("DROP TABLE IF EXISTS  OSM_TAG, OSM_NODE, OSM_NODE_TAG, OSM_WAY,OSM_WAY_TAG, OSM_WAY_NODE, OSM_RELATION, OSM_RELATION_TAG, OSM_NODE_MEMBER, OSM_WAY_MEMBER, OSM_RELATION_MEMBER;");
+
+        h2GIS.load(osmFile, "OSM")
+        h2GIS.load(osmFile, "OSM", true)
+
+        h2GIS.eachRow "SELECT count(TABLE_NAME) as nb FROM INFORMATION_SCHEMA.TABLES where TABLE_NAME LIKE 'OSM%'",
+                { row ->
+                    assertEquals(11,row.nb)
+                }
+
+        // Check number
+        h2GIS.eachRow "SELECT count(ID_NODE) as nb FROM OSM_NODE",{ row ->
+            assertTrue(row.nb == 3243) }
+
+
+        h2GIS.eachRow "SELECT count(ID_RELATION) as nb FROM OSM_RELATION", { row ->
+            assertTrue(row.nb == 3) }
+
+    }
 }

@@ -513,24 +513,27 @@ class GroovyH2GISTest {
     @Test
     void importOSMFile() {
         H2GIS h2GIS = H2GIS.open([databaseName: './target/loadH2GIS'])
-        String osmFile = new File(getClass().getResource("saint_jean.osm").toURI()).absolutePath
-        h2GIS.execute("DROP TABLE IF EXISTS  OSM_TAG, OSM_NODE, OSM_NODE_TAG, OSM_WAY,OSM_WAY_TAG, OSM_WAY_NODE, OSM_RELATION, OSM_RELATION_TAG, OSM_NODE_MEMBER, OSM_WAY_MEMBER, OSM_RELATION_MEMBER;");
+        URL url = getClass().getResource("osm_test.osm")
+        assertNotNull url
 
-        h2GIS.load(osmFile, "OSM")
-        h2GIS.load(osmFile, "OSM", true)
+        String osmFile = new File(url.toURI()).absolutePath
+        h2GIS.execute("DROP TABLE IF EXISTS  OSM_TAG, OSM_NODE, OSM_NODE_TAG, OSM_WAY,OSM_WAY_TAG, OSM_WAY_NODE, OSM_RELATION, OSM_RELATION_TAG, OSM_NODE_MEMBER, OSM_WAY_MEMBER, OSM_RELATION_MEMBER;")
+
+        assertNull h2GIS.load(osmFile, "OSM")
+        assertNull h2GIS.load(osmFile, "OSM", true)
 
         h2GIS.eachRow "SELECT count(TABLE_NAME) as nb FROM INFORMATION_SCHEMA.TABLES where TABLE_NAME LIKE 'OSM%'",
                 { row ->
-                    assertEquals(11,row.nb)
+                    assertEquals 11,row.nb
                 }
 
         // Check number
         h2GIS.eachRow "SELECT count(ID_NODE) as nb FROM OSM_NODE",{ row ->
-            assertTrue(row.nb == 3243) }
-
-
+            assertEquals 8, row.nb }
+        h2GIS.eachRow "SELECT count(ID_WAY) as nb FROM OSM_WAY",{ row ->
+            assertEquals 3, row.nb }
         h2GIS.eachRow "SELECT count(ID_RELATION) as nb FROM OSM_RELATION", { row ->
-            assertTrue(row.nb == 3) }
+            assertEquals 2, row.nb }
 
     }
 }

@@ -125,7 +125,6 @@ public class IOMethods {
             }
             else if (FileUtil.isExtensionWellFormated(fileToImport, "geojson")) {
                 dataSource.execute("DROP TABLE IF EXISTS " + tableName);
-                delete=false;
                 GeoJsonReaderDriver driver = new GeoJsonReaderDriver(connection, fileToImport);
                 driver.read(new EmptyProgressVisitor(), tableName);
                 return true;
@@ -151,7 +150,6 @@ public class IOMethods {
                 }
                 encoding = null;
                 driverFunction = new OSMDriverFunction();
-
             }
             else if (FileUtil.isExtensionWellFormated(fileToImport, "gpx")) {
                 if( encoding != null && !encoding.isEmpty()) {
@@ -164,9 +162,7 @@ public class IOMethods {
                 LOGGER.error("Unsupported file format");
             }
             if(driverFunction != null){
-                if(!(driverFunction instanceof OSMDriverFunction)) {
-                    dataSource.execute("DROP TABLE IF EXISTS " + tableName);
-                }
+                dataSource.execute("DROP TABLE IF EXISTS " + tableName);
                 if(encoding != null) {
                     driverFunction.importFile(connection, tableName, fileToImport, new EmptyProgressVisitor(), encoding);
                 }

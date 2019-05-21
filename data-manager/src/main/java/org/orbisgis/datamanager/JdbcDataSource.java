@@ -54,9 +54,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.sql.DataSource;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Map;
@@ -135,27 +133,57 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, ISe
         File file = URIUtilities.fileFromString(fileName);
         try {
             if (FileUtil.isExtensionWellFormated(file, "sql")) {
-                SimpleTemplateEngine engine = null;
-                if (bindings != null && !bindings.isEmpty()) {
-                    engine = new SimpleTemplateEngine();
+                executeScript(new FileInputStream(file), bindings);
+            }
+        } catch (IOException e) {
+            LOGGER.error("Unable to read the SQL file.\n" + e.getLocalizedMessage());
+        }
+    }
+
+    /**
+     * This method is used to execute a SQL script
+     *
+     * @param stream Input stream of the sql file
+     */
+    public void executeScript(InputStream stream) {
+        executeScript(stream, null);
+    }
+
+    /**
+     * This method is used to execute a SQL file that contains parametrized text
+     * Parametrized text must be expressed with $value or ${value}
+     *
+     * @param stream Input stream of the sql file
+     * @param bindings the map between parametrized text and its value. eg.
+     * ["value", "myvalue"] to replace ${value} by myvalue
+     */
+    public void executeScript(InputStream stream, Map<String, String> bindings) {
+        SimpleTemplateEngine engine = null;
+        if (bindings != null && !bindings.isEmpty()) {
+            engine = new SimpleTemplateEngine();
+        }
+        ScriptReader scriptReader = new ScriptReader(new InputStreamReader(stream));
+        scriptReader.setSkipRemarks(true);
+        while (true) {
+            String commandSQL = scriptReader.readStatement();
+            if (commandSQL == null) {
+                break;
+            }
+            if (!commandSQL.isEmpty()) {
+                if (engine != null) {
+                    try {
+                        commandSQL = engine.createTemplate(commandSQL).make(bindings).toString();
+                    } catch (ClassNotFoundException | IOException e) {
+                        LOGGER.error("Unable to create the template for the Sql command '" + commandSQL + "'.\n" +
+                                e.getLocalizedMessage());
+                    }
                 }
-                ScriptReader scriptReader = new ScriptReader(new FileReader(file));
-                scriptReader.setSkipRemarks(true);
-                while (true) {
-                    String commandSQL = scriptReader.readStatement();
-                    if (commandSQL == null) {
-                        break;
-                    }
-                    if (!commandSQL.isEmpty()) {
-                        if (engine != null) {
-                            commandSQL = engine.createTemplate(commandSQL).make(bindings).toString();
-                        }
-                        execute(commandSQL);
-                    }
+                try {
+                    execute(commandSQL);
+                } catch (SQLException e) {
+                    LOGGER.error("Unable to execute the Sql command '" + commandSQL + "'.\n" + e.getLocalizedMessage());
                 }
             }
-        } catch (SQLException | IOException | ClassNotFoundException e) {
-            LOGGER.error("Unable to read the SQL file.\n" + e.getLocalizedMessage());
         }
     }
 

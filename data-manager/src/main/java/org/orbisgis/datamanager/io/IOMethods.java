@@ -140,7 +140,6 @@ public class IOMethods {
                     LOGGER.warn("Encoding is not yet supported for this file format");
                 }
                 encoding = null;
-                delete = false;
                 driverFunction = new TSVDriverFunction();
             }
             else if (FileUtil.isExtensionWellFormated(fileToImport, "osm") ||

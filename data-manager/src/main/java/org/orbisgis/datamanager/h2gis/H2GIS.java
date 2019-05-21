@@ -217,6 +217,14 @@ public class H2GIS extends JdbcDataSource {
             return null;
         }
         String query = String.format("SELECT * FROM %s", tableName);
+        try {
+            if(!SFSUtilities.getGeometryFields(getConnection(), new TableLocation(tableName)).isEmpty()) {
+                return new H2gisSpatialTable(new TableLocation(tableName), query, statement, this);
+            }
+        } catch (SQLException e) {
+            LOGGER.error("Unable to check if table '" + tableName + "' contains geometric fields.\n" +
+                    e.getLocalizedMessage());
+        }
         return new H2gisTable(new TableLocation(tableName), query, statement, this);
     }
 
@@ -239,7 +247,16 @@ public class H2GIS extends JdbcDataSource {
             return null;
         }
         String query = String.format("SELECT * FROM %s", tableName);
-        return new H2gisSpatialTable(new TableLocation(tableName), query, statement, this);
+        try {
+            if(!SFSUtilities.getGeometryFields(getConnection(), new TableLocation(tableName)).isEmpty()) {
+                return new H2gisSpatialTable(new TableLocation(tableName), query, statement, this);
+            }
+        } catch (SQLException e) {
+            LOGGER.error("Unable to check if table '" + tableName + "' contains geometric fields.\n" +
+                    e.getLocalizedMessage());
+        }
+        LOGGER.error("The table '" + tableName + "' is not a spatial table.");
+        return null;
     }
 
     @Override

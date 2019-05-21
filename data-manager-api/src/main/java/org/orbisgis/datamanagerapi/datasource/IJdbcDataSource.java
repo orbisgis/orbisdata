@@ -68,7 +68,8 @@ public interface IJdbcDataSource extends IDataSource, GroovyObject {
     void close();
 
     /**
-     * Return the {@link ITable} contained by the database with the given name.
+     * Return the {@link ITable} contained by the database with the given name. If the table contains a geometric
+     * field, return a ISpatialTable.
      *
      * @param tableName Name of the requested table.
      *
@@ -77,11 +78,13 @@ public interface IJdbcDataSource extends IDataSource, GroovyObject {
     ITable getTable(String tableName);
 
     /**
-     * Return a {@link ISpatialTable} contained by the database with the given name.
+     * Return a {@link ISpatialTable} contained by the database with the given name. If the table doesn't contains a
+     * geometric field, return null;
      *
      * @param tableName Name of the requested table.
      *
-     * @return The {@link ISpatialTable} with the given name or null if no table is found.
+     * @return The {@link ISpatialTable} with the given name or null if no table is found or if the table doesn't
+     * contains a geometric field.
      */
     ISpatialTable getSpatialTable(String tableName);
 

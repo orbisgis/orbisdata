@@ -262,7 +262,7 @@ class GroovyH2GISTest {
         h2GIS.save("h2gis","target/h2gis_imported.csv")
         h2GIS.load("target/h2gis_imported.csv")
         def concat = ""
-        h2GIS.getSpatialTable "h2gis_imported" eachRow { row ->
+        h2GIS.getTable "h2gis_imported" eachRow { row ->
             concat += "$row.id $row.the_geom\n" }
         assertEquals("1 POINT (10 10)\n2 POINT (1 1)\n", concat)
     }

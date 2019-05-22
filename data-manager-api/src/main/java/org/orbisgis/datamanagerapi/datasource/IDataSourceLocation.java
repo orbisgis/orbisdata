@@ -36,29 +36,21 @@
  */
 package org.orbisgis.datamanagerapi.datasource;
 
-import org.orbisgis.datamanagerapi.dataset.IDataSet;
-
 /**
- * Raw source of data.
+ * Location of the IDataSource which can be converted in several type.
  *
  * @author Erwan Bocher (CNRS)
  * @author Sylvain PALOMINOS (UBS 2018-2019)
  */
-public interface IDataSource {
+public interface IDataSourceLocation {
 
     /**
-     * Return the {@link IDataSet} implementation corresponding to the given name.
+     * Cast the {@link IDataSourceLocation} into the given type
      *
-     * @param name Name of the {@link IDataSet}.
+     * @param type Type used for the cast
+     * @param <T> Class used for the cast
      *
-     * @return The implementation of {@link IDataSet} corresponding to the given name.
+     * @return The {@link IDataSourceLocation} into the given type
      */
-    IDataSet getDataSet(String name);
-
-    /**
-     * Return the location of the {@link IDataSourceLocation}
-     *
-     * @return The location of the {@link IDataSourceLocation}
-     */
-    IDataSourceLocation getLocation();
+    <T> T asType(Class<T> type);
 }

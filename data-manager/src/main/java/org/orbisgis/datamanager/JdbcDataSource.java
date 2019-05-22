@@ -47,6 +47,7 @@ import org.orbisgis.datamanager.dsl.FromBuilder;
 import org.orbisgis.datamanager.io.IOMethods;
 import org.orbisgis.datamanagerapi.dataset.DataBaseType;
 import org.orbisgis.datamanagerapi.dataset.ITable;
+import org.orbisgis.datamanagerapi.datasource.IDataSourceLocation;
 import org.orbisgis.datamanagerapi.datasource.IJdbcDataSource;
 import org.orbisgis.datamanagerapi.dsl.IFromBuilder;
 import org.orbisgis.datamanagerapi.dsl.ISelectBuilder;
@@ -286,6 +287,17 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, ISe
             return load(filePath,tableName, null, delete);
         } else {
             LOGGER.error("Unsupported file characters");
+        }
+        return null;
+    }
+
+    @Override
+    public IDataSourceLocation getLocation(){
+        try {
+            String url = this.getConnection().getMetaData().getURL();
+            return new DataSourceLocation(url.substring(url.lastIndexOf(":") + 1));
+        } catch (SQLException e) {
+            LOGGER.error("Unable to get the connection metadata.\n" + e.getLocalizedMessage());
         }
         return null;
     }

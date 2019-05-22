@@ -47,6 +47,7 @@ import org.orbisgis.datamanager.dsl.FromBuilder;
 import org.orbisgis.datamanager.io.IOMethods;
 import org.orbisgis.datamanagerapi.dataset.DataBaseType;
 import org.orbisgis.datamanagerapi.dataset.ITable;
+import org.orbisgis.datamanagerapi.datasource.IDataSourceLocation;
 import org.orbisgis.datamanagerapi.datasource.IJdbcDataSource;
 import org.orbisgis.datamanagerapi.dsl.IFromBuilder;
 import org.orbisgis.datamanagerapi.dsl.ISelectBuilder;
@@ -112,23 +113,7 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, ISe
         return new FromBuilder(query.toString(), this);
     }
 
-    /**
-     * This method is used to execute a SQL file
-     *
-     * @param fileName the sql file
-     */
-    public void executeScript(String fileName) {
-        executeScript(fileName, null);
-    }
-
-    /**
-     * This method is used to execute a SQL file that contains parametrized text
-     * Parametrized text must be expressed with $value or ${value}
-     *
-     * @param fileName the sql file
-     * @param bindings the map between parametrized text and its value. eg.
-     * ["value", "myvalue"] to replace ${value} by myvalue
-     */
+    @Override
     public void executeScript(String fileName, Map<String, String> bindings) {
         File file = URIUtilities.fileFromString(fileName);
         try {
@@ -140,23 +125,7 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, ISe
         }
     }
 
-    /**
-     * This method is used to execute a SQL script
-     *
-     * @param stream Input stream of the sql file
-     */
-    public void executeScript(InputStream stream) {
-        executeScript(stream, null);
-    }
-
-    /**
-     * This method is used to execute a SQL file that contains parametrized text
-     * Parametrized text must be expressed with $value or ${value}
-     *
-     * @param stream Input stream of the sql file
-     * @param bindings the map between parametrized text and its value. eg.
-     * ["value", "myvalue"] to replace ${value} by myvalue
-     */
+    @Override
     public void executeScript(InputStream stream, Map<String, String> bindings) {
         SimpleTemplateEngine engine = null;
         if (bindings != null && !bindings.isEmpty()) {
@@ -286,6 +255,17 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, ISe
             return load(filePath,tableName, null, delete);
         } else {
             LOGGER.error("Unsupported file characters");
+        }
+        return null;
+    }
+
+    @Override
+    public IDataSourceLocation getLocation(){
+        try {
+            String url = this.getConnection().getMetaData().getURL();
+            return new DataSourceLocation(url.substring(url.lastIndexOf(":") + 1));
+        } catch (SQLException e) {
+            LOGGER.error("Unable to get the connection metadata.\n" + e.getLocalizedMessage());
         }
         return null;
     }

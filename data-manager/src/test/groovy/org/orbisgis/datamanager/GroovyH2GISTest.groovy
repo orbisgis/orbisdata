@@ -42,7 +42,6 @@ import org.locationtech.jts.geom.Point
 import org.orbisgis.datamanager.h2gis.H2GIS
 import org.orbisgis.datamanagerapi.dataset.ISpatialTable
 import org.orbisgis.datamanagerapi.dataset.ITable
-import org.osgi.service.jdbc.DataSourceFactory
 
 import java.sql.SQLException
 import java.sql.Time
@@ -534,6 +533,16 @@ class GroovyH2GISTest {
             assertEquals 3, row.nb }
         h2GIS.eachRow "SELECT count(ID_RELATION) as nb FROM OSM_RELATION", { row ->
             assertEquals 2, row.nb }
+    }
 
+    @Test
+    void getLocation(){
+        H2GIS h2GIS = H2GIS.open([databaseName: './target/loadH2GIS'])
+        assertEquals './target/loadH2GIS', h2GIS.location as String
+        assertEquals new File('./target/loadH2GIS'), h2GIS.location as File
+        assertEquals new File('./target/loadH2GIS').toURI(), h2GIS.location as URI
+        assertEquals new File('./target/loadH2GIS').toURI().toURL(), h2GIS.location as URL
+
+        assertNull h2GIS.getLocation() as Geometry
     }
 }

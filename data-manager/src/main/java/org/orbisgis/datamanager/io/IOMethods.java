@@ -4,8 +4,10 @@ import org.h2gis.api.DriverFunction;
 import org.h2gis.api.EmptyProgressVisitor;
 import org.h2gis.functions.io.csv.CSVDriverFunction;
 import org.h2gis.functions.io.dbf.DBFDriverFunction;
+import org.h2gis.functions.io.geojson.GeoJsonDriverFunction;
 import org.h2gis.functions.io.geojson.GeoJsonReaderDriver;
 import org.h2gis.functions.io.gpx.GPXDriverFunction;
+import org.h2gis.functions.io.json.JsonDriverFunction;
 import org.h2gis.functions.io.kml.KMLWriterDriver;
 import org.h2gis.functions.io.osm.OSMDriverFunction;
 import org.h2gis.functions.io.shp.SHPDriverFunction;
@@ -25,9 +27,6 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Map;
-
-import org.h2gis.functions.io.geojson.GeoJsonDriverFunction;
-import org.h2gis.functions.io.json.JsonDriverFunction;
 
 /**
  * IO methods for database

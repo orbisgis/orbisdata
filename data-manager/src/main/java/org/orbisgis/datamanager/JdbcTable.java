@@ -46,7 +46,10 @@ import org.locationtech.jts.geom.Geometry;
 import org.orbisgis.datamanager.dsl.OptionBuilder;
 import org.orbisgis.datamanager.dsl.WhereBuilder;
 import org.orbisgis.datamanager.io.IOMethods;
-import org.orbisgis.datamanagerapi.dataset.*;
+import org.orbisgis.datamanagerapi.dataset.DataBaseType;
+import org.orbisgis.datamanagerapi.dataset.IJdbcTable;
+import org.orbisgis.datamanagerapi.dataset.ISpatialTable;
+import org.orbisgis.datamanagerapi.dataset.ITable;
 import org.orbisgis.datamanagerapi.dsl.IConditionOrOptionBuilder;
 import org.orbisgis.datamanagerapi.dsl.IOptionBuilder;
 
@@ -55,8 +58,9 @@ import java.io.Reader;
 import java.math.BigDecimal;
 import java.net.URL;
 import java.sql.*;
-import java.sql.Date;
-import java.util.*;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.Map;
 
 /**
  * Contains the methods which are in common to all the IJdbcTable subclasses.

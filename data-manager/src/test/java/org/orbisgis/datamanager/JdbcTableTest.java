@@ -47,11 +47,13 @@ import org.h2gis.utilities.wrapper.StatementWrapper;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.locationtech.jts.awt.PointShapeFactory;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.Point;
 import org.orbisgis.datamanager.h2gis.H2gisSpatialTable;
-import org.orbisgis.datamanagerapi.dataset.*;
+import org.orbisgis.datamanagerapi.dataset.DataBaseType;
+import org.orbisgis.datamanagerapi.dataset.IDataSet;
+import org.orbisgis.datamanagerapi.dataset.ISpatialTable;
+import org.orbisgis.datamanagerapi.dataset.ITable;
 
 import java.sql.*;
 import java.util.ArrayList;

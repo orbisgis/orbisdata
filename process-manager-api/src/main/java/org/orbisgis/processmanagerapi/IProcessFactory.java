@@ -38,7 +38,6 @@ package org.orbisgis.processmanagerapi;
 
 import groovy.lang.Closure;
 
-import java.util.List;
 import java.util.Map;
 
 /**

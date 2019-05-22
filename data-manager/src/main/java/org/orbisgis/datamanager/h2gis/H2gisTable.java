@@ -37,7 +37,6 @@
 package org.orbisgis.datamanager.h2gis;
 
 import org.h2gis.utilities.TableLocation;
-import org.h2gis.utilities.wrapper.ResultSetWrapper;
 import org.h2gis.utilities.wrapper.StatementWrapper;
 import org.orbisgis.datamanager.JdbcDataSource;
 import org.orbisgis.datamanager.JdbcTable;

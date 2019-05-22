@@ -46,6 +46,7 @@ import org.orbisgis.datamanagerapi.dataset.IDataSet;
 import org.orbisgis.datamanagerapi.dataset.ISpatialTable;
 import org.orbisgis.datamanagerapi.dataset.ITable;
 
+import java.io.InputStream;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -87,7 +88,25 @@ public class IJdbcDataSourceTest {
     }
 
     /**
-     * Test the {@link IJdbcDataSource#getProperty(String)} and {@link IJdbcDataSource#setProperty(String, Object)} method.
+     * Test the {@link IJdbcDataSource#executeScript(String)} and {@link IJdbcDataSource#executeScript(InputStream)}
+     * methods.
+     */
+    @Test
+    public void testExecuteScript(){
+        DummyDataSource ds = new IJdbcDataSourceTest.DummyDataSource();
+
+        assertFalse(ds.isFileScript());
+        ds.executeScript((String) null);
+        assertTrue(ds.isFileScript());
+
+        assertFalse(ds.isStreamScript());
+        ds.executeScript((InputStream) null);
+        assertTrue(ds.isStreamScript());
+    }
+
+    /**
+     * Test the {@link IJdbcDataSource#getProperty(String)} and {@link IJdbcDataSource#setProperty(String, Object)}
+     * methods.
      */
     @Test
     public void testGetProperty(){
@@ -123,6 +142,10 @@ public class IJdbcDataSourceTest {
     private class DummyDataSource implements IJdbcDataSource {
         private Object prop1;
         private Object prop2;
+        private boolean streamScript = false;
+        private boolean fileScript = false;
+        public boolean isStreamScript(){return streamScript;}
+        public boolean isFileScript(){return fileScript;}
         private DummyDataSource(){}
         public boolean getNoArg(){return true;}
         public Object[] getArrayMethod(Object[] array){return array;}
@@ -150,6 +173,8 @@ public class IJdbcDataSourceTest {
         @Override public ITable link(String filePath, String tableName) {return null;}
         @Override public ITable link(String filePath, boolean delete) {return null;}
         @Override public ITable link(String filePath) {return null;}
+        @Override public void executeScript(String fileName, Map<String, String> bindings) {fileScript = true;}
+        @Override public void executeScript(InputStream stream, Map<String, String> bindings) {streamScript = true;}
         @Override public MetaClass getMetaClass() {return InvokerHelper.getMetaClass(DummyDataSource.class);}
         @Override public void setMetaClass(MetaClass metaClass) {/*Does nothing*/}
         @Override public IDataSet getDataSet(String name) {return null;}

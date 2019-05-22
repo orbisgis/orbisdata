@@ -113,23 +113,7 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, ISe
         return new FromBuilder(query.toString(), this);
     }
 
-    /**
-     * This method is used to execute a SQL file
-     *
-     * @param fileName the sql file
-     */
-    public void executeScript(String fileName) {
-        executeScript(fileName, null);
-    }
-
-    /**
-     * This method is used to execute a SQL file that contains parametrized text
-     * Parametrized text must be expressed with $value or ${value}
-     *
-     * @param fileName the sql file
-     * @param bindings the map between parametrized text and its value. eg.
-     * ["value", "myvalue"] to replace ${value} by myvalue
-     */
+    @Override
     public void executeScript(String fileName, Map<String, String> bindings) {
         File file = URIUtilities.fileFromString(fileName);
         try {
@@ -141,23 +125,7 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, ISe
         }
     }
 
-    /**
-     * This method is used to execute a SQL script
-     *
-     * @param stream Input stream of the sql file
-     */
-    public void executeScript(InputStream stream) {
-        executeScript(stream, null);
-    }
-
-    /**
-     * This method is used to execute a SQL file that contains parametrized text
-     * Parametrized text must be expressed with $value or ${value}
-     *
-     * @param stream Input stream of the sql file
-     * @param bindings the map between parametrized text and its value. eg.
-     * ["value", "myvalue"] to replace ${value} by myvalue
-     */
+    @Override
     public void executeScript(InputStream stream, Map<String, String> bindings) {
         SimpleTemplateEngine engine = null;
         if (bindings != null && !bindings.isEmpty()) {

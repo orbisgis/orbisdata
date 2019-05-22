@@ -39,14 +39,18 @@ package org.orbisgis.datamanagerapi.datasource;
 import groovy.lang.GroovyObject;
 import groovy.lang.MissingMethodException;
 import org.codehaus.groovy.runtime.metaclass.MissingMethodExceptionNoStack;
+import org.h2.util.ScriptReader;
+import org.h2gis.utilities.URIUtilities;
 import org.orbisgis.datamanagerapi.dataset.ISpatialTable;
 import org.orbisgis.datamanagerapi.dataset.ITable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.*;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URI;
+import java.sql.SQLException;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -235,6 +239,44 @@ public interface IJdbcDataSource extends IDataSource, GroovyObject {
      * @return A {@link ITable} representing the linked file.
      */
     ITable link(String filePath);
+
+    /**
+     * This method is used to execute a SQL file
+     *
+     * @param fileName the sql file
+     */
+    default void executeScript(String fileName) {
+        executeScript(fileName, null);
+    }
+
+    /**
+     * This method is used to execute a SQL file that contains parametrized text
+     * Parametrized text must be expressed with $value or ${value}
+     *
+     * @param fileName the sql file
+     * @param bindings the map between parametrized text and its value. eg.
+     * ["value", "myvalue"] to replace ${value} by myvalue
+     */
+    void executeScript(String fileName, Map<String, String> bindings);
+
+    /**
+     * This method is used to execute a SQL script
+     *
+     * @param stream Input stream of the sql file
+     */
+    default void executeScript(InputStream stream) {
+        executeScript(stream, null);
+    }
+
+    /**
+     * This method is used to execute a SQL file that contains parametrized text
+     * Parametrized text must be expressed with $value or ${value}
+     *
+     * @param stream Input stream of the sql file
+     * @param bindings the map between parametrized text and its value. eg.
+     * ["value", "myvalue"] to replace ${value} by myvalue
+     */
+    void executeScript(InputStream stream, Map<String, String> bindings);
 
     @Override
     default Object invokeMethod(String name, Object args) {

@@ -37,8 +37,6 @@
 package org.orbisgis.datamanager;
 
 import org.orbisgis.datamanagerapi.datasource.IDataSourceLocation;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.net.MalformedURLException;
@@ -50,8 +48,6 @@ import java.net.MalformedURLException;
  * @author Sylvain PALOMINOS (UBS 2018-2019)
  */
 public class DataSourceLocation implements IDataSourceLocation {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(DataSourceLocation.class);
 
     private String location;
 

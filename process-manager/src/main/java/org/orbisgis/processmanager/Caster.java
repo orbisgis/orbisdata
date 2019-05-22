@@ -41,7 +41,9 @@ import org.orbisgis.processmanagerapi.ICaster;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
 
 /**
  * Implementation of the interface ICaster.

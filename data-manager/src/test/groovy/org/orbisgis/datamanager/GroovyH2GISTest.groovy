@@ -42,7 +42,6 @@ import org.locationtech.jts.geom.Point
 import org.orbisgis.datamanager.h2gis.H2GIS
 import org.orbisgis.datamanagerapi.dataset.ISpatialTable
 import org.orbisgis.datamanagerapi.dataset.ITable
-import org.osgi.service.jdbc.DataSourceFactory
 
 import java.sql.SQLException
 import java.sql.Time

@@ -48,7 +48,6 @@ import org.orbisgis.datamanagerapi.dataset.ITable;
 
 import java.io.InputStream;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;

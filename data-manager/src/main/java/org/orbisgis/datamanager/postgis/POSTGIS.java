@@ -1,8 +1,9 @@
 package org.orbisgis.datamanager.postgis;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
+import org.h2gis.functions.io.utility.FileUtil;
+import org.h2gis.postgis_jts.ConnectionWrapper;
+import org.h2gis.postgis_jts.StatementWrapper;
+import org.h2gis.postgis_jts_osgi.DataSourceFactoryImpl;
 import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.TableLocation;
@@ -15,17 +16,13 @@ import org.osgi.service.jdbc.DataSourceFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.*;
-import org.h2gis.functions.io.utility.FileUtil;
-import org.h2gis.postgis_jts.ConnectionWrapper;
-import org.h2gis.postgis_jts.StatementWrapper;
-import org.h2gis.postgis_jts_osgi.DataSourceFactoryImpl;
-import org.h2gis.utilities.URIUtilities;
-import org.orbisgis.datamanager.io.IOMethods;
 
 /**
  * Implementation of the IJdbcDataSource interface dedicated to the usage of an postgres/postgis database.

@@ -38,22 +38,15 @@ package org.orbisgis.datamanagerapi.datasource;
 
 import groovy.lang.GroovyObject;
 import groovy.lang.MissingMethodException;
-import org.codehaus.groovy.runtime.metaclass.MissingMethodExceptionNoStack;
-import org.h2.util.ScriptReader;
-import org.h2gis.utilities.URIUtilities;
 import org.orbisgis.datamanagerapi.dataset.ISpatialTable;
 import org.orbisgis.datamanagerapi.dataset.ITable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.*;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
+import java.io.InputStream;
 import java.net.URI;
-import java.sql.SQLException;
-import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import java.util.Collection;
+import java.util.Map;
 
 /**
  * Extension of the {@link IDataSource} interface dedicated to the usage of a JDBC database as a data source.

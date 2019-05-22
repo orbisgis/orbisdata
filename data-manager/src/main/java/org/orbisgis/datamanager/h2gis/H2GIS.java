@@ -36,8 +36,7 @@
  */
 package org.orbisgis.datamanager.h2gis;
 
-import org.h2.Driver;
-import org.h2.util.OsgiDataSourceFactory;
+import org.h2gis.functions.factory.H2GISFunctions;
 import org.h2gis.functions.io.utility.FileUtil;
 import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.SFSUtilities;
@@ -55,10 +54,7 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.*;
 
 /**
@@ -69,7 +65,6 @@ import java.util.*;
  */
 public class H2GIS extends JdbcDataSource {
 
-    private static final OsgiDataSourceFactory dataSourceFactory = new OsgiDataSourceFactory(new Driver());
     private static final Logger LOGGER = LoggerFactory.getLogger(H2GIS.class);
 
     private ConnectionWrapper connectionWrapper;
@@ -113,19 +108,15 @@ public class H2GIS extends JdbcDataSource {
      * @return H2GIS object if the DataBase has been successfully open, null otherwise.
      */
     public static H2GIS open(Properties properties) {
+        org.h2.Driver.load();
+        String path = properties.getProperty("databaseName");
         Connection connection;
         // Init spatial
         try {
-            connection = SFSUtilities.wrapConnection(dataSourceFactory.createDataSource(properties).getConnection());
+            connection = DriverManager.getConnection("jdbc:h2:" + path, properties);
+            connection = SFSUtilities.wrapConnection(connection);
         } catch (SQLException e) {
             LOGGER.error("Unable to create the DataSource.\n" + e.getLocalizedMessage());
-            return null;
-        }
-        Statement st;
-        try {
-            st = connection.createStatement();
-        } catch (SQLException e) {
-            LOGGER.error("Unable to create a Statement.\n" + e.getLocalizedMessage());
             return null;
         }
         boolean isH2;
@@ -144,11 +135,9 @@ public class H2GIS extends JdbcDataSource {
         }
         if (isH2 && tableExists) {
             try {
-                st.execute("CREATE ALIAS IF NOT EXISTS H2GIS_SPATIAL FOR\n" +
-                        "    \"org.h2gis.functions.factory.H2GISFunctions.load\";\n" +
-                        "CALL H2GIS_SPATIAL();");
+                H2GISFunctions.load(connection);
             } catch (SQLException e) {
-                LOGGER.error("Unable to initialize H2GIS.\n" + e.getLocalizedMessage());
+                LOGGER.error("Unable to load H2GIS.\n" + e.getLocalizedMessage());
                 return null;
             }
         }

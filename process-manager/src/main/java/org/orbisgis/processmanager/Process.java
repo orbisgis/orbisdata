@@ -45,6 +45,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.UUID;
 
@@ -68,9 +69,9 @@ public class Process implements IProcess {
     /** List of simple keyword (one word) of the process */
     private String[] keywords;
     /** Map of inputs with the name as key and the input class as value */
-    private Map<String, Class> inputs;
+    private LinkedHashMap<String, Class> inputs;
     /** Map of outputs with the name as key and the input class as value */
-    private Map<String, Class> outputs;
+    private LinkedHashMap<String, Class> outputs;
     /** Closure containing the code to execute on the process execution */
     private Closure closure;
     /** Map of the process Result */
@@ -81,6 +82,8 @@ public class Process implements IProcess {
     private String identifier;
     /** MetaClass use for groovy methods/properties binding */
     private MetaClass metaClass;
+    /** Map of the defaults values */
+    private Map<String, Object> defaultValues;
 
     /**
      * Create a new Process with its title, description, keyword array, input map, output map, version
@@ -99,8 +102,8 @@ public class Process implements IProcess {
      * @param closure Closure containing the code to execute on the process execution.
      * @param caster Caster used to cast input object into the good class.
      */
-    Process(String title, String description, String[] keywords, Map<String, Class> inputs,
-                   Map<String, Class> outputs, String version, Closure closure, ICaster caster){
+    Process(String title, String description, String[] keywords, LinkedHashMap<String, Object> inputs,
+            LinkedHashMap<String, Object> outputs, String version, Closure closure, ICaster caster){
         if(inputs != null && closure.getMaximumNumberOfParameters() != inputs.size()){
             LOGGER.error("The number of the closure parameters and the number of process input names are different.");
             return;
@@ -109,8 +112,30 @@ public class Process implements IProcess {
         this.version = version;
         this.description = description;
         this.keywords = keywords;
-        this.inputs = inputs;
-        this.outputs = outputs;
+        this.inputs = new LinkedHashMap<>();
+        this.defaultValues = new HashMap<>();
+        if(inputs != null) {
+            for (Map.Entry<String, Object> entry : inputs.entrySet()) {
+                if( entry.getValue() instanceof Class){
+                    this.inputs.put(entry.getKey(),(Class) entry.getValue());
+                }
+                else {
+                    this.inputs.put(entry.getKey(), entry.getValue().getClass());
+                    this.defaultValues.put(entry.getKey(), entry.getValue());
+                }
+            }
+        }
+        this.outputs = new LinkedHashMap<>();
+        if(inputs != null) {
+            for (Map.Entry<String, Object> entry : outputs.entrySet()) {
+                if( entry.getValue() instanceof Class){
+                    this.outputs.put(entry.getKey(),(Class) entry.getValue());
+                }
+                else {
+                    this.outputs.put(entry.getKey(), entry.getValue().getClass());
+                }
+            }
+        }
         this.closure = closure;
         this.resultMap = new HashMap<>();
         this.caster = caster;
@@ -120,21 +145,68 @@ public class Process implements IProcess {
 
     @Override
     public IProcess newInstance() {
-        return new Process(title, description, keywords, inputs, outputs, version, closure, caster);
+        Process process = new Process(title, description, keywords, new LinkedHashMap<>(inputs),  new LinkedHashMap<>(outputs),
+                version, closure, caster);
+        process.defaultValues = this.defaultValues;
+        return process;
+    }
+
+    /**
+     * Return the curry closure taking into account the optional arguments.
+     *
+     * @param inputDataMap Map containing the data for the execution of the closure. This map may not contains several
+     *                     inputs.
+     *
+     * @return The closure if the missing inputs are all optional, false otherwise.
+     */
+    private Closure getClosureWithCurry(LinkedHashMap<String, Object> inputDataMap){
+        Closure cl = closure;
+        int curryIndex = 0;
+        for (Map.Entry<String, Class> entry : inputs.entrySet()) {
+            if (!inputDataMap.containsKey(entry.getKey())) {
+                if(defaultValues.get(entry.getKey()) == null){
+                    LOGGER.error("The parameter " + entry.getKey() + "has no default value.");
+                    return null;
+                }
+                cl = cl.ncurry(curryIndex, defaultValues.get(entry.getKey()));
+                curryIndex--;
+            }
+            curryIndex++;
+        }
+        return cl;
+    }
+
+    /**
+     * Returns the casted input data as an Object array.
+     *
+     * @param inputDataMap Map containing the data for the execution of the closure.
+     *
+     * @return The casted input data as an Object array.
+     */
+    private Object[] getClosureArgs(LinkedHashMap<String, Object> inputDataMap){
+        return inputs
+                .entrySet()
+                .stream()
+                .filter(entry -> inputDataMap.containsKey(entry.getKey()))
+                .map(entry -> caster.cast(inputDataMap.get(entry.getKey()), entry.getValue()))
+                .toArray();
     }
 
     @Override
-    public boolean execute(Map<String, Object> inputDataMap) {
-        if(inputs != null && inputDataMap.size() != inputs.size()){
-            LOGGER.error("The number of the input data map and the number of process input are different.");
+    public boolean execute(LinkedHashMap<String, Object> inputDataMap) {
+        if(inputs != null && (inputs.size() < inputDataMap.size() || inputs.size()-defaultValues.size() > inputDataMap.size())){
+            LOGGER.error("The number of the input data map and the number of process input are different, should" +
+                    " be between " + (inputDataMap.size()-defaultValues.size()) + " and " + inputDataMap.size() + ".");
             return false;
         }
         Object result;
         try {
             if(inputs != null) {
-                result = closure.call(inputs.entrySet().stream().map(
-                        entry -> caster.cast(inputDataMap.get(entry.getKey()), entry.getValue())).toArray()
-                );
+                Closure cl = getClosureWithCurry(inputDataMap);
+                if(cl == null){
+                    return false;
+                }
+                result = cl.call(getClosureArgs(inputDataMap));
             }
             else {
                 result = closure.call();

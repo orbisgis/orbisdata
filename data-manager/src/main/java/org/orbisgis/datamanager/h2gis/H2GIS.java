@@ -145,8 +145,8 @@ public class H2GIS extends JdbcDataSource {
         if (isH2 && tableExists) {
             try {
                 st.execute("CREATE ALIAS IF NOT EXISTS H2GIS_SPATIAL FOR\n" +
-                        "    \"org.h2gis.functions.factory.H2GISFunctions.load\";\n" +
-                        "CALL H2GIS_SPATIAL();");
+                    "    \"org.h2gis.functions.factory.H2GISFunctions.load\";\n" +
+                    "CALL H2GIS_SPATIAL();");
             } catch (SQLException e) {
                 LOGGER.error("Unable to initialize H2GIS.\n" + e.getLocalizedMessage());
                 return null;

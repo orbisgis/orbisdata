@@ -131,6 +131,50 @@ class TestProcess {
         assertEquals "B", process.getResults().outputA
     }
 
+    @Test
+    void testProcessWithDefaultValue1(){
+        def process = processManager.factory("test").create(
+                "simple process",
+                [inputA : String, inputB : "toto"],
+                [outputA : String],
+                { inputA, inputB -> [outputA : inputA+inputB] }
+        )
+        assertTrue process.execute([inputA : "tata"])
+        assertEquals "tatatoto", process.getResults().outputA
+    }
+
+    @Test
+    void testProcessWithDefaultValue2(){
+        def process = processManager.factory("test").create(
+                "simple process",
+                [inputA : "tata", inputB : String],
+                [outputA : String],
+                { inputA, inputB -> [outputA : inputA+inputB] }
+        )
+        assertTrue process.execute([inputB : "toti"])
+        assertEquals "tatatoti", process.getResults().outputA
+    }
+
+    @Test
+    void testProcessWithDefaultValue3(){
+        def process = processManager.factory("test").create(
+                "simple process",
+                [inputA : String, inputB : "tyty", inputC : 5.23d, inputD : Double],
+                [outputA : String],
+                { inputA, inputB, inputC, inputD -> [outputA : inputA+inputB+inputC+inputD] }
+        )
+        assertTrue process.execute([inputA : "tata", inputB : "toto", inputC : 1.0d, inputD : 2.1d])
+        assertEquals "tatatoto1.02.1", process.getResults().outputA
+        assertTrue process.execute([inputA : "tata", inputC : 1.0d, inputD : 2.1d])
+        assertEquals "tatatyty1.02.1", process.getResults().outputA
+        assertTrue process.execute([inputA : "tata", inputB : "toto", inputD : 2.1d])
+        assertEquals "tatatoto5.232.1", process.getResults().outputA
+        assertTrue process.execute([inputA : "tata", inputD : 2.1d])
+        assertEquals "tatatyty5.232.1", process.getResults().outputA
+        assertFalse process.execute([inputD : 2.1d])
+        assertFalse process.execute([inputA : "tata", inputB : "toto"])
+    }
+
     /**
      *  --> -----      ----
      *     |  pA | -> | pB |-->

@@ -233,7 +233,7 @@ public class ProcessMapper implements IProcessMapper {
         for(List<String> uuids : executionTree){
             for(String uuid : uuids){
                 IProcess process = processMap.get(uuid);
-                Map<String, Object> processInData = new HashMap<>();
+                LinkedHashMap<String, Object> processInData = new LinkedHashMap<>();
                 if(process.getInputs() != null) {
                     for (String in : process.getInputs().keySet()) {
                         //Try to get the data directly from the out of a process

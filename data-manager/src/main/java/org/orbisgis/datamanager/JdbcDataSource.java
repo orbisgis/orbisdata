@@ -36,6 +36,7 @@
  */
 package org.orbisgis.datamanager;
 
+import groovy.lang.GString;
 import groovy.lang.MetaClass;
 import groovy.sql.Sql;
 import groovy.text.SimpleTemplateEngine;
@@ -93,6 +94,11 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, ISe
 
     public DataBaseType getDataBaseType(){
         return databaseType;
+    }
+
+    @Override
+    public boolean execute(GString gstring) throws SQLException {
+        return super.execute(gstring.toString());
     }
 
     @Override

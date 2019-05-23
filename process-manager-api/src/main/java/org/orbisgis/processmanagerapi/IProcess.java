@@ -36,6 +36,7 @@
  */
 package org.orbisgis.processmanagerapi;
 
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
@@ -60,7 +61,7 @@ public interface IProcess {
      *
      * @return True if the execution is successful, false otherwise.
      */
-    boolean execute(Map<String, Object> inputDataMap);
+    boolean execute(LinkedHashMap<String, Object> inputDataMap);
 
     /**
      * Return the title of the process.

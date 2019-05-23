@@ -151,6 +151,47 @@ public class Process implements IProcess {
         return process;
     }
 
+    /**
+     * Return the curry closure taking into account the optional arguments.
+     *
+     * @param inputDataMap Map containing the data for the execution of the closure. This map may not contains several
+     *                     inputs.
+     *
+     * @return The closure if the missing inputs are all optional, false otherwise.
+     */
+    private Closure getClosureWithCurry(LinkedHashMap<String, Object> inputDataMap){
+        Closure cl = closure;
+        int curryIndex = 0;
+        for (Map.Entry<String, Class> entry : inputs.entrySet()) {
+            if (!inputDataMap.containsKey(entry.getKey())) {
+                if(defaultValues.get(entry.getKey()) == null){
+                    LOGGER.error("The parameter " + entry.getKey() + "has no default value.");
+                    return null;
+                }
+                cl = cl.ncurry(curryIndex, defaultValues.get(entry.getKey()));
+                curryIndex--;
+            }
+            curryIndex++;
+        }
+        return cl;
+    }
+
+    /**
+     * Returns the casted input data as an Object array.
+     *
+     * @param inputDataMap Map containing the data for the execution of the closure.
+     *
+     * @return The casted input data as an Object array.
+     */
+    private Object[] getClosureArgs(LinkedHashMap<String, Object> inputDataMap){
+        return inputs
+                .entrySet()
+                .stream()
+                .filter(entry -> inputDataMap.containsKey(entry.getKey()))
+                .map(entry -> caster.cast(inputDataMap.get(entry.getKey()), entry.getValue()))
+                .toArray();
+    }
+
     @Override
     public boolean execute(LinkedHashMap<String, Object> inputDataMap) {
         if(inputs != null && (inputs.size() < inputDataMap.size() || inputs.size()-defaultValues.size() > inputDataMap.size())){
@@ -159,30 +200,13 @@ public class Process implements IProcess {
             return false;
         }
         Object result;
-        Closure cl = closure;
-        if(inputs != null) {
-            int curryIndex = 0;
-            for (Map.Entry<String, Class> entry : inputs.entrySet()) {
-                if (!inputDataMap.containsKey(entry.getKey())) {
-                    if(defaultValues.get(entry.getKey()) == null){
-                        LOGGER.error("The parameter " + entry.getKey() + "has no default value.");
-                        return false;
-                    }
-                    cl = cl.ncurry(curryIndex, defaultValues.get(entry.getKey()));
-                    curryIndex--;
-                }
-                curryIndex++;
-            }
-        }
         try {
             if(inputs != null) {
-                result = cl.call(inputs
-                        .entrySet()
-                        .stream()
-                        .filter(entry -> inputDataMap.containsKey(entry.getKey()))
-                        .map(entry -> caster.cast(inputDataMap.get(entry.getKey()), entry.getValue()))
-                        .toArray()
-                );
+                Closure cl = getClosureWithCurry(inputDataMap);
+                if(cl == null){
+                    return false;
+                }
+                result = cl.call(getClosureArgs(inputDataMap));
             }
             else {
                 result = closure.call();

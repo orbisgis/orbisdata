@@ -43,7 +43,7 @@ import org.orbisgis.processmanagerapi.IProcessFactory;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
+import java.util.LinkedHashMap;
 
 /**
  * Implementation of the IProcessManager.
@@ -103,8 +103,8 @@ public class ProcessFactory implements IProcessFactory {
     }
 
     @Override
-    public IProcess create(String title, String description, String[] keywords, Map<String, Class> inputs,
-                                  Map<String, Class> outputs, String version, Closure closure) {
+    public IProcess create(String title, String description, String[] keywords, LinkedHashMap<String, Object> inputs,
+                                  LinkedHashMap<String, Object> outputs, String version, Closure closure) {
         if(!isLocked()) {
             //TODO implements a isSame methods in IProcess
             IProcess process = null;
@@ -124,88 +124,88 @@ public class ProcessFactory implements IProcessFactory {
     }
 
     @Override
-    public IProcess create(String title, String description, String[] keywords, Map<String, Class> inputs,
-                                  Map<String, Class> outputs, Closure closure) {
+    public IProcess create(String title, String description, String[] keywords, LinkedHashMap<String, Object> inputs,
+                                  LinkedHashMap<String, Object> outputs, Closure closure) {
         return create(title, description, keywords, inputs, outputs, null, closure);
     }
 
     @Override
-    public IProcess create(String title, String description, String[] keywords, Map<String, Class> outputs,
+    public IProcess create(String title, String description, String[] keywords, LinkedHashMap<String, Object> outputs,
                                   String version, Closure closure) {
         return create(title, description, keywords, null, outputs, version, closure);
     }
 
     @Override
-    public IProcess create(String title, String description, String[] keywords, Map<String, Class> outputs,
+    public IProcess create(String title, String description, String[] keywords, LinkedHashMap<String, Object> outputs,
                                   Closure closure) {
         return create(title, description, keywords, null, outputs, null, closure);
     }
 
     @Override
-    public IProcess create(String title, String description, Map<String, Class> inputs,
-                                  Map<String, Class> outputs, String version, Closure closure) {
+    public IProcess create(String title, String description, LinkedHashMap<String, Object> inputs,
+                                  LinkedHashMap<String, Object> outputs, String version, Closure closure) {
         return create(title, description, null, inputs, outputs, version, closure);
     }
 
     @Override
-    public IProcess create(String title, String description, Map<String, Class> inputs,
-                                  Map<String, Class> outputs, Closure closure) {
+    public IProcess create(String title, String description, LinkedHashMap<String, Object> inputs,
+                                  LinkedHashMap<String, Object> outputs, Closure closure) {
         return create(title, description, null, inputs, outputs, null, closure);
     }
 
     @Override
-    public IProcess create(String title, String description, Map<String, Class> outputs, String version,
+    public IProcess create(String title, String description, LinkedHashMap<String, Object> outputs, String version,
                                   Closure closure) {
         return create(title, description, null, null, outputs, version, closure);
     }
 
     @Override
-    public IProcess create(String title, String description, Map<String, Class> outputs, Closure closure) {
+    public IProcess create(String title, String description, LinkedHashMap<String, Object> outputs, Closure closure) {
         return create(title, description, null, null, outputs, null, closure);
     }
 
     @Override
-    public IProcess create(String title, String[] keywords, Map<String, Class> inputs,
-                                  Map<String, Class> outputs, String version, Closure closure) {
+    public IProcess create(String title, String[] keywords, LinkedHashMap<String, Object> inputs,
+                                  LinkedHashMap<String, Object> outputs, String version, Closure closure) {
         return create(title, null, keywords, inputs, outputs, version, closure);
     }
 
     @Override
-    public IProcess create(String title, String[] keywords, Map<String, Class> inputs,
-                                  Map<String, Class> outputs, Closure closure) {
+    public IProcess create(String title, String[] keywords, LinkedHashMap<String, Object> inputs,
+                                  LinkedHashMap<String, Object> outputs, Closure closure) {
         return create(title, null, keywords, inputs, outputs, null, closure);
     }
 
     @Override
-    public IProcess create(String title, String[] keywords, Map<String, Class> outputs, String version,
+    public IProcess create(String title, String[] keywords, LinkedHashMap<String, Object> outputs, String version,
                                   Closure closure) {
         return create(title, null, keywords, null, outputs, version, closure);
     }
 
     @Override
-    public IProcess create(String title, String[] keywords, Map<String, Class> outputs, Closure closure) {
+    public IProcess create(String title, String[] keywords, LinkedHashMap<String, Object> outputs, Closure closure) {
         return create(title, null, keywords, null, outputs, null, closure);
     }
 
     @Override
-    public IProcess create(String title, Map<String, Class> inputs, Map<String, Class> outputs,
+    public IProcess create(String title, LinkedHashMap<String, Object> inputs, LinkedHashMap<String, Object> outputs,
                                   String version, Closure closure) {
         return create(title, null, null, inputs, outputs, version, closure);
     }
 
     @Override
-    public IProcess create(String title, Map<String, Class> inputs, Map<String, Class> outputs,
+    public IProcess create(String title, LinkedHashMap<String, Object> inputs, LinkedHashMap<String, Object> outputs,
                                   Closure closure) {
         return create(title, null, null, inputs, outputs, null, closure);
     }
 
     @Override
-    public IProcess create(String title, Map<String, Class> outputs, String version, Closure closure) {
+    public IProcess create(String title, LinkedHashMap<String, Object> outputs, String version, Closure closure) {
         return create(title, null, null, null, outputs, version, closure);
     }
 
     @Override
-    public IProcess create(String title, Map<String, Class> outputs, Closure closure) {
+    public IProcess create(String title, LinkedHashMap<String, Object> outputs, Closure closure) {
         return create(title, null, null, null, outputs, null, closure);
     }
 }

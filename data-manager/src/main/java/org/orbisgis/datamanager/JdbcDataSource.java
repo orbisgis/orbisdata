@@ -98,6 +98,11 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, ISe
 
     @Override
     public boolean execute(GString gstring) throws SQLException {
+        try {
+            return super.execute(gstring);
+        } catch (SQLException e) {
+            LOGGER.debug("Unable to execute the request as a GString.\n" + e.getLocalizedMessage());
+        }
         return super.execute(gstring.toString());
     }
 

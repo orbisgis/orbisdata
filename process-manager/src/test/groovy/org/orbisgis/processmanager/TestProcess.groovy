@@ -159,19 +159,19 @@ class TestProcess {
     void testProcessWithDefaultValue3(){
         def process = processManager.factory("test").create(
                 "simple process",
-                [inputA : String, inputB : "tyty", inputC : "thth", inputD : String],
+                [inputA : String, inputB : "tyty", inputC : 5.23d, inputD : Double],
                 [outputA : String],
                 { inputA, inputB, inputC, inputD -> [outputA : inputA+inputB+inputC+inputD] }
         )
-        assertTrue process.execute([inputA : "tata", inputB : "toto", inputC : "titi", inputD : "tutu"])
-        assertEquals "tatatototititutu", process.getResults().outputA
-        assertTrue process.execute([inputA : "tata", inputC : "titi", inputD : "tutu"])
-        assertEquals "tatatytytititutu", process.getResults().outputA
-        assertTrue process.execute([inputA : "tata", inputB : "toto", inputD : "tutu"])
-        assertEquals "tatatotoththtutu", process.getResults().outputA
-        assertTrue process.execute([inputA : "tata", inputD : "tutu"])
-        assertEquals "tatatytyththtutu", process.getResults().outputA
-        assertFalse process.execute([inputD : "tutu"])
+        assertTrue process.execute([inputA : "tata", inputB : "toto", inputC : 1.0d, inputD : 2.1d])
+        assertEquals "tatatoto1.02.1", process.getResults().outputA
+        assertTrue process.execute([inputA : "tata", inputC : 1.0d, inputD : 2.1d])
+        assertEquals "tatatyty1.02.1", process.getResults().outputA
+        assertTrue process.execute([inputA : "tata", inputB : "toto", inputD : 2.1d])
+        assertEquals "tatatoto5.232.1", process.getResults().outputA
+        assertTrue process.execute([inputA : "tata", inputD : 2.1d])
+        assertEquals "tatatyty5.232.1", process.getResults().outputA
+        assertFalse process.execute([inputD : 2.1d])
         assertFalse process.execute([inputA : "tata", inputB : "toto"])
     }
 

@@ -38,8 +38,6 @@ package org.orbisgis.processmanager;
 
 import groovy.lang.Closure;
 import groovy.lang.MetaClass;
-import groovy.lang.MetaMethod;
-import org.codehaus.groovy.reflection.CachedMethod;
 import org.codehaus.groovy.runtime.InvokerHelper;
 import org.orbisgis.processmanagerapi.ICaster;
 import org.orbisgis.processmanagerapi.IProcess;

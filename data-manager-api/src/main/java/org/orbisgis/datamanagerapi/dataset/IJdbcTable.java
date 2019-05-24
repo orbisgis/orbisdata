@@ -37,8 +37,6 @@
 package org.orbisgis.datamanagerapi.dataset;
 
 import groovy.lang.Closure;
-import groovy.lang.GroovyObject;
-import groovy.lang.MissingMethodException;
 import org.h2gis.utilities.TableLocation;
 import org.orbisgis.datamanagerapi.dsl.IWhereBuilderOrOptionBuilder;
 import org.slf4j.Logger;
@@ -51,14 +49,13 @@ import java.util.Iterator;
 
 /**
  * Extension of the {@link ITable} specially dedicated to the JDBC databases thanks to the extension of the
- * {@link ResultSet} interface. It also extends the {@link IWhereBuilderOrOptionBuilder} for the SQL requesting and
- * the {@link GroovyObject} to simplify the methods calling (i.e. .tableLocation instead of .getTableLocation() )
+ * {@link ResultSet} interface. It also extends the {@link IWhereBuilderOrOptionBuilder} for the SQL requesting
  */
-public interface IJdbcTable extends ITable, GroovyObject, ResultSet, IWhereBuilderOrOptionBuilder {
+public interface IJdbcTable extends ITable, ResultSet, IWhereBuilderOrOptionBuilder {
 
     /** Interface {@link Logger} */
     Logger LOGGER = LoggerFactory.getLogger(IJdbcTable.class);
-    /** {@link String} name of the metadata property use in the {@link #getProperty(String)} method */
+    /** {@link String} name of the metadata property */
     String META_PROPERTY = "meta";
 
     /**
@@ -127,43 +124,5 @@ public interface IJdbcTable extends ITable, GroovyObject, ResultSet, IWhereBuild
     @Override
     default void eachRow(Closure closure){
         this.forEach(closure::call);
-    }
-
-    @Override
-    default Object invokeMethod(String name, Object args) {
-        try {
-            return getMetaClass().invokeMethod(this, name, args);
-        } catch (MissingMethodException e) {
-            LOGGER.debug("Unable to find the '"+name+"' methods, trying with the getter");
-            return getMetaClass()
-                    .invokeMethod(this, "get" + name.substring(0, 1).toUpperCase() + name.substring(1), args);
-        }
-    }
-
-    @Override
-    default Object getProperty(String propertyName) {
-        if(propertyName == null){
-            LOGGER.error("Trying to get null property name.");
-            return null;
-        }
-        //First test the predefined properties
-        if(propertyName.equals(META_PROPERTY)){
-            return getMetadata();
-        }
-        if(getColumnNames()!= null &&
-                (getColumnNames().contains(propertyName.toLowerCase()) || getColumnNames().contains(propertyName.toUpperCase()))
-                || "id".equals(propertyName)) {
-            try {
-                return getObject(propertyName);
-            } catch (SQLException e) {
-                LOGGER.debug("Unable to find the column '" + propertyName + "'.\n" + e.getLocalizedMessage());
-            }
-        }
-        return getMetaClass().getProperty(this, propertyName);
-    }
-
-    @Override
-    default void setProperty(String propertyName, Object newValue) {
-        getMetaClass().setProperty(this, propertyName, newValue);
     }
 }

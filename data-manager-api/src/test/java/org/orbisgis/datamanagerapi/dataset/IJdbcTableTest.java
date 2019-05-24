@@ -37,11 +37,6 @@
 package org.orbisgis.datamanagerapi.dataset;
 
 import groovy.lang.Closure;
-import groovy.lang.MetaClass;
-import groovy.lang.MissingMethodException;
-import groovy.lang.MissingPropertyException;
-import org.codehaus.groovy.runtime.InvokerHelper;
-import org.codehaus.groovy.runtime.InvokerInvocationException;
 import org.h2gis.utilities.TableLocation;
 import org.junit.jupiter.api.Test;
 import org.orbisgis.datamanagerapi.dsl.IConditionOrOptionBuilder;
@@ -88,57 +83,6 @@ public class IJdbcTableTest {
                 new DummyJdbcTable(DataBaseType.POSTGIS, LOCATION, true).getName());
         assertEquals(LOCATION.toUpperCase().substring(LOCATION.lastIndexOf(".")+1),
                 new DummyJdbcTable(DataBaseType.H2GIS, LOCATION, true).getName());
-    }
-
-    /**
-     * Test the {@link IJdbcTable#invokeMethod(String, Object)} method.
-     */
-    @Test
-    public void testInvokeMethod(){
-        IJdbcTable table = new DummyJdbcTable(DataBaseType.H2GIS, LOCATION, true);
-        assertEquals(table.getLocation(), table.invokeMethod("getLocation", null));
-        assertEquals(table.getLocation(), table.invokeMethod("location", null));
-        assertArrayEquals(new Object[]{"string", 0.2}, (Object[])table.invokeMethod("getArrayMethod", new Object[]{"string", 0.2}));
-        assertArrayEquals(new Object[]{"string", 0.2}, (Object[])table.invokeMethod("arrayMethod", new Object[]{"string", 0.2}));
-        assertArrayEquals(new Object[]{"string", 0.2}, (Object[])table.invokeMethod("getParametersMethod", new Object[]{"string", 0.2}));
-        assertArrayEquals(new Object[]{"string", 0.2}, (Object[])table.invokeMethod("parametersMethod", new Object[]{"string", 0.2}));
-        assertArrayEquals(new Object[]{"string", "0.2"}, (Object[])table.invokeMethod("getParametersMethod", new Object[]{"string", "0.2"}));
-        assertArrayEquals(new Object[]{"string", "0.2"}, (Object[])table.invokeMethod("parametersMethod", new Object[]{"string", "0.2"}));
-        assertEquals("string", table.invokeMethod("getParameterMethod", new Object[]{"string"}));
-        assertEquals("string", table.invokeMethod("getParameterMethod", "string"));
-        assertEquals("string", table.invokeMethod("parameterMethod", new Object[]{"string"}));
-        assertEquals("string", table.invokeMethod("parameterMethod", "string"));
-        assertEquals(RowSetMetaDataImpl.class, table.invokeMethod("metadata", null).getClass());
-
-        assertThrows(MissingMethodException.class, () -> table.invokeMethod("getLocation", new String[]{"tata", "toto"}));
-        assertThrows(MissingMethodException.class, () -> table.invokeMethod("location", new String[]{"tata", "toto"}));
-        assertNull(table.invokeMethod("getPrivateMethod", null));
-        assertNull(table.invokeMethod("privateMethod", null));
-    }
-
-    /**
-     * Test the {@link IJdbcTable#getProperty(String)} method.
-     */
-    @Test
-    public void testGetProperty(){
-        IJdbcTable table = new DummyJdbcTable(DataBaseType.H2GIS, LOCATION, true);
-        assertThrows(MissingPropertyException.class, () -> table.getProperty("getLocation"));
-        assertEquals(table.getLocation(), table.getProperty("location"));
-        assertEquals(RowSetMetaDataImpl.class, table.getProperty("meta").getClass());
-        assertArrayEquals(new Object[]{"string", 0.2}, (Object[])table.getProperty("data"));
-        assertEquals("tutu", table.getProperty("privateData"));
-        assertNull(table.getProperty(null));
-    }
-
-    /**
-     * Test the {@link IJdbcTable#setProperty(String, Object)} method.
-     */
-    @Test
-    public void testSetProperty(){
-        IJdbcTable table = new DummyJdbcTable(DataBaseType.H2GIS, LOCATION, true);
-        assertThrows(MissingPropertyException.class, () -> table.setProperty("getLocation", "tata"));
-        table.setProperty("privateData", "toto");
-        assertEquals("toto", table.getProperty("privateData"));
     }
 
     /**
@@ -192,16 +136,7 @@ public class IJdbcTableTest {
         table.setException(true);
         assertFalse(it.hasNext());
         assertNotNull(it.next());
-
-        assertNotNull(table.getProperty("data"));
-
-        assertThrows(InvokerInvocationException.class, () -> table.invokeMethod("dupMethod", null));
     }
-
-    /**
-     * Simple implementation of Exception
-     */
-    private class DummyException extends Exception{}
 
     /**
      * Simple implementation of the {@link IJdbcTable} interface.
@@ -220,8 +155,6 @@ public class IJdbcTableTest {
         private boolean isIterable;
         /** True if throws exception, false otherwise. */
         private boolean sqlException = false;
-        /** Private data. */
-        private Object privateData = "tutu";
 
         /**
          * Main constructor.
@@ -257,8 +190,6 @@ public class IJdbcTableTest {
         @Override public boolean isSpatial() {return false;}
         @Override public boolean isLinked() {return false;}
         @Override public boolean isTemporary() {return false;}
-        @Override public MetaClass getMetaClass() {return InvokerHelper.getMetaClass(DummyJdbcTable.class);}
-        @Override public void setMetaClass(MetaClass metaClass) {/*Does nothing*/}
         @Override public boolean next() throws SQLException {
             if(!sqlException) {
                 return rowIndex++ < data.length;
@@ -267,44 +198,44 @@ public class IJdbcTableTest {
                 throw new SQLException();
             }
         }
-        @Override public void close() throws SQLException {/*Does nothing*/}
-        @Override public boolean wasNull() throws SQLException {return false;}
-        @Override public String getString(int i) throws SQLException {return null;}
-        @Override public boolean getBoolean(int i) throws SQLException {return false;}
-        @Override public byte getByte(int i) throws SQLException {return 0;}
-        @Override public short getShort(int i) throws SQLException {return 0;}
-        @Override public int getInt(int i) throws SQLException {return 0;}
-        @Override public long getLong(int i) throws SQLException {return 0;}
-        @Override public float getFloat(int i) throws SQLException {return 0;}
-        @Override public double getDouble(int i) throws SQLException {return 0;}
-        @Override public BigDecimal getBigDecimal(int i, int i1) throws SQLException {return null;}
-        @Override public byte[] getBytes(int i) throws SQLException {return new byte[0];}
-        @Override public Date getDate(int i) throws SQLException {return null;}
-        @Override public Time getTime(int i) throws SQLException {return null;}
-        @Override public Timestamp getTimestamp(int i) throws SQLException {return null;}
-        @Override public InputStream getAsciiStream(int i) throws SQLException {return null;}
-        @Override public InputStream getUnicodeStream(int i) throws SQLException {return null;}
-        @Override public InputStream getBinaryStream(int i) throws SQLException {return null;}
-        @Override public String getString(String s) throws SQLException {return null;}
-        @Override public boolean getBoolean(String s) throws SQLException {return false;}
-        @Override public byte getByte(String s) throws SQLException {return 0;}
-        @Override public short getShort(String s) throws SQLException {return 0;}
-        @Override public int getInt(String s) throws SQLException {return 0;}
-        @Override public long getLong(String s) throws SQLException {return 0;}
-        @Override public float getFloat(String s) throws SQLException {return 0;}
-        @Override public double getDouble(String s) throws SQLException {return 0;}
-        @Override public BigDecimal getBigDecimal(String s, int i) throws SQLException {return null;}
-        @Override public byte[] getBytes(String s) throws SQLException {return new byte[0];}
-        @Override public Date getDate(String s) throws SQLException {return null;}
-        @Override public Time getTime(String s) throws SQLException {return null;}
-        @Override public Timestamp getTimestamp(String s) throws SQLException {return null;}
-        @Override public InputStream getAsciiStream(String s) throws SQLException {return null;}
-        @Override public InputStream getUnicodeStream(String s) throws SQLException {return null;}
-        @Override public InputStream getBinaryStream(String s) throws SQLException {return null;}
-        @Override public SQLWarning getWarnings() throws SQLException {return null;}
-        @Override public void clearWarnings() throws SQLException {/*Does nothing*/}
-        @Override public String getCursorName() throws SQLException {return null;}
-        @Override public ResultSetMetaData getMetaData() throws SQLException {return null;}
+        @Override public void close() {/*Does nothing*/}
+        @Override public boolean wasNull() {return false;}
+        @Override public String getString(int i) {return null;}
+        @Override public boolean getBoolean(int i) {return false;}
+        @Override public byte getByte(int i) {return 0;}
+        @Override public short getShort(int i) {return 0;}
+        @Override public int getInt(int i) {return 0;}
+        @Override public long getLong(int i) {return 0;}
+        @Override public float getFloat(int i) {return 0;}
+        @Override public double getDouble(int i) {return 0;}
+        @Override public BigDecimal getBigDecimal(int i, int i1) {return null;}
+        @Override public byte[] getBytes(int i) {return new byte[0];}
+        @Override public Date getDate(int i) {return null;}
+        @Override public Time getTime(int i) {return null;}
+        @Override public Timestamp getTimestamp(int i) {return null;}
+        @Override public InputStream getAsciiStream(int i) {return null;}
+        @Override public InputStream getUnicodeStream(int i) {return null;}
+        @Override public InputStream getBinaryStream(int i) {return null;}
+        @Override public String getString(String s) {return null;}
+        @Override public boolean getBoolean(String s) {return false;}
+        @Override public byte getByte(String s) {return 0;}
+        @Override public short getShort(String s) {return 0;}
+        @Override public int getInt(String s) {return 0;}
+        @Override public long getLong(String s) {return 0;}
+        @Override public float getFloat(String s) {return 0;}
+        @Override public double getDouble(String s) {return 0;}
+        @Override public BigDecimal getBigDecimal(String s, int i) {return null;}
+        @Override public byte[] getBytes(String s) {return new byte[0];}
+        @Override public Date getDate(String s) {return null;}
+        @Override public Time getTime(String s) {return null;}
+        @Override public Timestamp getTimestamp(String s) {return null;}
+        @Override public InputStream getAsciiStream(String s) {return null;}
+        @Override public InputStream getUnicodeStream(String s) {return null;}
+        @Override public InputStream getBinaryStream(String s) {return null;}
+        @Override public SQLWarning getWarnings() {return null;}
+        @Override public void clearWarnings() {/*Does nothing*/}
+        @Override public String getCursorName() {return null;}
+        @Override public ResultSetMetaData getMetaData() {return null;}
         @Override public Object getObject(int i) {return data[rowIndex-1];}
         @Override public Object getObject(String s) throws SQLException {
             if(sqlException){
@@ -315,18 +246,18 @@ public class IJdbcTableTest {
             }
             return null;
         }
-        @Override public int findColumn(String s) throws SQLException {return 0;}
-        @Override public Reader getCharacterStream(int i) throws SQLException {return null;}
-        @Override public Reader getCharacterStream(String s) throws SQLException {return null;}
-        @Override public BigDecimal getBigDecimal(int i) throws SQLException {return null;}
-        @Override public BigDecimal getBigDecimal(String s) throws SQLException {return null;}
-        @Override public boolean isBeforeFirst() throws SQLException {return false;}
-        @Override public boolean isAfterLast() throws SQLException {return false;}
-        @Override public boolean isFirst() throws SQLException {return false;}
-        @Override public boolean isLast() throws SQLException {return false;}
-        @Override public void beforeFirst() throws SQLException {rowIndex = 0;}
-        @Override public void afterLast() throws SQLException {/*Does nothing*/}
-        @Override public boolean first() throws SQLException {return false;}
+        @Override public int findColumn(String s) {return 0;}
+        @Override public Reader getCharacterStream(int i) {return null;}
+        @Override public Reader getCharacterStream(String s) {return null;}
+        @Override public BigDecimal getBigDecimal(int i) {return null;}
+        @Override public BigDecimal getBigDecimal(String s) {return null;}
+        @Override public boolean isBeforeFirst() {return false;}
+        @Override public boolean isAfterLast() {return false;}
+        @Override public boolean isFirst() {return false;}
+        @Override public boolean isLast() {return false;}
+        @Override public void beforeFirst() {rowIndex = 0;}
+        @Override public void afterLast() {/*Does nothing*/}
+        @Override public boolean first() {return false;}
         @Override public boolean last() throws SQLException {
             if(!isIterable){
                 throw new SQLException();
@@ -342,142 +273,142 @@ public class IJdbcTableTest {
                 throw new SQLException();
             }
         }
-        @Override public boolean absolute(int i) throws SQLException {return false;}
-        @Override public boolean relative(int i) throws SQLException {return false;}
-        @Override public boolean previous() throws SQLException {return false;}
-        @Override public void setFetchDirection(int i) throws SQLException {/*Does nothing*/}
-        @Override public int getFetchDirection() throws SQLException {return 0;}
-        @Override public void setFetchSize(int i) throws SQLException {/*Does nothing*/}
-        @Override public int getFetchSize() throws SQLException {return 0;}
-        @Override public int getType() throws SQLException {return 0;}
-        @Override public int getConcurrency() throws SQLException {return 0;}
-        @Override public boolean rowUpdated() throws SQLException {return false;}
-        @Override public boolean rowInserted() throws SQLException {return false;}
-        @Override public boolean rowDeleted() throws SQLException {return false;}
-        @Override public void updateNull(int i) throws SQLException {/*Does nothing*/}
-        @Override public void updateBoolean(int i, boolean b) throws SQLException {/*Does nothing*/}
-        @Override public void updateByte(int i, byte b) throws SQLException {/*Does nothing*/}
-        @Override public void updateShort(int i, short i1) throws SQLException {/*Does nothing*/}
-        @Override public void updateInt(int i, int i1) throws SQLException {/*Does nothing*/}
-        @Override public void updateLong(int i, long l) throws SQLException {/*Does nothing*/}
-        @Override public void updateFloat(int i, float v) throws SQLException {/*Does nothing*/}
-        @Override public void updateDouble(int i, double v) throws SQLException {/*Does nothing*/}
-        @Override public void updateBigDecimal(int i, BigDecimal bigDecimal) throws SQLException {/*Does nothing*/}
-        @Override public void updateString(int i, String s) throws SQLException {/*Does nothing*/}
-        @Override public void updateBytes(int i, byte[] bytes) throws SQLException {/*Does nothing*/}
-        @Override public void updateDate(int i, Date date) throws SQLException {/*Does nothing*/}
-        @Override public void updateTime(int i, Time time) throws SQLException {/*Does nothing*/}
-        @Override public void updateTimestamp(int i, Timestamp timestamp) throws SQLException {/*Does nothing*/}
-        @Override public void updateAsciiStream(int i, InputStream inputStream, int i1) throws SQLException {/*Does nothing*/}
-        @Override public void updateBinaryStream(int i, InputStream inputStream, int i1) throws SQLException {/*Does nothing*/}
-        @Override public void updateCharacterStream(int i, Reader reader, int i1) throws SQLException {/*Does nothing*/}
-        @Override public void updateObject(int i, Object o, int i1) throws SQLException {/*Does nothing*/}
-        @Override public void updateObject(int i, Object o) throws SQLException {/*Does nothing*/}
-        @Override public void updateNull(String s) throws SQLException {/*Does nothing*/}
-        @Override public void updateBoolean(String s, boolean b) throws SQLException {/*Does nothing*/}
-        @Override public void updateByte(String s, byte b) throws SQLException {/*Does nothing*/}
-        @Override public void updateShort(String s, short i) throws SQLException {/*Does nothing*/}
-        @Override public void updateInt(String s, int i) throws SQLException {/*Does nothing*/}
-        @Override public void updateLong(String s, long l) throws SQLException {/*Does nothing*/}
-        @Override public void updateFloat(String s, float v) throws SQLException {/*Does nothing*/}
-        @Override public void updateDouble(String s, double v) throws SQLException {/*Does nothing*/}
-        @Override public void updateBigDecimal(String s, BigDecimal bigDecimal) throws SQLException {/*Does nothing*/}
-        @Override public void updateString(String s, String s1) throws SQLException {/*Does nothing*/}
-        @Override public void updateBytes(String s, byte[] bytes) throws SQLException {/*Does nothing*/}
-        @Override public void updateDate(String s, Date date) throws SQLException {/*Does nothing*/}
-        @Override public void updateTime(String s, Time time) throws SQLException {/*Does nothing*/}
-        @Override public void updateTimestamp(String s, Timestamp timestamp) throws SQLException {/*Does nothing*/}
-        @Override public void updateAsciiStream(String s, InputStream inputStream, int i) throws SQLException {/*Does nothing*/}
-        @Override public void updateBinaryStream(String s, InputStream inputStream, int i) throws SQLException {/*Does nothing*/}
-        @Override public void updateCharacterStream(String s, Reader reader, int i) throws SQLException {/*Does nothing*/}
-        @Override public void updateObject(String s, Object o, int i) throws SQLException {/*Does nothing*/}
-        @Override public void updateObject(String s, Object o) throws SQLException {/*Does nothing*/}
-        @Override public void insertRow() throws SQLException {/*Does nothing*/}
-        @Override public void updateRow() throws SQLException {/*Does nothing*/}
-        @Override public void deleteRow() throws SQLException {/*Does nothing*/}
-        @Override public void refreshRow() throws SQLException {/*Does nothing*/}
-        @Override public void cancelRowUpdates() throws SQLException {/*Does nothing*/}
-        @Override public void moveToInsertRow() throws SQLException {/*Does nothing*/}
-        @Override public void moveToCurrentRow() throws SQLException {/*Does nothing*/}
-        @Override public Statement getStatement() throws SQLException {return null;}
-        @Override public Object getObject(int i, Map<String, Class<?>> map) throws SQLException {return null;}
-        @Override public Ref getRef(int i) throws SQLException {return null;}
-        @Override public Blob getBlob(int i) throws SQLException {return null;}
-        @Override public Clob getClob(int i) throws SQLException {return null;}
-        @Override public Array getArray(int i) throws SQLException {return null;}
-        @Override public Object getObject(String s, Map<String, Class<?>> map) throws SQLException {return null;}
-        @Override public Ref getRef(String s) throws SQLException {return null;}
-        @Override public Blob getBlob(String s) throws SQLException {return null;}
-        @Override public Clob getClob(String s) throws SQLException {return null;}
-        @Override public Array getArray(String s) throws SQLException {return null;}
-        @Override public Date getDate(int i, Calendar calendar) throws SQLException {return null;}
-        @Override public Date getDate(String s, Calendar calendar) throws SQLException {return null;}
-        @Override public Time getTime(int i, Calendar calendar) throws SQLException {return null;}
-        @Override public Time getTime(String s, Calendar calendar) throws SQLException {return null;}
-        @Override public Timestamp getTimestamp(int i, Calendar calendar) throws SQLException {return null;}
-        @Override public Timestamp getTimestamp(String s, Calendar calendar) throws SQLException {return null;}
-        @Override public URL getURL(int i) throws SQLException {return null;}
-        @Override public URL getURL(String s) throws SQLException {return null;}
-        @Override public void updateRef(int i, Ref ref) throws SQLException {/*Does nothing*/}
-        @Override public void updateRef(String s, Ref ref) throws SQLException {/*Does nothing*/}
-        @Override public void updateBlob(int i, Blob blob) throws SQLException {/*Does nothing*/}
-        @Override public void updateBlob(String s, Blob blob) throws SQLException {/*Does nothing*/}
-        @Override public void updateClob(int i, Clob clob) throws SQLException {/*Does nothing*/}
-        @Override public void updateClob(String s, Clob clob) throws SQLException {/*Does nothing*/}
-        @Override public void updateArray(int i, Array array) throws SQLException {/*Does nothing*/}
-        @Override public void updateArray(String s, Array array) throws SQLException {/*Does nothing*/}
-        @Override public RowId getRowId(int i) throws SQLException {return null;}
-        @Override public RowId getRowId(String s) throws SQLException {return null;}
-        @Override public void updateRowId(int i, RowId rowId) throws SQLException {/*Does nothing*/}
-        @Override public void updateRowId(String s, RowId rowId) throws SQLException {/*Does nothing*/}
-        @Override public int getHoldability() throws SQLException {return 0;}
-        @Override public boolean isClosed() throws SQLException {return false;}
-        @Override public void updateNString(int i, String s) throws SQLException {/*Does nothing*/}
-        @Override public void updateNString(String s, String s1) throws SQLException {/*Does nothing*/}
-        @Override public void updateNClob(int i, NClob nClob) throws SQLException {/*Does nothing*/}
-        @Override public void updateNClob(String s, NClob nClob) throws SQLException {/*Does nothing*/}
-        @Override public NClob getNClob(int i) throws SQLException {return null;}
-        @Override public NClob getNClob(String s) throws SQLException {return null;}
-        @Override public SQLXML getSQLXML(int i) throws SQLException {return null;}
-        @Override public SQLXML getSQLXML(String s) throws SQLException {return null;}
-        @Override public void updateSQLXML(int i, SQLXML sqlxml) throws SQLException {/*Does nothing*/}
-        @Override public void updateSQLXML(String s, SQLXML sqlxml) throws SQLException {/*Does nothing*/}
-        @Override public String getNString(int i) throws SQLException {return null;}
-        @Override public String getNString(String s) throws SQLException {return null;}
-        @Override public Reader getNCharacterStream(int i) throws SQLException {return null;}
-        @Override public Reader getNCharacterStream(String s) throws SQLException {return null;}
-        @Override public void updateNCharacterStream(int i, Reader reader, long l) throws SQLException {/*Does nothing*/}
-        @Override public void updateNCharacterStream(String s, Reader reader, long l) throws SQLException {/*Does nothing*/}
-        @Override public void updateAsciiStream(int i, InputStream inputStream, long l) throws SQLException {/*Does nothing*/}
-        @Override public void updateBinaryStream(int i, InputStream inputStream, long l) throws SQLException {/*Does nothing*/}
-        @Override public void updateCharacterStream(int i, Reader reader, long l) throws SQLException {/*Does nothing*/}
-        @Override public void updateAsciiStream(String s, InputStream inputStream, long l) throws SQLException {/*Does nothing*/}
-        @Override public void updateBinaryStream(String s, InputStream inputStream, long l) throws SQLException {/*Does nothing*/}
-        @Override public void updateCharacterStream(String s, Reader reader, long l) throws SQLException {/*Does nothing*/}
-        @Override public void updateBlob(int i, InputStream inputStream, long l) throws SQLException {/*Does nothing*/}
-        @Override public void updateBlob(String s, InputStream inputStream, long l) throws SQLException {/*Does nothing*/}
-        @Override public void updateClob(int i, Reader reader, long l) throws SQLException {/*Does nothing*/}
-        @Override public void updateClob(String s, Reader reader, long l) throws SQLException {/*Does nothing*/}
-        @Override public void updateNClob(int i, Reader reader, long l) throws SQLException {/*Does nothing*/}
-        @Override public void updateNClob(String s, Reader reader, long l) throws SQLException {/*Does nothing*/}
-        @Override public void updateNCharacterStream(int i, Reader reader) throws SQLException {/*Does nothing*/}
-        @Override public void updateNCharacterStream(String s, Reader reader) throws SQLException {/*Does nothing*/}
-        @Override public void updateAsciiStream(int i, InputStream inputStream) throws SQLException {/*Does nothing*/}
-        @Override public void updateBinaryStream(int i, InputStream inputStream) throws SQLException {/*Does nothing*/}
-        @Override public void updateCharacterStream(int i, Reader reader) throws SQLException {/*Does nothing*/}
-        @Override public void updateAsciiStream(String s, InputStream inputStream) throws SQLException {/*Does nothing*/}
-        @Override public void updateBinaryStream(String s, InputStream inputStream) throws SQLException {/*Does nothing*/}
-        @Override public void updateCharacterStream(String s, Reader reader) throws SQLException {/*Does nothing*/}
-        @Override public void updateBlob(int i, InputStream inputStream) throws SQLException {/*Does nothing*/}
-        @Override public void updateBlob(String s, InputStream inputStream) throws SQLException {/*Does nothing*/}
-        @Override public void updateClob(int i, Reader reader) throws SQLException {/*Does nothing*/}
-        @Override public void updateClob(String s, Reader reader) throws SQLException {/*Does nothing*/}
-        @Override public void updateNClob(int i, Reader reader) throws SQLException {/*Does nothing*/}
-        @Override public void updateNClob(String s, Reader reader) throws SQLException {/*Does nothing*/}
-        @Override public <T> T getObject(int i, Class<T> aClass) throws SQLException {return null;}
-        @Override public <T> T getObject(String s, Class<T> aClass) throws SQLException {return null;}
-        @Override public <T> T unwrap(Class<T> aClass) throws SQLException {return null;}
-        @Override public boolean isWrapperFor(Class<?> aClass) throws SQLException {return false;}
+        @Override public boolean absolute(int i) {return false;}
+        @Override public boolean relative(int i) {return false;}
+        @Override public boolean previous() {return false;}
+        @Override public void setFetchDirection(int i) {/*Does nothing*/}
+        @Override public int getFetchDirection() {return ResultSet.FETCH_FORWARD;}
+        @Override public void setFetchSize(int i) {/*Does nothing*/}
+        @Override public int getFetchSize() {return 0;}
+        @Override public int getType() {return ResultSet.TYPE_FORWARD_ONLY;}
+        @Override public int getConcurrency() {return ResultSet.CONCUR_READ_ONLY;}
+        @Override public boolean rowUpdated() {return false;}
+        @Override public boolean rowInserted() {return false;}
+        @Override public boolean rowDeleted() {return false;}
+        @Override public void updateNull(int i) {/*Does nothing*/}
+        @Override public void updateBoolean(int i, boolean b) {/*Does nothing*/}
+        @Override public void updateByte(int i, byte b) {/*Does nothing*/}
+        @Override public void updateShort(int i, short i1) {/*Does nothing*/}
+        @Override public void updateInt(int i, int i1) {/*Does nothing*/}
+        @Override public void updateLong(int i, long l) {/*Does nothing*/}
+        @Override public void updateFloat(int i, float v) {/*Does nothing*/}
+        @Override public void updateDouble(int i, double v) {/*Does nothing*/}
+        @Override public void updateBigDecimal(int i, BigDecimal bigDecimal) {/*Does nothing*/}
+        @Override public void updateString(int i, String s) {/*Does nothing*/}
+        @Override public void updateBytes(int i, byte[] bytes) {/*Does nothing*/}
+        @Override public void updateDate(int i, Date date) {/*Does nothing*/}
+        @Override public void updateTime(int i, Time time) {/*Does nothing*/}
+        @Override public void updateTimestamp(int i, Timestamp timestamp) {/*Does nothing*/}
+        @Override public void updateAsciiStream(int i, InputStream inputStream, int i1) {/*Does nothing*/}
+        @Override public void updateBinaryStream(int i, InputStream inputStream, int i1) {/*Does nothing*/}
+        @Override public void updateCharacterStream(int i, Reader reader, int i1) {/*Does nothing*/}
+        @Override public void updateObject(int i, Object o, int i1) {/*Does nothing*/}
+        @Override public void updateObject(int i, Object o) {/*Does nothing*/}
+        @Override public void updateNull(String s) {/*Does nothing*/}
+        @Override public void updateBoolean(String s, boolean b) {/*Does nothing*/}
+        @Override public void updateByte(String s, byte b) {/*Does nothing*/}
+        @Override public void updateShort(String s, short i) {/*Does nothing*/}
+        @Override public void updateInt(String s, int i) {/*Does nothing*/}
+        @Override public void updateLong(String s, long l) {/*Does nothing*/}
+        @Override public void updateFloat(String s, float v) {/*Does nothing*/}
+        @Override public void updateDouble(String s, double v) {/*Does nothing*/}
+        @Override public void updateBigDecimal(String s, BigDecimal bigDecimal) {/*Does nothing*/}
+        @Override public void updateString(String s, String s1) {/*Does nothing*/}
+        @Override public void updateBytes(String s, byte[] bytes) {/*Does nothing*/}
+        @Override public void updateDate(String s, Date date) {/*Does nothing*/}
+        @Override public void updateTime(String s, Time time) {/*Does nothing*/}
+        @Override public void updateTimestamp(String s, Timestamp timestamp) {/*Does nothing*/}
+        @Override public void updateAsciiStream(String s, InputStream inputStream, int i) {/*Does nothing*/}
+        @Override public void updateBinaryStream(String s, InputStream inputStream, int i) {/*Does nothing*/}
+        @Override public void updateCharacterStream(String s, Reader reader, int i) {/*Does nothing*/}
+        @Override public void updateObject(String s, Object o, int i) {/*Does nothing*/}
+        @Override public void updateObject(String s, Object o) {/*Does nothing*/}
+        @Override public void insertRow() {/*Does nothing*/}
+        @Override public void updateRow() {/*Does nothing*/}
+        @Override public void deleteRow() {/*Does nothing*/}
+        @Override public void refreshRow() {/*Does nothing*/}
+        @Override public void cancelRowUpdates() {/*Does nothing*/}
+        @Override public void moveToInsertRow() {/*Does nothing*/}
+        @Override public void moveToCurrentRow() {/*Does nothing*/}
+        @Override public Statement getStatement() {return null;}
+        @Override public Object getObject(int i, Map<String, Class<?>> map) {return null;}
+        @Override public Ref getRef(int i) {return null;}
+        @Override public Blob getBlob(int i) {return null;}
+        @Override public Clob getClob(int i) {return null;}
+        @Override public Array getArray(int i) {return null;}
+        @Override public Object getObject(String s, Map<String, Class<?>> map) {return null;}
+        @Override public Ref getRef(String s) {return null;}
+        @Override public Blob getBlob(String s) {return null;}
+        @Override public Clob getClob(String s) {return null;}
+        @Override public Array getArray(String s) {return null;}
+        @Override public Date getDate(int i, Calendar calendar) {return null;}
+        @Override public Date getDate(String s, Calendar calendar) {return null;}
+        @Override public Time getTime(int i, Calendar calendar) {return null;}
+        @Override public Time getTime(String s, Calendar calendar) {return null;}
+        @Override public Timestamp getTimestamp(int i, Calendar calendar) {return null;}
+        @Override public Timestamp getTimestamp(String s, Calendar calendar) {return null;}
+        @Override public URL getURL(int i) {return null;}
+        @Override public URL getURL(String s) {return null;}
+        @Override public void updateRef(int i, Ref ref) {/*Does nothing*/}
+        @Override public void updateRef(String s, Ref ref) {/*Does nothing*/}
+        @Override public void updateBlob(int i, Blob blob) {/*Does nothing*/}
+        @Override public void updateBlob(String s, Blob blob) {/*Does nothing*/}
+        @Override public void updateClob(int i, Clob clob) {/*Does nothing*/}
+        @Override public void updateClob(String s, Clob clob) {/*Does nothing*/}
+        @Override public void updateArray(int i, Array array) {/*Does nothing*/}
+        @Override public void updateArray(String s, Array array) {/*Does nothing*/}
+        @Override public RowId getRowId(int i) {return null;}
+        @Override public RowId getRowId(String s) {return null;}
+        @Override public void updateRowId(int i, RowId rowId) {/*Does nothing*/}
+        @Override public void updateRowId(String s, RowId rowId) {/*Does nothing*/}
+        @Override public int getHoldability() {return ResultSet.HOLD_CURSORS_OVER_COMMIT;}
+        @Override public boolean isClosed() {return false;}
+        @Override public void updateNString(int i, String s) {/*Does nothing*/}
+        @Override public void updateNString(String s, String s1) {/*Does nothing*/}
+        @Override public void updateNClob(int i, NClob nClob) {/*Does nothing*/}
+        @Override public void updateNClob(String s, NClob nClob) {/*Does nothing*/}
+        @Override public NClob getNClob(int i) {return null;}
+        @Override public NClob getNClob(String s) {return null;}
+        @Override public SQLXML getSQLXML(int i) {return null;}
+        @Override public SQLXML getSQLXML(String s) {return null;}
+        @Override public void updateSQLXML(int i, SQLXML sqlxml) {/*Does nothing*/}
+        @Override public void updateSQLXML(String s, SQLXML sqlxml) {/*Does nothing*/}
+        @Override public String getNString(int i) {return null;}
+        @Override public String getNString(String s) {return null;}
+        @Override public Reader getNCharacterStream(int i) {return null;}
+        @Override public Reader getNCharacterStream(String s) {return null;}
+        @Override public void updateNCharacterStream(int i, Reader reader, long l) {/*Does nothing*/}
+        @Override public void updateNCharacterStream(String s, Reader reader, long l) {/*Does nothing*/}
+        @Override public void updateAsciiStream(int i, InputStream inputStream, long l) {/*Does nothing*/}
+        @Override public void updateBinaryStream(int i, InputStream inputStream, long l) {/*Does nothing*/}
+        @Override public void updateCharacterStream(int i, Reader reader, long l) {/*Does nothing*/}
+        @Override public void updateAsciiStream(String s, InputStream inputStream, long l) {/*Does nothing*/}
+        @Override public void updateBinaryStream(String s, InputStream inputStream, long l) {/*Does nothing*/}
+        @Override public void updateCharacterStream(String s, Reader reader, long l) {/*Does nothing*/}
+        @Override public void updateBlob(int i, InputStream inputStream, long l) {/*Does nothing*/}
+        @Override public void updateBlob(String s, InputStream inputStream, long l) {/*Does nothing*/}
+        @Override public void updateClob(int i, Reader reader, long l) {/*Does nothing*/}
+        @Override public void updateClob(String s, Reader reader, long l) {/*Does nothing*/}
+        @Override public void updateNClob(int i, Reader reader, long l) {/*Does nothing*/}
+        @Override public void updateNClob(String s, Reader reader, long l) {/*Does nothing*/}
+        @Override public void updateNCharacterStream(int i, Reader reader) {/*Does nothing*/}
+        @Override public void updateNCharacterStream(String s, Reader reader) {/*Does nothing*/}
+        @Override public void updateAsciiStream(int i, InputStream inputStream) {/*Does nothing*/}
+        @Override public void updateBinaryStream(int i, InputStream inputStream) {/*Does nothing*/}
+        @Override public void updateCharacterStream(int i, Reader reader) {/*Does nothing*/}
+        @Override public void updateAsciiStream(String s, InputStream inputStream) {/*Does nothing*/}
+        @Override public void updateBinaryStream(String s, InputStream inputStream) {/*Does nothing*/}
+        @Override public void updateCharacterStream(String s, Reader reader) {/*Does nothing*/}
+        @Override public void updateBlob(int i, InputStream inputStream) {/*Does nothing*/}
+        @Override public void updateBlob(String s, InputStream inputStream) {/*Does nothing*/}
+        @Override public void updateClob(int i, Reader reader) {/*Does nothing*/}
+        @Override public void updateClob(String s, Reader reader) {/*Does nothing*/}
+        @Override public void updateNClob(int i, Reader reader) {/*Does nothing*/}
+        @Override public void updateNClob(String s, Reader reader) {/*Does nothing*/}
+        @Override public <T> T getObject(int i, Class<T> aClass) {return null;}
+        @Override public <T> T getObject(String s, Class<T> aClass) {return null;}
+        @Override public <T> T unwrap(Class<T> aClass) {return null;}
+        @Override public boolean isWrapperFor(Class<?> aClass) {return false;}
         @Override public Collection<String> getColumnNames() {return null;}
         @Override public boolean hasColumn(String columnName, Class clazz) {return false;}
         @Override public int getRowCount() {return 0;}

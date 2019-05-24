@@ -54,17 +54,12 @@ import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.Point;
 import org.orbisgis.datamanager.h2gis.H2gisSpatialTable;
 import org.orbisgis.datamanagerapi.dataset.*;
-import org.orbisgis.datamanagerapi.dsl.IConditionOrOptionBuilder;
-import org.orbisgis.datamanagerapi.dsl.IOptionBuilder;
 
 import javax.sql.rowset.RowSetMetaDataImpl;
-import java.io.InputStream;
-import java.io.Reader;
-import java.math.BigDecimal;
-import java.net.URL;
 import java.sql.*;
-import java.sql.Date;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -76,8 +71,6 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 //TODO test with a postgis database
 public class JdbcTableTest {
-
-    private static final String LOCATION = "caTAlog.schEma.TAbLe";
 
     /** Database connection */
     private static Connection connection;
@@ -429,11 +422,12 @@ public class JdbcTableTest {
         /** True if throws exception, false otherwise. */
         private boolean sqlException = false;
         /** Private data. */
-        private Object privateData = "tutu";
+        private Object privateData;
 
         private DummyJdbcTable(DataBaseType dataBaseType, JdbcDataSource jdbcDataSource, TableLocation tableLocation,
                                Statement statement, String baseQuery) {
             super(dataBaseType, jdbcDataSource, tableLocation, statement, baseQuery);
+            privateData = "tutu";
         }
 
         @Override protected ResultSet getResultSet() {
@@ -453,14 +447,6 @@ public class JdbcTableTest {
             }
             return resultSet;}
 
-        /**
-         * True if throws exception, false otherwise.
-         * @param sqlException True if throws exception, false otherwise.
-         */
-        private void setException(boolean sqlException){
-            this.sqlException = sqlException;
-        }
-
         private void getPrivateMethod(){/*Does nothing*/}
         public Object[] getArrayMethod(Object[] array){return array;}
         public Object[] getParametersMethod(String param1, Double param2){return new Object[]{param1, param2};}
@@ -479,30 +465,5 @@ public class JdbcTableTest {
         }
 
         @Override public Object asType(Class clazz) {return null;}
-        /*@Override public Object getObject(int i) {return data[rowIndex-1];}
-        @Override public Object getObject(String s) throws SQLException {
-            if(sqlException){
-                throw new SQLException();
-            }
-            if("data".equals(s)){
-                return data;
-            }
-            return null;
-        }*/
-        /*@Override public boolean last() throws SQLException {
-            if(!isIterable){
-                throw new SQLException();
-            }
-            rowIndex = data.length;
-            return true;
-        }
-        @Override public int getRow() throws SQLException {
-            if(!sqlException) {
-                return rowIndex;
-            }
-            else{
-                throw new SQLException();
-            }
-        }*/
     }
 }

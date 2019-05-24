@@ -55,12 +55,9 @@ import org.orbisgis.datamanagerapi.dataset.ITable;
 import org.orbisgis.datamanagerapi.dsl.IConditionOrOptionBuilder;
 import org.orbisgis.datamanagerapi.dsl.IOptionBuilder;
 
-import java.io.InputStream;
-import java.io.Reader;
-import java.math.BigDecimal;
-import java.net.URL;
-import java.sql.*;
-import java.util.Calendar;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Collection;
 import java.util.Map;
 

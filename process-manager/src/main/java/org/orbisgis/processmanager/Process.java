@@ -165,7 +165,7 @@ public class Process implements IProcess {
         for (Map.Entry<String, Class> entry : inputs.entrySet()) {
             if (!inputDataMap.containsKey(entry.getKey())) {
                 if(defaultValues.get(entry.getKey()) == null){
-                    LOGGER.error("The parameter " + entry.getKey() + "has no default value.");
+                    LOGGER.error("The parameter " + entry.getKey() + " has no default value.");
                     return null;
                 }
                 cl = cl.ncurry(curryIndex, defaultValues.get(entry.getKey()));

@@ -245,7 +245,7 @@ public class ITableTest {
         /**
          * Main constructor with an empty column list.
          */
-        public DummyTable(){
+        private DummyTable(){
             columns = new ArrayList<>();
         }
 
@@ -255,7 +255,7 @@ public class ITableTest {
          * @param columnName Name of the column.
          * @param values Values of the column.
          */
-        public void addColumn(String columnName, List<Object> values){
+        private void addColumn(String columnName, List<Object> values){
             List<Object> list = new ArrayList<>();
             list.add(columnName);
             list.addAll(values);
@@ -292,6 +292,6 @@ public class ITableTest {
         @Override public String getLocation() {return null;}
         @Override public String getName() {return null;}
         @Override public Object getMetadata() {return null;}
-        @Override public Iterator<Object> iterator() {return null;}
+        @Override public Iterator<Object> iterator() {return new ResultSetIterator();}
     }
 }

@@ -61,7 +61,8 @@ class GroovyH2GISTest {
     void testColumnsType() throws SQLException {
         def h2GIS = H2GIS.open([databaseName: './target/loadH2GIS'])
         assertNotNull h2GIS
-        h2GIS.execute("DROP TABLE IF EXISTS TYPES")
+        def name = "TYPES"
+        h2GIS.execute("DROP TABLE IF EXISTS $name")
         h2GIS.execute("CREATE TABLE TYPES (colint INT, colreal REAL, colint2 MEDIUMINT, coltime TIME, " +
                 "colvarchar VARCHAR2, colbool boolean, coltiny tinyint, colpoint POINT, colgeom GEOMETRY)")
         assertTrue(h2GIS.getTable("TYPES").hasColumn("colint", Integer.class))

@@ -60,6 +60,7 @@ import java.io.*;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Map;
+import java.util.logging.Level;
 
 /**
  * Abstract class used to implements the request builder methods (select, from ...) in order to give a base to all the
@@ -78,18 +79,21 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, ISe
         super(parent);
         this.metaClass = InvokerHelper.getMetaClass(getClass());
         this.databaseType = databaseType;
+        LOG.setLevel(Level.OFF);
     }
 
     public JdbcDataSource(DataSource dataSource, DataBaseType databaseType) {
         super(dataSource);
         this.metaClass = InvokerHelper.getMetaClass(getClass());
         this.databaseType = databaseType;
+        LOG.setLevel(Level.OFF);
     }
 
     public JdbcDataSource(Connection connection, DataBaseType databaseType) {
         super(connection);
         this.metaClass = InvokerHelper.getMetaClass(getClass());
         this.databaseType = databaseType;
+        LOG.setLevel(Level.OFF);
     }
 
     public DataBaseType getDataBaseType(){

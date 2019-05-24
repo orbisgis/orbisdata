@@ -37,8 +37,11 @@
 package org.orbisgis.datamanager;
 
 import groovy.lang.MetaClass;
+import groovy.lang.MissingMethodException;
+import groovy.lang.MissingPropertyException;
 import groovy.sql.Sql;
 import org.codehaus.groovy.runtime.InvokerHelper;
+import org.codehaus.groovy.runtime.InvokerInvocationException;
 import org.h2gis.functions.factory.H2GISDBFactory;
 import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.TableLocation;
@@ -50,11 +53,9 @@ import org.junit.jupiter.api.Test;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.Point;
 import org.orbisgis.datamanager.h2gis.H2gisSpatialTable;
-import org.orbisgis.datamanagerapi.dataset.DataBaseType;
-import org.orbisgis.datamanagerapi.dataset.IDataSet;
-import org.orbisgis.datamanagerapi.dataset.ISpatialTable;
-import org.orbisgis.datamanagerapi.dataset.ITable;
+import org.orbisgis.datamanagerapi.dataset.*;
 
+import javax.sql.rowset.RowSetMetaDataImpl;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -310,33 +311,65 @@ public class JdbcTableTest {
 
 
     /**
-     * Simple implementation of the {@link JdbcTable} abstract class for test purpose.
+     * Test the {@link JdbcTable#invokeMethod(String, Object)} method.
      */
-    private class DummyJdbcTable extends JdbcTable{
+    @Test
+    public void testInvokeMethod(){
+        JdbcTable table = getTable();
+        assertEquals(table.getLocation(), table.invokeMethod("getLocation", null));
+        assertEquals(table.getLocation(), table.invokeMethod("location", null));
+        assertArrayEquals(new Object[]{"string", 0.2}, (Object[])table.invokeMethod("getArrayMethod", new Object[]{"string", 0.2}));
+        assertArrayEquals(new Object[]{"string", 0.2}, (Object[])table.invokeMethod("arrayMethod", new Object[]{"string", 0.2}));
+        assertArrayEquals(new Object[]{"string", 0.2}, (Object[])table.invokeMethod("getParametersMethod", new Object[]{"string", 0.2}));
+        assertArrayEquals(new Object[]{"string", 0.2}, (Object[])table.invokeMethod("parametersMethod", new Object[]{"string", 0.2}));
+        assertArrayEquals(new Object[]{"string", "0.2"}, (Object[])table.invokeMethod("getParametersMethod", new Object[]{"string", "0.2"}));
+        assertArrayEquals(new Object[]{"string", "0.2"}, (Object[])table.invokeMethod("parametersMethod", new Object[]{"string", "0.2"}));
+        assertEquals("string", table.invokeMethod("getParameterMethod", new Object[]{"string"}));
+        assertEquals("string", table.invokeMethod("getParameterMethod", "string"));
+        assertEquals("string", table.invokeMethod("parameterMethod", new Object[]{"string"}));
+        assertEquals("string", table.invokeMethod("parameterMethod", "string"));
+        assertEquals(RowSetMetaDataImpl.class, table.invokeMethod("metadata", null).getClass());
 
-        private DummyJdbcTable(DataBaseType dataBaseType, JdbcDataSource jdbcDataSource, TableLocation tableLocation,
-                              Statement statement, String baseQuery) {
-            super(dataBaseType, jdbcDataSource, tableLocation, statement, baseQuery);
-        }
+        assertThrows(MissingMethodException.class, () -> table.invokeMethod("getLocation", new String[]{"tata", "toto"}));
+        assertThrows(MissingMethodException.class, () -> table.invokeMethod("location", new String[]{"tata", "toto"}));
+        assertNull(table.invokeMethod("getPrivateMethod", null));
+        assertNull(table.invokeMethod("privateMethod", null));
+    }
 
-        @Override protected ResultSet getResultSet() {
-            if(resultSet == null) {
-                try {
-                    resultSet = getStatement().executeQuery(getBaseQuery());
-                } catch (SQLException e) {
-                    LOGGER.error("Unable to execute the query '"+getBaseQuery()+"'.\n"+e.getLocalizedMessage());
-                    return null;
-                }
-                try {
-                    resultSet.beforeFirst();
-                } catch (SQLException e) {
-                    LOGGER.error("Unable to go before the first ResultSet row.\n" + e.getLocalizedMessage());
-                    return null;
-                }
-            }
-            return resultSet;}
-        @Override public ResultSetMetaData getMetadata() {return null;}
-        @Override public Object asType(Class clazz) {return null;}
+    /**
+     * Test the {@link JdbcTable#getProperty(String)} method.
+     */
+    @Test
+    public void testGetProperty(){
+        JdbcTable table = getTable();
+        assertThrows(MissingPropertyException.class, () -> table.getProperty("getLocation"));
+        assertEquals(table.getLocation(), table.getProperty("location"));
+        assertEquals(RowSetMetaDataImpl.class, table.getProperty("meta").getClass());
+        assertArrayEquals(new Object[]{"string", 0.2}, (Object[])table.getProperty("data"));
+        assertEquals("tutu", table.getProperty("privateData"));
+        assertNull(table.getProperty(null));
+    }
+
+    /**
+     * Test the {@link JdbcTable#setProperty(String, Object)} method.
+     */
+    @Test
+    public void testSetProperty(){
+        JdbcTable table = getTable();
+        assertThrows(MissingPropertyException.class, () -> table.setProperty("getLocation", "tata"));
+        table.setProperty("privateData", "toto");
+        assertEquals("toto", table.getProperty("privateData"));
+    }
+
+    /**
+     * Test the {@link IJdbcTable} methods with {@link SQLException} thrown.
+     */
+    @Test
+    public void testSQLException() {
+        DummyJdbcTable table = getTable();
+
+        assertNotNull(table.getProperty("data"));
+        assertThrows(InvokerInvocationException.class, () -> table.invokeMethod("dupMethod", null));
     }
 
     /**
@@ -374,5 +407,63 @@ public class JdbcTableTest {
                 }
         return null;}
         @Override public IDataSet getDataSet(String name) {return null;}
+    }
+
+
+    /**
+     * Simple implementation of the {@link IJdbcTable} interface.
+     */
+    private static class DummyJdbcTable extends JdbcTable{
+
+        /** Fake row index. */
+        private int rowIndex = 0;
+        /** Fake data. */
+        private Object[] data = new Object[]{"string", 0.2};
+        /** True if throws exception, false otherwise. */
+        private boolean sqlException = false;
+        /** Private data. */
+        private Object privateData;
+
+        private DummyJdbcTable(DataBaseType dataBaseType, JdbcDataSource jdbcDataSource, TableLocation tableLocation,
+                               Statement statement, String baseQuery) {
+            super(dataBaseType, jdbcDataSource, tableLocation, statement, baseQuery);
+            privateData = "tutu";
+        }
+
+        @Override protected ResultSet getResultSet() {
+            if(resultSet == null) {
+                try {
+                    resultSet = getStatement().executeQuery(getBaseQuery());
+                } catch (SQLException e) {
+                    LOGGER.error("Unable to execute the query '"+getBaseQuery()+"'.\n"+e.getLocalizedMessage());
+                    return null;
+                }
+                try {
+                    resultSet.beforeFirst();
+                } catch (SQLException e) {
+                    LOGGER.error("Unable to go before the first ResultSet row.\n" + e.getLocalizedMessage());
+                    return null;
+                }
+            }
+            return resultSet;}
+
+        private void getPrivateMethod(){/*Does nothing*/}
+        public Object[] getArrayMethod(Object[] array){return array;}
+        public Object[] getParametersMethod(String param1, Double param2){return new Object[]{param1, param2};}
+        public Object[] getParametersMethod(Object param1, Object param2){return new Object[]{param1, param2};}
+        public String getParameterMethod(String param1){return param1;}
+        public void dupMethod() throws IllegalAccessException {throw new IllegalAccessException();}
+
+        @Override public ResultSetMetaData getMetadata() {return new RowSetMetaDataImpl();}
+        @Override public boolean next() throws SQLException {
+            if(!sqlException) {
+                return rowIndex++ < data.length;
+            }
+            else{
+                throw new SQLException();
+            }
+        }
+
+        @Override public Object asType(Class clazz) {return null;}
     }
 }

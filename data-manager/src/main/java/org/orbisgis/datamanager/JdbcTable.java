@@ -321,10 +321,14 @@ public abstract class JdbcTable extends DefaultResultSet implements IJdbcTable, 
         if(propertyName.equals(META_PROPERTY)){
             return getMetadata();
         }
-        if(getColumnNames()!= null &&
-                (getColumnNames().contains(propertyName.toLowerCase()) || getColumnNames().contains(propertyName.toUpperCase()))
+        Collection<String> columns = getColumnNames();
+        if(columns!= null &&
+                (columns.contains(propertyName.toLowerCase()) || columns.contains(propertyName.toUpperCase()))
                 || "id".equals(propertyName)) {
             try {
+                if(isBeforeFirst()){
+                    return new JdbcColumn(propertyName, this.getName(), getJdbcDataSource());
+                }
                 return getObject(propertyName);
             } catch (SQLException e) {
                 LOGGER.debug("Unable to find the column '" + propertyName + "'.\n" + e.getLocalizedMessage());

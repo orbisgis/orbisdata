@@ -546,4 +546,21 @@ class GroovyH2GISTest {
 
         assertNull h2GIS.getLocation() as Geometry
     }
+
+    @Test
+    void testColumn(){
+        def h2GIS = H2GIS.open('./target/orbisgis')
+        h2GIS.execute("""
+                DROP TABLE IF EXISTS orbisgis;
+                CREATE TABLE orbisgis (id int, the_geom point);
+                INSERT INTO orbisgis VALUES (1, 'POINT(10 10)'::GEOMETRY), (2, 'POINT(1 1)'::GEOMETRY);
+        """)
+        assertEquals "INTEGER", h2GIS.getSpatialTable("orbisgis").id.type
+        assertEquals "ID", h2GIS.getSpatialTable("orbisgis").id.name
+        assertEquals 2, h2GIS.getSpatialTable("orbisgis").id.size
+        assertFalse h2GIS.getSpatialTable("orbisgis").the_geom.indexed
+        h2GIS.getSpatialTable("orbisgis").the_geom.createSpatialIndex()
+        assertTrue h2GIS.getSpatialTable("orbisgis").the_geom.indexed
+        assertTrue h2GIS.getSpatialTable("orbisgis").the_geom.spatialIndexed
+    }
 }

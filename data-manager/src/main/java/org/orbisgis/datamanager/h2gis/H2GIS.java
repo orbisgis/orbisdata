@@ -200,9 +200,9 @@ public class H2GIS extends JdbcDataSource {
 
     @Override
     public ITable getTable(String tableName) {
+        tableName = TableLocation.parse(tableName, getDataBaseType().equals(DataBaseType.H2GIS)).toString( getDataBaseType().equals(DataBaseType.H2GIS));
         try {
-            if(!JDBCUtilities.tableExists(connectionWrapper,
-                    TableLocation.parse(tableName, getDataBaseType().equals(DataBaseType.H2GIS)).getTable())){
+            if(!JDBCUtilities.tableExists(connectionWrapper,tableName)){
                 return null;
             }
         } catch (SQLException e) {
@@ -230,9 +230,9 @@ public class H2GIS extends JdbcDataSource {
 
     @Override
     public ISpatialTable getSpatialTable(String tableName) {
+        tableName = TableLocation.parse(tableName, getDataBaseType().equals(DataBaseType.H2GIS)).toString( getDataBaseType().equals(DataBaseType.H2GIS));
         try {
-            if(!JDBCUtilities.tableExists(connectionWrapper,
-                    TableLocation.parse(tableName, getDataBaseType().equals(DataBaseType.H2GIS)).getTable())){
+            if(!JDBCUtilities.tableExists(connectionWrapper, tableName)){
                 return null;
             }
         } catch (SQLException e) {

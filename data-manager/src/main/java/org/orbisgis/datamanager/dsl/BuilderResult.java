@@ -40,6 +40,7 @@ import groovy.lang.Closure;
 import org.h2gis.utilities.TableLocation;
 import org.h2gis.utilities.wrapper.StatementWrapper;
 import org.orbisgis.commons.printer.Ascii;
+import org.orbisgis.commons.printer.ICustomPrinter;
 import org.orbisgis.datamanager.JdbcDataSource;
 import org.orbisgis.datamanager.h2gis.H2gisSpatialTable;
 import org.orbisgis.datamanager.h2gis.H2gisTable;
@@ -86,7 +87,7 @@ public abstract class BuilderResult implements IBuilderResult {
 
     @Override
     public Object asType(Class clazz) {
-        if(clazz.equals(Ascii.class)){
+        if(ICustomPrinter.class.isAssignableFrom(clazz)){
             return this.getTable().asType(clazz);
         }
         Statement statement;

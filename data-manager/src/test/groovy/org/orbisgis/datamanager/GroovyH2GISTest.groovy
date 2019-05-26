@@ -40,6 +40,7 @@ import org.junit.jupiter.api.Test
 import org.locationtech.jts.geom.Geometry
 import org.locationtech.jts.geom.Point
 import org.orbisgis.commons.printer.Ascii
+import org.orbisgis.commons.printer.Html
 import org.orbisgis.datamanager.h2gis.H2GIS
 import org.orbisgis.datamanagerapi.dataset.ISpatialTable
 import org.orbisgis.datamanagerapi.dataset.ITable
@@ -523,8 +524,6 @@ class GroovyH2GISTest {
         assertNull h2GIS.load(osmFile, "OSM")
         assertNull h2GIS.load(osmFile, "OSM", true)
 
-        println h2GIS.getTable("INFORMATION_SCHEMA.COLUMNS") as Ascii
-
         h2GIS.eachRow "SELECT count(TABLE_NAME) as nb FROM INFORMATION_SCHEMA.TABLES where TABLE_NAME LIKE 'OSM%'",
                 { row ->
                     assertEquals 11,row.nb
@@ -595,5 +594,27 @@ class GroovyH2GISTest {
                 "|                  1|POINT (10 10)      |just a string a ...|\n" +
                 "+-------------------+-------------------+-------------------+\n",
                 (h2GIS.getSpatialTable("orbisgis").limit(1) as Ascii).toString())
+        assertEquals "<table>\n" +
+                "<caption>ORBISGIS</caption>\n" +
+                "<tr></tr>\n" +
+                "<tr>\n" +
+                "<th align=\"CENTER\">ID</th>\n" +
+                "<th align=\"CENTER\">THE_GEOM</th>\n" +
+                "<th align=\"CENTER\">VERY_LONG_TITLE_TO_TEST_SIZE_LIMITS</th>\n" +
+                "</tr>\n" +
+                "<tr></tr>\n" +
+                "<tr>\n" +
+                "<td align=\"RIGHT\">1</td>\n" +
+                "<td align=\"LEFT\">POINT (10 10)</td>\n" +
+                "<td align=\"LEFT\">just a string a bit too long</td>\n" +
+                "</tr>\n" +
+                "<tr>\n" +
+                "<td align=\"RIGHT\">2</td>\n" +
+                "<td align=\"LEFT\">POINT (1 1)</td>\n" +
+                "<td align=\"LEFT\">another string</td>\n" +
+                "</tr>\n" +
+                "<tr></tr>\n" +
+                "</table>\n",
+                (h2GIS.getSpatialTable("orbisgis") as Html).toString()
     }
 }

@@ -46,6 +46,8 @@ import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.TableLocation;
 import org.locationtech.jts.geom.Geometry;
 import org.orbisgis.commons.printer.Ascii;
+import org.orbisgis.commons.printer.Html;
+import org.orbisgis.commons.printer.ICustomPrinter;
 import org.orbisgis.datamanager.dsl.OptionBuilder;
 import org.orbisgis.datamanager.dsl.WhereBuilder;
 import org.orbisgis.datamanager.io.IOMethods;
@@ -62,7 +64,7 @@ import java.sql.Statement;
 import java.util.Collection;
 import java.util.Map;
 
-import static org.orbisgis.commons.printer.Ascii.CellPosition.*;
+import static org.orbisgis.commons.printer.ICustomPrinter.CellPosition.*;
 
 /**
  * Contains the methods which are in common to all the IJdbcTable subclasses.
@@ -354,41 +356,47 @@ public abstract class JdbcTable extends DefaultResultSet implements IJdbcTable, 
 
     @Override
     public Object asType(Class clazz){
-        if(clazz.equals(Ascii.class)){
+        if(ICustomPrinter.class.isAssignableFrom(clazz)){
             StringBuilder builder = new StringBuilder();
+            ICustomPrinter printer;
+            if(clazz == Ascii.class){
+                printer = new Ascii(builder);
+            }
+            else if(clazz == Html.class){
+                printer = new Html(builder);
+            }
+            else{
+                return this;
+            }
             Collection<String> columnNames = getColumnNames();
 
-            Ascii ascii = new Ascii(builder);
-            ascii.startTable(ASCII_COLUMN_WIDTH, 1);
-            ascii.appendTableLineSeparator();
-            ascii.appendTableValue(this.getName(), CENTER);
-            ascii.endTable();
-            ascii.startTable(ASCII_COLUMN_WIDTH, columnNames.size());
-            ascii.appendTableLineSeparator();
+            printer.startTable(ASCII_COLUMN_WIDTH, columnNames.size());
+            printer.appendTableTitle(this.getName());
+            printer.appendTableLineSeparator();
             for(String column : columnNames){
-                ascii.appendTableValue(column, CENTER);
+                printer.appendTableHeaderValue(column, CENTER);
             }
-            ascii.appendTableLineSeparator();
+            printer.appendTableLineSeparator();
             ResultSet rs = getResultSet();
             try {
                 while (rs.next()) {
                     for (String column : columnNames) {
                         Object obj = rs.getObject(column);
                         if(obj instanceof Number){
-                            ascii.appendTableValue(rs.getObject(column), RIGHT);
+                            printer.appendTableValue(rs.getObject(column), RIGHT);
                         }
                         else{
-                            ascii.appendTableValue(rs.getObject(column), LEFT);
+                            printer.appendTableValue(rs.getObject(column), LEFT);
                         }
                     }
                 }
             } catch(Exception e){
                 LOGGER.error("Error while reading the table '"+getName()+"'.\n" + e.getLocalizedMessage());
             }
-            ascii.appendTableLineSeparator();
-            ascii.endTable();
+            printer.appendTableLineSeparator();
+            printer.endTable();
 
-            return ascii;
+            return printer;
         }
         return this;
     }

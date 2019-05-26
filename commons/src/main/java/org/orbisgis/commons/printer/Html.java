@@ -42,7 +42,7 @@ package org.orbisgis.commons.printer;
  * @author Erwan Bocher (CNRS)
  * @author Sylvain PALOMINOS (UBS 2019)
  */
-public class Html extends ICustomPrinter.CustomPrinter {
+public class Html extends CustomPrinter {
 
     /**
      * Main constructor.
@@ -51,5 +51,73 @@ public class Html extends ICustomPrinter.CustomPrinter {
      */
     public Html(StringBuilder builder) {
         super(builder);
+    }
+
+    @Override
+    public void appendTableLineSeparator() {
+        if(isDrawingTable){
+            builder.append("<tr></tr>\n");
+        }
+    }
+
+    @Override
+    public void startTable(int columnWidth, int columnCount){
+        builder.append("<table>\n");
+        super.startTable(columnWidth, columnCount);
+    }
+
+    @Override
+    public void endTable(){
+        super.endTable();
+        builder.append("</table>\n");
+    }
+
+    @Override
+    public void appendTableValue(Object value, CellPosition position) {
+        if (isDrawingTable) {
+            if(columnIndex == 0){
+                builder.append("<tr>\n");
+            }
+            builder.append("<td align=\"");
+            builder.append(position);
+            builder.append("\">");
+            builder.append(value);
+            builder.append("</td>");
+            builder.append("\n");
+            columnIndex ++;
+            if(columnIndex == columnCount){
+                builder.append("</tr>\n");
+                columnIndex = 0;
+            }
+        }
+    }
+
+    @Override
+    public void appendTableHeaderValue(Object value, CellPosition position) {
+        if (isDrawingTable) {
+            if(columnIndex == 0){
+                builder.append("<tr>\n");
+            }
+            builder.append("<th align=\"");
+            builder.append(position);
+            builder.append("\">");
+            builder.append(value);
+            builder.append("</th>");
+            builder.append("\n");
+            columnIndex ++;
+            if(columnIndex == columnCount){
+                builder.append("</tr>\n");
+                columnIndex = 0;
+            }
+        }
+    }
+
+    @Override
+    public void appendTableTitle(Object title) {
+        if(isDrawingTable) {
+            builder.append("<caption>");
+            builder.append(title);
+            builder.append("</caption>\n");
+        }
     }
 }

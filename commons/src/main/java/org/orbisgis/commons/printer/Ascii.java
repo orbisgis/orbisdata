@@ -42,18 +42,7 @@ package org.orbisgis.commons.printer;
  * @author Erwan Bocher (CNRS)
  * @author Sylvain PALOMINOS (UBS 2019)
  */
-public class Ascii extends ICustomPrinter.CustomPrinter {
-
-    public enum CellPosition {CENTER, RIGHT, LEFT}
-
-    /** Width in character number of a single column. */
-    private int columnWidth;
-    /** Count of column. */
-    private int columnCount;
-    /** True of a table is currently drawn, false otherwise. */
-    private boolean isDrawingTable;
-    /** Current column index. */
-    private int columnIndex;
+public class Ascii extends CustomPrinter {
 
     /**
      * Main constructor.
@@ -64,28 +53,7 @@ public class Ascii extends ICustomPrinter.CustomPrinter {
         super(builder);
     }
 
-    /**
-     * Start the drawing of a table.
-     * @param columnWidth Width in character number of a single column.
-     * @param columnCount Count of column.
-     */
-    public void startTable(int columnWidth, int columnCount){
-        this.columnCount = columnCount;
-        this.columnWidth = columnWidth;
-        this.columnIndex = 0;
-        this.isDrawingTable = true;
-    }
-
-    public void endTable(){
-        this.columnCount = -1;
-        this.columnWidth = -1;
-        this.columnIndex = -1;
-        this.isDrawingTable = false;
-    }
-
-    /**
-     * Append a line separator to the builder.
-     */
+    @Override
     public void appendTableLineSeparator(){
         if(isDrawingTable) {
             builder.append("+");
@@ -99,24 +67,11 @@ public class Ascii extends ICustomPrinter.CustomPrinter {
         }
     }
 
-    /**
-     * Add a single value to the table. Linebreak are automatically generated once the column count is reached.
-     *
-     * @param value Value to add to the table.
-     */
-    public void appendTableValue(Object value){
-        appendTableValue(value, CellPosition.LEFT);
-    }
-
-    /**
-     * Add a single value to the table. Linebreak are automatically generated once the column count is reached.
-     *
-     * @param value Value to add to the table.
-     */
-    public void appendTableValue(Object value, CellPosition position){
+    @Override
+    public void appendTableValue(Object value, ICustomPrinter.CellPosition position){
         if(isDrawingTable){
             builder.append("|");
-            String cut = value == null ? "null" : value.toString();
+            String cut = value == null ? "" : value.toString();
             if (cut.length() > columnWidth - 1) {
                 cut = cut.substring(0, columnWidth - 4) + "...";
             }
@@ -148,6 +103,38 @@ public class Ascii extends ICustomPrinter.CustomPrinter {
                 builder.append("|");
                 builder.append("\n");
             }
+        }
+    }
+
+    @Override
+    public void appendTableHeaderValue(Object value, ICustomPrinter.CellPosition position){
+        this.appendTableValue(value, position);
+    }
+
+    @Override
+    public void appendTableTitle(Object value){
+        if(isDrawingTable){
+            builder.append("+");
+            for (int j = 0; j < columnWidth - 1; j++) {
+                builder.append("-");
+            }
+            builder.append("+");
+            builder.append("\n");
+
+            builder.append("|");
+            String cut = value == null ? "" : value.toString();
+            if (cut.length() > columnWidth - 1) {
+                cut = cut.substring(0, columnWidth - 4) + "...";
+            }
+            for (int i = 0; i < (columnWidth - 1 - cut.length())/2; i++) {
+                builder.append(" ");
+            }
+            builder.append(cut);
+            for (int i = 0; i < (columnWidth - 1 - cut.length()) - (columnWidth - 1 - cut.length())/2; i++) {
+                builder.append(" ");
+            }
+            builder.append("|");
+            builder.append("\n");
         }
     }
 }

@@ -37,59 +37,56 @@
 package org.orbisgis.commons.printer;
 
 /**
- * Interface used for the customisation of the printing of Java Objects.
+ * Root class for the custom printers.
  *
  * @author Erwan Bocher (CNRS)
  * @author Sylvain PALOMINOS (UBS 2019)
  */
-public interface ICustomPrinter {
+public abstract class CustomPrinter implements ICustomPrinter {
 
-    /** Cell positions.*/
-    enum CellPosition {CENTER, RIGHT, LEFT}
+    /** {@link StringBuilder} used for the string building. */
+    protected StringBuilder builder;
+    /** Width in character number of a single column. */
+    protected int columnWidth;
+    /** Count of column. */
+    protected int columnCount;
+    /** True of a table is currently drawn, false otherwise. */
+    protected boolean isDrawingTable;
+    /** Current column index. */
+    protected int columnIndex;
 
     /**
-     * Start the drawing of a table.
+     * Main constructor.
      *
-     * @param columnWidth Width in character number of a single column.
-     * @param columnCount Count of column.
+     * @param builder {@link StringBuilder} used for the string building.
      */
-    void startTable(int columnWidth, int columnCount);
+    public CustomPrinter(StringBuilder builder){
+        this.builder = builder;
+    }
 
-    /**
-     * End the table drawing.
-     */
-    void endTable();
+    @Override
+    public String toString(){
+        return builder.toString();
+    }
 
-    /**
-     * Append a line separator to the builder.
-     */
-    void appendTableLineSeparator();
+    @Override
+    public void startTable(int columnWidth, int columnCount){
+        this.columnCount = columnCount;
+        this.columnWidth = columnWidth;
+        this.columnIndex = 0;
+        this.isDrawingTable = true;
+    }
 
-    /**
-     * Add a single value to the table. Linebreak are automatically generated once the column count is reached.
-     *
-     * @param value Value to add to the table.
-     */
-    void appendTableValue(Object value);
+    @Override
+    public void endTable(){
+        this.columnCount = -1;
+        this.columnWidth = -1;
+        this.columnIndex = -1;
+        this.isDrawingTable = false;
+    }
 
-    /**
-     * Add a single value to the table. Linebreak are automatically generated once the column count is reached.
-     *
-     * @param value Value to add to the table.
-     */
-    void appendTableValue(Object value, CellPosition position);
-
-    /**
-     * Add a header value to the table. Linebreak are automatically generated once the column count is reached.
-     *
-     * @param value Header value to add to the table.
-     */
-    void appendTableHeaderValue(Object value, CellPosition position);
-
-    /**
-     * Add a title to the table.
-     *
-     * @param title Title to add to the table.
-     */
-    void appendTableTitle(Object title);
+    @Override
+    public void appendTableValue(Object value){
+        appendTableValue(value, ICustomPrinter.CellPosition.LEFT);
+    }
 }

@@ -45,7 +45,7 @@ import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.TableLocation;
 import org.locationtech.jts.geom.Geometry;
-import org.orbisgis.commons.printer.CustomPrinter;
+import org.orbisgis.commons.printer.Ascii;
 import org.orbisgis.datamanager.dsl.OptionBuilder;
 import org.orbisgis.datamanager.dsl.WhereBuilder;
 import org.orbisgis.datamanager.io.IOMethods;
@@ -59,10 +59,10 @@ import org.orbisgis.datamanagerapi.dsl.IOptionBuilder;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 import java.util.Map;
+
+import static org.orbisgis.commons.printer.Ascii.CellPosition.*;
 
 /**
  * Contains the methods which are in common to all the IJdbcTable subclasses.
@@ -354,77 +354,41 @@ public abstract class JdbcTable extends DefaultResultSet implements IJdbcTable, 
 
     @Override
     public Object asType(Class clazz){
-        if(clazz.equals(CustomPrinter.Ascii.class)){
+        if(clazz.equals(Ascii.class)){
             StringBuilder builder = new StringBuilder();
             Collection<String> columnNames = getColumnNames();
 
-            builder.append("+");
-            for(String ignored : columnNames) {
-                for (int i = 0; i < ASCII_COLUMN_WIDTH-1; i++) {
-                    builder.append("-");
-                }
-                builder.append("+");
-            }
-            builder.append("\n");
-
-            builder.append("|");
+            Ascii ascii = new Ascii(builder);
+            ascii.startTable(ASCII_COLUMN_WIDTH, 1);
+            ascii.appendTableLineSeparator();
+            ascii.appendTableValue(this.getName(), CENTER);
+            ascii.endTable();
+            ascii.startTable(ASCII_COLUMN_WIDTH, columnNames.size());
+            ascii.appendTableLineSeparator();
             for(String column : columnNames){
-                String cut = column;
-                if(cut.length() > ASCII_COLUMN_WIDTH-1){
-                    cut = cut.substring(0, ASCII_COLUMN_WIDTH-4) + "...";
-                }
-                for(int i=0; i<((ASCII_COLUMN_WIDTH-1-cut.length())/2); i++){
-                    builder.append(" ");
-                }
-                builder.append(cut);
-                for(int i=0; i<(ASCII_COLUMN_WIDTH-1-cut.length()-((ASCII_COLUMN_WIDTH-1-cut.length()))/2); i++){
-                    builder.append(" ");
-                }
-                builder.append("|");
+                ascii.appendTableValue(column, CENTER);
             }
-            builder.append("\n");
-
-            for(String ignored : columnNames) {
-                builder.append("+");
-                for (int i = 0; i < ASCII_COLUMN_WIDTH-1; i++) {
-                    builder.append("-");
-                }
-            }
-            builder.append("+");
-            builder.append("\n");
-
+            ascii.appendTableLineSeparator();
             ResultSet rs = getResultSet();
             try {
                 while (rs.next()) {
-                    builder.append("|");
                     for (String column : columnNames) {
                         Object obj = rs.getObject(column);
-                        String cut = obj == null ? "null" : rs.getObject(column).toString();
-                        if (cut.length() > ASCII_COLUMN_WIDTH - 1) {
-                            cut = cut.substring(0, ASCII_COLUMN_WIDTH - 4) + "...";
+                        if(obj instanceof Number){
+                            ascii.appendTableValue(rs.getObject(column), RIGHT);
                         }
-                        builder.append(cut);
-                        for (int i = 0; i < (ASCII_COLUMN_WIDTH - 1 - cut.length()); i++) {
-                            builder.append(" ");
+                        else{
+                            ascii.appendTableValue(rs.getObject(column), LEFT);
                         }
-                        builder.append("|");
                     }
-                    builder.append("\n");
                 }
             } catch(Exception e){
                 LOGGER.error("Error while reading the table '"+getName()+"'.\n" + e.getLocalizedMessage());
             }
+            ascii.appendTableLineSeparator();
+            ascii.endTable();
 
-            builder.append("+");
-            for(String ignored : columnNames) {
-                for (int i = 0; i < ASCII_COLUMN_WIDTH-1; i++) {
-                    builder.append("-");
-                }
-                builder.append("+");
-            }
-            builder.append("\n");
-
-            return new CustomPrinter.Ascii(builder);
+            return ascii;
         }
         return this;
     }

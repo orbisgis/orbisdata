@@ -39,7 +39,7 @@ package org.orbisgis.datamanager
 import org.junit.jupiter.api.Test
 import org.locationtech.jts.geom.Geometry
 import org.locationtech.jts.geom.Point
-import org.orbisgis.commons.printer.CustomPrinter
+import org.orbisgis.commons.printer.Ascii
 import org.orbisgis.datamanager.h2gis.H2GIS
 import org.orbisgis.datamanagerapi.dataset.ISpatialTable
 import org.orbisgis.datamanagerapi.dataset.ITable
@@ -523,7 +523,7 @@ class GroovyH2GISTest {
         assertNull h2GIS.load(osmFile, "OSM")
         assertNull h2GIS.load(osmFile, "OSM", true)
 
-        println h2GIS.getTable("INFORMATION_SCHEMA.COLUMNS") as CustomPrinter.Ascii
+        println h2GIS.getTable("INFORMATION_SCHEMA.COLUMNS") as Ascii
 
         h2GIS.eachRow "SELECT count(TABLE_NAME) as nb FROM INFORMATION_SCHEMA.TABLES where TABLE_NAME LIKE 'OSM%'",
                 { row ->
@@ -577,19 +577,23 @@ class GroovyH2GISTest {
                 (2, 'POINT(1 1)'::GEOMETRY, 'another string');
         """)
         assertEquals(
+                "+-------------------+\n" +
+                "|     ORBISGIS      |\n" +
                 "+-------------------+-------------------+-------------------+\n" +
-                        "|        ID         |     THE_GEOM      |VERY_LONG_TITLE_...|\n" +
-                        "+-------------------+-------------------+-------------------+\n" +
-                        "|1                  |POINT (10 10)      |just a string a ...|\n" +
-                        "|2                  |POINT (1 1)        |another string     |\n" +
-                        "+-------------------+-------------------+-------------------+\n",
-                (h2GIS.getSpatialTable("orbisgis") as CustomPrinter.Ascii).toString())
+                "|        ID         |     THE_GEOM      |VERY_LONG_TITLE_...|\n" +
+                "+-------------------+-------------------+-------------------+\n" +
+                "|                  1|POINT (10 10)      |just a string a ...|\n" +
+                "|                  2|POINT (1 1)        |another string     |\n" +
+                "+-------------------+-------------------+-------------------+\n",
+                (h2GIS.getSpatialTable("orbisgis") as Ascii).toString())
         assertEquals(
+                "+-------------------+\n" +
+                "| SQL_QUERY_RESULT  |\n" +
                 "+-------------------+-------------------+-------------------+\n" +
-                        "|        ID         |     THE_GEOM      |VERY_LONG_TITLE_...|\n" +
-                        "+-------------------+-------------------+-------------------+\n" +
-                        "|1                  |POINT (10 10)      |just a string a ...|\n" +
-                        "+-------------------+-------------------+-------------------+\n",
-                (h2GIS.getSpatialTable("orbisgis").limit(1) as CustomPrinter.Ascii).toString())
+                "|        ID         |     THE_GEOM      |VERY_LONG_TITLE_...|\n" +
+                "+-------------------+-------------------+-------------------+\n" +
+                "|                  1|POINT (10 10)      |just a string a ...|\n" +
+                "+-------------------+-------------------+-------------------+\n",
+                (h2GIS.getSpatialTable("orbisgis").limit(1) as Ascii).toString())
     }
 }

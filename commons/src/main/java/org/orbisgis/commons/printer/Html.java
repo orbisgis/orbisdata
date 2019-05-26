@@ -37,23 +37,19 @@
 package org.orbisgis.commons.printer;
 
 /**
- * Interface used for the customisation of the printing of Java Objects.
+ * Class for the printing of data in an Html style.
  *
  * @author Erwan Bocher (CNRS)
  * @author Sylvain PALOMINOS (UBS 2019)
  */
-public interface CustomPrinter {
+public class Html extends ICustomPrinter.CustomPrinter {
+
     /**
-     * Interface for the printing of data in an ascii style
+     * Main constructor.
+     *
+     * @param builder StringBuilder used for building the string
      */
-    class Ascii{
-        private StringBuilder builder;
-        public Ascii(StringBuilder builder){
-            this.builder = builder;
-        }
-        @Override
-        public String toString(){
-            return builder.toString();
-        }
+    public Html(StringBuilder builder) {
+        super(builder);
     }
 }

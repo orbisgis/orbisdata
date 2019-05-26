@@ -111,7 +111,7 @@ public class H2gisSpatialTable extends JdbcSpatialTable {
             return new H2gisSpatialTable(getTableLocation(), getBaseQuery(), (StatementWrapper)getStatement(),
                     getJdbcDataSource());
         } else {
-            return null;
+            return super.asType(clazz);
         }
     }
 }

@@ -39,7 +39,9 @@ package org.orbisgis.datamanager.dsl;
 import groovy.lang.Closure;
 import org.h2gis.utilities.TableLocation;
 import org.h2gis.utilities.wrapper.StatementWrapper;
+import org.orbisgis.commons.printer.CustomPrinter;
 import org.orbisgis.datamanager.JdbcDataSource;
+import org.orbisgis.datamanager.JdbcTable;
 import org.orbisgis.datamanager.h2gis.H2gisSpatialTable;
 import org.orbisgis.datamanager.h2gis.H2gisTable;
 import org.orbisgis.datamanager.postgis.PostgisSpatialTable;
@@ -85,6 +87,9 @@ public abstract class BuilderResult implements IBuilderResult {
 
     @Override
     public Object asType(Class clazz) {
+        if(clazz.equals(CustomPrinter.Ascii.class)){
+            return this.getTable().asType(clazz);
+        }
         Statement statement;
         try {
             statement = getDataSource().getConnection()

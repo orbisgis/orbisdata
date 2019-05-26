@@ -45,6 +45,7 @@ import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.TableLocation;
 import org.locationtech.jts.geom.Geometry;
+import org.orbisgis.commons.printer.CustomPrinter;
 import org.orbisgis.datamanager.dsl.OptionBuilder;
 import org.orbisgis.datamanager.dsl.WhereBuilder;
 import org.orbisgis.datamanager.io.IOMethods;
@@ -58,7 +59,9 @@ import org.orbisgis.datamanagerapi.dsl.IOptionBuilder;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -68,6 +71,8 @@ import java.util.Map;
  */
 public abstract class JdbcTable extends DefaultResultSet implements IJdbcTable, GroovyObject {
 
+    /** Default width of the columns in ascii print */
+    private static final int ASCII_COLUMN_WIDTH = 20;
     /** MetaClass use for groovy methods/properties binding */
     private MetaClass metaClass;
     /** Type of the database */
@@ -345,5 +350,82 @@ public abstract class JdbcTable extends DefaultResultSet implements IJdbcTable, 
     @Override
     public Statement getStatement(){
         return statement;
+    }
+
+    @Override
+    public Object asType(Class clazz){
+        if(clazz.equals(CustomPrinter.Ascii.class)){
+            StringBuilder builder = new StringBuilder();
+            Collection<String> columnNames = getColumnNames();
+
+            builder.append("+");
+            for(String ignored : columnNames) {
+                for (int i = 0; i < ASCII_COLUMN_WIDTH-1; i++) {
+                    builder.append("-");
+                }
+                builder.append("+");
+            }
+            builder.append("\n");
+
+            builder.append("|");
+            for(String column : columnNames){
+                String cut = column;
+                if(cut.length() > ASCII_COLUMN_WIDTH-1){
+                    cut = cut.substring(0, ASCII_COLUMN_WIDTH-4) + "...";
+                }
+                for(int i=0; i<((ASCII_COLUMN_WIDTH-1-cut.length())/2); i++){
+                    builder.append(" ");
+                }
+                builder.append(cut);
+                for(int i=0; i<(ASCII_COLUMN_WIDTH-1-cut.length()-((ASCII_COLUMN_WIDTH-1-cut.length()))/2); i++){
+                    builder.append(" ");
+                }
+                builder.append("|");
+            }
+            builder.append("\n");
+
+            for(String ignored : columnNames) {
+                builder.append("+");
+                for (int i = 0; i < ASCII_COLUMN_WIDTH-1; i++) {
+                    builder.append("-");
+                }
+            }
+            builder.append("+");
+            builder.append("\n");
+
+            ResultSet rs = getResultSet();
+            try {
+                while (rs.next()) {
+                    builder.append("|");
+                    for (String column : columnNames) {
+                        Object obj = rs.getObject(column);
+                        String cut = obj == null ? "null" : rs.getObject(column).toString();
+                        if (cut.length() > ASCII_COLUMN_WIDTH - 1) {
+                            cut = cut.substring(0, ASCII_COLUMN_WIDTH - 4) + "...";
+                        }
+                        builder.append(cut);
+                        for (int i = 0; i < (ASCII_COLUMN_WIDTH - 1 - cut.length()); i++) {
+                            builder.append(" ");
+                        }
+                        builder.append("|");
+                    }
+                    builder.append("\n");
+                }
+            } catch(Exception e){
+                LOGGER.error("Error while reading the table '"+getName()+"'.\n" + e.getLocalizedMessage());
+            }
+
+            builder.append("+");
+            for(String ignored : columnNames) {
+                for (int i = 0; i < ASCII_COLUMN_WIDTH-1; i++) {
+                    builder.append("-");
+                }
+                builder.append("+");
+            }
+            builder.append("\n");
+
+            return new CustomPrinter.Ascii(builder);
+        }
+        return this;
     }
 }

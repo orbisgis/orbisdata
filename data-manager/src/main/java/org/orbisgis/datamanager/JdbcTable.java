@@ -45,6 +45,9 @@ import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.TableLocation;
 import org.locationtech.jts.geom.Geometry;
+import org.orbisgis.commons.printer.Ascii;
+import org.orbisgis.commons.printer.Html;
+import org.orbisgis.commons.printer.ICustomPrinter;
 import org.orbisgis.datamanager.dsl.OptionBuilder;
 import org.orbisgis.datamanager.dsl.WhereBuilder;
 import org.orbisgis.datamanager.io.IOMethods;
@@ -61,6 +64,8 @@ import java.sql.Statement;
 import java.util.Collection;
 import java.util.Map;
 
+import static org.orbisgis.commons.printer.ICustomPrinter.CellPosition.*;
+
 /**
  * Contains the methods which are in common to all the IJdbcTable subclasses.
  * Implements the {@link GroovyObject} to simplify the methods calling (i.e. .tableLocation instead of
@@ -68,6 +73,8 @@ import java.util.Map;
  */
 public abstract class JdbcTable extends DefaultResultSet implements IJdbcTable, GroovyObject {
 
+    /** Default width of the columns in ascii print */
+    private static final int ASCII_COLUMN_WIDTH = 20;
     /** MetaClass use for groovy methods/properties binding */
     private MetaClass metaClass;
     /** Type of the database */
@@ -345,5 +352,52 @@ public abstract class JdbcTable extends DefaultResultSet implements IJdbcTable, 
     @Override
     public Statement getStatement(){
         return statement;
+    }
+
+    @Override
+    public Object asType(Class clazz){
+        if(ICustomPrinter.class.isAssignableFrom(clazz)){
+            StringBuilder builder = new StringBuilder();
+            ICustomPrinter printer;
+            if(clazz == Ascii.class){
+                printer = new Ascii(builder);
+            }
+            else if(clazz == Html.class){
+                printer = new Html(builder);
+            }
+            else{
+                return this;
+            }
+            Collection<String> columnNames = getColumnNames();
+
+            printer.startTable(ASCII_COLUMN_WIDTH, columnNames.size());
+            printer.appendTableTitle(this.getName());
+            printer.appendTableLineSeparator();
+            for(String column : columnNames){
+                printer.appendTableHeaderValue(column, CENTER);
+            }
+            printer.appendTableLineSeparator();
+            ResultSet rs = getResultSet();
+            try {
+                while (rs.next()) {
+                    for (String column : columnNames) {
+                        Object obj = rs.getObject(column);
+                        if(obj instanceof Number){
+                            printer.appendTableValue(rs.getObject(column), RIGHT);
+                        }
+                        else{
+                            printer.appendTableValue(rs.getObject(column), LEFT);
+                        }
+                    }
+                }
+            } catch(Exception e){
+                LOGGER.error("Error while reading the table '"+getName()+"'.\n" + e.getLocalizedMessage());
+            }
+            printer.appendTableLineSeparator();
+            printer.endTable();
+
+            return printer;
+        }
+        return this;
     }
 }

@@ -39,6 +39,8 @@ package org.orbisgis.datamanager
 import org.junit.jupiter.api.Test
 import org.locationtech.jts.geom.Geometry
 import org.locationtech.jts.geom.Point
+import org.orbisgis.commons.printer.Ascii
+import org.orbisgis.commons.printer.Html
 import org.orbisgis.datamanager.h2gis.H2GIS
 import org.orbisgis.datamanagerapi.dataset.ISpatialTable
 import org.orbisgis.datamanagerapi.dataset.ITable
@@ -562,5 +564,57 @@ class GroovyH2GISTest {
         h2GIS.getSpatialTable("orbisgis").the_geom.createSpatialIndex()
         assertTrue h2GIS.getSpatialTable("orbisgis").the_geom.indexed
         assertTrue h2GIS.getSpatialTable("orbisgis").the_geom.spatialIndexed
+    }
+
+    @Test
+    void testPrint(){
+        def h2GIS = H2GIS.open('./target/orbisgis')
+        h2GIS.execute("""
+                DROP TABLE IF EXISTS orbisgis;
+                CREATE TABLE orbisgis (id int, the_geom point, very_long_title_to_test_size_limits varchar);
+                INSERT INTO orbisgis VALUES (1, 'POINT(10 10)'::GEOMETRY, 'just a string a bit too long'), 
+                (2, 'POINT(1 1)'::GEOMETRY, 'another string');
+        """)
+        assertEquals(
+                "+-------------------+\n" +
+                "|     ORBISGIS      |\n" +
+                "+-------------------+-------------------+-------------------+\n" +
+                "|        ID         |     THE_GEOM      |VERY_LONG_TITLE_...|\n" +
+                "+-------------------+-------------------+-------------------+\n" +
+                "|                  1|POINT (10 10)      |just a string a ...|\n" +
+                "|                  2|POINT (1 1)        |another string     |\n" +
+                "+-------------------+-------------------+-------------------+\n",
+                (h2GIS.getSpatialTable("orbisgis") as Ascii).toString())
+        assertEquals(
+                "+-------------------+\n" +
+                "| SQL_QUERY_RESULT  |\n" +
+                "+-------------------+-------------------+-------------------+\n" +
+                "|        ID         |     THE_GEOM      |VERY_LONG_TITLE_...|\n" +
+                "+-------------------+-------------------+-------------------+\n" +
+                "|                  1|POINT (10 10)      |just a string a ...|\n" +
+                "+-------------------+-------------------+-------------------+\n",
+                (h2GIS.getSpatialTable("orbisgis").limit(1) as Ascii).toString())
+        assertEquals "<table>\n" +
+                "<caption>ORBISGIS</caption>\n" +
+                "<tr></tr>\n" +
+                "<tr>\n" +
+                "<th align=\"CENTER\">ID</th>\n" +
+                "<th align=\"CENTER\">THE_GEOM</th>\n" +
+                "<th align=\"CENTER\">VERY_LONG_TITLE_TO_TEST_SIZE_LIMITS</th>\n" +
+                "</tr>\n" +
+                "<tr></tr>\n" +
+                "<tr>\n" +
+                "<td align=\"RIGHT\">1</td>\n" +
+                "<td align=\"LEFT\">POINT (10 10)</td>\n" +
+                "<td align=\"LEFT\">just a string a bit too long</td>\n" +
+                "</tr>\n" +
+                "<tr>\n" +
+                "<td align=\"RIGHT\">2</td>\n" +
+                "<td align=\"LEFT\">POINT (1 1)</td>\n" +
+                "<td align=\"LEFT\">another string</td>\n" +
+                "</tr>\n" +
+                "<tr></tr>\n" +
+                "</table>\n",
+                (h2GIS.getSpatialTable("orbisgis") as Html).toString()
     }
 }

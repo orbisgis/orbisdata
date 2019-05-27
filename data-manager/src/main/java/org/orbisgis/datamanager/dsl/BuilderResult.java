@@ -39,6 +39,8 @@ package org.orbisgis.datamanager.dsl;
 import groovy.lang.Closure;
 import org.h2gis.utilities.TableLocation;
 import org.h2gis.utilities.wrapper.StatementWrapper;
+import org.orbisgis.commons.printer.Ascii;
+import org.orbisgis.commons.printer.ICustomPrinter;
 import org.orbisgis.datamanager.JdbcDataSource;
 import org.orbisgis.datamanager.h2gis.H2gisSpatialTable;
 import org.orbisgis.datamanager.h2gis.H2gisTable;
@@ -85,6 +87,9 @@ public abstract class BuilderResult implements IBuilderResult {
 
     @Override
     public Object asType(Class clazz) {
+        if(ICustomPrinter.class.isAssignableFrom(clazz)){
+            return this.getTable().asType(clazz);
+        }
         Statement statement;
         try {
             statement = getDataSource().getConnection()
@@ -93,7 +98,7 @@ public abstract class BuilderResult implements IBuilderResult {
             LOGGER.error("Unable to create the StatementWrapper.\n" + e.getLocalizedMessage());
             return null;
         }
-        String name = "TABLE_"+ UUID.randomUUID().toString();
+        String name = "SQL_QUERY_RESULT";
         switch(getDataSource().getDataBaseType()) {
             case H2GIS:
                 if(!(statement instanceof StatementWrapper)){

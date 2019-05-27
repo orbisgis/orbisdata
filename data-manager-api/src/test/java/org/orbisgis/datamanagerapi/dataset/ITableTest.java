@@ -292,6 +292,7 @@ public class ITableTest {
         @Override public String getLocation() {return null;}
         @Override public String getName() {return null;}
         @Override public Object getMetadata() {return null;}
+        @Override public Object asType(Class clazz) {return null;}
         @Override public Iterator<Object> iterator() {return new ResultSetIterator();}
     }
 }

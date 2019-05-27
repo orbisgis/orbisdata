@@ -109,7 +109,7 @@ public class PostgisSpatialTable extends JdbcSpatialTable {
             return new PostgisSpatialTable(getTableLocation(), getBaseQuery(), (StatementWrapper)getStatement(),
                     getJdbcDataSource());
         } else {
-            return null;
+            return super.asType(clazz);
         }
     }
 }

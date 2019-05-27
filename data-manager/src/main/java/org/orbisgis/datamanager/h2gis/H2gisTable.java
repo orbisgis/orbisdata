@@ -109,7 +109,7 @@ public class H2gisTable extends JdbcTable {
             return new H2gisSpatialTable(getTableLocation(), getBaseQuery(), (StatementWrapper)getStatement(),
                     getJdbcDataSource());
         } else {
-            return null;
+            return super.asType(clazz);
         }
     }
 }

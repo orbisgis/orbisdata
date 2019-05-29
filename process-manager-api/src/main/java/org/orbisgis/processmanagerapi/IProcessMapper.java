@@ -38,7 +38,6 @@ package org.orbisgis.processmanagerapi;
 
 import java.util.UUID;
 
-
 /**
  * This class should not be used will using a IProcess executing and mapping processes is easier.
  *

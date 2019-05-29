@@ -195,6 +195,7 @@ public class Process implements IProcess, GroovyObject {
 
     @Override
     public boolean execute(LinkedHashMap<String, Object> inputDataMap) {
+        LOGGER.debug("Starting the execution of '" + this.getTitle() + "'.");
         if(inputs != null && (inputs.size() < inputDataMap.size() || inputs.size()-defaultValues.size() > inputDataMap.size())){
             LOGGER.error("The number of the input data map and the number of process input are different, should" +
                     " be between " + (inputDataMap.size()-defaultValues.size()) + " and " + inputDataMap.size() + ".");
@@ -225,6 +226,7 @@ public class Process implements IProcess, GroovyObject {
         for (Map.Entry<String, Class> entry : outputs.entrySet()) {
             isResultValid = map.containsKey(entry.getKey());
         }
+        LOGGER.debug("End of the execution of '" + this.getTitle() + "'.");
         if(!isResultValid){
             return false;
         }

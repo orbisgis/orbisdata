@@ -36,39 +36,27 @@
  */
 package org.orbisgis.processmanagerapi;
 
-import java.util.UUID;
-
-
 /**
- * This class should not be used will using a IProcess executing and mapping processes is easier.
+ * This interface declare the methods used to link inputs, outputs and aliases. The first element to link is given
+ * through the constructor, the second through the methods {@link ILinker#to(String)} or
+ * {@link ILinker#to(IProcessInOutPut[])}.
  *
  * @author Erwan Bocher (CNRS)
  * @author Sylvain PALOMINOS (UBS 2019)
  */
-public interface IProcessMapper extends IProcess {
+public interface ILinker {
 
     /**
-     * Start to link the given inputs/outputs.
+     * Second element to link.
      *
-     * @param inOutPuts Inputs or outputs to link.
-     *
-     * @return A {@link ILinker} object which will do the link.
+     * @param inOutPuts Inputs or Outputs to link.
      */
-    ILinker link(IProcessInOutPut... inOutPuts);
+    void to(IProcessInOutPut... inOutPuts);
 
-    default String getVersion(){
-        return null;
-    }
-
-    default String getDescription(){
-        return null;
-    }
-
-    default String[] getKeywords(){
-        return null;
-    }
-
-    default String getIdentifier(){
-        return UUID.randomUUID().toString();
-    }
+    /**
+     * Alias to give to the inputs or outputs.
+     *
+     * @param alias Alias to use.
+     */
+    void to(String alias);
 }

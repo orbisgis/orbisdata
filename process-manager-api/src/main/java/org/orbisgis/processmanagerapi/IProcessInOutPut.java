@@ -36,39 +36,25 @@
  */
 package org.orbisgis.processmanagerapi;
 
-import java.util.UUID;
-
-
 /**
- * This class should not be used will using a IProcess executing and mapping processes is easier.
+ * This interface defines the methods dedicated the wrapping of input/output.
  *
  * @author Erwan Bocher (CNRS)
  * @author Sylvain PALOMINOS (UBS 2019)
  */
-public interface IProcessMapper extends IProcess {
+public interface IProcessInOutPut {
 
     /**
-     * Start to link the given inputs/outputs.
+     * Return the input/output name.
      *
-     * @param inOutPuts Inputs or outputs to link.
-     *
-     * @return A {@link ILinker} object which will do the link.
+     * @return The input/output name.
      */
-    ILinker link(IProcessInOutPut... inOutPuts);
+    String getName();
 
-    default String getVersion(){
-        return null;
-    }
-
-    default String getDescription(){
-        return null;
-    }
-
-    default String[] getKeywords(){
-        return null;
-    }
-
-    default String getIdentifier(){
-        return UUID.randomUUID().toString();
-    }
+    /**
+     * Return the {@link IProcess} of the input/output.
+     *
+     * @return The {@link IProcess} of the input/output.
+     */
+    IProcess getProcess();
 }

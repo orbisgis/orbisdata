@@ -186,7 +186,7 @@ class TestProcess {
         def pB = processManager.factory("map1").create("pB", [inB1:String], [outB1:String], {inB1 ->[outB1:inB1+inB1]})
 
         def mapper = new ProcessMapper()
-        mapper.link(outA1:pA, inB1:pB)
+        mapper.link(pA.outA1).to(pB.inB1)
         assertTrue mapper.execute([inA1: "t", inA2: "a"])
         assertEquals "tata", mapper.getResults().outB1
     }
@@ -210,9 +210,9 @@ class TestProcess {
                 {inC1, inC2 ->[outC1:inC1+inC2, outC2:inC2+inC1]})
 
         def mapper = new ProcessMapper()
-        mapper.link(outA1:pA,inB1:pB)
-        mapper.link(outB1:pB,inC2:pC)
-        mapper.link(outA1:pA,inC1:pC)
+        mapper.link(pA.outA1).to(pB.inB1)
+        mapper.link(pB.outB1).to(pC.inC2)
+        mapper.link(pA.outA1).to(pC.inC1)
 
         assertTrue mapper.execute([inA1: "a", inB2: "b"])
         assertEquals "AbA", mapper.getResults().outC1
@@ -238,10 +238,10 @@ class TestProcess {
                 {inD1, inD2 ->[outD1:inD1.toLowerCase(), outD2:inD2+inD1]})
 
         def mapper = new ProcessMapper()
-        mapper.link(outA1: pA,inB1: pB)
-        mapper.link(outA1: pA,inC1: pC)
-        mapper.link(outB1: pB,inD1: pD)
-        mapper.link(outC1: pC,inD2: pD)
+        mapper.link(pA.outA1).to(pB.inB1)
+        mapper.link(pA.outA1).to(pC.inC1)
+        mapper.link(pB.outB1).to(pD.inD1)
+        mapper.link(pC.outC1).to(pD.inD2)
 
         assertTrue mapper.execute([inA1: "a", inB2: "b", inC2: "c"])
         assertEquals "ba", mapper.getResults().outD1
@@ -260,10 +260,10 @@ class TestProcess {
         def pA3 = processManager.factory("map4").create("pA", [inA1:String, inA2:String], [outA1:String], {inA1, inA2 ->[outA1:inA1+inA2]})
 
         def mapper = new ProcessMapper()
-        mapper.link(outA1:pA1, inA1:pA2)
-        mapper.link(outA1:pA1, inA2:pA2)
-        mapper.link(outA1:pA2, inA1:pA3)
-        mapper.link(outA1:pA2, inA2:pA3)
+        mapper.link(pA1.outA1).to(pA2.inA1)
+        mapper.link(pA1.outA1).to(pA2.inA2)
+        mapper.link(pA2.outA1).to(pA3.inA1)
+        mapper.link(pA2.outA1).to(pA3.inA2)
         assertTrue mapper.execute([inA1: "t", inA2: "a"])
         assertEquals "tatatata", mapper.getResults().outA1
     }
@@ -286,23 +286,26 @@ class TestProcess {
 
         def mapper = new ProcessMapper()
 
-        mapper.link(outA1:pA1, inB1:pB1)
-        mapper.link(outA1:pA1, inB2:pB1)
-        mapper.link(outA1:pA2, inB1:pB2)
-        mapper.link(outA1:pA2, inB2:pB2)
+        mapper.link(pA1.outA1).to(pB1.inB1)
+        mapper.link(pA1.outA1).to(pB1.inB2)
+        mapper.link(pA2.outA1).to(pB2.inB1, pB2.inB2)
 
-        mapper.alias(inA1:pA1, "commonInput")
-        mapper.alias(inA1:pA2, "commonInput")
-        mapper.alias(inA2:pA1, "inputD")
-        mapper.alias(inA2:pA2, "inputK")
+        mapper.link(pA1.outA1).to("interPA1OutA1")
+        mapper.link(pA2.outA1).to("interPA2OutA1")
 
-        mapper.alias(outB1:pB1, "outD")
-        mapper.alias(outB1:pB2, "outK")
+        mapper.link(pA1.inA1, pA2.inA1).to("commonInput")
+        mapper.link(pA1.inA2).to("inputD")
+        mapper.link(pA2.inA2).to("inputK")
+
+        mapper.link(pB1.outB1).to("outD")
+        mapper.link(pB2.outB1).to("outK")
 
         assertTrue mapper.execute([inputD: "D", inputK: "K", commonInput: "common"])
         assertFalse mapper.getResults().containsKey("outB1")
         assertEquals "commonD or commonD", mapper.getResults().outD
         assertEquals "commonK or commonK", mapper.getResults().outK
+        assertEquals "commonK", mapper.getResults().interPA2OutA1
+        assertEquals "commonD", mapper.getResults().interPA1OutA1
     }
 }
 

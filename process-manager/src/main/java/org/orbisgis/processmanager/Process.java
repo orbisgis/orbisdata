@@ -37,6 +37,7 @@
 package org.orbisgis.processmanager;
 
 import groovy.lang.Closure;
+import groovy.lang.GroovyObject;
 import groovy.lang.MetaClass;
 import org.codehaus.groovy.runtime.InvokerHelper;
 import org.orbisgis.processmanagerapi.ICaster;
@@ -50,13 +51,13 @@ import java.util.Map;
 import java.util.UUID;
 
 /**
- * Implementation of the IProcess interface dedicated to the local creation and execution of process (no link with
+ * Implementation of the {@link IProcess} interface dedicated to the local creation and execution of process (no link with
  * WPS process for now).
  *
  * @author Erwan Bocher (CNRS)
  * @author Sylvain PALOMINOS (UBS 2019)
  */
-public class Process implements IProcess {
+public class Process implements IProcess, GroovyObject {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Process.class);
 
@@ -271,5 +272,33 @@ public class Process implements IProcess {
     @Override
     public Map<String, Class> getOutputs() {
         return outputs;
+    }
+
+    @Override
+    public Object invokeMethod(String name, Object args) {
+        return metaClass.invokeMethod(this, name, args);
+    }
+
+    @Override
+    public Object getProperty(String propertyName) {
+        if(inputs.keySet().contains(propertyName) || outputs.keySet().contains(propertyName)){
+            return new ProcessInOutPut(this, propertyName);
+        }
+        return metaClass.getProperty(this, propertyName);
+    }
+
+    @Override
+    public void setProperty(String propertyName, Object newValue) {
+        this.metaClass.setProperty(this, propertyName, newValue);
+    }
+
+    @Override
+    public MetaClass getMetaClass() {
+        return metaClass;
+    }
+
+    @Override
+    public void setMetaClass(MetaClass metaClass) {
+        this.metaClass = metaClass;
     }
 }

@@ -57,6 +57,8 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 public class ProcessMapperTest {
 
+    private static final IProcessManager processManager = ProcessManager.getProcessManager();
+
     private static Process pA1;
     private static Process pA2;
     private static Process pB1;
@@ -124,8 +126,6 @@ public class ProcessMapperTest {
         });
     }
 
-    private static final IProcessManager processManager = ProcessManager.getProcessManager();
-
     /**
      *   --> ----
      *      | pB | -----> ---- -->
@@ -138,7 +138,7 @@ public class ProcessMapperTest {
      *      ----
      */
     @Test
-    void testMapping1(){
+    public void testMapping1(){
 
         LinkedHashMap<String, Object> pAInputMap = new LinkedHashMap<>();
         pAInputMap.put("inA1", String.class);
@@ -184,8 +184,8 @@ public class ProcessMapperTest {
         dataMap.put("inA1", "a");
         dataMap.put("inB2", "b");
         assertTrue(mapper.execute(dataMap));
-        assertEquals("AbA", mapper.getResults().get("outC1"));
-        assertEquals("bAA", mapper.getResults().get("outC2"));
+        assertEquals("Ab or A", mapper.getResults().get("outC1"));
+        assertEquals("b or AA", mapper.getResults().get("outC2"));
     }
 
 

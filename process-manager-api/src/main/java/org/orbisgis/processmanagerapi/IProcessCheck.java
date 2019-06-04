@@ -59,10 +59,8 @@ public interface IProcessCheck {
      * On success, continue the programme or apply the action set with {@link #onSuccess(String, String)}.
      *
      * @param processInData {@link LinkedHashMap} containing the input data for the {@link IProcess} execution.
-     *
-     * @throws Exception {@link Exception} thrown on check fail.
      */
-    void run(LinkedHashMap<String, Object> processInData) throws Exception;
+    void run(LinkedHashMap<String, Object> processInData);
 
     /**
      * Set the action to do on check fail.
@@ -96,17 +94,13 @@ public interface IProcessCheck {
 
     /**
      * Method executed on check fail.
-     *
-     * @throws Exception {@link Exception} thrown on failure with stop action.
      */
-    void fail() throws Exception;
+    void fail();
 
     /**
      * Method executed on check success.
-     *
-     * @throws Exception {@link Exception} thrown on success with stop action.
      */
-    void success() throws Exception;
+    void success();
 
     /**
      * Return the {@link IProcess} concerned by the check.

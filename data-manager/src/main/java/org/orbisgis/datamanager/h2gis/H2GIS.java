@@ -200,9 +200,9 @@ public class H2GIS extends JdbcDataSource {
 
     @Override
     public ITable getTable(String tableName) {
-        tableName = TableLocation.parse(tableName, getDataBaseType().equals(DataBaseType.H2GIS)).toString( getDataBaseType().equals(DataBaseType.H2GIS));
+        String name = TableLocation.parse(tableName, getDataBaseType().equals(DataBaseType.H2GIS)).toString( getDataBaseType().equals(DataBaseType.H2GIS));
         try {
-            if(!JDBCUtilities.tableExists(connectionWrapper,tableName)){
+            if(!JDBCUtilities.tableExists(connectionWrapper,name)){
                 return null;
             }
         } catch (SQLException e) {
@@ -216,23 +216,23 @@ public class H2GIS extends JdbcDataSource {
             LOGGER.error("Unable to create Statement.\n"+e.getLocalizedMessage());
             return null;
         }
-        String query = String.format("SELECT * FROM %s", tableName);
+        String query = String.format("SELECT * FROM %s", name);
         try {
-            if(!SFSUtilities.getGeometryFields(getConnection(), new TableLocation(tableName)).isEmpty()) {
-                return new H2gisSpatialTable(new TableLocation(tableName), query, statement, this);
+            if(!SFSUtilities.getGeometryFields(getConnection(), new TableLocation(name)).isEmpty()) {
+                return new H2gisSpatialTable(new TableLocation(name), query, statement, this);
             }
         } catch (SQLException e) {
-            LOGGER.error("Unable to check if table '" + tableName + "' contains geometric fields.\n" +
+            LOGGER.error("Unable to check if table '" + name + "' contains geometric fields.\n" +
                     e.getLocalizedMessage());
         }
-        return new H2gisTable(new TableLocation(tableName), query, statement, this);
+        return new H2gisTable(new TableLocation(name), query, statement, this);
     }
 
     @Override
     public ISpatialTable getSpatialTable(String tableName) {
-        tableName = TableLocation.parse(tableName, getDataBaseType().equals(DataBaseType.H2GIS)).toString( getDataBaseType().equals(DataBaseType.H2GIS));
+        String name = TableLocation.parse(tableName, getDataBaseType().equals(DataBaseType.H2GIS)).toString( getDataBaseType().equals(DataBaseType.H2GIS));
         try {
-            if(!JDBCUtilities.tableExists(connectionWrapper, tableName)){
+            if(!JDBCUtilities.tableExists(connectionWrapper, name)){
                 return null;
             }
         } catch (SQLException e) {
@@ -246,16 +246,16 @@ public class H2GIS extends JdbcDataSource {
             LOGGER.error("Unable to create Statement.\n"+e.getLocalizedMessage());
             return null;
         }
-        String query = String.format("SELECT * FROM %s", tableName);
+        String query = String.format("SELECT * FROM %s", name);
         try {
-            if(!SFSUtilities.getGeometryFields(getConnection(), new TableLocation(tableName)).isEmpty()) {
-                return new H2gisSpatialTable(new TableLocation(tableName), query, statement, this);
+            if(!SFSUtilities.getGeometryFields(getConnection(), new TableLocation(name)).isEmpty()) {
+                return new H2gisSpatialTable(new TableLocation(name), query, statement, this);
             }
         } catch (SQLException e) {
-            LOGGER.error("Unable to check if table '" + tableName + "' contains geometric fields.\n" +
+            LOGGER.error("Unable to check if table '" + name + "' contains geometric fields.\n" +
                     e.getLocalizedMessage());
         }
-        LOGGER.error("The table '" + tableName + "' is not a spatial table.");
+        LOGGER.error("The table '" + name + "' is not a spatial table.");
         return null;
     }
 

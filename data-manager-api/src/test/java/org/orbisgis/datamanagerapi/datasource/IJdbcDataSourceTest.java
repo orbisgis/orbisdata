@@ -143,10 +143,10 @@ public class IJdbcDataSourceTest {
         private Object prop2;
         private boolean streamScript = false;
         private boolean fileScript = false;
-        public boolean isStreamScript(){return streamScript;}
-        public boolean isFileScript(){return fileScript;}
-        private DummyDataSource(){}
-        public boolean getNoArg(){return true;}
+        private boolean isStreamScript(){return streamScript;}
+        private boolean isFileScript(){return fileScript;}
+        private DummyDataSource(){prop1 = null; prop2 = null;}
+        public boolean getNoArg(){return prop1 == prop2 || prop2 != prop1;}
         public Object[] getArrayMethod(Object[] array){return array;}
         public Object[] getParametersMethod(String param1, Double param2){return new Object[]{param1, param2};}
         public Object[] getParametersMethod(Object param1, Object param2){return new Object[]{param1, param2};}

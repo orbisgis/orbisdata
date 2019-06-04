@@ -97,16 +97,9 @@ public class ProcessMapper implements IProcessMapper {
     }
 
     /**
-     * Link the inputs, the outputs and the aliases to prepare the execution.
+     * Fill the process list.
      */
-    private void link(){
-        executionTree = new ArrayList<>();
-        results = new HashMap<>();
-        processList = new ArrayList<>();
-
-        List<IProcessInOutPut> availableIn = new ArrayList<>();
-
-        //Build the map linking the inputs and outputs.
+    private void fillProcessList(){
         inputOutputMap.forEach((input, output) -> {
             if (!processList.contains(input.getProcess())) {
                 processList.add(input.getProcess());
@@ -115,8 +108,15 @@ public class ProcessMapper implements IProcessMapper {
                 processList.add(output.getProcess());
             }
         });
+    }
 
-        //Get all the inputs and outputs of the processes.
+    /**
+     * Collect all the not linked inputs/outputs to set the {@link ProcessMapper} inputs/outputs.
+     *
+     * @return The list of available inputs.
+     */
+    private List<IProcessInOutPut> collectInputOutput(){
+        List<IProcessInOutPut> availableIn = new ArrayList<>();
         for (IProcess process : processList) {
             if(process.getInputs() != null) {
                 process.getInputs().forEach((key, value) -> {
@@ -146,6 +146,56 @@ public class ProcessMapper implements IProcessMapper {
                 }
             });
         }
+        return availableIn;
+    }
+
+    private void buildExecutionTreeLevel(List<IProcess> iterableProcessList, List<IProcessInOutPut> availableIn,
+                                         int i, List<IProcessInOutPut> newIn){
+        for (Iterator<IProcess> iterator = iterableProcessList.iterator(); iterator.hasNext(); ) {
+            IProcess process = iterator.next();
+            boolean isAllInput = true;
+            if (process.getInputs() != null) {
+                for (String input : process.getInputs().keySet()) {
+                    boolean isInputAvailable = false;
+                    for (IProcessInOutPut processInput : availableIn) {
+                        if (processInput.getName().equals(input) &&
+                                processInput.getProcess().getIdentifier().equals(process.getIdentifier())) {
+                            isInputAvailable = true;
+                            break;
+                        }
+                    }
+                    if (!isInputAvailable) {
+                        isAllInput = false;
+                        break;
+                    }
+                }
+            }
+            if (isAllInput) {
+                executionTree.get(i).add(process);
+                for (String name : process.getOutputs().keySet()) {
+                    for (Map.Entry<IProcessInOutPut, IProcessInOutPut> entry : inputOutputMap.entrySet()) {
+                        if (entry.getValue().getName().equals(name) &&
+                                entry.getValue().getProcess().getIdentifier().equals(process.getIdentifier())) {
+                            newIn.add(entry.getKey());
+                        }
+                    }
+                }
+                iterator.remove();
+            }
+        }
+    }
+
+    /**
+     * Link the inputs, the outputs and the aliases to prepare the execution.
+     */
+    private void link(){
+        executionTree = new ArrayList<>();
+        results = new HashMap<>();
+        processList = new ArrayList<>();
+
+        fillProcessList();
+
+        List<IProcessInOutPut> availableIn = collectInputOutput();
 
         //Build the execution tree
         List<IProcess> iterableProcessList = new ArrayList<>(processList);
@@ -155,38 +205,7 @@ public class ProcessMapper implements IProcessMapper {
             availableIn.addAll(newIn);
             newIn = new ArrayList<>();
             executionTree.add(new ArrayList<>());
-            for (Iterator<IProcess> iterator = iterableProcessList.iterator(); iterator.hasNext(); ) {
-                IProcess process = iterator.next();
-                boolean isAllInput = true;
-                if (process.getInputs() != null) {
-                    for (String input : process.getInputs().keySet()) {
-                        boolean isInputAvailable = false;
-                        for (IProcessInOutPut processInput : availableIn) {
-                            if (processInput.getName().equals(input) &&
-                                    processInput.getProcess().getIdentifier().equals(process.getIdentifier())) {
-                                isInputAvailable = true;
-                                break;
-                            }
-                        }
-                        if (!isInputAvailable) {
-                            isAllInput = false;
-                            break;
-                        }
-                    }
-                }
-                if (isAllInput) {
-                    executionTree.get(i).add(process);
-                    for (String name : process.getOutputs().keySet()) {
-                        for (Map.Entry<IProcessInOutPut, IProcessInOutPut> entry : inputOutputMap.entrySet()) {
-                            if (entry.getValue().getName().equals(name) &&
-                                    entry.getValue().getProcess().getIdentifier().equals(process.getIdentifier())) {
-                                newIn.add(entry.getKey());
-                            }
-                        }
-                    }
-                    iterator.remove();
-                }
-            }
+            buildExecutionTreeLevel(iterableProcessList, availableIn, i, newIn);
             i++;
         } while(!iterableProcessList.isEmpty() && !executionTree.get(i-1).isEmpty());
 
@@ -218,40 +237,53 @@ public class ProcessMapper implements IProcessMapper {
         return mapper;
     }
 
+    /**
+     * Return a {@link LinkedHashMap} with the input data for the given {@link IProcess} execution.
+     *
+     * @param process {@link IProcess} which will executed.
+     * @param dataMap {@link Map} with the {@link ProcessMapper} input data.
+     *
+     * @return A {@link LinkedHashMap} with the input data for the given {@link IProcess}.
+     */
+    private LinkedHashMap<String, Object> getInputDataMap(IProcess process, Map<String, Object> dataMap){
+        LinkedHashMap<String, Object> processInData = new LinkedHashMap<>();
+        if(process.getInputs() != null) {
+            for (String in : process.getInputs().keySet()) {
+                //Try to get the data directly from the out of a process
+                String alias = getAlias(in, process);
+                final Object[] data = new Object[1];
+                if(alias != null){
+                    data[0] = dataMap.get(alias);
+                }
+                else {
+                    data[0] = dataMap.get(in);
+                }
+                //Get the link between the input 'in' and a process output if exists
+                inputOutputMap.forEach((input, output) -> {
+                    if(process.getIdentifier().equals(input.getProcess().getIdentifier()) &&
+                            input.getName().equals(in)){
+                        //get the process with the output linked to 'in'
+                        for(IProcess p : processList){
+                            if(p.getIdentifier().equals(output.getProcess().getIdentifier())){
+                                data[0] = p.getResults().get(output.getName());
+                            }
+                        }
+                    }
+                });
+                processInData.put(in, data[0]);
+            }
+        }
+        return processInData;
+    }
+
     @Override
-    public boolean execute(LinkedHashMap<String, Object> inputDataMap) throws Exception {
+    public boolean execute(LinkedHashMap<String, Object> inputDataMap) {
         link();
         Map<String, Object> dataMap = inputDataMap == null ?  new HashMap<>() : new HashMap<>(inputDataMap);
         //Iterate over the execution tree
         for(List<IProcess> processes : executionTree){
             for(IProcess process : processes){
-                LinkedHashMap<String, Object> processInData = new LinkedHashMap<>();
-                if(process.getInputs() != null) {
-                    for (String in : process.getInputs().keySet()) {
-                        //Try to get the data directly from the out of a process
-                        String alias = getAlias(in, process);
-                        final Object[] data = new Object[1];
-                        if(alias != null){
-                            data[0] = dataMap.get(alias);
-                        }
-                        else {
-                            data[0] = dataMap.get(in);
-                        }
-                        //Get the link between the input 'in' and a process output if exists
-                        inputOutputMap.forEach((input, output) -> {
-                            if(process.getIdentifier().equals(input.getProcess().getIdentifier()) &&
-                                    input.getName().equals(in)){
-                                //get the process with the output linked to 'in'
-                                for(IProcess p : processList){
-                                    if(p.getIdentifier().equals(output.getProcess().getIdentifier())){
-                                        data[0] = p.getResults().get(output.getName());
-                                    }
-                                }
-                            }
-                        });
-                        processInData.put(in, data[0]);
-                    }
-                }
+                LinkedHashMap<String, Object> processInData = getInputDataMap(process, dataMap);
                 //Do the before check
                 for(IProcessCheck check : beforeList){
                     if(check.getProcess().getIdentifier().equals(process.getIdentifier())){

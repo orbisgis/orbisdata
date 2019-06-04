@@ -98,6 +98,7 @@ public abstract class BuilderResult implements IBuilderResult {
         }
         String name = "SQL_QUERY_RESULT";
         switch(getDataSource().getDataBaseType()) {
+            default:
             case H2GIS:
                 if(!(statement instanceof StatementWrapper)){
                     LOGGER.error("The statement class not compatible with the database.");

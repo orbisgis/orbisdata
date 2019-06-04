@@ -88,6 +88,7 @@ public class Ascii extends CustomPrinter {
                     }
                     builder.append(cut);
                     break;
+                default:
                 case CENTER:
                     for (int i = 0; i < (columnWidth - 1 - cut.length())/2; i++) {
                         builder.append(" ");
@@ -96,6 +97,7 @@ public class Ascii extends CustomPrinter {
                     for (int i = 0; i < (columnWidth - 1 - cut.length()) - (columnWidth - 1 - cut.length())/2; i++) {
                         builder.append(" ");
                     }
+                    break;
             }
             columnIndex ++;
             if(columnIndex == columnCount){

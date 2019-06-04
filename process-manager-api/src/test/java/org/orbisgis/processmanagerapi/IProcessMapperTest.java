@@ -94,6 +94,8 @@ public class IProcessMapperTest {
     private class DummyProcessMapper implements IProcessMapper {
 
         @Override public ILinker link(IProcessInOutPut... inOutPuts) {return null;}
+        @Override public ICheckDataBuilder before(IProcess process) {return null;}
+        @Override public ICheckDataBuilder after(IProcess process) {return null;}
         @Override public IProcess newInstance() {return null;}
         @Override public boolean execute(LinkedHashMap<String, Object> inputDataMap) {return false;}
         @Override public String getTitle() {return null;}

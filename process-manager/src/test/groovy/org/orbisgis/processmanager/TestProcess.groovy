@@ -307,5 +307,30 @@ class TestProcess {
         assertEquals "commonK", mapper.getResults().interPA2OutA1
         assertEquals "commonD", mapper.getResults().interPA1OutA1
     }
+
+    /**
+     *  --> -----      ----
+     *     |  pA | -> | pB |-->
+     *  --> -----      ----
+     *
+     *  with test after and before pB and pA
+     */
+    @Test
+    void testMapping6(){
+        def pA = processManager.factory("map1").create("pA", [inA1:String, inA2:String], [outA1:String], {inA1, inA2 ->[outA1:inA1+inA2]})
+        def pB = processManager.factory("map1").create("pB", [inB1:String], [outB1:String], {inB1 ->[outB1:inB1+inB1]})
+
+        def mapper = new ProcessMapper()
+        mapper.link(pA.outA1).to(pB.inB1)
+
+        mapper.before(pA).with(pA.inA1).check({inA1 -> inA1 == "t"}).stopOnFail("Fail")
+        mapper.after(pA).with(pA.outA1).check({outA1 ->outA1 == "ta"}).stopOnFail("Fail")
+
+        mapper.before(pB).with(pB.inB1, pA.outA1).check({inB1, outA1 ->inB1 == "ta" && outA1 == inB1}).stopOnFail("Fail")
+        mapper.after(pB).with(pB.outB1).check({outB1 ->outB1 == "tata"}).stopOnFail("Fail")
+
+        assertTrue mapper.execute([inA1: "t", inA2: "a"])
+        assertEquals "tata", mapper.getResults().outB1
+    }
 }
 

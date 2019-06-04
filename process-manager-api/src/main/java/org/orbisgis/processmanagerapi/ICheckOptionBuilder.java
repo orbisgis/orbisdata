@@ -36,61 +36,47 @@
  */
 package org.orbisgis.processmanagerapi;
 
-import java.util.UUID;
-
 /**
- * This class should not be used will using a IProcess executing and mapping processes is easier.
+ * Interface for the definition of the process check execution options.
  *
  * @author Erwan Bocher (CNRS)
  * @author Sylvain PALOMINOS (UBS 2019)
  */
-public interface IProcessMapper extends IProcess {
+public interface ICheckOptionBuilder {
 
     /**
-     * Start to link the given inputs/outputs.
+     * Make the check log the given message and stop the program on fail .
      *
-     * @param inOutPuts Inputs or outputs to link.
+     * @param message Message to log.
      *
-     * @return A {@link ILinker} object which will do the link.
+     * @return A {@link ICheckOptionBuilder} to continue the check building.
      */
-    ILinker link(IProcessInOutPut... inOutPuts);
+    ICheckOptionBuilder stopOnFail(String message);
 
     /**
-     * Add a {@link IProcessCheck} before the execution of the given {@link IProcess}.
+     * Make the check log the given message and stop the program on success .
      *
-     * @param process {@link IProcess} before which the check should be done.
+     * @param message Message to log.
      *
-     * @return A {@link ICheckDataBuilder} to continue the {@link IProcessCheck} build.
+     * @return A {@link ICheckOptionBuilder} to continue the check building.
      */
-    ICheckDataBuilder before(IProcess process);
-
+    ICheckOptionBuilder stopOnSuccess(String message);
 
     /**
-     * Add a {@link IProcessCheck} after the execution of the given {@link IProcess}.
+     * Make the check log the given message and continue the program on fail .
      *
-     * @param process {@link IProcess} after which the check should be done.
+     * @param message Message to log.
      *
-     * @return A {@link ICheckDataBuilder} to continue the {@link IProcessCheck} build.
+     * @return A {@link ICheckOptionBuilder} to continue the check building.
      */
-    ICheckDataBuilder after(IProcess process);
+    ICheckOptionBuilder continueOnFail(String message);
 
-    @Override
-    default String getVersion(){
-        return null;
-    }
-
-    @Override
-    default String getDescription(){
-        return null;
-    }
-
-    @Override
-    default String[] getKeywords(){
-        return null;
-    }
-
-    @Override
-    default String getIdentifier(){
-        return UUID.randomUUID().toString();
-    }
+    /**
+     * Make the check log the given message and continue the program on success .
+     *
+     * @param message Message to log.
+     *
+     * @return A {@link ICheckOptionBuilder} to continue the check building.
+     */
+    ICheckOptionBuilder continueOnSuccess(String message);
 }

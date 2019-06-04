@@ -36,10 +36,7 @@
  */
 package org.orbisgis.processmanager;
 
-import org.orbisgis.processmanagerapi.ILinker;
-import org.orbisgis.processmanagerapi.IProcess;
-import org.orbisgis.processmanagerapi.IProcessInOutPut;
-import org.orbisgis.processmanagerapi.IProcessMapper;
+import org.orbisgis.processmanagerapi.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -67,6 +64,10 @@ public class ProcessMapper implements IProcessMapper {
     private List<IProcess> processList;
     /** Map of the aliases as key and the list of input/output as value. */
     private Map<String, List<IProcessInOutPut>> aliases;
+    /** List of check to do before process execution */
+    private List<IProcessCheck> beforeList = new ArrayList<>();
+    /** List of check to do after process execution */
+    private List<IProcessCheck> afterList = new ArrayList<>();
 
     /**
      * Main constructor.
@@ -79,8 +80,8 @@ public class ProcessMapper implements IProcessMapper {
     /**
      * Return the alias of the given input or output.
      *
-     * @param name
-     * @param process
+     * @param name Name of the alias.
+     * @param process {@link IProcess} containing the input/output with the alias.
      *
      * @return The alias name if there is one, null otherwise.
      */
@@ -221,10 +222,7 @@ public class ProcessMapper implements IProcessMapper {
     public boolean execute(LinkedHashMap<String, Object> inputDataMap) {
         link();
         Map<String, Object> dataMap = inputDataMap == null ?  new HashMap<>() : new HashMap<>(inputDataMap);
-        /*if(inputs != null && dataMap.size() != inputs.size()){
-            LOGGER.error("The number of the input data map and the number of process input are different.");
-            return false;
-        }*/
+        //Iterate over the execution tree
         for(List<IProcess> processes : executionTree){
             for(IProcess process : processes){
                 LinkedHashMap<String, Object> processInData = new LinkedHashMap<>();
@@ -240,9 +238,8 @@ public class ProcessMapper implements IProcessMapper {
                             data[0] = dataMap.get(in);
                         }
                         //Get the link between the input 'in' and a process output if exists
-                        IProcess finalProcess = process;
                         inputOutputMap.forEach((input, output) -> {
-                            if(finalProcess.getIdentifier().equals(input.getProcess().getIdentifier()) &&
+                            if(process.getIdentifier().equals(input.getProcess().getIdentifier()) &&
                                     input.getName().equals(in)){
                                 //get the process with the output linked to 'in'
                                 for(IProcess p : processList){
@@ -255,8 +252,21 @@ public class ProcessMapper implements IProcessMapper {
                         processInData.put(in, data[0]);
                     }
                 }
+                //Do the before check
+                for(IProcessCheck check : beforeList){
+                    if(check.getProcess().getIdentifier().equals(process.getIdentifier())){
+                        check.run(processInData);
+                    }
+                }
+                //Execute the process
                 process.execute(processInData);
                 storeResults(process);
+                //Do the after check
+                for(IProcessCheck check : afterList){
+                    if(check.getProcess().getIdentifier().equals(process.getIdentifier())){
+                        check.run(processInData);
+                    }
+                }
             }
         }
         return true;
@@ -301,6 +311,20 @@ public class ProcessMapper implements IProcessMapper {
     @Override
     public ILinker link(IProcessInOutPut... inOutPuts) {
         return new Linker(inOutPuts);
+    }
+
+    @Override
+    public ICheckDataBuilder before(IProcess process) {
+        IProcessCheck processCheck = new ProcessCheck(process);
+        beforeList.add(processCheck);
+        return new CheckDataBuilder(processCheck);
+    }
+
+    @Override
+    public ICheckDataBuilder after(IProcess process) {
+        IProcessCheck processCheck = new ProcessCheck(process);
+        afterList.add(processCheck);
+        return new CheckDataBuilder(processCheck);
     }
 
     /**

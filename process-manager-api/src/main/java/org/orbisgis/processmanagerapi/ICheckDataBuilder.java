@@ -36,61 +36,20 @@
  */
 package org.orbisgis.processmanagerapi;
 
-import java.util.UUID;
-
 /**
- * This class should not be used will using a IProcess executing and mapping processes is easier.
+ * Interface for the definition of which data are provided for the process check execution.
  *
  * @author Erwan Bocher (CNRS)
  * @author Sylvain PALOMINOS (UBS 2019)
  */
-public interface IProcessMapper extends IProcess {
+public interface ICheckDataBuilder {
 
     /**
-     * Start to link the given inputs/outputs.
+     * Sets the inputs or outputs to use for the check.
      *
-     * @param inOutPuts Inputs or outputs to link.
+     * @param data Input or output list to use to do the check.
      *
-     * @return A {@link ILinker} object which will do the link.
+     * @return A {@link ICheckClosureBuilder} to continue the check building.
      */
-    ILinker link(IProcessInOutPut... inOutPuts);
-
-    /**
-     * Add a {@link IProcessCheck} before the execution of the given {@link IProcess}.
-     *
-     * @param process {@link IProcess} before which the check should be done.
-     *
-     * @return A {@link ICheckDataBuilder} to continue the {@link IProcessCheck} build.
-     */
-    ICheckDataBuilder before(IProcess process);
-
-
-    /**
-     * Add a {@link IProcessCheck} after the execution of the given {@link IProcess}.
-     *
-     * @param process {@link IProcess} after which the check should be done.
-     *
-     * @return A {@link ICheckDataBuilder} to continue the {@link IProcessCheck} build.
-     */
-    ICheckDataBuilder after(IProcess process);
-
-    @Override
-    default String getVersion(){
-        return null;
-    }
-
-    @Override
-    default String getDescription(){
-        return null;
-    }
-
-    @Override
-    default String[] getKeywords(){
-        return null;
-    }
-
-    @Override
-    default String getIdentifier(){
-        return UUID.randomUUID().toString();
-    }
+    ICheckClosureBuilder with(Object... data);
 }

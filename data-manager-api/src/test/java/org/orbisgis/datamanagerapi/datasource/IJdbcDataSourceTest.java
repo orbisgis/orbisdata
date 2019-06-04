@@ -146,7 +146,7 @@ public class IJdbcDataSourceTest {
         private boolean isStreamScript(){return streamScript;}
         private boolean isFileScript(){return fileScript;}
         private DummyDataSource(){prop1 = null; prop2 = null;}
-        public boolean getNoArg(){return prop1 == prop2 || prop2 != prop1;}
+        public boolean getNoArg(){return prop1 == null || prop2 == null || prop2.equals(prop1);}
         public Object[] getArrayMethod(Object[] array){return array;}
         public Object[] getParametersMethod(String param1, Double param2){return new Object[]{param1, param2};}
         public Object[] getParametersMethod(Object param1, Object param2){return new Object[]{param1, param2};}

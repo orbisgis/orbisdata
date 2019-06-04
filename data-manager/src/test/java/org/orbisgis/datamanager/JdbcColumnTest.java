@@ -229,7 +229,15 @@ public class JdbcColumnTest {
         assertFalse(getColumn(COL_MEANING).isSpatialIndexed());
         assertFalse(getColumn(COL_NO_COL).isSpatialIndexed());
         assertFalse(getColumn(COL_NO_TAB).isIndexed());
+    }
 
+    /**
+     * Test the {@link JdbcColumn#isIndexed()}, {@link JdbcColumn#isSpatialIndexed()},
+     * {@link JdbcColumn#createIndex()}, {@link JdbcColumn#createSpatialIndex()}, {@link JdbcColumn#dropIndex()}
+     * methods.
+     */
+    @Test
+    public void testIndexes2(){
         //Test drop index
         getColumn(COL_THE_GEOM).dropIndex();
         getColumn(COL_THE_GEOM2).dropIndex();
@@ -293,6 +301,8 @@ public class JdbcColumnTest {
         assertFalse(getColumn(COL_NO_COL).createIndex());
         assertFalse(getColumn(COL_NO_TAB).isIndexed());
     }
+
+
 
     /**
      * Test the {@link JdbcColumn#getMetaClass()} and {@link JdbcColumn#setMetaClass(MetaClass)} methods.

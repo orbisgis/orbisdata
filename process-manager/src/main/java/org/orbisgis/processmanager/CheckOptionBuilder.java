@@ -36,50 +36,49 @@
  */
 package org.orbisgis.processmanager;
 
-import org.orbisgis.processmanagerapi.ICastElement;
-import org.orbisgis.processmanagerapi.ICaster;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
+import org.orbisgis.processmanagerapi.ICheckOptionBuilder;
+import org.orbisgis.processmanagerapi.IProcessCheck;
 
 /**
- * Implementation of the interface {@link ICaster}.
+ * Implementation of the {@link ICheckOptionBuilder} interface.
  *
  * @author Erwan Bocher (CNRS)
  * @author Sylvain PALOMINOS (UBS 2019)
  */
-public class Caster implements ICaster {
+public class CheckOptionBuilder implements ICheckOptionBuilder {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(Caster.class);
+    /** {@link IProcessCheck} being built */
+    private IProcessCheck processCheck;
 
-    /** List of ICastElement available */
-    private Map<Class, ICastElement> castElementMap;
-
-    public Caster(){
-        castElementMap = new HashMap<>();
+    /**
+     * Default constructor.
+     * @param processCheck {@link IProcessCheck} to build.
+     */
+    public CheckOptionBuilder(IProcessCheck processCheck){
+        this.processCheck = processCheck;
     }
 
     @Override
-    public void addCast(Class clazz, ICastElement castElement) {
-        if(castElementMap.containsKey(clazz)){
-            castElementMap.put(clazz, castElement);
-        }
-        else{
-            LOGGER.debug("There is already a cast element with the class name '"+clazz+"'.");
-        }
+    public ICheckOptionBuilder stopOnFail(String message) {
+        processCheck.onFail(IProcessCheck.STOP, message);
+        return this;
     }
 
     @Override
-    public Object cast(Object o, Class clazz) {
-        return castElementMap.entrySet()
-                .stream()
-                .filter(element -> element.getKey().equals(clazz))
-                .map(element -> element.getValue().cast(o))
-                .filter(Objects::nonNull)
-                .findFirst()
-                .orElse(o);
+    public ICheckOptionBuilder stopOnSuccess(String message) {
+        processCheck.onSuccess(IProcessCheck.STOP, message);
+        return this;
+    }
+
+    @Override
+    public ICheckOptionBuilder continueOnFail(String message) {
+        processCheck.onFail(IProcessCheck.CONTINUE, message);
+        return this;
+    }
+
+    @Override
+    public ICheckOptionBuilder continueOnSuccess(String message) {
+        processCheck.onSuccess(IProcessCheck.CONTINUE, message);
+        return this;
     }
 }

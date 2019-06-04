@@ -37,6 +37,7 @@
 package org.orbisgis.processmanager;
 
 import groovy.lang.Closure;
+import groovy.lang.GroovyObject;
 import groovy.lang.MetaClass;
 import org.codehaus.groovy.runtime.InvokerHelper;
 import org.orbisgis.processmanagerapi.ICaster;
@@ -50,13 +51,13 @@ import java.util.Map;
 import java.util.UUID;
 
 /**
- * Implementation of the IProcess interface dedicated to the local creation and execution of process (no link with
+ * Implementation of the {@link IProcess} interface dedicated to the local creation and execution of process (no link with
  * WPS process for now).
  *
  * @author Erwan Bocher (CNRS)
  * @author Sylvain PALOMINOS (UBS 2019)
  */
-public class Process implements IProcess {
+public class Process implements IProcess, GroovyObject {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Process.class);
 
@@ -194,6 +195,7 @@ public class Process implements IProcess {
 
     @Override
     public boolean execute(LinkedHashMap<String, Object> inputDataMap) {
+        LOGGER.debug("Starting the execution of '" + this.getTitle() + "'.");
         if(inputs != null && (inputs.size() < inputDataMap.size() || inputs.size()-defaultValues.size() > inputDataMap.size())){
             LOGGER.error("The number of the input data map and the number of process input are different, should" +
                     " be between " + (inputDataMap.size()-defaultValues.size()) + " and " + inputDataMap.size() + ".");
@@ -224,6 +226,7 @@ public class Process implements IProcess {
         for (Map.Entry<String, Class> entry : outputs.entrySet()) {
             isResultValid = map.containsKey(entry.getKey());
         }
+        LOGGER.debug("End of the execution of '" + this.getTitle() + "'.");
         if(!isResultValid){
             return false;
         }
@@ -271,5 +274,33 @@ public class Process implements IProcess {
     @Override
     public Map<String, Class> getOutputs() {
         return outputs;
+    }
+
+    @Override
+    public Object invokeMethod(String name, Object args) {
+        return metaClass.invokeMethod(this, name, args);
+    }
+
+    @Override
+    public Object getProperty(String propertyName) {
+        if(inputs.keySet().contains(propertyName) || outputs.keySet().contains(propertyName)){
+            return new ProcessInOutPut(this, propertyName);
+        }
+        return metaClass.getProperty(this, propertyName);
+    }
+
+    @Override
+    public void setProperty(String propertyName, Object newValue) {
+        this.metaClass.setProperty(this, propertyName, newValue);
+    }
+
+    @Override
+    public MetaClass getMetaClass() {
+        return metaClass;
+    }
+
+    @Override
+    public void setMetaClass(MetaClass metaClass) {
+        this.metaClass = metaClass;
     }
 }

@@ -39,7 +39,6 @@ package org.orbisgis.datamanager.dsl;
 import groovy.lang.Closure;
 import org.h2gis.utilities.TableLocation;
 import org.h2gis.utilities.wrapper.StatementWrapper;
-import org.orbisgis.commons.printer.Ascii;
 import org.orbisgis.commons.printer.ICustomPrinter;
 import org.orbisgis.datamanager.JdbcDataSource;
 import org.orbisgis.datamanager.h2gis.H2gisSpatialTable;
@@ -54,7 +53,6 @@ import org.slf4j.LoggerFactory;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.UUID;
 
 /**
  * Implementation of IBuilderResult

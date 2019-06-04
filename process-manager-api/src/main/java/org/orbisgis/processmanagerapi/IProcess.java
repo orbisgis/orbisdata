@@ -61,7 +61,7 @@ public interface IProcess {
      *
      * @return True if the execution is successful, false otherwise.
      */
-    boolean execute(LinkedHashMap<String, Object> inputDataMap);
+    boolean execute(LinkedHashMap<String, Object> inputDataMap) throws Exception;
 
     /**
      * Return the title of the process.

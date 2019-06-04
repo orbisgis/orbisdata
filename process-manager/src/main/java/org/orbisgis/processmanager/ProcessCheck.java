@@ -81,7 +81,7 @@ public class ProcessCheck implements IProcessCheck {
     }
 
     @Override
-    public void run(LinkedHashMap<String, Object> processInData) {
+    public void run(LinkedHashMap<String, Object> processInData) throws Exception {
         if(cl == null){
             LOGGER.error("A closure for the process check should be defined.");
             fail();
@@ -140,25 +140,25 @@ public class ProcessCheck implements IProcessCheck {
     }
 
     @Override
-    public void fail() {
+    public void fail() throws Exception {
         LOGGER.error(failMessage);
         switch(failAction){
             case STOP:
-                System.exit(1);
-                break;
-            case  CONTINUE:
+                throw new Exception(failMessage);
+            case CONTINUE:
+            default:
                 break;
         }
     }
 
     @Override
-    public void success() {
+    public void success() throws Exception {
         LOGGER.info(successMessage);
         switch(successAction){
             case STOP:
-                System.exit(1);
-                break;
-            case  CONTINUE:
+                throw new Exception(successMessage);
+            case CONTINUE:
+            default:
                 break;
         }
     }

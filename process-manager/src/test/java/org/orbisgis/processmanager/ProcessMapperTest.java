@@ -138,7 +138,7 @@ public class ProcessMapperTest {
      *      ----
      */
     @Test
-    public void testMapping1(){
+    public void testMapping1() throws Exception {
 
         LinkedHashMap<String, Object> pAInputMap = new LinkedHashMap<>();
         pAInputMap.put("inA1", String.class);
@@ -199,7 +199,7 @@ public class ProcessMapperTest {
      *  --> -----  |--> ----
      */
     @Test
-    public void testMapping2(){
+    public void testMapping2() throws Exception {
 
         IProcessMapper mapper = new ProcessMapper();
 

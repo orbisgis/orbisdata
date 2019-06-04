@@ -219,7 +219,7 @@ public class ProcessMapper implements IProcessMapper {
     }
 
     @Override
-    public boolean execute(LinkedHashMap<String, Object> inputDataMap) {
+    public boolean execute(LinkedHashMap<String, Object> inputDataMap) throws Exception {
         link();
         Map<String, Object> dataMap = inputDataMap == null ?  new HashMap<>() : new HashMap<>(inputDataMap);
         //Iterate over the execution tree

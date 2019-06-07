@@ -36,11 +36,14 @@
  */
 package org.orbisgis.datamanager;
 
+import groovy.lang.Closure;
 import groovy.lang.GString;
 import groovy.lang.MetaClass;
 import groovy.sql.GroovyRowResult;
 import groovy.sql.Sql;
 import groovy.text.SimpleTemplateEngine;
+import groovy.transform.stc.ClosureParams;
+import groovy.transform.stc.SimpleType;
 import org.codehaus.groovy.runtime.InvokerHelper;
 import org.h2.util.ScriptReader;
 import org.h2gis.functions.io.utility.FileUtil;
@@ -130,6 +133,18 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, ISe
             LOGGER.debug("Unable to execute the request as a GString.\n" + e.getLocalizedMessage());
         }
         return super.rows(gstring.toString());
+    }
+
+    @Override
+    public void eachRow(GString gstring,
+                      @ClosureParams(value= SimpleType.class, options="java.sql.ResultSet") Closure closure)
+            throws SQLException {
+        try {
+            super.eachRow(gstring, closure);
+        } catch (SQLException e) {
+            LOGGER.debug("Unable to execute the request as a GString.\n" + e.getLocalizedMessage());
+            super.eachRow(gstring.toString(), closure);
+        }
     }
 
     @Override

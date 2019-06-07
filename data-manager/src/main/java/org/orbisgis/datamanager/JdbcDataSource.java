@@ -38,6 +38,7 @@ package org.orbisgis.datamanager;
 
 import groovy.lang.GString;
 import groovy.lang.MetaClass;
+import groovy.sql.GroovyRowResult;
 import groovy.sql.Sql;
 import groovy.text.SimpleTemplateEngine;
 import org.codehaus.groovy.runtime.InvokerHelper;
@@ -108,6 +109,16 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, ISe
             LOGGER.debug("Unable to execute the request as a GString.\n" + e.getLocalizedMessage());
         }
         return super.execute(gstring.toString());
+    }
+
+    @Override
+    public GroovyRowResult firstRow(GString gstring) throws SQLException {
+        try {
+            return super.firstRow(gstring);
+        } catch (SQLException e) {
+            LOGGER.debug("Unable to execute the request as a GString.\n" + e.getLocalizedMessage());
+        }
+        return super.firstRow(gstring.toString());
     }
 
     @Override

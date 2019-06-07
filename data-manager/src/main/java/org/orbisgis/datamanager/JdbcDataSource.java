@@ -60,6 +60,7 @@ import javax.sql.DataSource;
 import java.io.*;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 
@@ -119,6 +120,16 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, ISe
             LOGGER.debug("Unable to execute the request as a GString.\n" + e.getLocalizedMessage());
         }
         return super.firstRow(gstring.toString());
+    }
+
+    @Override
+    public List<GroovyRowResult> rows(GString gstring) throws SQLException {
+        try {
+            return super.rows(gstring);
+        } catch (SQLException e) {
+            LOGGER.debug("Unable to execute the request as a GString.\n" + e.getLocalizedMessage());
+        }
+        return super.rows(gstring.toString());
     }
 
     @Override

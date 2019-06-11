@@ -91,16 +91,6 @@ public class PostgisSpatialTable extends JdbcSpatialTable {
     }
 
     @Override
-    public SpatialResultSetMetaData getMetadata(){
-        try {
-            return getResultSet().getMetaData().unwrap(SpatialResultSetMetaData.class);
-        } catch (SQLException e) {
-            LOGGER.error("Unable to get the metadata.\n" + e.getLocalizedMessage());
-            return null;
-        }
-    }
-
-    @Override
     public Object asType(Class clazz) {
         if (clazz == ITable.class || clazz == PostgisTable.class) {
             return new PostgisTable(getTableLocation(), getBaseQuery(), (StatementWrapper)getStatement(),

@@ -192,31 +192,4 @@ public class POSTGIS extends JdbcDataSource {
         LOGGER.error("The table '" + tableName + "' is not a spatial table.");
         return null;
     }
-
-    @Override
-    public Collection<String> getTableNames() {
-        try {
-            return JDBCUtilities.getTableNames(connectionWrapper.getMetaData(), null, null, null, null);
-        } catch (SQLException e) {
-            LOGGER.error("Unable to get the database metadata.\n" + e.getLocalizedMessage());
-            return new ArrayList<>();
-        }
-    }
-
-    @Override
-    public IDataSet getDataSet(String dataSetName) {
-        List<String> geomFields;
-        try {
-            geomFields = SFSUtilities.getGeometryFields(connectionWrapper, new TableLocation(dataSetName));
-        } catch (SQLException e) {
-
-            return getTable(dataSetName);
-        }
-        if(geomFields.size() >= 1){
-            return getSpatialTable(dataSetName);
-        }
-        return getTable(dataSetName);
-    }
-
-
 }

@@ -38,6 +38,7 @@ package org.orbisgis.datamanager;
 
 import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.SpatialResultSet;
+import org.h2gis.utilities.SpatialResultSetMetaData;
 import org.h2gis.utilities.TableLocation;
 import org.locationtech.jts.geom.Geometry;
 import org.orbisgis.datamanagerapi.dataset.DataBaseType;
@@ -138,6 +139,16 @@ public abstract class JdbcSpatialTable extends JdbcTable implements ISpatialTabl
             return map;
         } catch (SQLException e) {
             LOGGER.error("Unable to get the geometry types.\n" + e.getLocalizedMessage());
+            return null;
+        }
+    }
+
+    @Override
+    public SpatialResultSetMetaData getMetadata(){
+        try {
+            return getResultSet().getMetaData().unwrap(SpatialResultSetMetaData.class);
+        } catch (SQLException e) {
+            LOGGER.error("Unable to get the metadata.\n" + e.getLocalizedMessage());
             return null;
         }
     }

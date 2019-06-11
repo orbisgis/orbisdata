@@ -59,6 +59,7 @@ import org.orbisgis.datamanagerapi.dsl.IConditionOrOptionBuilder;
 import org.orbisgis.datamanagerapi.dsl.IOptionBuilder;
 
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collection;
@@ -118,12 +119,34 @@ public abstract class JdbcTable extends DefaultResultSet implements IJdbcTable, 
         return baseQuery;
     }
 
-    /**
-     * Return the contained ResultSet.
-     *
-     * @return The table ResultSet.
-     */
-    protected abstract ResultSet getResultSet();
+    @Override
+    protected ResultSet getResultSet(){
+        if(resultSet == null) {
+            try {
+                resultSet = getStatement().executeQuery(getBaseQuery());
+            } catch (SQLException e) {
+                LOGGER.error("Unable to execute the query '"+getBaseQuery()+"'.\n"+e.getLocalizedMessage());
+                return null;
+            }
+            try {
+                resultSet.beforeFirst();
+            } catch (SQLException e) {
+                LOGGER.error("Unable to go before the first ResultSet row.\n" + e.getLocalizedMessage());
+                return null;
+            }
+        }
+        return resultSet;
+    }
+
+    @Override
+    public ResultSetMetaData getMetadata(){
+        try {
+            return getResultSet().getMetaData();
+        } catch (SQLException e) {
+            LOGGER.error("Unable to get the metadata.\n" + e.getLocalizedMessage());
+            return null;
+        }
+    }
 
     /**
      * Return the parent DataSource.

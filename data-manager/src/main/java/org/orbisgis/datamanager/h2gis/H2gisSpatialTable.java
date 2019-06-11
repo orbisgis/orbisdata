@@ -91,16 +91,6 @@ public class H2gisSpatialTable extends JdbcSpatialTable {
         return new SpatialResultSetImpl(resultSet, (StatementWrapper) getStatement());
     }
 
-    @Override
-    public SpatialResultSetMetaData getMetadata(){
-        try {
-            return getResultSet().getMetaData().unwrap(SpatialResultSetMetaData.class);
-        } catch (SQLException e) {
-            LOGGER.error("Unable to get the metadata.\n" + e.getLocalizedMessage());
-            return null;
-        }
-    }
-
 
     @Override
     public Object asType(Class clazz) {

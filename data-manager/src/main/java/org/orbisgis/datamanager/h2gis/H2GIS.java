@@ -176,9 +176,7 @@ public class H2GIS extends JdbcDataSource {
      * @return An instantiated H2GIS object wrapping the Sql object connected to the database.
      */
     public static H2GIS open(String path) {
-        Map<String, String> map = new HashMap<>();
-        map.put("databaseName", path);
-        return open(map);
+        return open(path, "sa", "");
     }
 
     /**
@@ -230,57 +228,13 @@ public class H2GIS extends JdbcDataSource {
 
     @Override
     public ISpatialTable getSpatialTable(String tableName) {
-        String name = TableLocation.parse(tableName, getDataBaseType().equals(DataBaseType.H2GIS)).toString( getDataBaseType().equals(DataBaseType.H2GIS));
-        try {
-            if(!JDBCUtilities.tableExists(connectionWrapper, name)){
-                return null;
-            }
-        } catch (SQLException e) {
-            LOGGER.error("Unable to find table.\n"+e.getLocalizedMessage());
+        ITable table = getTable(tableName);
+        if(table instanceof ISpatialTable){
+            return (ISpatialTable) table;
+        }
+        else {
+            LOGGER.error("The table '" + table.getName() + "' is not a spatial table.");
             return null;
         }
-        StatementWrapper statement;
-        try {
-            statement = (StatementWrapper)connectionWrapper.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);
-        } catch (SQLException e) {
-            LOGGER.error("Unable to create Statement.\n"+e.getLocalizedMessage());
-            return null;
-        }
-        String query = String.format("SELECT * FROM %s", name);
-        try {
-            if(!SFSUtilities.getGeometryFields(getConnection(), new TableLocation(name)).isEmpty()) {
-                return new H2gisSpatialTable(new TableLocation(name), query, statement, this);
-            }
-        } catch (SQLException e) {
-            LOGGER.error("Unable to check if table '" + name + "' contains geometric fields.\n" +
-                    e.getLocalizedMessage());
-        }
-        LOGGER.error("The table '" + name + "' is not a spatial table.");
-        return null;
-    }
-
-    @Override
-    public Collection<String> getTableNames() {
-        try {
-            return JDBCUtilities.getTableNames(connectionWrapper.getMetaData(), null, null, null, null);
-        } catch (SQLException e) {
-            LOGGER.error("Unable to get the database metadata.\n" + e.getLocalizedMessage());
-            return new ArrayList<>();
-        }
-    }
-
-    @Override
-    public IDataSet getDataSet(String dataSetName) {
-        List<String> geomFields;
-        try {
-            geomFields = SFSUtilities.getGeometryFields(connectionWrapper, new TableLocation(dataSetName));
-        } catch (SQLException e) {
-
-            return getTable(dataSetName);
-        }
-        if (geomFields.size() >= 1) {
-            return getSpatialTable(dataSetName);
-        }
-        return getTable(dataSetName);
     }
 }

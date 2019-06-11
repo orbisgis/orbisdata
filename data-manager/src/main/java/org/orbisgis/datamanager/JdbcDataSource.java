@@ -47,10 +47,14 @@ import groovy.transform.stc.SimpleType;
 import org.codehaus.groovy.runtime.InvokerHelper;
 import org.h2.util.ScriptReader;
 import org.h2gis.functions.io.utility.FileUtil;
+import org.h2gis.utilities.JDBCUtilities;
+import org.h2gis.utilities.SFSUtilities;
+import org.h2gis.utilities.TableLocation;
 import org.h2gis.utilities.URIUtilities;
 import org.orbisgis.datamanager.dsl.FromBuilder;
 import org.orbisgis.datamanager.io.IOMethods;
 import org.orbisgis.datamanagerapi.dataset.DataBaseType;
+import org.orbisgis.datamanagerapi.dataset.IDataSet;
 import org.orbisgis.datamanagerapi.dataset.ITable;
 import org.orbisgis.datamanagerapi.datasource.IDataSourceLocation;
 import org.orbisgis.datamanagerapi.datasource.IJdbcDataSource;
@@ -63,6 +67,8 @@ import javax.sql.DataSource;
 import java.io.*;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
@@ -320,5 +326,31 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, ISe
             LOGGER.error("Unable to get the connection metadata.\n" + e.getLocalizedMessage());
         }
         return null;
+    }
+
+
+    @Override
+    public Collection<String> getTableNames() {
+        try {
+            return JDBCUtilities.getTableNames(getConnection().getMetaData(), null, null, null, null);
+        } catch (SQLException e) {
+            LOGGER.error("Unable to get the database metadata.\n" + e.getLocalizedMessage());
+            return new ArrayList<>();
+        }
+    }
+
+    @Override
+    public IDataSet getDataSet(String dataSetName) {
+        List<String> geomFields;
+        try {
+            geomFields = SFSUtilities.getGeometryFields(getConnection(), new TableLocation(dataSetName));
+        } catch (SQLException e) {
+
+            return getTable(dataSetName);
+        }
+        if (geomFields.size() >= 1) {
+            return getSpatialTable(dataSetName);
+        }
+        return getTable(dataSetName);
     }
 }

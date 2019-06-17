@@ -39,13 +39,11 @@
         <dependency>
             <groupId>org.orbisgis</groupId>
             <artifactId>data-manager-api</artifactId>
-            <version>${project.parent.version}</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.orbisgis</groupId>
             <artifactId>commons</artifactId>
-            <version>${project.parent.version}</version>
             <scope>compile</scope>
         </dependency>
         <dependency>

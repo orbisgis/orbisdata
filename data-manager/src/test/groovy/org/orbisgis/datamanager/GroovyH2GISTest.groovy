@@ -66,7 +66,7 @@ class GroovyH2GISTest {
         def name = "TYPES"
         h2GIS.execute("DROP TABLE IF EXISTS $name")
         h2GIS.execute("CREATE TABLE TYPES (colint INT, colreal REAL, colint2 MEDIUMINT, coltime TIME, " +
-                "colvarchar VARCHAR2, colbool boolean, coltiny tinyint, colpoint POINT, colgeom GEOMETRY)")
+                "colvarchar VARCHAR2, colbool boolean, coltiny tinyint, colpoint GEOMETRY(POINT), colgeom GEOMETRY)")
         assertTrue(h2GIS.getTable("TYPES").hasColumn("colint", Integer.class))
         assertFalse(h2GIS.getTable("TYPES").hasColumn("colint", Short.class))
         assertTrue(h2GIS.getTable("TYPES").hasColumns(
@@ -103,7 +103,7 @@ class GroovyH2GISTest {
         def h2GIS = H2GIS.open([databaseName: './target/loadH2GIS'])
         h2GIS.execute("""
                 DROP TABLE IF EXISTS h2gis;
-                CREATE TABLE h2gis (id int, the_geom point);
+                CREATE TABLE h2gis (id int, the_geom geometry(point));
                 INSERT INTO h2gis VALUES (1, 'POINT(10 10)'::GEOMETRY), (2, 'POINT(1 1)'::GEOMETRY);
         """)
         def concat = ""
@@ -116,7 +116,7 @@ class GroovyH2GISTest {
         def h2GIS = H2GIS.open([databaseName: './target/loadH2GIS'])
         h2GIS.execute("""
                 DROP TABLE IF EXISTS h2gis;
-                CREATE TABLE h2gis (id int, the_geom point);
+                CREATE TABLE h2gis (id int, the_geom geometry(point));
                 INSERT INTO h2gis VALUES (1, 'POINT(10 10)'::GEOMETRY), (2, 'POINT(1 1)'::GEOMETRY);
         """)
         def concat = ""
@@ -129,8 +129,8 @@ class GroovyH2GISTest {
         def h2GIS = H2GIS.open([databaseName: './target/loadH2GIS'])
         h2GIS.execute("""
                 DROP TABLE IF EXISTS table1, table2;
-                CREATE TABLE table1 (id int, the_geom point);
-                CREATE TABLE table2 (id int, the_geom point);
+                CREATE TABLE table1 (id int, the_geom geometry(point));
+                CREATE TABLE table2 (id int, the_geom geometry(point));
         """)
 
         def values = h2GIS.tableNames
@@ -143,7 +143,7 @@ class GroovyH2GISTest {
         def h2GIS = H2GIS.open([databaseName: './target/loadH2GIS'])
         h2GIS.execute("""
                 DROP TABLE IF EXISTS h2gis;
-                CREATE TABLE h2gis (id int, the_geom point);
+                CREATE TABLE h2gis (id int, the_geom geometry(point));
                 INSERT INTO h2gis VALUES (1, 'POINT(10 10)'::GEOMETRY), (2, 'POINT(1 1)'::GEOMETRY);
         """)
         def concat = ""
@@ -158,7 +158,7 @@ class GroovyH2GISTest {
         def h2GIS = H2GIS.open([databaseName: './target/loadH2GIS'])
         h2GIS.execute("""
                 DROP TABLE IF EXISTS h2gis;
-                CREATE TABLE h2gis (id int, the_geom point);
+                CREATE TABLE h2gis (id int, the_geom geometry(point));
                 INSERT INTO h2gis VALUES (1, 'POINT(10 10)'::GEOMETRY), (2, 'POINT(1 1)'::GEOMETRY);
         """)
 
@@ -181,7 +181,7 @@ class GroovyH2GISTest {
         def h2GIS = H2GIS.open([databaseName: './target/loadH2GIS'])
         h2GIS.execute("""
                 DROP TABLE IF EXISTS h2gis, h2gis_imported;
-                CREATE TABLE h2gis (id int, the_geom point);
+                CREATE TABLE h2gis (id int, the_geom geometry(point));
                 INSERT INTO h2gis VALUES (1, 'POINT(10 10)'::GEOMETRY), (2, 'POINT(1 1)'::GEOMETRY);
         """)
         h2GIS.save("h2gis","target/h2gis_imported.shp");
@@ -196,7 +196,7 @@ class GroovyH2GISTest {
         def h2GIS = H2GIS.open([databaseName: './target/loadH2GIS'])
         h2GIS.execute("""
                 DROP TABLE IF EXISTS h2gis, h2gis_imported;
-                CREATE TABLE h2gis (id int, the_geom point);
+                CREATE TABLE h2gis (id int, the_geom geometry(point));
                 INSERT INTO h2gis VALUES (1, 'POINT(10 10)'::GEOMETRY), (2, 'POINT(1 1)'::GEOMETRY);
         """)
         h2GIS.save("h2gis","target/h2gis_imported.shp");
@@ -212,7 +212,7 @@ class GroovyH2GISTest {
         def h2GIS = H2GIS.open([databaseName: './target/loadH2GIS'])
         h2GIS.execute("""
                 DROP TABLE IF EXISTS h2gis, h2gis_imported;
-                CREATE TABLE h2gis (id int, the_geom point);
+                CREATE TABLE h2gis (id int, the_geom geometry(point));
                 INSERT INTO h2gis VALUES (1, 'POINT(10 10)'::GEOMETRY), (2, 'POINT(1 1)'::GEOMETRY);
         """)
         h2GIS.save("h2gis","target/h2gis_imported.shp");
@@ -227,7 +227,7 @@ class GroovyH2GISTest {
         def h2GIS = H2GIS.open([databaseName: './target/loadH2GIS'])
         h2GIS.execute("""
                 DROP TABLE IF EXISTS h2gis, h2gis_imported;
-                CREATE TABLE h2gis (id int, the_geom point);
+                CREATE TABLE h2gis (id int, the_geom geometry(point));
                 INSERT INTO h2gis VALUES (1, 'POINT(10 10)'::GEOMETRY), (2, 'POINT(1 1)'::GEOMETRY);
         """)
         h2GIS.save("h2gis","target/h2gis_imported.shp");
@@ -241,7 +241,7 @@ class GroovyH2GISTest {
         def h2GIS = H2GIS.open([databaseName: './target/loadH2GIS'])
         h2GIS.execute("""
                 DROP TABLE IF EXISTS h2gis, h2gis_imported;
-                CREATE TABLE h2gis (id int, the_geom point);
+                CREATE TABLE h2gis (id int, the_geom geometry(point));
                 INSERT INTO h2gis VALUES (1, 'POINT(10 10)'::GEOMETRY), (2, 'POINT(1 1)'::GEOMETRY);
         """)
         h2GIS.save("h2gis","target/h2gis_imported.geojson")
@@ -258,7 +258,7 @@ class GroovyH2GISTest {
         def h2GIS = H2GIS.open([databaseName: './target/loadH2GIS'])
         h2GIS.execute("""
                 DROP TABLE IF EXISTS h2gis, h2gis_imported;
-                CREATE TABLE h2gis (id int, the_geom point);
+                CREATE TABLE h2gis (id int, the_geom geometry(point));
                 INSERT INTO h2gis VALUES (1, 'POINT(10 10)'::GEOMETRY), (2, 'POINT(1 1)'::GEOMETRY);
         """)
         h2GIS.save("h2gis","target/h2gis_imported.csv")
@@ -274,7 +274,7 @@ class GroovyH2GISTest {
         def h2GIS = H2GIS.open([databaseName: './target/loadH2GIS'])
         h2GIS.execute("""
                 DROP TABLE IF EXISTS h2gis, h2gis_imported;
-                CREATE TABLE h2gis (id int, the_geom point);
+                CREATE TABLE h2gis (id int, the_geom geometry(point));
                 INSERT INTO h2gis VALUES (1, 'POINT(10 10)'::GEOMETRY), (2, 'POINT(1 1)'::GEOMETRY);
         """)
 
@@ -291,7 +291,7 @@ class GroovyH2GISTest {
         def h2GIS = H2GIS.open([databaseName: './target/loadH2GIS'])
         h2GIS.execute("""
                 DROP TABLE IF EXISTS h2gis;
-                CREATE TABLE h2gis (id int, the_geom point);
+                CREATE TABLE h2gis (id int, the_geom geometry(point));
                 INSERT INTO h2gis VALUES (1, 'POINT(10 10)'::GEOMETRY), (2, 'POINT(1 1)'::GEOMETRY);
         """)
         assertEquals("ID,THE_GEOM", h2GIS.getSpatialTable("h2gis").columnNames.join(","))
@@ -303,7 +303,7 @@ class GroovyH2GISTest {
         def h2External = H2GIS.open([databaseName: './target/secondH2GIS', user:'sa', password:'sa'])
         h2External.execute("""
                 DROP TABLE IF EXISTS externalTable;
-                CREATE TABLE externalTable (id int, the_geom point);
+                CREATE TABLE externalTable (id int, the_geom geometry(point));
                 INSERT INTO externalTable VALUES (1, 'POINT(10 10)'::GEOMETRY), (2, 'POINT(1 1)'::GEOMETRY);
         """)
         def h2GIS = H2GIS.open([databaseName: './target/loadH2GIS'])
@@ -316,7 +316,7 @@ class GroovyH2GISTest {
         def h2GIS = H2GIS.open([databaseName: './target/secondH2GIS', user:'sa', password:'sa'])
         h2GIS.execute("""
                 DROP TABLE IF EXISTS externalTable;
-                CREATE TABLE externalTable (id int, the_geom point);
+                CREATE TABLE externalTable (id int, the_geom geometry(point));
                 INSERT INTO externalTable VALUES (1, 'POINT(10 10)'::GEOMETRY), (2, 'POINT(1 1)'::GEOMETRY);
         """)
         h2GIS.save("externalTable", 'target/externalFile.shp' )
@@ -329,7 +329,7 @@ class GroovyH2GISTest {
         def h2GIS = H2GIS.open([databaseName: './target/secondH2GIS', user:'sa', password:'sa'])
         h2GIS.execute("""
                 DROP TABLE IF EXISTS externalTable;
-                CREATE TABLE externalTable (id int, the_geom point);
+                CREATE TABLE externalTable (id int, the_geom geometry(point));
                 INSERT INTO externalTable VALUES (1, 'POINT(10 10)'::GEOMETRY), (2, 'POINT(1 1)'::GEOMETRY);
         """)
         h2GIS.save("externalTable", 'target/externalFile.shp' )
@@ -342,7 +342,7 @@ class GroovyH2GISTest {
         def h2GIS = H2GIS.open([databaseName: './target/secondH2GIS', user:'sa', password:'sa'])
         h2GIS.execute("""
                 DROP TABLE IF EXISTS externalTable, supersave;
-                CREATE TABLE externalTable (id int, the_geom point);
+                CREATE TABLE externalTable (id int, the_geom geometry(point));
                 INSERT INTO externalTable VALUES (1, 'POINT(10 10)'::GEOMETRY), (2, 'POINT(1 1)'::GEOMETRY);
         """)
         h2GIS.save("externalTable", 'target/externalFile.shp' )
@@ -358,7 +358,7 @@ class GroovyH2GISTest {
         def h2GIS = H2GIS.open([databaseName: './target/loadH2GIS'])
         h2GIS.execute("""
                 DROP TABLE IF EXISTS h2gis, super;
-                CREATE TABLE h2gis (id int, the_geom point);
+                CREATE TABLE h2gis (id int, the_geom geometry(point));
                 INSERT INTO h2gis VALUES (1, 'POINT(10 10)'::GEOMETRY), (2, 'POINT(1 1)'::GEOMETRY);
         """)
         def file = new File('target/myscript.sql')
@@ -375,7 +375,7 @@ class GroovyH2GISTest {
         def h2GIS = H2GIS.open([databaseName: './target/loadH2GIS'])
         h2GIS.execute("""
                 DROP TABLE IF EXISTS h2gis, super;
-                CREATE TABLE h2gis (id int, the_geom point);
+                CREATE TABLE h2gis (id int, the_geom geometry(point));
                 INSERT INTO h2gis VALUES (1, 'POINT(10 10)'::GEOMETRY), (2, 'POINT(1 1)'::GEOMETRY);
         """)
         def file = new File('target/myscript.sql')
@@ -392,7 +392,7 @@ class GroovyH2GISTest {
         def h2GIS = H2GIS.open([databaseName: './target/loadH2GIS'])
         h2GIS.execute("""
                 DROP TABLE IF EXISTS h2gis, super;
-                CREATE TABLE h2gis (id int, the_geom point);
+                CREATE TABLE h2gis (id int, the_geom geometry(point));
                 INSERT INTO h2gis VALUES (1, 'POINT(10 10)'::GEOMETRY), (2, 'POINT(1 1)'::GEOMETRY);
         """)
         def file = new File('target/myscript.sql')
@@ -409,7 +409,7 @@ class GroovyH2GISTest {
         def h2GIS = H2GIS.open([databaseName: './target/loadH2GIS'])
         h2GIS.execute("""
                 DROP TABLE IF EXISTS h2gis, super;
-                CREATE TABLE h2gis (id int, the_geom point);
+                CREATE TABLE h2gis (id int, the_geom geometry(point));
                 INSERT INTO h2gis VALUES (1, 'POINT(10 10)'::GEOMETRY), (2, 'POINT(1 1)'::GEOMETRY);
         """)
         def file = new File('target/myscript.sql')
@@ -448,7 +448,7 @@ class GroovyH2GISTest {
             fail()
         }
         h2GIS.load(outputOSMFile.absolutePath, 'map', true)
-        assertTrue(h2GIS.tableNames.count{it.startsWith('LOADH2GIS.PUBLIC.MAP')}==11 )
+        assertEquals 10, h2GIS.tableNames.count{it.startsWith('LOADH2GIS.PUBLIC.MAP')}
 
     }
 
@@ -456,7 +456,7 @@ class GroovyH2GISTest {
     void request() throws SQLException {
         def h2GIS = H2GIS.open([databaseName: './target/loadH2GIS'])
         h2GIS.execute """DROP TABLE IF EXISTS h2gis;
-                CREATE TABLE h2gis (id int PRIMARY KEY, code int, the_geom point);
+                CREATE TABLE h2gis (id int PRIMARY KEY, code int, the_geom geometry(point));
                 insert into h2gis values (1,22, 'POINT(10 10)'::GEOMETRY);
                 insert into h2gis values (2,56, 'POINT(20 20)'::GEOMETRY);
                 insert into h2gis values (3,22, 'POINT(10 10)'::GEOMETRY);
@@ -504,7 +504,7 @@ class GroovyH2GISTest {
         def h2GIS = H2GIS.open([databaseName: './target/secondH2GIS', user:'sa', password:'sa'])
         h2GIS.execute("""
                 DROP TABLE IF EXISTS externalTable;
-                CREATE TABLE externalTable (id int, the_geom point);
+                CREATE TABLE externalTable (id int, the_geom geometry(point));
                 INSERT INTO externalTable VALUES (1, 'POINT(10 10)'::GEOMETRY), (2, 'POINT(1 1)'::GEOMETRY);
         """)
         h2GIS.save("externalTable", 'target/externalFile.shp' )
@@ -526,7 +526,7 @@ class GroovyH2GISTest {
 
         h2GIS.eachRow "SELECT count(TABLE_NAME) as nb FROM INFORMATION_SCHEMA.TABLES where TABLE_NAME LIKE 'OSM%'",
                 { row ->
-                    assertEquals 11,row.nb
+                    assertEquals 10,row.nb
                 }
 
         // Check number
@@ -554,7 +554,7 @@ class GroovyH2GISTest {
         def h2GIS = H2GIS.open('./target/orbisgis')
         h2GIS.execute("""
                 DROP TABLE IF EXISTS orbisgis;
-                CREATE TABLE orbisgis (id int, the_geom point);
+                CREATE TABLE orbisgis (id int, the_geom geometry(point));
                 INSERT INTO orbisgis VALUES (1, 'POINT(10 10)'::GEOMETRY), (2, 'POINT(1 1)'::GEOMETRY);
         """)
         assertEquals "INTEGER", h2GIS.getSpatialTable("orbisgis").id.type
@@ -571,7 +571,7 @@ class GroovyH2GISTest {
         def h2GIS = H2GIS.open('./target/orbisgis')
         h2GIS.execute("""
                 DROP TABLE IF EXISTS orbisgis;
-                CREATE TABLE orbisgis (id int, the_geom point, very_long_title_to_test_size_limits varchar);
+                CREATE TABLE orbisgis (id int, the_geom geometry(point), very_long_title_to_test_size_limits varchar);
                 INSERT INTO orbisgis VALUES (1, 'POINT(10 10)'::GEOMETRY, 'just a string a bit too long'), 
                 (2, 'POINT(1 1)'::GEOMETRY, 'another string');
         """)

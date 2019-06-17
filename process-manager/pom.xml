@@ -27,7 +27,6 @@
         <dependency>
             <groupId>org.orbisgis</groupId>
             <artifactId>process-manager-api</artifactId>
-            <version>${project.parent.version}</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
@@ -57,7 +56,6 @@
         <dependency>
             <groupId>org.orbisgis</groupId>
             <artifactId>data-manager</artifactId>
-            <version>${project.parent.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>

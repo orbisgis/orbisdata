@@ -71,8 +71,8 @@
 
     <!-- More Project Information -->
     <name>OrbisData</name>
-    <description>Data managin for OrbisGIS application</description>
-    <url>https://github.com/orbisgis/orbisfx</url>
+    <description>Data managing for OrbisGIS application</description>
+    <url>https://github.com/orbisgis/orbisdata</url>
     <licenses>
         <license>
             <name>The GNU General Public License, Version 3.0</name>

@@ -38,6 +38,7 @@ package org.orbisgis.datamanager;
 
 import groovy.lang.Closure;
 import groovy.lang.GString;
+import groovy.lang.GroovyObject;
 import groovy.lang.MetaClass;
 import groovy.sql.GroovyRowResult;
 import groovy.sql.Sql;
@@ -65,6 +66,9 @@ import org.slf4j.LoggerFactory;
 
 import javax.sql.DataSource;
 import java.io.*;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -72,6 +76,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
+import java.util.regex.Pattern;
 
 /**
  * Abstract class used to implements the request builder methods (select, from ...) in order to give a base to all the
@@ -81,11 +86,18 @@ import java.util.logging.Level;
  * @author Sylvain PALOMINOS (UBS 2019)
  */
 public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, ISelectBuilder {
+    /** Logger */
     private static final Logger LOGGER = LoggerFactory.getLogger(JdbcDataSource.class);
-
+    /** MetaClass used for the implementation of the {@link GroovyObject} methods */
     private MetaClass metaClass;
+    /** Type of the database */
     private DataBaseType databaseType;
 
+    /**
+     * Constructor to create a {@link JdbcDataSource} from a {@link Sql} object.
+     * @param parent Parent {@link Sql} object.
+     * @param databaseType Type of the database
+     */
     public JdbcDataSource(Sql parent, DataBaseType databaseType) {
         super(parent);
         this.metaClass = InvokerHelper.getMetaClass(getClass());
@@ -93,6 +105,11 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, ISe
         LOG.setLevel(Level.OFF);
     }
 
+    /**
+     * Constructor to create a {@link JdbcDataSource} from a {@link DataSource} object.
+     * @param dataSource Parent {@link DataSource} object.
+     * @param databaseType Type of the database
+     */
     public JdbcDataSource(DataSource dataSource, DataBaseType databaseType) {
         super(dataSource);
         this.metaClass = InvokerHelper.getMetaClass(getClass());
@@ -100,6 +117,11 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, ISe
         LOG.setLevel(Level.OFF);
     }
 
+    /**
+     * Constructor to create a {@link JdbcDataSource} from a {@link Connection} object.
+     * @param connection Parent {@link Sql} object.
+     * @param databaseType Type of the database
+     */
     public JdbcDataSource(Connection connection, DataBaseType databaseType) {
         super(connection);
         this.metaClass = InvokerHelper.getMetaClass(getClass());
@@ -107,6 +129,24 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, ISe
         LOG.setLevel(Level.OFF);
     }
 
+    @Override
+    public Connection getConnection(){
+        Connection con = super.getConnection();
+        if(con == null){
+            try {
+                con = getDataSource().getConnection();
+            } catch (SQLException e) {
+                LOGGER.error("Unable to get the connection from the DataSource.\n" + e.getLocalizedMessage());
+            }
+        }
+        return con;
+    }
+
+    /**
+     * Return the type of the database.
+     *
+     * @return The type of the database.
+     */
     public DataBaseType getDataBaseType(){
         return databaseType;
     }
@@ -172,19 +212,20 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, ISe
     }
 
     @Override
-    public void executeScript(String fileName, Map<String, String> bindings) {
+    public boolean executeScript(String fileName, Map<String, String> bindings) {
         File file = URIUtilities.fileFromString(fileName);
         try {
             if (FileUtil.isExtensionWellFormated(file, "sql")) {
-                executeScript(new FileInputStream(file), bindings);
+                return executeScript(new FileInputStream(file), bindings);
             }
         } catch (IOException e) {
             LOGGER.error("Unable to read the SQL file.\n" + e.getLocalizedMessage());
         }
+        return false;
     }
 
     @Override
-    public void executeScript(InputStream stream, Map<String, String> bindings) {
+    public boolean executeScript(InputStream stream, Map<String, String> bindings) {
         SimpleTemplateEngine engine = null;
         if (bindings != null && !bindings.isEmpty()) {
             engine = new SimpleTemplateEngine();
@@ -203,15 +244,18 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, ISe
                     } catch (ClassNotFoundException | IOException e) {
                         LOGGER.error("Unable to create the template for the Sql command '" + commandSQL + "'.\n" +
                                 e.getLocalizedMessage());
+                        return false;
                     }
                 }
                 try {
                     execute(commandSQL);
                 } catch (SQLException e) {
                     LOGGER.error("Unable to execute the Sql command '" + commandSQL + "'.\n" + e.getLocalizedMessage());
+                    return false;
                 }
             }
         }
+        return true;
     }
 
     @Override
@@ -235,6 +279,50 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, ISe
     }
 
     @Override
+    public boolean save(String tableName, URL url) {
+        return save(tableName, url, null);
+    }
+
+    @Override
+    public boolean save(String tableName, URL url, String encoding) {
+        try {
+            return save(tableName, url.toURI(), encoding);
+        } catch (URISyntaxException e) {
+            LOGGER.error("Unable to get the file from the URL '" + url.toString() + "'\n" + e.getLocalizedMessage());
+        }
+        return false;
+    }
+
+    @Override
+    public boolean save(String tableName, URI uri) {
+        return save(tableName, uri, null);
+    }
+
+    @Override
+    public boolean save(String tableName, URI uri, String encoding) {
+        return save(tableName, new File(uri), encoding);
+    }
+
+    @Override
+    public boolean save(String tableName, File file) {
+        return save(tableName, file, null);
+    }
+
+    @Override
+    public boolean save(String tableName, File file, String encoding) {
+        return save(tableName, file.getAbsolutePath(), encoding);
+    }
+
+    private String getTableNameFromPath(String filePath){
+        int start = filePath.lastIndexOf("/")+1;
+        int end = filePath.lastIndexOf(".");
+        if(end == -1){
+            end = filePath.length();
+        }
+        return filePath.substring(start, end).toUpperCase();
+    }
+
+    @Override
     public ITable link(String filePath, String tableName, boolean delete) {
         IOMethods.link(filePath, tableName, delete, this);
         return getTable(tableName);
@@ -247,9 +335,8 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, ISe
 
     @Override
     public ITable link(String filePath, boolean delete) {
-        final String name = URIUtilities.fileFromString(filePath).getName();
-        String tableName = name.substring(0, name.lastIndexOf(".")).toUpperCase();
-        if ("^[a-zA-Z][a-zA-Z0-9_]*$".matches(tableName)) {
+        String tableName = getTableNameFromPath(filePath);
+        if (Pattern.compile("^[a-zA-Z][a-zA-Z0-9_]*$").matcher(tableName).find()) {
             return link(filePath, tableName, delete);
         } else {
             LOGGER.error("The file name contains unsupported characters");
@@ -263,9 +350,83 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, ISe
     }
 
     @Override
-    public ITable load(String filePath, String tableName, String encoding, boolean delete) {
-        IOMethods.loadFile(filePath, tableName, encoding, delete, this);
-        return getTable(tableName);
+    public ITable link(URL url, String tableName, boolean delete) {
+        try {
+            return link(url.toURI(), tableName, delete);
+        } catch (URISyntaxException e) {
+            LOGGER.error("Unable to get the file from the URL '" + url.toString() + "'\n" + e.getLocalizedMessage());
+        }
+        return null;
+    }
+
+    @Override
+    public ITable link(URL url, String tableName) {
+        try {
+            return link(url.toURI(), tableName);
+        } catch (URISyntaxException e) {
+            LOGGER.error("Unable to get the file from the URL '" + url.toString() + "'\n" + e.getLocalizedMessage());
+        }
+        return null;
+    }
+
+    @Override
+    public ITable link(URL url, boolean delete) {
+        try {
+            return link(url.toURI(), delete);
+        } catch (URISyntaxException e) {
+            LOGGER.error("Unable to get the file from the URL '" + url.toString() + "'\n" + e.getLocalizedMessage());
+        }
+        return null;
+    }
+
+    @Override
+    public ITable link(URL url) {
+        try {
+            return link(url.toURI());
+        } catch (URISyntaxException e) {
+            LOGGER.error("Unable to get the file from the URL '" + url.toString() + "'\n" + e.getLocalizedMessage());
+        }
+        return null;
+    }
+
+    @Override
+    public ITable link(URI uri, String tableName, boolean delete) {
+        return link(new File(uri), tableName, delete);
+    }
+
+    @Override
+    public ITable link(URI uri, String tableName) {
+        return link(new File(uri), tableName);
+    }
+
+    @Override
+    public ITable link(URI uri, boolean delete) {
+        return link(new File(uri), delete);
+    }
+
+    @Override
+    public ITable link(URI uri) {
+        return link(new File(uri));
+    }
+
+    @Override
+    public ITable link(File file, String tableName, boolean delete) {
+        return link(file.getAbsolutePath(), tableName, delete);
+    }
+
+    @Override
+    public ITable link(File file, String tableName) {
+        return link(file.getAbsolutePath(), tableName);
+    }
+
+    @Override
+    public ITable link(File file, boolean delete) {
+        return link(file.getAbsolutePath(), delete);
+    }
+
+    @Override
+    public ITable link(File file) {
+        return link(file.getAbsolutePath());
     }
 
     @Override
@@ -287,7 +448,12 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, ISe
     public ITable load(Map<String, String> properties, String inputTableName, String outputTableName, boolean delete) {
         IOMethods.loadTable(properties, inputTableName, outputTableName, delete, this);
         return getTable(outputTableName);
+    }
 
+    @Override
+    public ITable load(String filePath, String tableName, String encoding, boolean delete) {
+        IOMethods.loadFile(filePath, tableName, encoding, delete, this);
+        return getTable(tableName);
     }
 
     @Override
@@ -307,9 +473,8 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, ISe
 
     @Override
     public ITable load(String filePath, boolean delete) {
-        final String name = URIUtilities.fileFromString(filePath).getName();
-        String tableName = name.substring(0, name.lastIndexOf(".")).toUpperCase();
-        if (tableName.matches("^[a-zA-Z][a-zA-Z0-9_]*$")) {
+        String tableName = getTableNameFromPath(filePath);
+        if (Pattern.compile("^[a-zA-Z][a-zA-Z0-9_]*$").matcher(tableName).find()) {
             return load(filePath,tableName, null, delete);
         } else {
             LOGGER.error("Unsupported file characters");
@@ -318,10 +483,110 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, ISe
     }
 
     @Override
+    public ITable load(URL url, String tableName) {
+        try {
+            return load(url.toURI(), tableName, null, false);
+        } catch (URISyntaxException e) {
+            LOGGER.error("Unable to get the file from the URL '" + url.toString() + "'\n" + e.getLocalizedMessage());
+        }
+        return null;
+    }
+
+    @Override
+    public ITable load(URL url, String tableName, boolean delete) {
+        try {
+            return load(url.toURI(), tableName, null, delete);
+        } catch (URISyntaxException e) {
+            LOGGER.error("Unable to get the file from the URL '" + url.toString() + "'\n" + e.getLocalizedMessage());
+        }
+        return null;
+    }
+
+    @Override
+    public ITable load(URL url) {
+        try {
+            return load(url.toURI(), false);
+        } catch (URISyntaxException e) {
+            LOGGER.error("Unable to get the file from the URL '" + url.toString() + "'\n" + e.getLocalizedMessage());
+        }
+        return null;
+    }
+
+    @Override
+    public ITable load(URL url, boolean delete) {
+        try {
+            return load(url.toURI(), delete);
+        } catch (URISyntaxException e) {
+            LOGGER.error("Unable to get the file from the URL '" + url.toString() + "'\n" + e.getLocalizedMessage());
+        }
+        return null;
+    }
+
+    @Override
+    public ITable load(URL url, String tableName, String encoding, boolean delete) {
+        try {
+            return load(url.toURI(), tableName, encoding, delete);
+        } catch (URISyntaxException e) {
+            LOGGER.error("Unable to get the file from the URL '" + url.toString() + "'\n" + e.getLocalizedMessage());
+        }
+        return null;
+    }
+
+    @Override
+    public ITable load(URI uri, String tableName) {
+        return load(new File(uri), tableName, null, false);
+    }
+
+    @Override
+    public ITable load(URI uri, String tableName, boolean delete) {
+        return load(new File(uri), tableName, null, delete);
+    }
+
+    @Override
+    public ITable load(URI uri) {
+        return load(new File(uri), false);
+    }
+
+    @Override
+    public ITable load(URI uri, boolean delete) {
+        return load(new File(uri), delete);
+    }
+
+    @Override
+    public ITable load(URI uri, String tableName, String encoding, boolean delete) {
+        return load(new File(uri), tableName, encoding, delete);
+    }
+
+    @Override
+    public ITable load(File file, String tableName) {
+        return load(file.getAbsolutePath(), tableName, null, false);
+    }
+
+    @Override
+    public ITable load(File file, String tableName, boolean delete) {
+        return load(file.getAbsolutePath(), tableName, null, delete);
+    }
+
+    @Override
+    public ITable load(File file) {
+        return load(file.getAbsolutePath(), false);
+    }
+
+    @Override
+    public ITable load(File file, boolean delete) {
+        return load(file.getAbsolutePath(), delete);
+    }
+
+    @Override
+    public ITable load(File file, String tableName, String encoding, boolean delete) {
+        return load(file.getAbsolutePath(), tableName, encoding, delete);
+    }
+
+    @Override
     public IDataSourceLocation getLocation(){
         try {
             String url = this.getConnection().getMetaData().getURL();
-            return new DataSourceLocation(url.substring(url.lastIndexOf(":") + 1));
+            return url == null ? null : new DataSourceLocation(url.substring(url.lastIndexOf(":") + 1));
         } catch (SQLException e) {
             LOGGER.error("Unable to get the connection metadata.\n" + e.getLocalizedMessage());
         }
@@ -345,7 +610,7 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, ISe
         try {
             geomFields = SFSUtilities.getGeometryFields(getConnection(), new TableLocation(dataSetName));
         } catch (SQLException e) {
-
+            LOGGER.error("Unable to get the geometric fields.\n" + e.getLocalizedMessage());
             return getTable(dataSetName);
         }
         if (geomFields.size() >= 1) {

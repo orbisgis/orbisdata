@@ -59,7 +59,9 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
 
 /**
  * Implementation of the IJdbcDataSource interface dedicated to the usage of an H2/H2GIS database.

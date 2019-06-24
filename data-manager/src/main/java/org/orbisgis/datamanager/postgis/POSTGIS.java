@@ -9,7 +9,6 @@ import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.TableLocation;
 import org.orbisgis.datamanager.JdbcDataSource;
 import org.orbisgis.datamanagerapi.dataset.DataBaseType;
-import org.orbisgis.datamanagerapi.dataset.IDataSet;
 import org.orbisgis.datamanagerapi.dataset.ISpatialTable;
 import org.orbisgis.datamanagerapi.dataset.ITable;
 import org.osgi.service.jdbc.DataSourceFactory;
@@ -22,7 +21,9 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
 
 /**
  * Implementation of the IJdbcDataSource interface dedicated to the usage of an postgres/postgis database.

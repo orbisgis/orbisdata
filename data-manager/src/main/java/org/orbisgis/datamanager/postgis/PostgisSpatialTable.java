@@ -37,7 +37,6 @@
 package org.orbisgis.datamanager.postgis;
 
 import org.h2gis.postgis_jts.StatementWrapper;
-import org.h2gis.utilities.SpatialResultSetMetaData;
 import org.h2gis.utilities.TableLocation;
 import org.orbisgis.datamanager.JdbcDataSource;
 import org.orbisgis.datamanager.JdbcSpatialTable;

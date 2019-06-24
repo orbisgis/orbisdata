@@ -43,9 +43,12 @@ import org.orbisgis.datamanagerapi.dataset.ITable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.*;
-import java.net.*;
-import java.util.*;
+import java.io.File;
+import java.io.InputStream;
+import java.net.URI;
+import java.net.URL;
+import java.util.Collection;
+import java.util.Map;
 
 /**
  * Extension of the {@link IDataSource} interface dedicated to the usage of a JDBC database as a data source.

@@ -16,7 +16,6 @@ import org.h2gis.functions.io.utility.FileUtil;
 import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.URIUtilities;
 import org.orbisgis.datamanager.JdbcDataSource;
-import org.orbisgis.datamanager.h2gis.H2GIS;
 import org.orbisgis.datamanagerapi.dataset.DataBaseType;
 import org.osgi.service.jdbc.DataSourceFactory;
 import org.slf4j.Logger;

@@ -48,7 +48,7 @@ import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.TableLocation;
 import org.h2gis.utilities.wrapper.ConnectionWrapper;
 import org.h2gis.utilities.wrapper.StatementWrapper;
-import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.orbisgis.datamanager.h2gis.H2GIS;
@@ -89,6 +89,14 @@ public class JdbcDataSourceTest {
     static DummyJdbcDataSource ds2;
     static DummyJdbcDataSource ds3;
 
+    @BeforeAll
+    public static void beforeAll() throws SQLException {
+        H2GIS h2gis = H2GIS.open(DB_LINK_NAME);
+        h2gis.execute("DROP TABLE IF EXISTS linkedtable");
+        h2gis.execute("CREATE TABLE linkedtable(id int, the_geom GEOMETRY, text varchar)");
+        h2gis.execute("INSERT INTO linkedtable VALUES (1, 'POINT(0 0)', 'toto')");
+    }
+
     /**
      * Initialize three {@link JdbcDataSource} with each constructors.
      *
@@ -110,17 +118,6 @@ public class JdbcDataSourceTest {
         st.execute("INSERT INTO test VALUES (1, 'POINT(0 0)', 'toto')");
         st.execute("INSERT INTO test VALUES (2, 'LINESTRING(0 0, 1 1, 2 2)', 'tata')");
         st.execute("INSERT INTO test VALUES (3, 'POINT(4 5)', 'titi')");
-
-        H2GIS h2gis = H2GIS.open(DB_LINK_NAME);
-        h2gis.execute("DROP TABLE IF EXISTS linkedtable");
-        h2gis.execute("CREATE TABLE linkedtable(id int, the_geom GEOMETRY, text varchar)");
-        h2gis.execute("INSERT INTO linkedtable VALUES (1, 'POINT(0 0)', 'toto')");
-    }
-    @AfterEach
-    public void after() throws SQLException {
-        ds1.getConnection().close();
-        ds2.getConnection().close();
-        ds3.getConnection().close();
     }
 
     /**

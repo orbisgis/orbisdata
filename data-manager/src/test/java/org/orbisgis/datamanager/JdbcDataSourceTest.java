@@ -83,7 +83,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class JdbcDataSourceTest {
 
     static final String DB_NAME = "target/JdbcDataSourceTest";
-    static final String DB_LINK_NAME = "./target/dbToLink";
+    static final String DB_LINK_NAME = "./target/dbToLink2";
     static DummyJdbcDataSource ds1;
     static DummyJdbcDataSource ds2;
     static DummyJdbcDataSource ds3;
@@ -111,9 +111,9 @@ public class JdbcDataSourceTest {
         st.execute("INSERT INTO test VALUES (3, 'POINT(4 5)', 'titi')");
 
         H2GIS h2gis = H2GIS.open(DB_LINK_NAME);
-        h2gis.execute("DROP TABLE IF EXISTS linkedtable");
-        h2gis.execute("CREATE TABLE linkedtable(id int, the_geom GEOMETRY, text varchar)");
-        h2gis.execute("INSERT INTO linkedtable VALUES (1, 'POINT(0 0)', 'toto')");
+        h2gis.execute("DROP TABLE IF EXISTS linkedtable3");
+        h2gis.execute("CREATE TABLE linkedtable3(id int, the_geom GEOMETRY, text varchar)");
+        h2gis.execute("INSERT INTO linkedtable3 VALUES (1, 'POINT(0 0)', 'toto')");
     }
 
     /**
@@ -600,7 +600,7 @@ public class JdbcDataSourceTest {
     public void loadFromDB() throws SQLException {
         Map<String, String> map = new HashMap<>();
         map.put("url", "jdbc:h2:" + DB_LINK_NAME);
-        String tableName = "LINKEDTABLE";
+        String tableName = "LINKEDTABLE3";
         String tableName2 = "LINKEDTABLE2";
 
         ds1.execute("DROP TABLE IF EXISTS "+tableName);

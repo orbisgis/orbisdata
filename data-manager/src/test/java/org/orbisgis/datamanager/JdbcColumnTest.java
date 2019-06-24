@@ -80,9 +80,9 @@ public class JdbcColumnTest {
         dataSource = H2GIS.open(BASE_DATABASE);
         try {
             dataSource.execute("DROP TABLE IF EXISTS "+TABLE_NAME+","+LINKED_NAME+","+TEMP_NAME);
-        dataSource.execute("CREATE TABLE "+TABLE_NAME+" ("+COL_THE_GEOM+" GEOMETRY, "+COL_THE_GEOM2+" POINT," +
+        dataSource.execute("CREATE TABLE "+TABLE_NAME+" ("+COL_THE_GEOM+" GEOMETRY, "+COL_THE_GEOM2+" GEOMETRY(POINT Z)," +
                 COL_ID+" INTEGER, "+COL_VALUE+" FLOAT, "+COL_MEANING+" VARCHAR)");
-        dataSource.execute("INSERT INTO "+TABLE_NAME+" VALUES ('POINT(0 0)', 'POINT(1 1)', 1, 2.3, 'Simple points')");
+        dataSource.execute("INSERT INTO "+TABLE_NAME+" VALUES ('POINT(0 0)', 'POINT(1 1 0)', 1, 2.3, 'Simple points')");
         dataSource.execute("INSERT INTO "+TABLE_NAME+" VALUES ('POINT(0 1 2)', 'POINT(10 11 12)', 2, 0.568, '3D point')");
         dataSource.execute("INSERT INTO "+TABLE_NAME+" VALUES (null, 'POINT(110 111 112)', 2, null, '3D point')");
         } catch (SQLException e) {

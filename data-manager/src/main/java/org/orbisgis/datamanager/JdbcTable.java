@@ -231,7 +231,10 @@ public abstract class JdbcTable extends DefaultResultSet implements IJdbcTable, 
             } catch (SQLException e) {
                 LOGGER.error("Unable to get the geometric type of the column '" + columnName + "'\n" + e.getLocalizedMessage());
             }
-            return clazz.getSimpleName().equalsIgnoreCase(str);
+            return clazz.getSimpleName().equalsIgnoreCase(str) ||
+                    (clazz.getSimpleName()+"Z").equalsIgnoreCase(str) ||
+                    (clazz.getSimpleName()+"M").equalsIgnoreCase(str) ||
+                    (clazz.getSimpleName()+"ZM").equalsIgnoreCase(str);
         }
         else {
             ResultSet rs;

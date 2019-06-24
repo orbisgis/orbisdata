@@ -46,7 +46,10 @@ import org.orbisgis.datamanagerapi.dataset.IDataSet;
 import org.orbisgis.datamanagerapi.dataset.ISpatialTable;
 import org.orbisgis.datamanagerapi.dataset.ITable;
 
+import java.io.File;
 import java.io.InputStream;
+import java.net.URI;
+import java.net.URL;
 import java.util.Collection;
 import java.util.Map;
 
@@ -95,11 +98,11 @@ public class IJdbcDataSourceTest {
         DummyDataSource ds = new IJdbcDataSourceTest.DummyDataSource();
 
         assertFalse(ds.isFileScript());
-        ds.executeScript((String) null);
+        assertTrue(ds.executeScript((String) null));
         assertTrue(ds.isFileScript());
 
         assertFalse(ds.isStreamScript());
-        ds.executeScript((InputStream) null);
+        assertTrue(ds.executeScript((InputStream) null));
         assertTrue(ds.isStreamScript());
     }
 
@@ -162,18 +165,51 @@ public class IJdbcDataSourceTest {
         @Override public ITable load(String filePath, String tableName) {return null;}
         @Override public ITable load(String filePath, String tableName, boolean delete) {return null;}
         @Override public ITable load(String filePath, String tableName, String encoding, boolean delete) {return null;}
+        @Override public ITable load(URL url) {return null;}
+        @Override public ITable load(URL url, boolean delete) {return null;}
+        @Override public ITable load(URL url, String tableName) {return null;}
+        @Override public ITable load(URL url, String tableName, boolean delete) {return null;}
+        @Override public ITable load(URL url, String tableName, String encoding, boolean delete) {return null;}
+        @Override public ITable load(URI uri) {return null;}
+        @Override public ITable load(URI uri, boolean delete) {return null;}
+        @Override public ITable load(URI uri, String tableName) {return null;}
+        @Override public ITable load(URI uri, String tableName, boolean delete) {return null;}
+        @Override public ITable load(URI uri, String tableName, String encoding, boolean delete) {return null;}
+        @Override public ITable load(File file) {return null;}
+        @Override public ITable load(File file, boolean delete) {return null;}
+        @Override public ITable load(File file, String tableName) {return null;}
+        @Override public ITable load(File file, String tableName, boolean delete) {return null;}
+        @Override public ITable load(File file, String tableName, String encoding, boolean delete) {return null;}
         @Override public ITable load(Map<String, String> properties, String inputTableName) {return null;}
         @Override public ITable load(Map<String, String> properties, String inputTableName, String outputTableName) {return null;}
         @Override public ITable load(Map<String, String> properties, String inputTableName, boolean delete) {return null;}
         @Override public ITable load(Map<String, String> properties, String inputTableName, String outputTableName, boolean delete) {return null;}
         @Override public boolean save(String tableName, String filePath) {return false;}
         @Override public boolean save(String tableName, String filePath, String encoding) {return false;}
+        @Override public boolean save(String tableName, URI uri) {return false;}
+        @Override public boolean save(String tableName, URI uri, String encoding) {return false;}
+        @Override public boolean save(String tableName, URL url) {return false;}
+        @Override public boolean save(String tableName, URL url, String encoding) {return false;}
+        @Override public boolean save(String tableName, File file) {return false;}
+        @Override public boolean save(String tableName, File file, String encoding) {return false;}
         @Override public ITable link(String filePath, String tableName, boolean delete) {return null;}
         @Override public ITable link(String filePath, String tableName) {return null;}
         @Override public ITable link(String filePath, boolean delete) {return null;}
         @Override public ITable link(String filePath) {return null;}
-        @Override public void executeScript(String fileName, Map<String, String> bindings) {fileScript = true;}
-        @Override public void executeScript(InputStream stream, Map<String, String> bindings) {streamScript = true;}
+        @Override public ITable link(URI uri, String tableName, boolean delete) {return null;}
+        @Override public ITable link(URI uri, String tableName) {return null;}
+        @Override public ITable link(URI uri, boolean delete) {return null;}
+        @Override public ITable link(URI uri) {return null;}
+        @Override public ITable link(URL url, String tableName, boolean delete) {return null;}
+        @Override public ITable link(URL url, String tableName) {return null;}
+        @Override public ITable link(URL url, boolean delete) {return null;}
+        @Override public ITable link(URL url) {return null;}
+        @Override public ITable link(File file, String tableName, boolean delete) {return null;}
+        @Override public ITable link(File file, String tableName) {return null;}
+        @Override public ITable link(File file, boolean delete) {return null;}
+        @Override public ITable link(File file) {return null;}
+        @Override public boolean executeScript(String fileName, Map<String, String> bindings) {fileScript = true;return true;}
+        @Override public boolean executeScript(InputStream stream, Map<String, String> bindings) {streamScript = true;return true;}
         @Override public MetaClass getMetaClass() {return InvokerHelper.getMetaClass(DummyDataSource.class);}
         @Override public void setMetaClass(MetaClass metaClass) {/*Does nothing*/}
         @Override public IDataSet getDataSet(String name) {return null;}

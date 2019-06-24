@@ -43,10 +43,9 @@ import org.orbisgis.datamanagerapi.dataset.ITable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.InputStream;
-import java.net.URI;
-import java.util.Collection;
-import java.util.Map;
+import java.io.*;
+import java.net.*;
+import java.util.*;
 
 /**
  * Extension of the {@link IDataSource} interface dedicated to the usage of a JDBC database as a data source.
@@ -92,25 +91,30 @@ public interface IJdbcDataSource extends IDataSource, GroovyObject {
      */
     Collection<String> getTableNames();
 
+
+    /* ********************** */
+    /*      Load methods      */
+    /* ********************** */
+
     /**
      * Load a file into the database.
      *
-     * @param filePath Path of the file or its {@link URI}.
+     * @param filePath Path of the file.
      */
     ITable load(String filePath);
 
     /**
      * Load a file into the database.
      *
-     * @param filePath Path of the file or its {@link URI}.
+     * @param filePath Path of the file.
      * @param delete True to delete the table if exists, false otherwise.
-    */
+     */
     ITable load(String filePath, boolean delete);
 
     /**
      * Load a file to the database.
      *
-     * @param filePath Path of the file or its {@link URI}.
+     * @param filePath Path of the file.
      * @param tableName Name of the table.
      */
     ITable load(String filePath, String tableName);
@@ -118,16 +122,16 @@ public interface IJdbcDataSource extends IDataSource, GroovyObject {
     /**
      * Load a file to the database.
      *
-     * @param filePath Path of the file or its {@link URI}.
+     * @param filePath Path of the file.
      * @param tableName Name of the table.
      * @param delete True to delete the table if exists, false otherwise.
      */
     ITable load(String filePath, String tableName, boolean delete);
-    
+
     /**
      * Load a file to the database.
      *
-     * @param filePath Path of the file or its {@link URI}
+     * @param filePath Path of the file.
      * @param tableName Name of the table
      * @param encoding Encoding of the loaded file.
      * @param delete True to delete the table if exists, false otherwise.
@@ -135,10 +139,136 @@ public interface IJdbcDataSource extends IDataSource, GroovyObject {
     ITable load(String filePath, String tableName, String encoding, boolean delete);
 
     /**
+     * Load a file into the database.
+     *
+     * @param url {@link URL} of the file.
+     */
+    ITable load(URL url);
+
+    /**
+     * Load a file into the database.
+     *
+     * @param url {@link URL} of the file.
+     * @param delete True to delete the table if exists, false otherwise.
+     */
+    ITable load(URL url, boolean delete);
+
+    /**
+     * Load a file to the database.
+     *
+     * @param url {@link URL} of the file.
+     * @param tableName Name of the table.
+     */
+    ITable load(URL url, String tableName);
+
+    /**
+     * Load a file to the database.
+     *
+     * @param url {@link URL} of the file.
+     * @param tableName Name of the table.
+     * @param delete True to delete the table if exists, false otherwise.
+     */
+    ITable load(URL url, String tableName, boolean delete);
+
+    /**
+     * Load a file to the database.
+     *
+     * @param url {@link URL} of the file.
+     * @param tableName Name of the table
+     * @param encoding Encoding of the loaded file.
+     * @param delete True to delete the table if exists, false otherwise.
+     */
+    ITable load(URL url, String tableName, String encoding, boolean delete);
+
+    /**
+     * Load a file into the database.
+     *
+     * @param uri {@link URI} of the file.
+     */
+    ITable load(URI uri);
+
+    /**
+     * Load a file into the database.
+     *
+     * @param uri {@link URI} of the file.
+     * @param delete True to delete the table if exists, false otherwise.
+     */
+    ITable load(URI uri, boolean delete);
+
+    /**
+     * Load a file to the database.
+     *
+     * @param uri {@link URI} of the file.
+     * @param tableName Name of the table.
+     */
+    ITable load(URI uri, String tableName);
+
+    /**
+     * Load a file to the database.
+     *
+     * @param uri {@link URI} of the file.
+     * @param tableName Name of the table.
+     * @param delete True to delete the table if exists, false otherwise.
+     */
+    ITable load(URI uri, String tableName, boolean delete);
+
+    /**
+     * Load a file to the database.
+     *
+     * @param uri {@link URI} of the file.
+     * @param tableName Name of the table
+     * @param encoding Encoding of the loaded file.
+     * @param delete True to delete the table if exists, false otherwise.
+     */
+    ITable load(URI uri, String tableName, String encoding, boolean delete);
+
+    /**
+     * Load a file into the database.
+     *
+     * @param file {@link File}.
+     */
+    ITable load(File file);
+
+    /**
+     * Load a file into the database.
+     *
+     * @param file {@link File}.
+     * @param delete True to delete the table if exists, false otherwise.
+     */
+    ITable load(File file, boolean delete);
+
+    /**
+     * Load a file to the database.
+     *
+     * @param file {@link File}.
+     * @param tableName Name of the table.
+     */
+    ITable load(File file, String tableName);
+
+    /**
+     * Load a file to the database.
+     *
+     * @param file {@link File}.
+     * @param tableName Name of the table.
+     * @param delete True to delete the table if exists, false otherwise.
+     */
+    ITable load(File file, String tableName, boolean delete);
+
+    /**
+     * Load a file to the database.
+     *
+     * @param file {@link File}.
+     * @param tableName Name of the table
+     * @param encoding Encoding of the loaded file.
+     * @param delete True to delete the table if exists, false otherwise.
+     */
+    ITable load(File file, String tableName, String encoding, boolean delete);
+
+    /**
      * Load a table from another database.
      *
-     * @param properties to connect to the database.
-     * @param inputTableName the name of the table we want to import.
+     * @param properties Properties used to connect to the database.
+     * @param inputTableName Name of the table to import.
      */
     ITable load(Map<String, String> properties, String inputTableName);
 
@@ -150,7 +280,7 @@ public interface IJdbcDataSource extends IDataSource, GroovyObject {
      * @param inputTableName Name of the table to import.
      * @param outputTableName Name of the imported table in the database.
      */
-    ITable load(Map<String, String> properties, String inputTableName,String outputTableName);
+    ITable load(Map<String, String> properties, String inputTableName, String outputTableName);
 
     /**
      * Load a table from another database.
@@ -170,7 +300,12 @@ public interface IJdbcDataSource extends IDataSource, GroovyObject {
      * @param delete True to delete the outputTableName if exists, false otherwise.
      */
     ITable load(Map<String, String> properties, String inputTableName, String outputTableName, boolean delete);
-    
+
+
+    /* ********************** */
+    /*      Save methods      */
+    /* ********************** */
+
     /**
      * Save a table into a file.
      *
@@ -192,11 +327,78 @@ public interface IJdbcDataSource extends IDataSource, GroovyObject {
      */
     boolean save(String tableName, String filePath, String encoding);
 
+    /**
+     * Save a table into a file.
+     *
+     * @param tableName Name of the table to save.
+     * @param uri {@link URI} of the file where the table will be saved.
+     *
+     * @return True if the file has been successfully saved, false otherwise.
+     */
+    boolean save(String tableName, URI uri);
+
+    /**
+     * Save a table into a file.
+     *
+     * @param tableName Name of the table to save.
+     * @param uri {@link URI} of the file where the table will be saved.
+     * @param encoding Encoding of the file.
+     *
+     * @return True if the file has been successfully saved, false otherwise.
+     */
+    boolean save(String tableName, URI uri, String encoding);
+
+    /**
+     * Save a table into a file.
+     *
+     * @param tableName Name of the table to save.
+     * @param url {@link URL} of the file where the table will be saved.
+     *
+     * @return True if the file has been successfully saved, false otherwise.
+     */
+    boolean save(String tableName, URL url);
+
+    /**
+     * Save a table into a file.
+     *
+     * @param tableName Name of the table to save.
+     * @param url {@link URL} of the file where the table will be saved.
+     * @param encoding Encoding of the file.
+     *
+     * @return True if the file has been successfully saved, false otherwise.
+     */
+    boolean save(String tableName, URL url, String encoding);
+
+    /**
+     * Save a table into a file.
+     *
+     * @param tableName Name of the table to save.
+     * @param file {@link File} of the file where the table will be saved.
+     *
+     * @return True if the file has been successfully saved, false otherwise.
+     */
+    boolean save(String tableName, File file);
+
+    /**
+     * Save a table into a file.
+     *
+     * @param tableName Name of the table to save.
+     * @param file {@link File} of the file where the table will be saved.
+     * @param encoding Encoding of the file.
+     *
+     * @return True if the file has been successfully saved, false otherwise.
+     */
+    boolean save(String tableName, File file, String encoding);
+
+
+    /* ********************** */
+    /*      Link methods      */
+    /* ********************** */
 
     /**
      * Link a file to the database.
      *
-     * @param filePath Path of the file or its {@link URI}
+     * @param filePath Path of the file.
      * @param tableName Name of the database table.
      * @param delete True to delete the table if exists, false otherwise.
      *
@@ -207,7 +409,7 @@ public interface IJdbcDataSource extends IDataSource, GroovyObject {
     /**
      * Link a file to the database.
      *
-     * @param filePath Path of the file or its {@link URI}
+     * @param filePath Path of the file.
      * @param tableName Name of the database table.
      *
      * @return A {@link ITable} representing the linked file.
@@ -217,7 +419,7 @@ public interface IJdbcDataSource extends IDataSource, GroovyObject {
     /**
      * Link a file to the database.
      *
-     * @param filePath Path of the file or its {@link URI}
+     * @param filePath Path of the file.
      * @param delete True to delete the table if exists, false otherwise.
      *
      * @return A {@link ITable} representing the linked file.
@@ -227,38 +429,164 @@ public interface IJdbcDataSource extends IDataSource, GroovyObject {
     /**
      * Link a file to the database.
      *
-     * @param filePath Path or URI of the file to link.
+     * @param filePath Path of the file to link.
      *
      * @return A {@link ITable} representing the linked file.
      */
     ITable link(String filePath);
 
     /**
+     * Link a file to the database.
+     *
+     * @param uri {@link URI} of the file.
+     * @param tableName Name of the database table.
+     * @param delete True to delete the table if exists, false otherwise.
+     *
+     * @return A {@link ITable} representing the linked file.
+     */
+    ITable link(URI uri, String tableName, boolean delete);
+
+    /**
+     * Link a file to the database.
+     *
+     * @param uri {@link URI} of the file.
+     * @param tableName Name of the database table.
+     *
+     * @return A {@link ITable} representing the linked file.
+     */
+    ITable link(URI uri, String tableName);
+
+    /**
+     * Link a file to the database.
+     *
+     * @param uri {@link URI} of the file.
+     * @param delete True to delete the table if exists, false otherwise.
+     *
+     * @return A {@link ITable} representing the linked file.
+     */
+    ITable link(URI uri,  boolean delete);
+
+    /**
+     * Link a file to the database.
+     *
+     * @param uri {@link URI} of the file.
+     *
+     * @return A {@link ITable} representing the linked file.
+     */
+    ITable link(URI uri);
+
+    /**
+     * Link a file to the database.
+     *
+     * @param url {@link URL} of the file.
+     * @param tableName Name of the database table.
+     * @param delete True to delete the table if exists, false otherwise.
+     *
+     * @return A {@link ITable} representing the linked file.
+     */
+    ITable link(URL url, String tableName, boolean delete);
+
+    /**
+     * Link a file to the database.
+     *
+     * @param url {@link URI} of the file.
+     * @param tableName Name of the database table.
+     *
+     * @return A {@link ITable} representing the linked file.
+     */
+    ITable link(URL url, String tableName);
+
+    /**
+     * Link a file to the database.
+     *
+     * @param url {@link URI} of the file.
+     * @param delete True to delete the table if exists, false otherwise.
+     *
+     * @return A {@link ITable} representing the linked file.
+     */
+    ITable link(URL url,  boolean delete);
+
+    /**
+     * Link a file to the database.
+     *
+     * @param url {@link URI} of the file.
+     *
+     * @return A {@link ITable} representing the linked file.
+     */
+    ITable link(URL url);
+
+    /**
+     * Link a file to the database.
+     *
+     * @param file {@link File}.
+     * @param tableName Name of the database table.
+     * @param delete True to delete the table if exists, false otherwise.
+     *
+     * @return A {@link ITable} representing the linked file.
+     */
+    ITable link(File file, String tableName, boolean delete);
+
+    /**
+     * Link a file to the database.
+     *
+     * @param file {@link File}.
+     * @param tableName Name of the database table.
+     *
+     * @return A {@link ITable} representing the linked file.
+     */
+    ITable link(File file, String tableName);
+
+    /**
+     * Link a file to the database.
+     *
+     * @param file {@link File}.
+     * @param delete True to delete the table if exists, false otherwise.
+     *
+     * @return A {@link ITable} representing the linked file.
+     */
+    ITable link(File file,  boolean delete);
+
+    /**
+     * Link a file to the database.
+     *
+     * @param file {@link File}.
+     *
+     * @return A {@link ITable} representing the linked file.
+     */
+    ITable link(File file);
+
+    /**
      * This method is used to execute a SQL file
      *
-     * @param fileName the sql file
+     * @param fileName The sql file
+     *
+     * @return True if the script has been successfully run, false otherwise.
      */
-    default void executeScript(String fileName) {
-        executeScript(fileName, null);
+    default boolean executeScript(String fileName) {
+        return executeScript(fileName, null);
     }
 
     /**
      * This method is used to execute a SQL file that contains parametrized text
      * Parametrized text must be expressed with $value or ${value}
      *
-     * @param fileName the sql file
-     * @param bindings the map between parametrized text and its value. eg.
-     * ["value", "myvalue"] to replace ${value} by myvalue
+     * @param fileName The sql file
+     * @param bindings The map between parametrized text and its value. eg.
+     *                 ["value", "myvalue"] to replace ${value} by myvalue
+     *
+     * @return True if the script has been successfully run, false otherwise.
      */
-    void executeScript(String fileName, Map<String, String> bindings);
+    boolean executeScript(String fileName, Map<String, String> bindings);
 
     /**
      * This method is used to execute a SQL script
      *
      * @param stream Input stream of the sql file
+     *
+     * @return True if the script has been successfully run, false otherwise.
      */
-    default void executeScript(InputStream stream) {
-        executeScript(stream, null);
+    default boolean executeScript(InputStream stream) {
+        return executeScript(stream, null);
     }
 
     /**
@@ -266,10 +594,12 @@ public interface IJdbcDataSource extends IDataSource, GroovyObject {
      * Parametrized text must be expressed with $value or ${value}
      *
      * @param stream Input stream of the sql file
-     * @param bindings the map between parametrized text and its value. eg.
-     * ["value", "myvalue"] to replace ${value} by myvalue
+     * @param bindings The map between parametrized text and its value. eg.
+     *                 ["value", "myvalue"] to replace ${value} by myvalue
+     *
+     * @return True if the script has been successfully run, false otherwise.
      */
-    void executeScript(InputStream stream, Map<String, String> bindings);
+    boolean executeScript(InputStream stream, Map<String, String> bindings);
 
     @Override
     default Object invokeMethod(String name, Object args) {

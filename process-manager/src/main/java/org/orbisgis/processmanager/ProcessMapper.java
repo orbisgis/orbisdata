@@ -36,6 +36,7 @@
  */
 package org.orbisgis.processmanager;
 
+import org.orbisgis.processmanager.inoutput.ProcessInOutPut;
 import org.orbisgis.processmanagerapi.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

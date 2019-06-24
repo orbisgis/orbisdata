@@ -8,10 +8,10 @@
     <parent>
         <groupId>org.orbisgis</groupId>
         <artifactId>orbisdata</artifactId>
-        <version>1.0-SNAPSHOT</version>
+        <version>1.0.0-SNAPSHOT</version>
     </parent>
     <artifactId>process-manager</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0.0-SNAPSHOT</version>
     <packaging>bundle</packaging>
 
     <!-- Properties -->
@@ -27,7 +27,6 @@
         <dependency>
             <groupId>org.orbisgis</groupId>
             <artifactId>process-manager-api</artifactId>
-            <version>${project.parent.version}</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
@@ -57,7 +56,6 @@
         <dependency>
             <groupId>org.orbisgis</groupId>
             <artifactId>data-manager</artifactId>
-            <version>${project.parent.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>

@@ -38,6 +38,7 @@ package org.orbisgis.datamanager.h2gis;
 
 import org.h2.Driver;
 import org.h2.util.OsgiDataSourceFactory;
+import org.h2gis.functions.factory.H2GISFunctions;
 import org.h2gis.functions.io.utility.FileUtil;
 import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.SFSUtilities;
@@ -46,7 +47,6 @@ import org.h2gis.utilities.wrapper.ConnectionWrapper;
 import org.h2gis.utilities.wrapper.StatementWrapper;
 import org.orbisgis.datamanager.JdbcDataSource;
 import org.orbisgis.datamanagerapi.dataset.DataBaseType;
-import org.orbisgis.datamanagerapi.dataset.IDataSet;
 import org.orbisgis.datamanagerapi.dataset.ISpatialTable;
 import org.orbisgis.datamanagerapi.dataset.ITable;
 import org.slf4j.Logger;
@@ -144,9 +144,7 @@ public class H2GIS extends JdbcDataSource {
         }
         if (isH2 && tableExists) {
             try {
-                st.execute("CREATE ALIAS IF NOT EXISTS H2GIS_SPATIAL FOR\n" +
-                    "    \"org.h2gis.functions.factory.H2GISFunctions.load\";\n" +
-                    "CALL H2GIS_SPATIAL();");
+                H2GISFunctions.load(connection);
             } catch (SQLException e) {
                 LOGGER.error("Unable to initialize H2GIS.\n" + e.getLocalizedMessage());
                 return null;

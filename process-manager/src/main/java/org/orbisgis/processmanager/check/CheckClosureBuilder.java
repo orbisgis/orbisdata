@@ -34,18 +34,20 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.processmanager;
+package org.orbisgis.processmanager.check;
 
-import org.orbisgis.processmanagerapi.ICheckOptionBuilder;
-import org.orbisgis.processmanagerapi.IProcessCheck;
+import groovy.lang.Closure;
+import org.orbisgis.processmanagerapi.check.ICheckClosureBuilder;
+import org.orbisgis.processmanagerapi.check.ICheckOptionBuilder;
+import org.orbisgis.processmanagerapi.check.IProcessCheck;
 
 /**
- * Implementation of the {@link ICheckOptionBuilder} interface.
+ * Implementation of the {@link ICheckClosureBuilder} interface.
  *
  * @author Erwan Bocher (CNRS)
  * @author Sylvain PALOMINOS (UBS 2019)
  */
-public class CheckOptionBuilder implements ICheckOptionBuilder {
+public class CheckClosureBuilder implements ICheckClosureBuilder {
 
     /** {@link IProcessCheck} being built */
     private IProcessCheck processCheck;
@@ -54,31 +56,13 @@ public class CheckOptionBuilder implements ICheckOptionBuilder {
      * Default constructor.
      * @param processCheck {@link IProcessCheck} to build.
      */
-    public CheckOptionBuilder(IProcessCheck processCheck){
+    public CheckClosureBuilder(IProcessCheck processCheck){
         this.processCheck = processCheck;
     }
 
     @Override
-    public ICheckOptionBuilder stopOnFail(String message) {
-        processCheck.onFail(IProcessCheck.STOP, message);
-        return this;
-    }
-
-    @Override
-    public ICheckOptionBuilder stopOnSuccess(String message) {
-        processCheck.onSuccess(IProcessCheck.STOP, message);
-        return this;
-    }
-
-    @Override
-    public ICheckOptionBuilder continueOnFail(String message) {
-        processCheck.onFail(IProcessCheck.CONTINUE, message);
-        return this;
-    }
-
-    @Override
-    public ICheckOptionBuilder continueOnSuccess(String message) {
-        processCheck.onSuccess(IProcessCheck.CONTINUE, message);
-        return this;
+    public ICheckOptionBuilder check(Closure cl) {
+        processCheck.setClosure(cl);
+        return new CheckOptionBuilder(processCheck);
     }
 }

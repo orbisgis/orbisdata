@@ -37,8 +37,9 @@
 package org.orbisgis.processmanager;
 
 import groovy.lang.Closure;
-import org.orbisgis.processmanagerapi.ICaster;
+import groovy.lang.DelegatesTo;
 import org.orbisgis.processmanagerapi.IProcess;
+import org.orbisgis.processmanagerapi.IProcessBuilder;
 import org.orbisgis.processmanagerapi.IProcessFactory;
 
 import java.util.ArrayList;
@@ -53,8 +54,6 @@ import java.util.List;
  */
 public class ProcessFactory implements IProcessFactory {
 
-    /** Caster use to cast the inputs. */
-    private ICaster caster;
     /** Indicated if the process creation is allowed. */
     private boolean isLock;
     /** Indicates if the factory should be used as the default one. */
@@ -78,9 +77,14 @@ public class ProcessFactory implements IProcessFactory {
     ProcessFactory(boolean lock, boolean dflt){
         isLock = lock;
         isDefault = dflt;
-        caster = new Caster();
-        caster.addCast(String.class, Object::toString);
         processList = new ArrayList<>();
+    }
+
+    @Override
+    public void registerProcess(IProcess process){
+        if(!isLock){
+            processList.add(process);
+        }
     }
 
     @Override
@@ -94,12 +98,27 @@ public class ProcessFactory implements IProcessFactory {
     }
 
     @Override
-    public IProcess process(String processId) {
-        return processList
+    public IProcess getProcess(String processId) {
+        IProcess process = processList
                 .stream()
-                .filter(iProcess -> iProcess.getIdentifier().equals(processId))
+                .filter(iProcess ->
+                        iProcess.getIdentifier().equals(processId))
                 .findFirst()
                 .orElse(null);
+        return process == null ? null : process.newInstance();
+    }
+
+    @Override
+    public IProcessBuilder create() {
+        return new ProcessBuilder(this);
+    }
+
+    @Override
+    public IProcess create(@DelegatesTo(IProcessBuilder.class) Closure cl) {
+        IProcessBuilder builder = new ProcessBuilder(this);
+        Closure code = cl.rehydrate(builder, this, this);
+        code.setResolveStrategy(Closure.DELEGATE_FIRST);
+        return ((IProcessBuilder)code.call()).getProcess();
     }
 
     @Override
@@ -113,7 +132,7 @@ public class ProcessFactory implements IProcessFactory {
                     .findAny()
                     .orElse(null);*/
             if(process == null) {
-                process = new Process(title, description, keywords, inputs, outputs, version, closure, caster);
+                process = new Process(title, description, keywords, inputs, outputs, version, closure);
                 processList.add(process);
             }
             return process.newInstance();

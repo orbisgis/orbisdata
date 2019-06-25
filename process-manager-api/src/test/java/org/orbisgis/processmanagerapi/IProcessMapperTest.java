@@ -37,6 +37,7 @@
 package org.orbisgis.processmanagerapi;
 
 import org.junit.jupiter.api.Test;
+import org.orbisgis.processmanagerapi.check.ICheckDataBuilder;
 
 import java.util.LinkedHashMap;
 import java.util.Map;

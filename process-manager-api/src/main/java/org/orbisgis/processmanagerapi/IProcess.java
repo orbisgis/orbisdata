@@ -104,6 +104,18 @@ public interface IProcess {
      * @return The process identifier.
      */
     String getIdentifier();
+
+    /**
+     * Return a {@link Map} with the input name as key and its {@link Class} as value.
+     *
+     * @return A {@link Map} with the input name as key and its {@link Class} as value.
+     */
     Map<String, Class> getInputs();
+
+    /**
+     * Return a {@link Map} with the output name as key and its {@link Class} as value.
+     *
+     * @return A {@link Map} with the output name as key and its {@link Class} as value.
+     */
     Map<String, Class> getOutputs();
 }

@@ -33,23 +33,50 @@
  * For more information, please consult: <http://www.orbisgis.org/>
  * or contact directly:
  * info_at_ orbisgis.org
- */package org.orbisgis.processmanagerapi;
+ */
+package org.orbisgis.processmanagerapi.check;
 
 /**
- * This interface declare the cast methods dedicated to the casting of a specific class into another specific class.
+ * Interface for the definition of the getProcess check execution options.
  *
  * @author Erwan Bocher (CNRS)
  * @author Sylvain PALOMINOS (UBS 2019)
  */
-@FunctionalInterface
-public interface ICastElement {
+public interface ICheckOptionBuilder {
 
     /**
-     * Cast the given object into a new one in another class.
+     * Make the check log the given message and stop the program on fail .
      *
-     * @param object Object to cast.
+     * @param message Message to log.
      *
-     * @return The new Object with another class if the cast has been successful, null otherwise.
+     * @return A {@link ICheckOptionBuilder} to continue the check building.
      */
-    Object cast(Object object);
+    ICheckOptionBuilder stopOnFail(String message);
+
+    /**
+     * Make the check log the given message and stop the program on success .
+     *
+     * @param message Message to log.
+     *
+     * @return A {@link ICheckOptionBuilder} to continue the check building.
+     */
+    ICheckOptionBuilder stopOnSuccess(String message);
+
+    /**
+     * Make the check log the given message and continue the program on fail .
+     *
+     * @param message Message to log.
+     *
+     * @return A {@link ICheckOptionBuilder} to continue the check building.
+     */
+    ICheckOptionBuilder continueOnFail(String message);
+
+    /**
+     * Make the check log the given message and continue the program on success .
+     *
+     * @param message Message to log.
+     *
+     * @return A {@link ICheckOptionBuilder} to continue the check building.
+     */
+    ICheckOptionBuilder continueOnSuccess(String message);
 }

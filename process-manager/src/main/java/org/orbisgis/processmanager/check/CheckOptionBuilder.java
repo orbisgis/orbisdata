@@ -34,20 +34,18 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.processmanager;
+package org.orbisgis.processmanager.check;
 
-import groovy.lang.Closure;
-import org.orbisgis.processmanagerapi.ICheckClosureBuilder;
-import org.orbisgis.processmanagerapi.ICheckOptionBuilder;
-import org.orbisgis.processmanagerapi.IProcessCheck;
+import org.orbisgis.processmanagerapi.check.ICheckOptionBuilder;
+import org.orbisgis.processmanagerapi.check.IProcessCheck;
 
 /**
- * Implementation of the {@link ICheckClosureBuilder} interface.
+ * Implementation of the {@link ICheckOptionBuilder} interface.
  *
  * @author Erwan Bocher (CNRS)
  * @author Sylvain PALOMINOS (UBS 2019)
  */
-public class CheckClosureBuilder implements ICheckClosureBuilder {
+public class CheckOptionBuilder implements ICheckOptionBuilder {
 
     /** {@link IProcessCheck} being built */
     private IProcessCheck processCheck;
@@ -56,13 +54,31 @@ public class CheckClosureBuilder implements ICheckClosureBuilder {
      * Default constructor.
      * @param processCheck {@link IProcessCheck} to build.
      */
-    public CheckClosureBuilder(IProcessCheck processCheck){
+    public CheckOptionBuilder(IProcessCheck processCheck){
         this.processCheck = processCheck;
     }
 
     @Override
-    public ICheckOptionBuilder check(Closure cl) {
-        processCheck.setClosure(cl);
-        return new CheckOptionBuilder(processCheck);
+    public ICheckOptionBuilder stopOnFail(String message) {
+        processCheck.onFail(IProcessCheck.STOP, message);
+        return this;
+    }
+
+    @Override
+    public ICheckOptionBuilder stopOnSuccess(String message) {
+        processCheck.onSuccess(IProcessCheck.STOP, message);
+        return this;
+    }
+
+    @Override
+    public ICheckOptionBuilder continueOnFail(String message) {
+        processCheck.onFail(IProcessCheck.CONTINUE, message);
+        return this;
+    }
+
+    @Override
+    public ICheckOptionBuilder continueOnSuccess(String message) {
+        processCheck.onSuccess(IProcessCheck.CONTINUE, message);
+        return this;
     }
 }

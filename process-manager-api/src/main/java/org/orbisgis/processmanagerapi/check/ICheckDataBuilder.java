@@ -34,49 +34,22 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.processmanagerapi;
+package org.orbisgis.processmanagerapi.check;
 
 /**
- * Interface for the definition of the process check execution options.
+ * Interface for the definition of which data are provided for the getProcess check execution.
  *
  * @author Erwan Bocher (CNRS)
  * @author Sylvain PALOMINOS (UBS 2019)
  */
-public interface ICheckOptionBuilder {
+public interface ICheckDataBuilder {
 
     /**
-     * Make the check log the given message and stop the program on fail .
+     * Sets the inputs or outputs to use for the check.
      *
-     * @param message Message to log.
+     * @param data Input or output list to use to do the check.
      *
-     * @return A {@link ICheckOptionBuilder} to continue the check building.
+     * @return A {@link ICheckClosureBuilder} to continue the check building.
      */
-    ICheckOptionBuilder stopOnFail(String message);
-
-    /**
-     * Make the check log the given message and stop the program on success .
-     *
-     * @param message Message to log.
-     *
-     * @return A {@link ICheckOptionBuilder} to continue the check building.
-     */
-    ICheckOptionBuilder stopOnSuccess(String message);
-
-    /**
-     * Make the check log the given message and continue the program on fail .
-     *
-     * @param message Message to log.
-     *
-     * @return A {@link ICheckOptionBuilder} to continue the check building.
-     */
-    ICheckOptionBuilder continueOnFail(String message);
-
-    /**
-     * Make the check log the given message and continue the program on success .
-     *
-     * @param message Message to log.
-     *
-     * @return A {@link ICheckOptionBuilder} to continue the check building.
-     */
-    ICheckOptionBuilder continueOnSuccess(String message);
+    ICheckClosureBuilder with(Object... data);
 }

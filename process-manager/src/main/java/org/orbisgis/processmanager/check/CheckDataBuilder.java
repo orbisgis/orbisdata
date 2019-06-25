@@ -34,11 +34,11 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.processmanager;
+package org.orbisgis.processmanager.check;
 
-import org.orbisgis.processmanagerapi.ICheckClosureBuilder;
-import org.orbisgis.processmanagerapi.ICheckDataBuilder;
-import org.orbisgis.processmanagerapi.IProcessCheck;
+import org.orbisgis.processmanagerapi.check.ICheckClosureBuilder;
+import org.orbisgis.processmanagerapi.check.ICheckDataBuilder;
+import org.orbisgis.processmanagerapi.check.IProcessCheck;
 
 /**
  * Implementation of the {@link ICheckDataBuilder} interface.

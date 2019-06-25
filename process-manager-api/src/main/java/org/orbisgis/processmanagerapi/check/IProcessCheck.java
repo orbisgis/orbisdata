@@ -34,14 +34,15 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.processmanagerapi;
+package org.orbisgis.processmanagerapi.check;
 
 import groovy.lang.Closure;
+import org.orbisgis.processmanagerapi.IProcess;
 
 import java.util.LinkedHashMap;
 
 /**
- * Interface for the definition of process check.
+ * Interface for the definition of getProcess check.
  *
  * @author Erwan Bocher (CNRS)
  * @author Sylvain PALOMINOS (UBS 2019)

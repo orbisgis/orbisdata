@@ -34,7 +34,7 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.processmanager;
+package org.orbisgis.processmanager.check;
 
 import groovy.lang.Closure;
 import org.orbisgis.processmanagerapi.IProcess;

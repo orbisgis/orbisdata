@@ -36,6 +36,8 @@
  */
 package org.orbisgis.processmanager;
 
+import org.orbisgis.processmanager.check.CheckDataBuilder;
+import org.orbisgis.processmanager.check.ProcessCheck;
 import org.orbisgis.processmanager.inoutput.ProcessInOutPut;
 import org.orbisgis.processmanagerapi.*;
 import org.orbisgis.processmanagerapi.check.ICheckDataBuilder;

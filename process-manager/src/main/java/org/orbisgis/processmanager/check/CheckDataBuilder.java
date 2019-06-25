@@ -34,7 +34,7 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.processmanager;
+package org.orbisgis.processmanager.check;
 
 import org.orbisgis.processmanagerapi.check.ICheckClosureBuilder;
 import org.orbisgis.processmanagerapi.check.ICheckDataBuilder;

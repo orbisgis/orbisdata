@@ -41,7 +41,6 @@ import groovy.lang.GroovyObject;
 import groovy.lang.MetaClass;
 import org.codehaus.groovy.runtime.InvokerHelper;
 import org.orbisgis.processmanager.inoutput.ProcessInOutPut;
-import org.orbisgis.processmanagerapi.ICaster;
 import org.orbisgis.processmanagerapi.IProcess;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -78,8 +77,6 @@ public class Process implements IProcess, GroovyObject {
     private Closure closure;
     /** Map of the process Result */
     private Map<String, Object> resultMap;
-    /** Caster used to cast input object into the good class */
-    private ICaster caster;
     /** Unique identifier */
     private String identifier;
     /** MetaClass use for groovy methods/properties binding */
@@ -102,10 +99,9 @@ public class Process implements IProcess, GroovyObject {
      *                    generate the Map of the getResults Method.
      * @param version Process version.
      * @param closure Closure containing the code to execute on the process execution.
-     * @param caster Caster used to cast input object into the good class.
      */
     Process(String title, String description, String[] keywords, LinkedHashMap<String, Object> inputs,
-            LinkedHashMap<String, Object> outputs, String version, Closure closure, ICaster caster){
+            LinkedHashMap<String, Object> outputs, String version, Closure closure){
         if(inputs != null && closure.getMaximumNumberOfParameters() != inputs.size()){
             LOGGER.error("The number of the closure parameters and the number of process input names are different.");
             return;
@@ -140,7 +136,6 @@ public class Process implements IProcess, GroovyObject {
         }
         this.closure = closure;
         this.resultMap = new HashMap<>();
-        this.caster = caster;
         this.identifier = UUID.randomUUID().toString();
         this.metaClass = InvokerHelper.getMetaClass(getClass());
     }
@@ -148,7 +143,7 @@ public class Process implements IProcess, GroovyObject {
     @Override
     public IProcess newInstance() {
         Process process = new Process(title, description, keywords, new LinkedHashMap<>(inputs),  new LinkedHashMap<>(outputs),
-                version, closure, caster);
+                version, closure);
         process.defaultValues = this.defaultValues;
         return process;
     }
@@ -179,7 +174,7 @@ public class Process implements IProcess, GroovyObject {
     }
 
     /**
-     * Returns the casted input data as an Object array.
+     * Returns the input data as an Object array.
      *
      * @param inputDataMap Map containing the data for the execution of the closure.
      *
@@ -187,10 +182,10 @@ public class Process implements IProcess, GroovyObject {
      */
     private Object[] getClosureArgs(LinkedHashMap<String, Object> inputDataMap){
         return inputs
-                .entrySet()
+                .keySet()
                 .stream()
-                .filter(entry -> inputDataMap.containsKey(entry.getKey()))
-                .map(entry -> caster.cast(inputDataMap.get(entry.getKey()), entry.getValue()))
+                .filter(inputDataMap::containsKey)
+                .map(inputDataMap::get)
                 .toArray();
     }
 
@@ -232,7 +227,7 @@ public class Process implements IProcess, GroovyObject {
             return false;
         }
         else {
-            map.forEach((key, value) -> resultMap.put(key, caster.cast(value, outputs.get(key))));
+            map.forEach((key, value) -> resultMap.put(key, value));
             return true;
         }
     }

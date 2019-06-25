@@ -37,7 +37,6 @@
 package org.orbisgis.processmanager;
 
 import groovy.lang.Closure;
-import org.orbisgis.processmanagerapi.ICaster;
 import org.orbisgis.processmanagerapi.IProcess;
 import org.orbisgis.processmanagerapi.IProcessFactory;
 
@@ -53,8 +52,6 @@ import java.util.List;
  */
 public class ProcessFactory implements IProcessFactory {
 
-    /** Caster use to cast the inputs. */
-    private ICaster caster;
     /** Indicated if the process creation is allowed. */
     private boolean isLock;
     /** Indicates if the factory should be used as the default one. */
@@ -78,8 +75,6 @@ public class ProcessFactory implements IProcessFactory {
     ProcessFactory(boolean lock, boolean dflt){
         isLock = lock;
         isDefault = dflt;
-        caster = new Caster();
-        caster.addCast(String.class, Object::toString);
         processList = new ArrayList<>();
     }
 
@@ -113,7 +108,7 @@ public class ProcessFactory implements IProcessFactory {
                     .findAny()
                     .orElse(null);*/
             if(process == null) {
-                process = new Process(title, description, keywords, inputs, outputs, version, closure, caster);
+                process = new Process(title, description, keywords, inputs, outputs, version, closure);
                 processList.add(process);
             }
             return process.newInstance();

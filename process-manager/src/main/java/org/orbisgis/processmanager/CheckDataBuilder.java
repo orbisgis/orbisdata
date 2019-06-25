@@ -36,9 +36,9 @@
  */
 package org.orbisgis.processmanager;
 
-import org.orbisgis.processmanagerapi.ICheckClosureBuilder;
-import org.orbisgis.processmanagerapi.ICheckDataBuilder;
-import org.orbisgis.processmanagerapi.IProcessCheck;
+import org.orbisgis.processmanagerapi.check.ICheckClosureBuilder;
+import org.orbisgis.processmanagerapi.check.ICheckDataBuilder;
+import org.orbisgis.processmanagerapi.check.IProcessCheck;
 
 /**
  * Implementation of the {@link ICheckDataBuilder} interface.

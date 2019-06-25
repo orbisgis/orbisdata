@@ -38,6 +38,8 @@ package org.orbisgis.processmanager;
 
 import org.orbisgis.processmanager.inoutput.ProcessInOutPut;
 import org.orbisgis.processmanagerapi.*;
+import org.orbisgis.processmanagerapi.check.ICheckDataBuilder;
+import org.orbisgis.processmanagerapi.check.IProcessCheck;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

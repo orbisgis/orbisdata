@@ -38,7 +38,7 @@ package org.orbisgis.processmanager;
 
 import groovy.lang.Closure;
 import org.orbisgis.processmanagerapi.IProcess;
-import org.orbisgis.processmanagerapi.IProcessCheck;
+import org.orbisgis.processmanagerapi.check.IProcessCheck;
 import org.orbisgis.processmanagerapi.IProcessInOutPut;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

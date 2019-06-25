@@ -36,6 +36,9 @@
  */
 package org.orbisgis.processmanagerapi;
 
+import org.orbisgis.processmanagerapi.check.ICheckDataBuilder;
+import org.orbisgis.processmanagerapi.check.IProcessCheck;
+
 import java.util.UUID;
 
 /**

@@ -37,9 +37,9 @@
 package org.orbisgis.processmanager;
 
 import groovy.lang.Closure;
-import org.orbisgis.processmanagerapi.ICheckClosureBuilder;
-import org.orbisgis.processmanagerapi.ICheckOptionBuilder;
-import org.orbisgis.processmanagerapi.IProcessCheck;
+import org.orbisgis.processmanagerapi.check.ICheckClosureBuilder;
+import org.orbisgis.processmanagerapi.check.ICheckOptionBuilder;
+import org.orbisgis.processmanagerapi.check.IProcessCheck;
 
 /**
  * Implementation of the {@link ICheckClosureBuilder} interface.

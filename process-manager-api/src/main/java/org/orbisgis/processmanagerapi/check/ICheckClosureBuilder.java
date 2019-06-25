@@ -35,7 +35,7 @@
  * info_at_ orbisgis.org
  */
 
-package org.orbisgis.processmanagerapi;
+package org.orbisgis.processmanagerapi.check;
 
 import groovy.lang.Closure;
 

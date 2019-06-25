@@ -34,7 +34,7 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.processmanagerapi;
+package org.orbisgis.processmanagerapi.check;
 
 /**
  * Interface for the definition of the process check execution options.

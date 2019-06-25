@@ -36,8 +36,8 @@
  */
 package org.orbisgis.processmanager;
 
-import org.orbisgis.processmanagerapi.ICheckOptionBuilder;
-import org.orbisgis.processmanagerapi.IProcessCheck;
+import org.orbisgis.processmanagerapi.check.ICheckOptionBuilder;
+import org.orbisgis.processmanagerapi.check.IProcessCheck;
 
 /**
  * Implementation of the {@link ICheckOptionBuilder} interface.

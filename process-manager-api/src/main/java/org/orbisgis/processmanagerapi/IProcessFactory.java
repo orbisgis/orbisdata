@@ -37,6 +37,7 @@
 package org.orbisgis.processmanagerapi;
 
 import groovy.lang.Closure;
+import groovy.lang.DelegatesTo;
 
 import java.util.LinkedHashMap;
 
@@ -47,6 +48,13 @@ import java.util.LinkedHashMap;
  * @author Sylvain PALOMINOS (UBS 2019)
  */
 public interface IProcessFactory {
+
+    /**
+     * Register a {@link IProcess}.
+     *
+     * @param process {@link IProcess} to register.
+     */
+    void registerProcess(IProcess process);
 
     /**
      * Return true if the process creation is locked, false otherwise.
@@ -67,9 +75,27 @@ public interface IProcessFactory {
      *
      * @param processId Identifier of the process to get.
      *
-     * @return The process with the given identifier,
+     * @return The process with the given identifier.
      */
-    IProcess process(String processId);
+    IProcess getProcess(String processId);
+
+    /**
+     * Return a {@link IProcessBuilder} to create a {@link IProcess}. Once the process created, it will be register
+     * in this {@link IProcessFactory}.
+     *
+     * @return A {@link IProcessBuilder} to create a {@link IProcess}.
+     */
+    IProcessBuilder create();
+
+    /**
+     * Return a {@link IProcess} created from the given {@link Closure}. Once the process created, it will be register
+     * in this {@link IProcessFactory}.
+     *
+     * @param cl {@link Closure} delegated to {@link IProcessBuilder}.
+     *
+     * @return A {@link IProcess}.
+     */
+    IProcess create(@DelegatesTo(IProcessBuilder.class) Closure cl);
 
     /**
      * Create a new Process with its title, description, keyword array, input map, output map, version
@@ -87,6 +113,7 @@ public interface IProcessFactory {
      * @param version Process version.
      * @param closure Closure containing the code to execute on the process execution.
      */
+    @Deprecated
     IProcess create(String title, String description, String[] keywords, LinkedHashMap<String, Object> inputs,
                            LinkedHashMap<String, Object> outputs, String version, Closure closure);
 
@@ -105,6 +132,7 @@ public interface IProcessFactory {
      *                    generate the LinkedHashMap of the getResults Method.
      * @param closure Closure containing the code to execute on the process execution.
      */
+    @Deprecated
     IProcess create(String title, String description, String[] keywords, LinkedHashMap<String, Object> inputs,
                            LinkedHashMap<String, Object> outputs, Closure closure);
 
@@ -122,6 +150,7 @@ public interface IProcessFactory {
      * @param version Process version.
      * @param closure Closure containing the code to execute on the process execution.
      */
+    @Deprecated
     IProcess create(String title, String description, String[] keywords, LinkedHashMap<String, Object> outputs,
                            String version, Closure closure);
 
@@ -138,6 +167,7 @@ public interface IProcessFactory {
      *                    generate the LinkedHashMap of the getResults Method.
      * @param closure Closure containing the code to execute on the process execution.
      */
+    @Deprecated
     IProcess create(String title, String description, String[] keywords, LinkedHashMap<String, Object> outputs,
                            Closure closure);
 
@@ -156,6 +186,7 @@ public interface IProcessFactory {
      * @param version Process version.
      * @param closure Closure containing the code to execute on the process execution.
      */
+    @Deprecated
     IProcess create(String title, String description, LinkedHashMap<String, Object> inputs, LinkedHashMap<String, Object> outputs,
                            String version, Closure closure);
 
@@ -173,6 +204,7 @@ public interface IProcessFactory {
      *                    generate the LinkedHashMap of the getResults Method.
      * @param closure Closure containing the code to execute on the process execution.
      */
+    @Deprecated
     IProcess create(String title, String description,  LinkedHashMap<String, Object> inputs, LinkedHashMap<String, Object> outputs,
                            Closure closure);
 
@@ -189,6 +221,7 @@ public interface IProcessFactory {
      * @param version Process version.
      * @param closure Closure containing the code to execute on the process execution.
      */
+    @Deprecated
     IProcess create(String title, String description, LinkedHashMap<String, Object> outputs, String version,
                            Closure closure);
 
@@ -204,6 +237,7 @@ public interface IProcessFactory {
      *                    generate the LinkedHashMap of the getResults Method.
      * @param closure Closure containing the code to execute on the process execution.
      */
+    @Deprecated
     IProcess create(String title, String description, LinkedHashMap<String, Object> outputs, Closure closure);
 
     /**
@@ -221,6 +255,7 @@ public interface IProcessFactory {
      * @param version Process version.
      * @param closure Closure containing the code to execute on the process execution.
      */
+    @Deprecated
     IProcess create(String title, String[] keywords, LinkedHashMap<String, Object> inputs, LinkedHashMap<String, Object> outputs,
                            String version, Closure closure);
 
@@ -238,6 +273,7 @@ public interface IProcessFactory {
      *                    generate the LinkedHashMap of the getResults Method.
      * @param closure Closure containing the code to execute on the process execution.
      */
+    @Deprecated
     IProcess create(String title, String[] keywords, LinkedHashMap<String, Object> inputs, LinkedHashMap<String, Object> outputs,
                            Closure closure);
 
@@ -254,6 +290,7 @@ public interface IProcessFactory {
      * @param version Process version.
      * @param closure Closure containing the code to execute on the process execution.
      */
+    @Deprecated
     IProcess create(String title, String[] keywords, LinkedHashMap<String, Object> outputs, String version,
                            Closure closure);
 
@@ -269,6 +306,7 @@ public interface IProcessFactory {
      *                    generate the LinkedHashMap of the getResults Method.
      * @param closure Closure containing the code to execute on the process execution.
      */
+    @Deprecated
     IProcess create(String title, String[] keywords, LinkedHashMap<String, Object> outputs, Closure closure);
 
     /**
@@ -285,6 +323,7 @@ public interface IProcessFactory {
      * @param version Process version.
      * @param closure Closure containing the code to execute on the process execution.
      */
+    @Deprecated
     IProcess create(String title, LinkedHashMap<String, Object> inputs, LinkedHashMap<String, Object> outputs, String version,
                            Closure closure);
 
@@ -301,6 +340,7 @@ public interface IProcessFactory {
      *                    generate the LinkedHashMap of the getResults Method.
      * @param closure Closure containing the code to execute on the process execution.
      */
+    @Deprecated
     IProcess create(String title, LinkedHashMap<String, Object> inputs, LinkedHashMap<String, Object> outputs, Closure closure);
 
     /**
@@ -315,6 +355,7 @@ public interface IProcessFactory {
      * @param version Process version.
      * @param closure Closure containing the code to execute on the process execution.
      */
+    @Deprecated
     IProcess create(String title, LinkedHashMap<String, Object> outputs, String version, Closure closure);
 
     /**
@@ -328,5 +369,6 @@ public interface IProcessFactory {
      *                    generate the LinkedHashMap of the getResults Method.
      * @param closure Closure containing the code to execute on the process execution.
      */
+    @Deprecated
     IProcess create(String title, LinkedHashMap<String, Object> outputs, Closure closure);
 }

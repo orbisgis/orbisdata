@@ -191,6 +191,10 @@ public class Process implements IProcess, GroovyObject {
 
     @Override
     public boolean execute(LinkedHashMap<String, Object> inputDataMap) {
+        if(closure == null){
+            LOGGER.error("The process should have a Closure defined.");
+            return false;
+        }
         LOGGER.debug("Starting the execution of '" + this.getTitle() + "'.");
         if(inputs != null && (inputs.size() < inputDataMap.size() || inputs.size()-defaultValues.size() > inputDataMap.size())){
             LOGGER.error("The number of the input data map and the number of process input are different, should" +

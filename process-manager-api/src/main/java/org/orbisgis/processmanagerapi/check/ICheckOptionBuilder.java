@@ -37,7 +37,7 @@
 package org.orbisgis.processmanagerapi.check;
 
 /**
- * Interface for the definition of the process check execution options.
+ * Interface for the definition of the getProcess check execution options.
  *
  * @author Erwan Bocher (CNRS)
  * @author Sylvain PALOMINOS (UBS 2019)

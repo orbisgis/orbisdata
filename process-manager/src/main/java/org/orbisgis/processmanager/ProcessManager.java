@@ -36,7 +36,10 @@
  */
 package org.orbisgis.processmanager;
 
+import groovy.lang.Closure;
+import groovy.lang.DelegatesTo;
 import org.orbisgis.processmanagerapi.IProcess;
+import org.orbisgis.processmanagerapi.IProcessBuilder;
 import org.orbisgis.processmanagerapi.IProcessFactory;
 import org.orbisgis.processmanagerapi.IProcessManager;
 
@@ -58,13 +61,15 @@ public class ProcessManager implements IProcessManager {
     private Map<String, IProcessFactory> processFactoryMap;
     /** Unique ProcessManager instance. */
     private static ProcessManager instance = null;
+    /** Default factory name */
+    private static final String DEFAULT_FACTORY_NAME = "orbisgis";
 
     /**
      * Private constructor in order to make it unique.
      */
     private ProcessManager(){
         processFactoryMap = new HashMap<>();
-        processFactoryMap.put("orbisgis", new ProcessFactory(true, true));
+        processFactoryMap.put(DEFAULT_FACTORY_NAME, new ProcessFactory(true, true));
     }
 
     /**
@@ -77,6 +82,20 @@ public class ProcessManager implements IProcessManager {
             instance = new ProcessManager();
         }
         return instance;
+    }
+
+    @Override
+    public IProcessBuilder create() {
+        return new ProcessBuilder(processFactoryMap.get(DEFAULT_FACTORY_NAME));
+    }
+
+    @Override
+    public IProcess create(@DelegatesTo(IProcessBuilder.class) Closure cl) {
+        IProcessBuilder builder = new ProcessBuilder(processFactoryMap.get(DEFAULT_FACTORY_NAME));
+        Closure code = cl.rehydrate(builder, this, this);
+        code.setResolveStrategy(Closure.DELEGATE_FIRST);
+        code.call();
+        return builder.getProcess();
     }
 
     @Override
@@ -99,9 +118,8 @@ public class ProcessManager implements IProcessManager {
     @Override
     public IProcessFactory factory(){
         return processFactoryMap
-                .entrySet()
+                .values()
                 .stream()
-                .map(Map.Entry::getValue)
                 .filter(IProcessFactory::isDefault)
                 .findFirst()
                 .orElse(null);
@@ -114,12 +132,12 @@ public class ProcessManager implements IProcessManager {
     @Override
     public IProcess process(String processId){
         IProcessFactory processFactory = factory();
-        return processFactory == null ? null : processFactory.process(processId);
+        return processFactory == null ? null : processFactory.getProcess(processId);
     }
 
     @Override
     public IProcess process(String processId, String factoryId){
         IProcessFactory processFactory = factory(factoryId);
-        return processFactory == null ? null : processFactory.process(processId);
+        return processFactory == null ? null : processFactory.getProcess(processId);
     }
 }

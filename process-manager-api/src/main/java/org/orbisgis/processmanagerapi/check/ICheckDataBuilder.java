@@ -37,7 +37,7 @@
 package org.orbisgis.processmanagerapi.check;
 
 /**
- * Interface for the definition of which data are provided for the process check execution.
+ * Interface for the definition of which data are provided for the getProcess check execution.
  *
  * @author Erwan Bocher (CNRS)
  * @author Sylvain PALOMINOS (UBS 2019)

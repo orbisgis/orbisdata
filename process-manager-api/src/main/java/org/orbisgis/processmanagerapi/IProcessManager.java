@@ -36,6 +36,9 @@
  */
 package org.orbisgis.processmanagerapi;
 
+import groovy.lang.Closure;
+import groovy.lang.DelegatesTo;
+
 import java.util.List;
 
 /**
@@ -45,6 +48,24 @@ import java.util.List;
  * @author Sylvain PALOMINOS (UBS 2019)
  */
 public interface IProcessManager {
+
+    /**
+     * Return a {@link IProcessBuilder} to create a {@link IProcess}. Once the process created, it will be register
+     * in the default {@link IProcessFactory} if set.
+     *
+     * @return A {@link IProcessBuilder} to create a {@link IProcess}.
+     */
+    IProcessBuilder create();
+
+    /**
+     * Return a {@link IProcess} created from the given {@link Closure}. Once the process created, it will be register
+     * in the default {@link IProcessFactory} if set.
+     *
+     * @param cl {@link Closure} delegated to {@link IProcessBuilder}.
+     *
+     * @return A {@link IProcess}.
+     */
+    IProcess create(@DelegatesTo(IProcessBuilder.class) Closure cl);
 
     /**
      * Return the list of the factory identifiers.

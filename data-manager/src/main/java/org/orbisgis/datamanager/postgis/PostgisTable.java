@@ -52,8 +52,6 @@ import org.slf4j.LoggerFactory;
  */
 public class PostgisTable extends JdbcTable {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(PostgisTable.class);
-
     /**
      * Main constructor.
      *

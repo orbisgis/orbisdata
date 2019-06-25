@@ -40,7 +40,7 @@ package org.orbisgis.processmanagerapi.check;
 import groovy.lang.Closure;
 
 /**
- * Interface for the definition of which closure is provided for the process check execution.
+ * Interface for the definition of which closure is provided for the getProcess check execution.
  *
  * @author Erwan Bocher (CNRS)
  * @author Sylvain PALOMINOS (UBS 2019)

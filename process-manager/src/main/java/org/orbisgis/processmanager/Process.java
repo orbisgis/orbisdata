@@ -196,14 +196,14 @@ public class Process implements IProcess, GroovyObject {
             return false;
         }
         LOGGER.debug("Starting the execution of '" + this.getTitle() + "'.");
-        if(inputs != null && (inputs.size() < inputDataMap.size() || inputs.size()-defaultValues.size() > inputDataMap.size())){
+        if(inputs != null && inputDataMap != null && (inputs.size() < inputDataMap.size() || inputs.size()-defaultValues.size() > inputDataMap.size())){
             LOGGER.error("The number of the input data map and the number of process input are different, should" +
                     " be between " + (inputDataMap.size()-defaultValues.size()) + " and " + inputDataMap.size() + ".");
             return false;
         }
         Object result;
         try {
-            if(inputs != null) {
+            if(inputs != null && inputs.size() != 0) {
                 Closure cl = getClosureWithCurry(inputDataMap);
                 if(cl == null){
                     return false;
@@ -218,8 +218,9 @@ public class Process implements IProcess, GroovyObject {
             return false;
         }
         if(!(result instanceof Map)){
-            LOGGER.error("The process output should be a Map");
-            return false;
+            HashMap<String, Object> map = new HashMap<>();
+            map.put("result", result);
+            result = map;
         }
         Map<String, Object> map = (Map<String, Object>) result;
         boolean isResultValid = true;

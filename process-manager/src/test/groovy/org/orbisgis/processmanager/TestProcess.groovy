@@ -52,6 +52,9 @@ class TestProcess {
     @Test
     void testProcessCreation(){
 
+        assertFalse processManager.create({}).execute()
+        assertTrue  processManager.create({closure {1+1}}).execute()
+
         String[] arr = ["key1", "key2"]
 
         def process = processManager.create()

@@ -64,7 +64,7 @@ public interface IDataSet extends Iterable<Object> {
      *
      * @return The metadata object.
      */
-    Object getMetadata();
+    Object getMetaData();
 
     /**
      * Convert the current object into another with the given class.

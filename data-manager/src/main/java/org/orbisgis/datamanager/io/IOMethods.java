@@ -68,7 +68,8 @@ public class IOMethods {
             case "gpx":
                 return null;
             default:
-                LOGGER.error("Unsupported file format");
+                LOGGER.error("Unsupported file format.\n" +
+                        "Supported formats are : [shp, geojson, tsv, csv, dbf, kml, kmz, osm, gz, bz, gpx].");
                 return null;
         }
     }

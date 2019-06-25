@@ -144,7 +144,7 @@ public abstract class JdbcSpatialTable extends JdbcTable implements ISpatialTabl
     }
 
     @Override
-    public SpatialResultSetMetaData getMetadata(){
+    public SpatialResultSetMetaData getMetaData(){
         try {
             return getResultSet().getMetaData().unwrap(SpatialResultSetMetaData.class);
         } catch (SQLException e) {

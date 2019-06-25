@@ -186,7 +186,7 @@ public class IJdbcTableTest {
 
         @Override public TableLocation getTableLocation() {return location;}
         @Override public DataBaseType getDbType() {return databaseType;}
-        @Override public ResultSetMetaData getMetadata() {return new RowSetMetaDataImpl();}
+        @Override public ResultSetMetaData getMetaData() {return new RowSetMetaDataImpl();}
         @Override public boolean isSpatial() {return false;}
         @Override public boolean isLinked() {return false;}
         @Override public boolean isTemporary() {return false;}
@@ -235,7 +235,6 @@ public class IJdbcTableTest {
         @Override public SQLWarning getWarnings() {return null;}
         @Override public void clearWarnings() {/*Does nothing*/}
         @Override public String getCursorName() {return null;}
-        @Override public ResultSetMetaData getMetaData() {return null;}
         @Override public Object getObject(int i) {return data[rowIndex-1];}
         @Override public Object getObject(String s) throws SQLException {
             if(sqlException){

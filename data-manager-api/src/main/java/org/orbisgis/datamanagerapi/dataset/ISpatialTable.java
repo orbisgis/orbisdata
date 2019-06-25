@@ -50,13 +50,8 @@ import java.util.Map;
  */
 public interface ISpatialTable extends IJdbcTable, SpatialResultSet {
 
-    /**
-     * Get the {@link SpatialResultSetMetaData} of the {@link ISpatialTable}.
-     *
-     * @return The metadata object.
-     */
     @Override
-    SpatialResultSetMetaData getMetadata();
+    SpatialResultSetMetaData getMetaData();
 
     @Override
     Geometry getGeometry(int columnIndex);

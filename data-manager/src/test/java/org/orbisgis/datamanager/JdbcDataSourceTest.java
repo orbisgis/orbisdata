@@ -59,8 +59,8 @@ import org.orbisgis.datamanagerapi.dataset.ISpatialTable;
 import org.orbisgis.datamanagerapi.dataset.ITable;
 import org.orbisgis.datamanagerapi.dsl.IFromBuilder;
 
-import java.io.File;
 import javax.sql.DataSource;
+import java.io.File;
 import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.net.MalformedURLException;

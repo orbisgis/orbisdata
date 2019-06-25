@@ -42,6 +42,7 @@ import groovy.lang.MissingPropertyException;
 import groovy.sql.Sql;
 import org.codehaus.groovy.runtime.InvokerHelper;
 import org.codehaus.groovy.runtime.InvokerInvocationException;
+import org.h2.jdbc.JdbcResultSetMetaData;
 import org.h2gis.functions.factory.H2GISDBFactory;
 import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.TableLocation;
@@ -55,8 +56,11 @@ import org.locationtech.jts.geom.Point;
 import org.orbisgis.datamanager.h2gis.H2gisSpatialTable;
 import org.orbisgis.datamanagerapi.dataset.*;
 
-import javax.sql.rowset.RowSetMetaDataImpl;
-import java.sql.*;
+import java.io.File;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -88,19 +92,19 @@ public class JdbcTableTest {
     private static TableLocation tempLocation;
 
     private static final String BASE_DATABASE = JdbcTableTest.class.getSimpleName();
-    private static final String TABLE_NAME = "orbisgis";
+    private static final String TABLE_NAME = "ORBISGIS";
     private static final String BASE_QUERY = "SELECT * FROM "+TABLE_NAME;
-    private static final String TEMP_NAME = "tempTable";
+    private static final String TEMP_NAME = "TEMPTABLE";
     private static final String TEMP_QUERY = "SELECT * FROM "+TEMP_NAME;
-    private static final String LINKED_DATABASE = JdbcTableTest.class.getSimpleName()+"_linked";
-    private static final String LINKED_NAME = "linkedTable";
+    private static final String LINKED_DATABASE = JdbcTableTest.class.getSimpleName()+"linked";
+    private static final String LINKED_NAME = "LINKEDTABLE";
     private static final String LINKED_QUERY = "SELECT * FROM "+LINKED_NAME;
 
-    private static final String COL_THE_GEOM = "the_geom";
-    private static final String COL_THE_GEOM2 = "the_geom2";
-    private static final String COL_ID = "id";
-    private static final String COL_VALUE = "value";
-    private static final String COL_MEANING = "meaning";
+    private static final String COL_THE_GEOM = "THE_GEOM";
+    private static final String COL_THE_GEOM2 = "THE_GEOM2";
+    private static final String COL_ID = "ID";
+    private static final String COL_VALUE = "VALUE";
+    private static final String COL_MEANING = "MEANING";
 
     /**
      * Initialization of the database.
@@ -124,11 +128,13 @@ public class JdbcTableTest {
     public void prepareDB(){
         try {
             Statement statementLinked = connectionLinked.createStatement();
-            statementLinked.execute("DROP TABLE IF EXISTS "+TABLE_NAME);
+            statementLinked.execute("DROP TABLE IF EXISTS "+TABLE_NAME+","+TEMP_NAME);
             statementLinked.execute("CREATE TABLE "+TABLE_NAME+" ("+COL_THE_GEOM+" GEOMETRY, "+COL_THE_GEOM2+" GEOMETRY(POINT Z)," +
                     COL_ID+" INTEGER, "+COL_VALUE+" FLOAT, "+COL_MEANING+" VARCHAR)");
             statementLinked.execute("INSERT INTO "+TABLE_NAME+" VALUES ('POINT(0 0)', 'POINT(1 1 0)', 1, 2.3, 'Simple points')");
             statementLinked.execute("INSERT INTO "+TABLE_NAME+" VALUES ('POINT(0 1 2)', 'POINT(10 11 12)', 2, 0.568, '3D point')");
+            statementLinked.execute("CREATE TEMPORARY TABLE "+TEMP_NAME+" ("+COL_THE_GEOM+" GEOMETRY, "+COL_THE_GEOM2+" GEOMETRY(POINT Z)," +
+                    COL_ID+" INTEGER, "+COL_VALUE+" FLOAT, "+COL_MEANING+" VARCHAR)");
 
             statement = connection.createStatement();
             statement.execute("DROP TABLE IF EXISTS "+TABLE_NAME+","+LINKED_NAME+","+TEMP_NAME);
@@ -179,6 +185,28 @@ public class JdbcTableTest {
     @Test
     public void testConstructor(){
         assertNotNull(getTable());
+    }
+
+    /**
+     * Test the {@link JdbcTable#getResultSet()} constructor.
+     */
+    @Test
+    public void testGetResultSet() throws SQLException {
+        assertNotNull(getTable().getResultSet());
+        JdbcTable table = new DummyJdbcTable(null, dataSource, new TableLocation("tab"),
+                dataSource.getConnection().createStatement(), "not a request");
+        assertNull(table.getResultSet());
+    }
+
+    /**
+     * Test the {@link JdbcTable#getMetaData()} constructor.
+     */
+    @Test
+    public void testGetMetadata() throws SQLException {
+        assertNotNull(getTable().getMetaData());
+        JdbcTable table = new DummyJdbcTable(null, dataSource, new TableLocation("tab"),
+                dataSource.getConnection().createStatement(), "not a request");
+        assertNull(table.getMetaData());
     }
 
     /**
@@ -306,9 +334,57 @@ public class JdbcTableTest {
         assertTrue(t.hasColumn(COL_VALUE, Float.class));
         assertTrue(t.hasColumn(COL_VALUE, Double.class));
         assertFalse(t.hasColumn(COL_VALUE, Integer.class));
-        assertTrue(t.hasColumn(COL_MEANING));
+        assertTrue(t.hasColumn(COL_MEANING, String.class));
+        assertFalse(t.hasColumn("not_a_col", String.class));
     }
 
+    /**
+     * Test the {@link JdbcTable#getRowCount()} method.
+     */
+    @Test
+    public void testGetRowCount() {
+        assertEquals(2, getTable().getRowCount());
+        assertEquals(2, getLinkedTable().getRowCount());
+        assertEquals(0, getTempTable().getRowCount());
+    }
+
+    /**
+     * Test the {@link JdbcTable#getUniqueValues(String)} method.
+     */
+    @Test
+    public void testGetUniqueValues() {
+        assertEquals(2, getTable().getUniqueValues(COL_MEANING).size());
+        assertTrue(getTable().getUniqueValues(COL_MEANING).contains("Simple points"));
+        assertTrue(getTable().getUniqueValues(COL_MEANING).contains("3D point"));
+        assertEquals(2, getTable().getUniqueValues(COL_THE_GEOM).size());
+
+        assertEquals(2, getLinkedTable().getUniqueValues(COL_MEANING).size());
+        assertTrue(getLinkedTable().getUniqueValues(COL_MEANING).contains("Simple points"));
+        assertTrue(getLinkedTable().getUniqueValues(COL_MEANING).contains("3D point"));
+        assertEquals(2, getLinkedTable().getUniqueValues(COL_THE_GEOM).size());
+    }
+
+    /**
+     * Test the {@link JdbcTable#save(String, String)} and {@link JdbcTable#save(String)} methods.
+     */
+    @Test
+    public void testSave() {
+        assertFalse(new File("./target/save1.json").exists());
+        assertTrue(getTable().save("./target/save1.json"));
+        assertTrue(new File("./target/save1.json").exists());
+
+        assertFalse(new File("./target/save2.json").exists());
+        assertTrue(getTable().save("./target/save2.json"), "UTF8");
+        assertTrue(new File("./target/save2.json").exists());
+
+        assertFalse(new File("./target/save3.json").exists());
+        assertTrue(getTempTable().save("./target/save3.json"));
+        assertTrue(new File("./target/save3.json").exists());
+
+        assertFalse(new File("./target/save4.json").exists());
+        assertTrue(getTempTable().save("./target/save4.json"), "UTF8");
+        assertTrue(new File("./target/save4.json").exists());
+    }
 
     /**
      * Test the {@link JdbcTable#invokeMethod(String, Object)} method.
@@ -328,7 +404,7 @@ public class JdbcTableTest {
         assertEquals("string", table.invokeMethod("getParameterMethod", "string"));
         assertEquals("string", table.invokeMethod("parameterMethod", new Object[]{"string"}));
         assertEquals("string", table.invokeMethod("parameterMethod", "string"));
-        assertEquals(RowSetMetaDataImpl.class, table.invokeMethod("metadata", null).getClass());
+        assertEquals(JdbcResultSetMetaData.class, table.invokeMethod("metaData", null).getClass());
 
         assertThrows(MissingMethodException.class, () -> table.invokeMethod("getLocation", new String[]{"tata", "toto"}));
         assertThrows(MissingMethodException.class, () -> table.invokeMethod("location", new String[]{"tata", "toto"}));
@@ -344,10 +420,12 @@ public class JdbcTableTest {
         JdbcTable table = getTable();
         assertThrows(MissingPropertyException.class, () -> table.getProperty("getLocation"));
         assertEquals(table.getLocation(), table.getProperty("location"));
-        assertEquals(RowSetMetaDataImpl.class, table.getProperty("meta").getClass());
+        assertEquals(JdbcResultSetMetaData.class, table.getProperty("meta").getClass());
         assertArrayEquals(new Object[]{"string", 0.2}, (Object[])table.getProperty("data"));
         assertEquals("tutu", table.getProperty("privateData"));
         assertNull(table.getProperty(null));
+        assertTrue(table.getProperty("meaning") instanceof JdbcColumn);
+        assertEquals("MEANING", ((JdbcColumn)table.getProperty("meaning")).getName());
     }
 
     /**
@@ -429,24 +507,6 @@ public class JdbcTableTest {
             super(dataBaseType, jdbcDataSource, tableLocation, statement, baseQuery);
             privateData = "tutu";
         }
-
-        @Override protected ResultSet getResultSet() {
-            if(resultSet == null) {
-                try {
-                    resultSet = getStatement().executeQuery(getBaseQuery());
-                } catch (SQLException e) {
-                    LOGGER.error("Unable to execute the query '"+getBaseQuery()+"'.\n"+e.getLocalizedMessage());
-                    return null;
-                }
-                try {
-                    resultSet.beforeFirst();
-                } catch (SQLException e) {
-                    LOGGER.error("Unable to go before the first ResultSet row.\n" + e.getLocalizedMessage());
-                    return null;
-                }
-            }
-            return resultSet;}
-
         private void getPrivateMethod(){/*Does nothing*/}
         public Object[] getArrayMethod(Object[] array){return array;}
         public Object[] getParametersMethod(String param1, Double param2){return new Object[]{param1, param2};}
@@ -454,7 +514,6 @@ public class JdbcTableTest {
         public String getParameterMethod(String param1){return param1;}
         public void dupMethod() throws IllegalAccessException {throw new IllegalAccessException();}
 
-        @Override public ResultSetMetaData getMetadata() {return new RowSetMetaDataImpl();}
         @Override public boolean next() throws SQLException {
             if(!sqlException) {
                 return rowIndex++ < data.length;
@@ -463,7 +522,5 @@ public class JdbcTableTest {
                 throw new SQLException();
             }
         }
-
-        @Override public Object asType(Class clazz) {return null;}
     }
 }

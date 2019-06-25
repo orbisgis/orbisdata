@@ -291,7 +291,7 @@ public class ITableTest {
         @Override public boolean save(String filePath, String encoding) {return true;}
         @Override public String getLocation() {return null;}
         @Override public String getName() {return null;}
-        @Override public Object getMetadata() {return null;}
+        @Override public Object getMetaData() {return null;}
         @Override public Object asType(Class clazz) {return null;}
         @Override public Iterator<Object> iterator() {return new ResultSetIterator();}
     }

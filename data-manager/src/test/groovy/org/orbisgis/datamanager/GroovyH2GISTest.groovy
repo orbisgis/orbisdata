@@ -169,7 +169,7 @@ class GroovyH2GISTest {
         assertEquals("ID 4\nTHE_GEOM 1111\n", concat)
 
         concat = ""
-        h2GIS.getSpatialTable("h2gis").metadata.each {row ->
+        h2GIS.getSpatialTable("h2gis").metaData.each {row ->
             concat += "$row.columnLabel $row.columnType\n"
         }
         assertEquals("ID 4\nTHE_GEOM 1111\n", concat)

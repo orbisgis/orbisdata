@@ -16,7 +16,6 @@ import org.h2gis.functions.io.utility.FileUtil;
 import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.URIUtilities;
 import org.orbisgis.datamanager.JdbcDataSource;
-import org.orbisgis.datamanager.h2gis.H2GIS;
 import org.orbisgis.datamanagerapi.dataset.DataBaseType;
 import org.osgi.service.jdbc.DataSourceFactory;
 import org.slf4j.Logger;
@@ -69,7 +68,8 @@ public class IOMethods {
             case "gpx":
                 return null;
             default:
-                LOGGER.error("Unsupported file format");
+                LOGGER.error("Unsupported file format.\n" +
+                        "Supported formats are : [shp, geojson, tsv, csv, dbf, kml, kmz, osm, gz, bz, gpx].");
                 return null;
         }
     }

@@ -36,7 +36,6 @@
  */
 package org.orbisgis.datamanager.h2gis;
 
-import org.h2gis.utilities.SpatialResultSetMetaData;
 import org.h2gis.utilities.TableLocation;
 import org.h2gis.utilities.wrapper.SpatialResultSetImpl;
 import org.h2gis.utilities.wrapper.StatementWrapper;

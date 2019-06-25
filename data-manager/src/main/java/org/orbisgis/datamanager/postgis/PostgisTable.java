@@ -46,10 +46,6 @@ import org.orbisgis.datamanagerapi.dataset.ITable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
-
 /**
  * @author Erwan Bocher (CNRS)
  * @author Sylvain PALOMINOS (UBS 2018-2019)

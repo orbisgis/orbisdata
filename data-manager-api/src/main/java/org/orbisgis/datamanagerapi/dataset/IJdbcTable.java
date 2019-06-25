@@ -72,13 +72,8 @@ public interface IJdbcTable extends ITable, ResultSet, IWhereBuilderOrOptionBuil
      */
     DataBaseType getDbType();
 
-    /**
-     * Get the {@link ResultSetMetaData} wrapping the metadata of the {@link IJdbcTable}.
-     *
-     * @return The {@link ResultSetMetaData} object.
-     */
     @Override
-    ResultSetMetaData getMetadata();
+    ResultSetMetaData getMetaData();
 
     /**
      * Return true if the {@link ITable} is spatial.

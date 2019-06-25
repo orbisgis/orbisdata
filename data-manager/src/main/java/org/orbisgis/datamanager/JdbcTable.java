@@ -139,13 +139,19 @@ public abstract class JdbcTable extends DefaultResultSet implements IJdbcTable, 
     }
 
     @Override
-    public ResultSetMetaData getMetadata(){
+    public ResultSetMetaData getMetaData(){
         try {
-            return getResultSet().getMetaData();
+            ResultSet rs = getResultSet();
+            if(rs == null){
+                LOGGER.error("The ResultSet is null.");
+            }
+            else {
+                return rs.getMetaData();
+            }
         } catch (SQLException e) {
             LOGGER.error("Unable to get the metadata.\n" + e.getLocalizedMessage());
-            return null;
         }
+        return null;
     }
 
     /**
@@ -271,7 +277,8 @@ public abstract class JdbcTable extends DefaultResultSet implements IJdbcTable, 
     public Collection<String> getUniqueValues(String column){
         try {
             return JDBCUtilities.getUniqueFieldValues(jdbcDataSource.getConnection(),
-                    getTableLocation().getTable(), column);
+                    getTableLocation().toString(getDbType().equals(DataBaseType.H2GIS)),
+                    column);
         } catch (SQLException e) {
             LOGGER.error("Unable to request unique values fo the column '"+column+"'.\n"+e.getLocalizedMessage());
         }
@@ -352,7 +359,7 @@ public abstract class JdbcTable extends DefaultResultSet implements IJdbcTable, 
         }
         //First test the predefined properties
         if(propertyName.equals(META_PROPERTY)){
-            return getMetadata();
+            return getMetaData();
         }
         Collection<String> columns = getColumnNames();
         if(columns!= null &&

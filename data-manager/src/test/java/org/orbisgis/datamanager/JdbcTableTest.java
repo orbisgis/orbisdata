@@ -56,11 +56,14 @@ import org.locationtech.jts.geom.Point;
 import org.orbisgis.datamanager.h2gis.H2gisSpatialTable;
 import org.orbisgis.datamanagerapi.dataset.*;
 
-import java.sql.*;
+import java.io.File;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.io.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 

@@ -34,31 +34,25 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.processmanagerapi;
-
-import org.orbisgis.processmanagerapi.inoutput.IInOutPut;
+package org.orbisgis.processmanagerapi.inoutput;
 
 /**
- * This interface declare the methods used to link inputs, outputs and aliases. The first element to link is given
- * through the constructor, the second through the methods {@link ILinker#to(String)} or
- * {@link ILinker#to(IInOutPut[])}.
+ * This interface defines the methods dedicated the wrapping of input.
  *
  * @author Erwan Bocher (CNRS)
  * @author Sylvain PALOMINOS (UBS 2019)
  */
-public interface ILinker {
-
+public interface IInput extends IInOutPut {
     /**
-     * Second element to link.
+     * Make the {@link IInput} optional.
      *
-     * @param inOutPuts Inputs or Outputs to link.
+     * @return The {@link IInput} to continue its configuration.
      */
-    void to(IInOutPut... inOutPuts);
-
+    IInOutPut optional();
     /**
-     * Alias to give to the inputs or outputs.
+     * Make the {@link IInput} mandatory.
      *
-     * @param alias Alias to use.
+     * @return The {@link IInput} to continue its configuration.
      */
-    void to(String alias);
+    IInOutPut mandatory();
 }

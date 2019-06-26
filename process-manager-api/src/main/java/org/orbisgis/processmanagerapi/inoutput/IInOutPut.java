@@ -34,31 +34,78 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.processmanagerapi;
+package org.orbisgis.processmanagerapi.inoutput;
 
-import org.orbisgis.processmanagerapi.inoutput.IInOutPut;
+import org.orbisgis.processmanagerapi.IProcess;
 
 /**
- * This interface declare the methods used to link inputs, outputs and aliases. The first element to link is given
- * through the constructor, the second through the methods {@link ILinker#to(String)} or
- * {@link ILinker#to(IInOutPut[])}.
+ * This interface defines the methods dedicated the wrapping of input/output.
  *
  * @author Erwan Bocher (CNRS)
  * @author Sylvain PALOMINOS (UBS 2019)
  */
-public interface ILinker {
+public interface IInOutPut {
 
     /**
-     * Second element to link.
+     * Return the input/output name.
      *
-     * @param inOutPuts Inputs or Outputs to link.
+     * @return The input/output name.
      */
-    void to(IInOutPut... inOutPuts);
+    String getName();
 
     /**
-     * Alias to give to the inputs or outputs.
+     * Sets the name of the input/output.
      *
-     * @param alias Alias to use.
+     * @param name Name of the input/output.
      */
-    void to(String alias);
+    void setName(String name);
+
+    /**
+     * Return the {@link IProcess} of the input/output.
+     *
+     * @return The {@link IProcess} of the input/output.
+     */
+    IProcess getProcess();
+
+    /**
+     * Sets the {@link IProcess} of the input/output.
+     *
+     * @param process The {@link IProcess} of the input/output.
+     */
+    void setProcess(IProcess process);
+
+    /**
+     * Sets the type of the input/output.
+     *
+     * @param type The type of the input/output.
+     */
+    void setType(Class type);
+
+    /**
+     * Return the type of the input/output.
+     *
+     * @return The type of the input/output.
+     */
+    Class getType();
+
+    /**
+     * Sets the title of the input/output.
+     *
+     * @param title The title of the input/output.
+     */
+    IInOutPut title(String title);
+
+    /**
+     * Sets the description of the input/output.
+     *
+     * @param description The description of the input/output.
+     */
+    IInOutPut description(String description);
+
+    /**
+     * Sets the keywords of the input/output.
+     *
+     * @param keywords The keywords of the input/output.
+     */
+    IInOutPut keywords(String[] keywords);
 }

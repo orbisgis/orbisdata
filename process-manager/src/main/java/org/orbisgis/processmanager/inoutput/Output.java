@@ -36,39 +36,27 @@
  */
 package org.orbisgis.processmanager.inoutput;
 
+import org.orbisgis.processmanagerapi.inoutput.IOutput;
 import org.orbisgis.processmanagerapi.IProcess;
-import org.orbisgis.processmanagerapi.IProcessInOutPut;
 
 /**
- * Implementation of the {@link IProcessInOutPut} interface.
+ * Implementation of the {@link IOutput} interface.
  *
  * @author Erwan Bocher (CNRS)
  * @author Sylvain PALOMINOS (UBS 2019)
  */
-public class ProcessInOutPut implements IProcessInOutPut {
-    /** {@link IProcess} of the input/output. */
-    private IProcess process;
-    /** Name of the input/output. */
-    private String name;
-
+public class Output extends InOutPut implements IOutput {
     /**
      * Main constructor.
      *
      * @param process {@link IProcess} of the input/output.
-     * @param name Name of the input/output.
+     * @param name    Name of the input/output.
      */
-    public ProcessInOutPut(IProcess process, String name){
-        this.process = process;
-        this.name = name;
+    public Output(IProcess process, String name) {
+        super(process, name);
     }
 
-    public String getName(){
-        return name;
+    public static Output call() {
+        return new Output(null, null);
     }
-
-    public IProcess getProcess() {
-        return process;
-    }
-
-    @Override public String toString(){return name+":"+process.getIdentifier();}
 }

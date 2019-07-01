@@ -312,9 +312,11 @@ public class Process implements IProcess, GroovyObject {
 
     @Override
     public Object getProperty(String propertyName) {
-        if(inputs.stream().anyMatch(iInput -> iInput.getName().equals(propertyName)) ||
-                outputs.stream().anyMatch(iOutput -> iOutput.getName().equals(propertyName))){
-            return new InOutPut(this, propertyName);
+        if(inputs.stream().anyMatch(iInput -> iInput.getName().equals(propertyName))){
+            return new Input(this, propertyName);
+        }
+        if(outputs.stream().anyMatch(iOutput -> iOutput.getName().equals(propertyName))){
+            return new Output(this, propertyName);
         }
         return metaClass.getProperty(this, propertyName);
     }

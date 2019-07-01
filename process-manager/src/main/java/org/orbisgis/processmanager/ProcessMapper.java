@@ -38,7 +38,6 @@ package org.orbisgis.processmanager;
 
 import org.orbisgis.processmanager.check.CheckDataBuilder;
 import org.orbisgis.processmanager.check.ProcessCheck;
-import org.orbisgis.processmanager.inoutput.InOutPut;
 import org.orbisgis.processmanager.inoutput.Input;
 import org.orbisgis.processmanager.inoutput.Output;
 import org.orbisgis.processmanagerapi.ILinker;
@@ -129,6 +128,39 @@ public class ProcessMapper implements IProcessMapper {
         });
     }
 
+    private void collectInput(IInput input, IProcess process, List<IInOutPut> collection){
+        boolean isBetween = false;
+        for (Map.Entry<IInOutPut, IInOutPut> entry : inputOutputMap.entrySet()) {
+            if (entry.getKey().getName().equals(input.getName()) &&
+                    entry.getKey().getProcess().getIdentifier().equals(process.getIdentifier())) {
+                isBetween = true;
+            }
+        }
+        if (!isBetween) {
+            if(inputs.stream().noneMatch(iInput -> iInput.getName().equals(input.getName()) &&
+                    iInput.getProcess().getIdentifier().equals(input.getProcess().getIdentifier()))) {
+                inputs.add(input);
+            }
+            collection.add(new Input(process, input.getName()));
+        }
+    }
+
+    private void collectOutput(IOutput output, IProcess process){
+        boolean isBetween = false;
+        for(Map.Entry<IInOutPut, IInOutPut> entry : inputOutputMap.entrySet()) {
+            if (entry.getValue().getName().equals(output.getName()) &&
+                    entry.getValue().getProcess().getIdentifier().equals(process.getIdentifier())) {
+                isBetween = true;
+            }
+        }
+        if (!isBetween) {
+            if(outputs.stream().noneMatch(iOutput -> iOutput.getName().equals(output.getName()) &&
+                    iOutput.getProcess().getIdentifier().equals(output.getProcess().getIdentifier()))) {
+                outputs.add(output);
+            }
+        }
+    }
+
     /**
      * Collect all the not linked inputs/outputs to set the {@link ProcessMapper} inputs/outputs.
      *
@@ -138,38 +170,9 @@ public class ProcessMapper implements IProcessMapper {
         List<IInOutPut> availableIn = new ArrayList<>();
         for (IProcess process : processList) {
             if(process.getInputs() != null) {
-                process.getInputs().forEach(key -> {
-                    boolean isBetween = false;
-                    for (Map.Entry<IInOutPut, IInOutPut> entry : inputOutputMap.entrySet()) {
-                        if (entry.getKey().getName().equals(key.getName()) &&
-                                entry.getKey().getProcess().getIdentifier().equals(process.getIdentifier())) {
-                            isBetween = true;
-                        }
-                    }
-                    if (!isBetween) {
-                        if(inputs.stream().noneMatch(iInput -> iInput.getName().equals(key.getName()) &&
-                                iInput.getProcess().getIdentifier().equals(key.getProcess().getIdentifier()))) {
-                            inputs.add(key);
-                        }
-                        availableIn.add(new InOutPut(process, key.getName()));
-                    }
-                });
+                process.getInputs().forEach(input -> collectInput(input, process, availableIn));
             }
-            process.getOutputs().forEach(key -> {
-                boolean isBetween = false;
-                for(Map.Entry<IInOutPut, IInOutPut> entry : inputOutputMap.entrySet()) {
-                    if (entry.getValue().getName().equals(key.getName()) &&
-                            entry.getValue().getProcess().getIdentifier().equals(process.getIdentifier())) {
-                        isBetween = true;
-                    }
-                }
-                if (!isBetween) {
-                    if(outputs.stream().noneMatch(iOutput -> iOutput.getName().equals(key.getName()) &&
-                            iOutput.getProcess().getIdentifier().equals(key.getProcess().getIdentifier()))) {
-                        outputs.add(key);
-                    }
-                }
-            });
+            process.getOutputs().forEach(output -> collectOutput(output, process));
         }
         return availableIn;
     }
@@ -488,7 +491,7 @@ public class ProcessMapper implements IProcessMapper {
         Iterator<Map.Entry<String, IProcess>> it = map.entrySet().iterator();
         Map.Entry<String, IProcess> inputEntry = it.next();
         Map.Entry<String, IProcess> outputEntry = it.next();
-        link(new InOutPut(inputEntry.getValue(), inputEntry.getKey()))
-                .to(new InOutPut(outputEntry.getValue(), outputEntry.getKey()));
+        link(new Input(inputEntry.getValue(), inputEntry.getKey()))
+                .to(new Output(outputEntry.getValue(), outputEntry.getKey()));
     }
 }

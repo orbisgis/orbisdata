@@ -45,16 +45,19 @@ import org.orbisgis.processmanagerapi.inoutput.IInOutPut;
  * @author Erwan Bocher (CNRS)
  * @author Sylvain PALOMINOS (UBS 2019)
  */
-public class InOutPut implements IInOutPut {
+public abstract class InOutPut implements IInOutPut {
     /** {@link IProcess} of the input/output. */
     private IProcess process;
     /** Name of the input/output. */
     private String name;
+    /** Type of the input/output. */
     private Class type;
+    /** Title of the input/output. */
     private String title;
+    /** Description of the input/output. */
     private String description;
+    /** Keywords of the input/output. */
     private String[] keywords;
-    private String version;
 
     /**
      * Main constructor.
@@ -92,15 +95,30 @@ public class InOutPut implements IInOutPut {
     }
 
     @Override
+    public String getTitle() {
+        return title;
+    }
+
+    @Override
     public IInOutPut setDescription(String description) {
         this.description = description;
         return this;
     }
 
     @Override
+    public String getDescription() {
+        return description;
+    }
+
+    @Override
     public IInOutPut setKeywords(String[] keywords) {
         this.keywords = keywords;
         return this;
+    }
+
+    @Override
+    public String[] getKeyWords() {
+        return keywords;
     }
 
     @Override

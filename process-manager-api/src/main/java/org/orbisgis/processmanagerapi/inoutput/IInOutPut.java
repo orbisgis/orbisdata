@@ -96,6 +96,13 @@ public interface IInOutPut {
     IInOutPut setTitle(String title);
 
     /**
+     * Return the title or the input/output.
+     *
+     * @return The title of the input/output.
+     */
+    String getTitle();
+
+    /**
      * Sets the description of the input/output.
      *
      * @param description The description of the input/output.
@@ -103,9 +110,23 @@ public interface IInOutPut {
     IInOutPut setDescription(String description);
 
     /**
+     * Return the description of the input/output.
+     *
+     * @return The description of the input/output.
+     */
+    String getDescription();
+
+    /**
      * Sets the keywords of the input/output.
      *
      * @param keywords The keywords of the input/output.
      */
     IInOutPut setKeywords(String[] keywords);
+
+    /**
+     * Return the keywords of the input/output.
+     *
+     * @return The keywords of the input/output.
+     */
+    String[] getKeyWords();
 }

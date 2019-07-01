@@ -53,6 +53,11 @@ public interface IInput extends IInOutPut {
      */
     IInOutPut optional(Object dfltValue);
 
+    /**
+     * Return true if the input is optional, false otherwise.
+     *
+     * @return True if the input is optional, false otherwise.
+     */
     boolean isOptional();
 
     /**
@@ -62,7 +67,17 @@ public interface IInput extends IInOutPut {
      */
     IInOutPut mandatory();
 
+    /**
+     * Return true if the input is mandatory, false otherwise.
+     *
+     * @return True if the input is mandatory, false otherwise.
+     */
     boolean isMandatory();
 
+    /**
+     * Return the default value of the input. If mandatory, return null.
+     *
+     * @return The default value of the input.
+     */
     Object getDefaultValue();
 }

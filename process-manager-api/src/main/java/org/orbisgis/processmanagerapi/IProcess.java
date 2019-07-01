@@ -122,4 +122,18 @@ public interface IProcess {
      * @return A {@link Map} with the output name as key and its {@link Class} as value.
      */
     List<IOutput> getOutputs();
+
+    /**
+     * Enumeration of the available WPS for conversion.
+     */
+    enum WpsType{GeoServer}
+
+    /**
+     * Return the WPS script of the given type.
+     *
+     * @param type Type of the WPS script to write.
+     *
+     * @return The Wps script.
+     */
+    String toWps(WpsType type);
 }

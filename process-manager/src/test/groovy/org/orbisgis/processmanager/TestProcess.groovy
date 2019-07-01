@@ -450,4 +450,3 @@ class TestProcess {
         assertEquals "tata", mapper.getResults().outB1
     }
 }
-

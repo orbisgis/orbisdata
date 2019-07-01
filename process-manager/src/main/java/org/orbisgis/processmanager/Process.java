@@ -40,6 +40,7 @@ import groovy.lang.Closure;
 import groovy.lang.GroovyObject;
 import groovy.lang.MetaClass;
 import org.codehaus.groovy.runtime.InvokerHelper;
+import org.codehaus.groovy.runtime.metaclass.ClosureMetaClass;
 import org.orbisgis.processmanager.inoutput.Input;
 import org.orbisgis.processmanager.inoutput.Output;
 import org.orbisgis.processmanagerapi.IProcess;
@@ -216,6 +217,16 @@ public class Process implements IProcess, GroovyObject {
                 .toArray();
     }
 
+    private Closure getClosure(LinkedHashMap<String, Object> inputDataMap){
+        if(inputs != null && inputs.size() != 0) {
+            Closure cl = getClosureWithCurry(inputDataMap);
+            if(cl != null){
+                return cl;
+            }
+        }
+        return closure;
+    }
+
     @Override
     public boolean execute(LinkedHashMap<String, Object> inputDataMap) {
         if(closure == null){
@@ -230,11 +241,8 @@ public class Process implements IProcess, GroovyObject {
         }
         Object result;
         try {
-            if(inputs != null && inputs.size() != 0) {
-                Closure cl = getClosureWithCurry(inputDataMap);
-                if(cl == null){
-                    return false;
-                }
+            Closure cl = getClosure(inputDataMap);
+            if(cl.getMaximumNumberOfParameters() > 0) {
                 result = cl.call(getClosureArgs(inputDataMap));
             }
             else {
@@ -302,6 +310,61 @@ public class Process implements IProcess, GroovyObject {
     @Override
     public List<IOutput> getOutputs() {
         return outputs;
+    }
+
+    @Override
+    public String toWps(WpsType type) {
+        switch(type){
+            case GeoServer:
+                return toGeoServer();
+            default:
+                return null;
+        }
+    }
+
+    private String toGeoServer(){
+        StringBuilder builder = new StringBuilder();
+        if(title != null) {
+            builder.append("title = '").append(this.title).append("'\n");
+        }
+        if(description != null) {
+            builder.append("description = '").append(this.description).append("'\n");
+        }
+        builder.append("\n");
+        if(!inputs.isEmpty()) {
+            builder.append("inputs = [\n");
+            for (int i = 0; i < inputs.size(); i++) {
+                IInput input = inputs.get(i);
+                builder.append("\t").append(input.getName()).append(": [name: '").append(input.getName()).append("'");
+                if (input.getTitle() != null) {
+                    builder.append(", title: ").append(input.getTitle());
+                }
+                builder.append(", type: ").append(input.getType().getTypeName()).append(".class]");
+                if (i < inputs.size() - 1) {
+                    builder.append(",\n");
+                }
+            }
+            builder.append("]\n");
+        }
+        if(!outputs.isEmpty()) {
+            builder.append("outputs = [\n");
+            for (int i = 0; i < outputs.size(); i++) {
+                IOutput output = outputs.get(i);
+                builder.append("\t").append(output.getName()).append(": [name: '").append(output.getName()).append("'");
+                if (output.getTitle() != null) {
+                    builder.append(", title: ").append(output.getTitle());
+                }
+                builder.append(", type: ").append(output.getType().getTypeName()).append(".class]");
+                if(i<outputs.size()-1) {
+                    builder.append(",\n");
+                }
+            }
+            builder.append("]\n");
+        }
+        builder.append("def run(inputs) {");
+        builder.append(closure.getMetaClass().getClassNode().getDeclaredMethods("doCall").get(0).getCode().getText());
+        builder.append("}");
+        return builder.toString();
     }
 
     @Override

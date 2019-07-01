@@ -253,6 +253,12 @@ public class ProcessMapper implements IProcessMapper {
     }
 
     @Override
+    public String toWps(WpsType type) {
+        LOGGER.error("Conversion to a WPS script not supported for Mappers");
+        return null;
+    }
+
+    @Override
     public IProcess newInstance() {
         ProcessMapper mapper = new ProcessMapper();
         mapper.aliases = aliases;

@@ -107,5 +107,6 @@ public class IProcessMapperTest {
         @Override public Map<String, Object> getResults() {return null;}
         @Override public List<IInput> getInputs() {return null;}
         @Override public List<IOutput> getOutputs() {return null;}
+        @Override public String toWps(WpsType type) {return null;}
     }
 }

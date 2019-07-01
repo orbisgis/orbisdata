@@ -43,10 +43,12 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.orbisgis.processmanager.inoutput.Input;
 import org.orbisgis.processmanager.inoutput.Output;
+import org.orbisgis.processmanagerapi.IProcess;
 
 import java.util.LinkedHashMap;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.orbisgis.processmanagerapi.IProcess.WpsType.GeoServer;
 
 /**
  * Test class dedicated to {@link Process} class.

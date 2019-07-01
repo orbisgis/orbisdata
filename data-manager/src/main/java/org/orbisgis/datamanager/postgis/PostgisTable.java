@@ -43,8 +43,6 @@ import org.orbisgis.datamanager.JdbcTable;
 import org.orbisgis.datamanagerapi.dataset.DataBaseType;
 import org.orbisgis.datamanagerapi.dataset.ISpatialTable;
 import org.orbisgis.datamanagerapi.dataset.ITable;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * @author Erwan Bocher (CNRS)

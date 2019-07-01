@@ -34,31 +34,50 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.processmanagerapi;
-
-import org.orbisgis.processmanagerapi.inoutput.IInOutPut;
+package org.orbisgis.processmanagerapi.inoutput;
 
 /**
- * This interface declare the methods used to link inputs, outputs and aliases. The first element to link is given
- * through the constructor, the second through the methods {@link ILinker#to(String)} or
- * {@link ILinker#to(IInOutPut[])}.
+ * This interface defines the methods dedicated the wrapping of input.
  *
  * @author Erwan Bocher (CNRS)
  * @author Sylvain PALOMINOS (UBS 2019)
  */
-public interface ILinker {
+public interface IInput extends IInOutPut {
 
     /**
-     * Second element to link.
+     * Make the {@link IInput} optional.
      *
-     * @param inOutPuts Inputs or Outputs to link.
+     * @param dfltValue Default value to use if no value is provided.
+     *
+     * @return The {@link IInput} to continue its configuration.
      */
-    void to(IInOutPut... inOutPuts);
+    IInOutPut optional(Object dfltValue);
 
     /**
-     * Alias to give to the inputs or outputs.
+     * Return true if the input is optional, false otherwise.
      *
-     * @param alias Alias to use.
+     * @return True if the input is optional, false otherwise.
      */
-    void to(String alias);
+    boolean isOptional();
+
+    /**
+     * Make the {@link IInput} mandatory.
+     *
+     * @return The {@link IInput} to continue its configuration.
+     */
+    IInOutPut mandatory();
+
+    /**
+     * Return true if the input is mandatory, false otherwise.
+     *
+     * @return True if the input is mandatory, false otherwise.
+     */
+    boolean isMandatory();
+
+    /**
+     * Return the default value of the input. If mandatory, return null.
+     *
+     * @return The default value of the input.
+     */
+    Object getDefaultValue();
 }

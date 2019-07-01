@@ -38,6 +38,7 @@ package org.orbisgis.processmanagerapi;
 
 import org.orbisgis.processmanagerapi.check.ICheckDataBuilder;
 import org.orbisgis.processmanagerapi.check.IProcessCheck;
+import org.orbisgis.processmanagerapi.inoutput.IInOutPut;
 
 import java.util.UUID;
 
@@ -56,7 +57,7 @@ public interface IProcessMapper extends IProcess {
      *
      * @return A {@link ILinker} object which will do the link.
      */
-    ILinker link(IProcessInOutPut... inOutPuts);
+    ILinker link(IInOutPut... inOutPuts);
 
     /**
      * Add a {@link IProcessCheck} before the execution of the given {@link IProcess}.

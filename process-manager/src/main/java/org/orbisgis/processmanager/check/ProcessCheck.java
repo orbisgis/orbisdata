@@ -38,8 +38,8 @@ package org.orbisgis.processmanager.check;
 
 import groovy.lang.Closure;
 import org.orbisgis.processmanagerapi.IProcess;
-import org.orbisgis.processmanagerapi.IProcessInOutPut;
 import org.orbisgis.processmanagerapi.check.IProcessCheck;
+import org.orbisgis.processmanagerapi.inoutput.IInOutPut;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -59,7 +59,7 @@ public class ProcessCheck implements IProcessCheck {
     /** {@link IProcess} concerned by the check. */
     private IProcess process;
     /** Inputs/outputs to use for the check. */
-    private LinkedList<IProcessInOutPut> inOutPuts = new LinkedList<>();
+    private LinkedList<IInOutPut> inOutPuts = new LinkedList<>();
     /** {@link Closure} to perform for the check. */
     private Closure cl;
     /** Action to do on fail. */
@@ -87,8 +87,8 @@ public class ProcessCheck implements IProcessCheck {
             fail();
         }
         LinkedList<Object> dataList = new LinkedList<>();
-        for(IProcessInOutPut inOutPut : inOutPuts){
-            if(inOutPut.getProcess().getOutputs().containsKey(inOutPut.getName())){
+        for(IInOutPut inOutPut : inOutPuts){
+            if(inOutPut.getProcess().getOutputs().stream().anyMatch(output -> output.getName().equals(inOutPut.getName()))){
                 dataList.push(inOutPut.getProcess().getResults().get(inOutPut.getName()));
             }
             else{
@@ -125,8 +125,8 @@ public class ProcessCheck implements IProcessCheck {
     @Override
     public void setInOutputs(Object... data) {
         for(Object obj : data){
-            if(obj instanceof IProcessInOutPut){
-                this.inOutPuts.add((IProcessInOutPut) obj);
+            if(obj instanceof IInOutPut){
+                this.inOutPuts.add((IInOutPut) obj);
             }
             else{
                 LOGGER.error("The inOutPuts for the process check should be process input or output.");

@@ -36,7 +36,11 @@
  */
 package org.orbisgis.processmanagerapi;
 
+import org.orbisgis.processmanagerapi.inoutput.IInput;
+import org.orbisgis.processmanagerapi.inoutput.IOutput;
+
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -110,12 +114,12 @@ public interface IProcess {
      *
      * @return A {@link Map} with the input name as key and its {@link Class} as value.
      */
-    Map<String, Class> getInputs();
+    List<IInput> getInputs();
 
     /**
      * Return a {@link Map} with the output name as key and its {@link Class} as value.
      *
      * @return A {@link Map} with the output name as key and its {@link Class} as value.
      */
-    Map<String, Class> getOutputs();
+    List<IOutput> getOutputs();
 }

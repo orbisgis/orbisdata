@@ -47,7 +47,7 @@ import static org.junit.jupiter.api.Assertions.*
 
 class TestProcess {
 
-    private static final IProcessManager processManager = ProcessManager.getProcessManager()
+    private static final IProcessManager processManager = ProcessManager.processManager
 
     @Test
     void testProcessCreation(){
@@ -71,8 +71,8 @@ class TestProcess {
         assertEquals "simple process", process.title
         assertEquals "description", process.description
         assertArrayEquals arr, process.keywords
-        assertEquals([inputA : String, inputB : String], process.inputs)
-        assertEquals([outputA : String], process.outputs)
+        assertEquals 2, process.inputs.size()
+        assertEquals 1, process.outputs.size()
         assertEquals "version", process.version
 
         process = processManager.create({
@@ -89,8 +89,8 @@ class TestProcess {
         assertEquals "simple process", process.title
         assertEquals "description", process.description
         assertArrayEquals arr, process.keywords
-        assertEquals([inputA : String, inputB : String], process.inputs)
-        assertEquals([outputA : String], process.outputs)
+        assertEquals 2, process.inputs.size()
+        assertEquals 1, process.outputs.size()
         assertEquals "version", process.version
     }
 

@@ -38,8 +38,12 @@ package org.orbisgis.processmanagerapi;
 
 import org.junit.jupiter.api.Test;
 import org.orbisgis.processmanagerapi.check.ICheckDataBuilder;
+import org.orbisgis.processmanagerapi.inoutput.IInOutPut;
+import org.orbisgis.processmanagerapi.inoutput.IInput;
+import org.orbisgis.processmanagerapi.inoutput.IOutput;
 
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -94,14 +98,14 @@ public class IProcessMapperTest {
      */
     private class DummyProcessMapper implements IProcessMapper {
 
-        @Override public ILinker link(IProcessInOutPut... inOutPuts) {return null;}
+        @Override public ILinker link(IInOutPut... inOutPuts) {return null;}
         @Override public ICheckDataBuilder before(IProcess process) {return null;}
         @Override public ICheckDataBuilder after(IProcess process) {return null;}
         @Override public IProcess newInstance() {return null;}
         @Override public boolean execute(LinkedHashMap<String, Object> inputDataMap) {return false;}
         @Override public String getTitle() {return null;}
         @Override public Map<String, Object> getResults() {return null;}
-        @Override public Map<String, Class> getInputs() {return null;}
-        @Override public Map<String, Class> getOutputs() {return null;}
+        @Override public List<IInput> getInputs() {return null;}
+        @Override public List<IOutput> getOutputs() {return null;}
     }
 }

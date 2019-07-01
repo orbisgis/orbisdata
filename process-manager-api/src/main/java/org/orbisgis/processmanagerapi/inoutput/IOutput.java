@@ -34,27 +34,13 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.processmanagerapi;
+package org.orbisgis.processmanagerapi.inoutput;
 
 /**
- * This interface defines the methods dedicated the wrapping of input/output.
+ * This interface defines the methods dedicated the wrapping of output.
  *
  * @author Erwan Bocher (CNRS)
  * @author Sylvain PALOMINOS (UBS 2019)
  */
-public interface IProcessInOutPut {
-
-    /**
-     * Return the input/output name.
-     *
-     * @return The input/output name.
-     */
-    String getName();
-
-    /**
-     * Return the {@link IProcess} of the input/output.
-     *
-     * @return The {@link IProcess} of the input/output.
-     */
-    IProcess getProcess();
+public interface IOutput extends IInOutPut {
 }

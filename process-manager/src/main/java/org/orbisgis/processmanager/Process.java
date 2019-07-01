@@ -40,15 +40,16 @@ import groovy.lang.Closure;
 import groovy.lang.GroovyObject;
 import groovy.lang.MetaClass;
 import org.codehaus.groovy.runtime.InvokerHelper;
-import org.orbisgis.processmanager.inoutput.ProcessInOutPut;
+import org.orbisgis.processmanager.inoutput.Input;
+import org.orbisgis.processmanager.inoutput.Output;
 import org.orbisgis.processmanagerapi.IProcess;
+import org.orbisgis.processmanagerapi.inoutput.IInOutPut;
+import org.orbisgis.processmanagerapi.inoutput.IInput;
+import org.orbisgis.processmanagerapi.inoutput.IOutput;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * Implementation of the {@link IProcess} interface dedicated to the local creation and execution of process (no link with
@@ -69,10 +70,10 @@ public class Process implements IProcess, GroovyObject {
     private String description;
     /** List of simple keyword (one word) of the process */
     private String[] keywords;
-    /** Map of inputs with the name as key and the input class as value */
-    private LinkedHashMap<String, Class> inputs;
-    /** Map of outputs with the name as key and the input class as value */
-    private LinkedHashMap<String, Class> outputs;
+    /** List of inputs */
+    private LinkedList<IInput> inputs;
+    /** List of outputs */
+    private LinkedList<IOutput> outputs;
     /** Closure containing the code to execute on the process execution */
     private Closure closure;
     /** Map of the process Result */
@@ -110,27 +111,51 @@ public class Process implements IProcess, GroovyObject {
         this.version = version;
         this.description = description;
         this.keywords = keywords;
-        this.inputs = new LinkedHashMap<>();
+        this.inputs = new LinkedList<>();
         this.defaultValues = new HashMap<>();
         if(inputs != null) {
             for (Map.Entry<String, Object> entry : inputs.entrySet()) {
                 if( entry.getValue() instanceof Class){
-                    this.inputs.put(entry.getKey(),(Class) entry.getValue());
+                    Input input = new Input(this, entry.getKey());
+                    input.setType((Class)entry.getValue());
+                    this.inputs.add(input);
+                }
+                else if(entry.getValue() instanceof Input) {
+                    Input input = (Input)entry.getValue();
+                    input.setProcess(this);
+                    input.setName(entry.getKey());
+                    this.inputs.add(input);
+                    if(input.isOptional()) {
+                        this.defaultValues.put(entry.getKey(), input.getDefaultValue());
+                    }
                 }
                 else {
-                    this.inputs.put(entry.getKey(), entry.getValue().getClass());
+                    Input input = new Input(this, entry.getKey());
+                    input.setType(entry.getValue().getClass());
+                    input.optional(entry.getValue());
+                    this.inputs.add(input);
                     this.defaultValues.put(entry.getKey(), entry.getValue());
                 }
             }
         }
-        this.outputs = new LinkedHashMap<>();
+        this.outputs = new LinkedList<>();
         if(inputs != null) {
             for (Map.Entry<String, Object> entry : outputs.entrySet()) {
                 if( entry.getValue() instanceof Class){
-                    this.outputs.put(entry.getKey(),(Class) entry.getValue());
+                    Output output = new Output(this, entry.getKey());
+                    output.setType((Class)entry.getValue());
+                    this.outputs.add(output);
+                }
+                else if(entry.getValue() instanceof Output) {
+                    Output output = (Output)entry.getValue();
+                    output.setProcess(this);
+                    output.setName(entry.getKey());
+                    this.outputs.add(output);
                 }
                 else {
-                    this.outputs.put(entry.getKey(), entry.getValue().getClass());
+                    Output output = new Output(this, entry.getKey());
+                    output.setType(entry.getValue().getClass());
+                    this.outputs.add(output);
                 }
             }
         }
@@ -142,8 +167,10 @@ public class Process implements IProcess, GroovyObject {
 
     @Override
     public IProcess newInstance() {
-        Process process = new Process(title, description, keywords, new LinkedHashMap<>(inputs),  new LinkedHashMap<>(outputs),
+        Process process = new Process(title, description, keywords, null,  null,
                 version, closure);
+        process.inputs = this.inputs;
+        process.outputs = this.outputs;
         process.defaultValues = this.defaultValues;
         return process;
     }
@@ -159,13 +186,13 @@ public class Process implements IProcess, GroovyObject {
     private Closure getClosureWithCurry(LinkedHashMap<String, Object> inputDataMap){
         Closure cl = closure;
         int curryIndex = 0;
-        for (Map.Entry<String, Class> entry : inputs.entrySet()) {
-            if (!inputDataMap.containsKey(entry.getKey())) {
-                if(defaultValues.get(entry.getKey()) == null){
-                    LOGGER.error("The parameter " + entry.getKey() + " has no default value.");
+        for(IInput input : inputs) {
+            if (!inputDataMap.containsKey(input.getName())) {
+                if(defaultValues.get(input.getName()) == null){
+                    LOGGER.error("The parameter " + input.getName() + " has no default value.");
                     return null;
                 }
-                cl = cl.ncurry(curryIndex, defaultValues.get(entry.getKey()));
+                cl = cl.ncurry(curryIndex, defaultValues.get(input.getName()));
                 curryIndex--;
             }
             curryIndex++;
@@ -182,8 +209,8 @@ public class Process implements IProcess, GroovyObject {
      */
     private Object[] getClosureArgs(LinkedHashMap<String, Object> inputDataMap){
         return inputs
-                .keySet()
                 .stream()
+                .map(IInOutPut::getName)
                 .filter(inputDataMap::containsKey)
                 .map(inputDataMap::get)
                 .toArray();
@@ -224,8 +251,8 @@ public class Process implements IProcess, GroovyObject {
         }
         Map<String, Object> map = (Map<String, Object>) result;
         boolean isResultValid = true;
-        for (Map.Entry<String, Class> entry : outputs.entrySet()) {
-            isResultValid = map.containsKey(entry.getKey());
+        for(IOutput output : outputs) {
+            isResultValid = map.containsKey(output.getName());
         }
         LOGGER.debug("End of the execution of '" + this.getTitle() + "'.");
         if(!isResultValid){
@@ -268,12 +295,12 @@ public class Process implements IProcess, GroovyObject {
     }
 
     @Override
-    public Map<String, Class> getInputs() {
+    public List<IInput> getInputs() {
         return inputs;
     }
 
     @Override
-    public Map<String, Class> getOutputs() {
+    public List<IOutput> getOutputs() {
         return outputs;
     }
 
@@ -284,8 +311,11 @@ public class Process implements IProcess, GroovyObject {
 
     @Override
     public Object getProperty(String propertyName) {
-        if(inputs.keySet().contains(propertyName) || outputs.keySet().contains(propertyName)){
-            return new ProcessInOutPut(this, propertyName);
+        if(inputs.stream().anyMatch(iInput -> iInput.getName().equals(propertyName))){
+            return new Input(this, propertyName);
+        }
+        if(outputs.stream().anyMatch(iOutput -> iOutput.getName().equals(propertyName))){
+            return new Output(this, propertyName);
         }
         return metaClass.getProperty(this, propertyName);
     }

@@ -58,6 +58,7 @@ public class ProcessTest {
 
     private static Process miniProcess;
     private static Process fullProcess;
+    private static ProcessMapper mapper;
 
     @BeforeAll
     static void beforeAll(){
@@ -96,6 +97,9 @@ public class ProcessTest {
         outputs.put("out3", String.class);
 
         fullProcess = new Process("title", "description", new String[]{"test", "process"}, inputs, outputs, "1.0.0", cl2);
+
+        mapper = new ProcessMapper();
+        mapper.link(fullProcess.getInputs().get(0)).to("in1");
     }
 
     @Test
@@ -164,5 +168,45 @@ public class ProcessTest {
         assertEquals("5698toto[t, a, t, a]3.56", fullProcess.getResults().get("out1").toString());
         assertEquals(4, fullProcess.getResults().get("out2"));
         assertEquals("toto", fullProcess.getResults().get("out3"));
+
+
+
+        assertTrue(mapper.execute(data));
+
+        assertNotNull(mapper.getInputs());
+        assertEquals(4, mapper.getInputs().size());
+
+        assertEquals(5698, mapper.getInputs().get(0).getDefaultValue());
+        assertEquals("in1", mapper.getInputs().get(0).getName());
+        assertEquals(Integer.class, mapper.getInputs().get(0).getType());
+
+        assertNull(mapper.getInputs().get(1).getDefaultValue());
+        assertEquals("in2", mapper.getInputs().get(1).getName());
+        assertEquals(String.class, mapper.getInputs().get(1).getType());
+
+        assertNull(mapper.getInputs().get(2).getDefaultValue());
+        assertEquals("in3", mapper.getInputs().get(2).getName());
+        assertEquals(String[].class, mapper.getInputs().get(2).getType());
+
+        assertEquals(3.56D, mapper.getInputs().get(3).getDefaultValue());
+        assertEquals("in4", mapper.getInputs().get(3).getName());
+        assertEquals(Double.class, mapper.getInputs().get(3).getType());
+
+        assertNotNull(mapper.getOutputs());
+        assertEquals(3, mapper.getOutputs().size());
+
+        assertEquals("out1", mapper.getOutputs().get(0).getName());
+        assertEquals(String[].class, mapper.getOutputs().get(0).getType());
+
+        assertEquals("out2", mapper.getOutputs().get(1).getName());
+        assertEquals(int.class, mapper.getOutputs().get(1).getType());
+
+        assertEquals("out3", mapper.getOutputs().get(2).getName());
+        assertEquals(String.class, mapper.getOutputs().get(2).getType());
+
+        assertEquals(3, mapper.getResults().size());
+        assertEquals("5698toto[t, a, t, a]3.56", mapper.getResults().get("out1").toString());
+        assertEquals(4, mapper.getResults().get("out2"));
+        assertEquals("toto", mapper.getResults().get("out3"));
     }
 }

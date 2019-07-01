@@ -120,6 +120,13 @@ public class ProcessMapper implements IProcessMapper {
                 processList.add(output.getProcess());
             }
         });
+        aliases.forEach((alias, iInOutPuts) -> {
+            iInOutPuts.forEach(iInOutPut -> {
+                if (!processList.contains(iInOutPut.getProcess())) {
+                    processList.add(iInOutPut.getProcess());
+                }
+            });
+        });
     }
 
     /**
@@ -288,7 +295,10 @@ public class ProcessMapper implements IProcessMapper {
                         }
                     }
                 });
-                processInData.put(in.getName(), data[0]);
+                //Do not add null value for optional input
+                if(!in.isOptional() && data[0] != null) {
+                    processInData.put(in.getName(), data[0]);
+                }
             }
         }
         return processInData;

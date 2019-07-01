@@ -47,7 +47,7 @@ public class Html extends CustomPrinter {
     /**
      * Main constructor.
      *
-     * @param builder StringBuilder used for building the string
+     * @param builder {@link StringBuilder} used for building the string
      */
     public Html(StringBuilder builder) {
         super(builder);

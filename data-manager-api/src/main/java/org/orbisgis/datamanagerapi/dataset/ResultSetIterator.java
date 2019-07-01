@@ -86,7 +86,7 @@ public class ResultSetIterator implements Iterator<Object> {
         if(resultSet == null) {
             return false;
         }
-        int row = 0;
+        int row;
         try {
             row = resultSet.getRow();
         } catch (SQLException e) {

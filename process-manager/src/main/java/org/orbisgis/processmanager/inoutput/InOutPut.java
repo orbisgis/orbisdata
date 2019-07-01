@@ -51,6 +51,10 @@ public class InOutPut implements IInOutPut {
     /** Name of the input/output. */
     private String name;
     private Class type;
+    private String title;
+    private String description;
+    private String[] keywords;
+    private String version;
 
     /**
      * Main constructor.
@@ -68,8 +72,8 @@ public class InOutPut implements IInOutPut {
     }
 
     @Override
-    public void setName() {
-
+    public void setName(String name) {
+        this.name = name;
     }
 
     public IProcess getProcess() {
@@ -78,37 +82,31 @@ public class InOutPut implements IInOutPut {
 
     @Override
     public void setProcess(IProcess process) {
-
+        this.process = process;
     }
 
     @Override
-    public IInOutPut optional() {
+    public IInOutPut setTitle(String title) {
+        this.title = title;
         return this;
     }
 
     @Override
-    public IInOutPut mandatory() {
+    public IInOutPut setDescription(String description) {
+        this.description = description;
         return this;
     }
 
     @Override
-    public IInOutPut title(String title) {
+    public IInOutPut setKeywords(String[] keywords) {
+        this.keywords = keywords;
         return this;
     }
 
     @Override
-    public IInOutPut description(String description) {
-        return this;
-    }
-
-    @Override
-    public IInOutPut keywords(String[] keywords) {
-        return this;
-    }
-
-    @Override
-    public void setType(Class type) {
+    public IInOutPut setType(Class type) {
         this.type = type;
+        return this;
     }
 
     @Override

@@ -36,8 +36,8 @@
  */
 package org.orbisgis.processmanager.inoutput;
 
-import org.orbisgis.processmanagerapi.inoutput.IInput;
 import org.orbisgis.processmanagerapi.IProcess;
+import org.orbisgis.processmanagerapi.inoutput.IInput;
 
 /**
  * Implementation of the {@link IInput} interface.
@@ -46,6 +46,8 @@ import org.orbisgis.processmanagerapi.IProcess;
  * @author Sylvain PALOMINOS (UBS 2019)
  */
 public class Input extends InOutPut implements IInput {
+
+    private Object dfltValue;
 
     /**
      * Main constructor.
@@ -59,5 +61,56 @@ public class Input extends InOutPut implements IInput {
 
     public static Input call() {
         return new Input(null, null);
+    }
+
+    @Override
+    public Input optional(Object dfltValue) {
+        this.dfltValue = dfltValue;
+        return this;
+    }
+
+    @Override
+    public boolean isOptional() {
+        return dfltValue != null;
+    }
+
+    @Override
+    public Object getDefaultValue(){
+        return dfltValue;
+    }
+
+    @Override
+    public Input mandatory() {
+        dfltValue = null;
+        return this;
+    }
+
+    @Override
+    public boolean isMandatory() {
+        return dfltValue == null;
+    }
+
+    @Override
+    public Input setTitle(String title) {
+        super.setTitle(title);
+        return this;
+    }
+
+    @Override
+    public Input setDescription(String description) {
+        super.setDescription(description);
+        return this;
+    }
+
+    @Override
+    public Input setKeywords(String[] keywords) {
+        super.setKeywords(keywords);
+        return this;
+    }
+
+    @Override
+    public Input setType(Class type) {
+        super.setType(type);
+        return this;
     }
 }

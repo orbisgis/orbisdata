@@ -39,9 +39,9 @@ package org.orbisgis.processmanager;
 import groovy.lang.Closure;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.orbisgis.processmanagerapi.inoutput.IInOutPut;
 import org.orbisgis.processmanagerapi.IProcessManager;
 import org.orbisgis.processmanagerapi.IProcessMapper;
+import org.orbisgis.processmanagerapi.inoutput.IInOutPut;
 
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -50,7 +50,7 @@ import java.util.Map;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
- * Test class dedicated to {@link ProcessMapper} interface.
+ * Test class dedicated to {@link ProcessMapper} class.
  *
  * @author Erwan Bocher (CNRS)
  * @author Sylvain PALOMINOS (UBS 2019)

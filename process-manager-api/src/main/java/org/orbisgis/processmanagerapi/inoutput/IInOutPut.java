@@ -79,7 +79,7 @@ public interface IInOutPut {
      *
      * @param type The type of the input/output.
      */
-    void setType(Class type);
+    IInOutPut setType(Class type);
 
     /**
      * Return the type of the input/output.
@@ -93,19 +93,19 @@ public interface IInOutPut {
      *
      * @param title The title of the input/output.
      */
-    IInOutPut title(String title);
+    IInOutPut setTitle(String title);
 
     /**
      * Sets the description of the input/output.
      *
      * @param description The description of the input/output.
      */
-    IInOutPut description(String description);
+    IInOutPut setDescription(String description);
 
     /**
      * Sets the keywords of the input/output.
      *
      * @param keywords The keywords of the input/output.
      */
-    IInOutPut keywords(String[] keywords);
+    IInOutPut setKeywords(String[] keywords);
 }

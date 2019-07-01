@@ -36,8 +36,8 @@
  */
 package org.orbisgis.processmanager.inoutput;
 
-import org.orbisgis.processmanagerapi.inoutput.IOutput;
 import org.orbisgis.processmanagerapi.IProcess;
+import org.orbisgis.processmanagerapi.inoutput.IOutput;
 
 /**
  * Implementation of the {@link IOutput} interface.
@@ -58,5 +58,29 @@ public class Output extends InOutPut implements IOutput {
 
     public static Output call() {
         return new Output(null, null);
+    }
+
+    @Override
+    public Output setTitle(String title) {
+        super.setTitle(title);
+        return this;
+    }
+
+    @Override
+    public Output setDescription(String description) {
+        super.setDescription(description);
+        return this;
+    }
+
+    @Override
+    public Output setKeywords(String[] keywords) {
+        super.setKeywords(keywords);
+        return this;
+    }
+
+    @Override
+    public Output setType(Class type) {
+        super.setType(type);
+        return this;
     }
 }

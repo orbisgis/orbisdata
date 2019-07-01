@@ -43,10 +43,10 @@ import org.codehaus.groovy.runtime.InvokerHelper;
 import org.orbisgis.processmanager.inoutput.InOutPut;
 import org.orbisgis.processmanager.inoutput.Input;
 import org.orbisgis.processmanager.inoutput.Output;
+import org.orbisgis.processmanagerapi.IProcess;
 import org.orbisgis.processmanagerapi.inoutput.IInOutPut;
 import org.orbisgis.processmanagerapi.inoutput.IInput;
 import org.orbisgis.processmanagerapi.inoutput.IOutput;
-import org.orbisgis.processmanagerapi.IProcess;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -121,8 +121,20 @@ public class Process implements IProcess, GroovyObject {
                     input.setType((Class)entry.getValue());
                     this.inputs.add(input);
                 }
+                else if(entry.getValue() instanceof Input) {
+                    Input input = (Input)entry.getValue();
+                    input.setProcess(this);
+                    input.setName(entry.getKey());
+                    this.inputs.add(input);
+                    if(input.isOptional()) {
+                        this.defaultValues.put(entry.getKey(), input.getDefaultValue());
+                    }
+                }
                 else {
-                    this.inputs.add(new Input(this, entry.getKey()));
+                    Input input = new Input(this, entry.getKey());
+                    input.setType(entry.getValue().getClass());
+                    input.optional(entry.getValue());
+                    this.inputs.add(input);
                     this.defaultValues.put(entry.getKey(), entry.getValue());
                 }
             }
@@ -135,8 +147,16 @@ public class Process implements IProcess, GroovyObject {
                     output.setType((Class)entry.getValue());
                     this.outputs.add(output);
                 }
+                else if(entry.getValue() instanceof Output) {
+                    Output output = (Output)entry.getValue();
+                    output.setProcess(this);
+                    output.setName(entry.getKey());
+                    this.outputs.add(output);
+                }
                 else {
-                    this.outputs.add(new Output(this, entry.getKey()));
+                    Output output = new Output(this, entry.getKey());
+                    output.setType(entry.getValue().getClass());
+                    this.outputs.add(output);
                 }
             }
         }

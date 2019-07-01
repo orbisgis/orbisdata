@@ -43,16 +43,26 @@ package org.orbisgis.processmanagerapi.inoutput;
  * @author Sylvain PALOMINOS (UBS 2019)
  */
 public interface IInput extends IInOutPut {
+
     /**
      * Make the {@link IInput} optional.
      *
+     * @param dfltValue Default value to use if no value is provided.
+     *
      * @return The {@link IInput} to continue its configuration.
      */
-    IInOutPut optional();
+    IInOutPut optional(Object dfltValue);
+
+    boolean isOptional();
+
     /**
      * Make the {@link IInput} mandatory.
      *
      * @return The {@link IInput} to continue its configuration.
      */
     IInOutPut mandatory();
+
+    boolean isMandatory();
+
+    Object getDefaultValue();
 }

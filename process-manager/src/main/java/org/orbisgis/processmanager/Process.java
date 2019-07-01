@@ -40,7 +40,6 @@ import groovy.lang.Closure;
 import groovy.lang.GroovyObject;
 import groovy.lang.MetaClass;
 import org.codehaus.groovy.runtime.InvokerHelper;
-import org.orbisgis.processmanager.inoutput.InOutPut;
 import org.orbisgis.processmanager.inoutput.Input;
 import org.orbisgis.processmanager.inoutput.Output;
 import org.orbisgis.processmanagerapi.IProcess;

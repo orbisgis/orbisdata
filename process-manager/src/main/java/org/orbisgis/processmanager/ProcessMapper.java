@@ -153,11 +153,10 @@ public class ProcessMapper implements IProcessMapper {
                 isBetween = true;
             }
         }
-        if (!isBetween) {
-            if(outputs.stream().noneMatch(iOutput -> iOutput.getName().equals(output.getName()) &&
-                    iOutput.getProcess().getIdentifier().equals(output.getProcess().getIdentifier()))) {
-                outputs.add(output);
-            }
+        if (!isBetween &&
+                outputs.stream().noneMatch(iOutput -> iOutput.getName().equals(output.getName()) &&
+                        iOutput.getProcess().getIdentifier().equals(output.getProcess().getIdentifier()))) {
+            outputs.add(output);
         }
     }
 

@@ -217,6 +217,7 @@ public class ProcessTest {
 
     @Test
     void testBadProcess(){
+        //Test wrong constructor
         assertFalse(new Process(null, null, null, new LinkedHashMap<>(), null, null, new Closure(null) {
             @Override
             public int getMaximumNumberOfParameters() {
@@ -226,7 +227,7 @@ public class ProcessTest {
 
         assertFalse(new Process(null, null, null, new LinkedHashMap<>(), null, null, null).execute(null));
 
-
+        //Test execution with exception
         LinkedHashMap<String, Object> inputs = new LinkedHashMap<>();
         inputs.put("in", String.class);
         LinkedHashMap<String, Object> outputs = new LinkedHashMap<>();
@@ -246,6 +247,7 @@ public class ProcessTest {
         data.put("in", null);
         assertFalse(p.execute(data));
 
+        //Test null input value
         inputs = new LinkedHashMap<>();
         inputs.put("in", String.class);
         outputs = new LinkedHashMap<>();
@@ -264,11 +266,26 @@ public class ProcessTest {
         data.put("in", null);
         assertFalse(p.execute(data));
 
-        fullProcess.execute(new LinkedHashMap<>());
+        //Test no mandatory input
         data = new LinkedHashMap<>();
         data.put("in3", "toto");
         data.put("in", "toto");
         assertFalse(fullProcess.execute(data));
+
+        //Test too much inputs
+        data = new LinkedHashMap<>();
+        data.put("in", "toto");
+        data.put("in2", "toto");
+        data.put("in3", "toto");
+        data.put("in4", "toto");
+        data.put("in5", "toto");
+        assertFalse(fullProcess.execute(data));
+
+        //Test empty inputs
+        assertFalse(fullProcess.execute(new LinkedHashMap<>()));
+
+        //Test null inputs
+        assertFalse(fullProcess.execute(null));
     }
 
     @Test

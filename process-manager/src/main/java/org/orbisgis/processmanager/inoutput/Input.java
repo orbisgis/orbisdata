@@ -36,6 +36,7 @@
  */
 package org.orbisgis.processmanager.inoutput;
 
+import groovy.lang.MissingMethodException;
 import org.orbisgis.processmanagerapi.IProcess;
 import org.orbisgis.processmanagerapi.inoutput.IInput;
 
@@ -59,7 +60,15 @@ public class Input extends InOutPut implements IInput {
         super(process, name);
     }
 
-    public static Input call() {
+    /**
+     * Empty constructor.
+     *
+     */
+    public Input() {
+        super(null, null);
+    }
+
+    public static Input create() {
         return new Input(null, null);
     }
 

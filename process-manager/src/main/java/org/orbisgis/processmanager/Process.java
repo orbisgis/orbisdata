@@ -39,8 +39,8 @@ package org.orbisgis.processmanager;
 import groovy.lang.Closure;
 import groovy.lang.GroovyObject;
 import groovy.lang.MetaClass;
+import org.codehaus.groovy.ast.ClassNode;
 import org.codehaus.groovy.runtime.InvokerHelper;
-import org.codehaus.groovy.runtime.metaclass.ClosureMetaClass;
 import org.orbisgis.processmanager.inoutput.Input;
 import org.orbisgis.processmanager.inoutput.Output;
 import org.orbisgis.processmanagerapi.IProcess;
@@ -308,16 +308,32 @@ public class Process implements IProcess, GroovyObject {
     }
 
     @Override
+    public String toWps(String type) {
+        return toWps(WpsType.valueOf(type.toUpperCase()));
+    }
+
+    @Override
     public String toWps(WpsType type) {
         switch(type){
-            case GeoServer:
+            case GEOSERVER:
                 return toGeoServer();
             default:
                 return null;
         }
     }
 
+    /**
+     * Return the string representation of the process as a GeoServer WPS script.
+     *
+     * @return GeoServer WPS script.
+     */
     private String toGeoServer(){
+        ClassNode classNode = closure.getMetaClass().getClassNode();
+        if(classNode == null){
+            LOGGER.error("Unable to get the source code of the process closure." +
+                    " Maybe the process should be written on its own groovy script file.");
+            return null;
+        }
         StringBuilder builder = new StringBuilder();
         if(title != null) {
             builder.append("title = '").append(this.title).append("'\n");
@@ -339,7 +355,7 @@ public class Process implements IProcess, GroovyObject {
                     builder.append(",\n");
                 }
             }
-            builder.append("]\n");
+            builder.append("\n]\n");
         }
         if(!outputs.isEmpty()) {
             builder.append("outputs = [\n");
@@ -354,11 +370,11 @@ public class Process implements IProcess, GroovyObject {
                     builder.append(",\n");
                 }
             }
-            builder.append("]\n");
+            builder.append("\n]\n");
         }
-        builder.append("def run(inputs) {");
-        builder.append(closure.getMetaClass().getClassNode().getDeclaredMethods("doCall").get(0).getCode().getText());
-        builder.append("}");
+        builder.append("def run(inputs) ");
+        builder.append(classNode.getDeclaredMethods("doCall").get(0).getCode().getText());
+        builder.append("\n");
         return builder.toString();
     }
 

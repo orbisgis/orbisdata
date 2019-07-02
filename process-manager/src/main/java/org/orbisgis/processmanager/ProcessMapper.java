@@ -259,6 +259,11 @@ public class ProcessMapper implements IProcessMapper {
     }
 
     @Override
+    public String toWps(String type) {
+        return toWps(WpsType.valueOf(type));
+    }
+
+    @Override
     public IProcess newInstance() {
         ProcessMapper mapper = new ProcessMapper();
         mapper.aliases = aliases;

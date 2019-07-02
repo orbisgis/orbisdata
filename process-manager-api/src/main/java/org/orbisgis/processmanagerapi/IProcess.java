@@ -126,7 +126,7 @@ public interface IProcess {
     /**
      * Enumeration of the available WPS for conversion.
      */
-    enum WpsType{GeoServer}
+    enum WpsType{GEOSERVER}
 
     /**
      * Return the WPS script of the given type.
@@ -136,4 +136,13 @@ public interface IProcess {
      * @return The Wps script.
      */
     String toWps(WpsType type);
+
+    /**
+     * Return the WPS script of the given type.
+     *
+     * @param type Type of the WPS script to write.
+     *
+     * @return The Wps script.
+     */
+    String toWps(String type);
 }

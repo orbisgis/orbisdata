@@ -36,8 +36,14 @@
  */
 package org.orbisgis.processmanager.inoutput;
 
+import groovy.lang.GroovyObject;
+import groovy.lang.MetaClass;
+import groovy.lang.MissingMethodException;
+import org.codehaus.groovy.runtime.InvokerHelper;
 import org.orbisgis.processmanagerapi.IProcess;
 import org.orbisgis.processmanagerapi.inoutput.IInOutPut;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Implementation of the {@link IInOutPut} interface.
@@ -45,7 +51,10 @@ import org.orbisgis.processmanagerapi.inoutput.IInOutPut;
  * @author Erwan Bocher (CNRS)
  * @author Sylvain PALOMINOS (UBS 2019)
  */
-public abstract class InOutPut implements IInOutPut {
+public abstract class InOutPut implements IInOutPut, GroovyObject {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(InOutPut.class);
+
     /** {@link IProcess} of the input/output. */
     private IProcess process;
     /** Name of the input/output. */
@@ -58,6 +67,8 @@ public abstract class InOutPut implements IInOutPut {
     private String description;
     /** Keywords of the input/output. */
     private String[] keywords;
+    /** Groovy metaclass */
+    private MetaClass metaClass;
 
     /**
      * Main constructor.
@@ -68,6 +79,7 @@ public abstract class InOutPut implements IInOutPut {
     public InOutPut(IProcess process, String name){
         this.process = process;
         this.name = name;
+        this.metaClass = InvokerHelper.getMetaClass(InOutPut.class);
     }
 
     public String getName(){
@@ -133,4 +145,82 @@ public abstract class InOutPut implements IInOutPut {
     }
 
     @Override public String toString(){return name+":"+process.getIdentifier();}
+
+    @Override
+    public Object invokeMethod(String name, Object args) {
+        try {
+            return getMetaClass().invokeMethod(this, name, args);
+        } catch (MissingMethodException e) {
+            LOGGER.debug("Unable to find the '"+name+"' methods, trying with the getter");
+            return getProperty(name);
+        }
+    }
+
+    @Override
+    public Object getProperty(String propertyName) {
+        switch(propertyName.toLowerCase()){
+            case "title":
+                return getTitle();
+            case "description":
+                return getDescription();
+            case "keywords":
+                return getKeyWords();
+            case "type":
+                return getType();
+            default:
+                return metaClass.getProperty(this, propertyName);
+        }
+    }
+
+    @Override
+    public void setProperty(String propertyName, Object newValue) {
+        switch(propertyName.toLowerCase()){
+            case "title":
+                setTitle(newValue.toString());
+                break;
+            case "description":
+                setDescription(newValue.toString());
+                break;
+            case "keywords":
+                if(newValue instanceof String[]) {
+                    setKeywords((String[])newValue);
+                }
+                break;
+            case "type":
+                if(newValue instanceof Class) {
+                    setType((Class)newValue);
+                }
+                break;
+            default:
+                metaClass.setProperty(this, propertyName, newValue);
+                break;
+        }
+    }
+
+    @Override
+    public MetaClass getMetaClass() {
+        return metaClass;
+    }
+
+    @Override
+    public void setMetaClass(MetaClass metaClass) {
+        this.metaClass = metaClass;
+    }
+
+    public Object methodMissing(String name, Object arg) {
+        Object[] args = (Object[])arg;
+        if(name.equalsIgnoreCase("title") && args.length == 1 && args[0] instanceof String){
+            return setTitle(args[0].toString());
+        }
+        else if(name.equalsIgnoreCase("description") && args.length == 1 && args[0] instanceof String){
+            return setDescription(args[0].toString());
+        }
+        else if(name.equalsIgnoreCase("keywords") && args.length == 1 && args[0] instanceof String[]){
+            return setKeywords((String[])args[0]);
+        }
+        else if(name.equalsIgnoreCase("type") && args.length == 1 && args[0] instanceof Class){
+            return setType((Class)args[0]);
+        }
+        return new MissingMethodException(name, InOutPut.class, args);
+    }
 }

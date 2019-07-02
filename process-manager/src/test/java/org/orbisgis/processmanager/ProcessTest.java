@@ -82,9 +82,9 @@ public class ProcessTest {
                 "                return [out1:o1, out2:o2, out3:\"toto\"]}";
         Closure cl2 = (Closure)new GroovyShell().evaluate(new GroovyCodeSource(str, "script", ""));
 
-        Input in3 = Input.call().setTitle("in title").setDescription("in description")
+        Input in3 = Input.create().setTitle("in title").setDescription("in description")
                 .setKeywords(new String[]{"key1", "key2"}).setType(String[].class).mandatory();
-        Input in4 = Input.call().setType(Double.class).optional(3.56D);
+        Input in4 = Input.create().setType(Double.class).optional(3.56D);
 
         LinkedHashMap<String, Object> inputs = new LinkedHashMap<>();
         inputs.put("in1", 5698);
@@ -92,9 +92,9 @@ public class ProcessTest {
         inputs.put("in3", in3);
         inputs.put("in4", in4);
 
-        Output out1 = Output.call().setTitle("out title").setDescription("out description")
+        Output out1 = Output.create().setTitle("out title").setDescription("out description")
                 .setKeywords(new String[]{"key1", "key2"}).setType(String[].class);
-        Output out2 = Output.call().setType(int.class);
+        Output out2 = Output.create().setType(int.class);
 
         LinkedHashMap<String, Object> outputs = new LinkedHashMap<>();
         outputs.put("out1", out1);

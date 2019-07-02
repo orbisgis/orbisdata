@@ -56,7 +56,7 @@ public class Output extends InOutPut implements IOutput {
         super(process, name);
     }
 
-    public static Output call() {
+    public static Output create() {
         return new Output(null, null);
     }
 

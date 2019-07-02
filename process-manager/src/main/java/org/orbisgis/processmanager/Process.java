@@ -104,7 +104,7 @@ public class Process implements IProcess, GroovyObject {
      */
     Process(String title, String description, String[] keywords, LinkedHashMap<String, Object> inputs,
             LinkedHashMap<String, Object> outputs, String version, Closure closure){
-        if(inputs != null && closure.getMaximumNumberOfParameters() != inputs.size()){
+        if(inputs != null && closure != null && closure.getMaximumNumberOfParameters() != inputs.size()){
             LOGGER.error("The number of the closure parameters and the number of process input names are different.");
             return;
         }
@@ -140,7 +140,7 @@ public class Process implements IProcess, GroovyObject {
             }
         }
         this.outputs = new LinkedList<>();
-        if(inputs != null) {
+        if(outputs != null) {
             for (Map.Entry<String, Object> entry : outputs.entrySet()) {
                 if( entry.getValue() instanceof Class){
                     Output output = new Output(this, entry.getKey());
@@ -151,11 +151,6 @@ public class Process implements IProcess, GroovyObject {
                     Output output = (Output)entry.getValue();
                     output.setProcess(this);
                     output.setName(entry.getKey());
-                    this.outputs.add(output);
-                }
-                else {
-                    Output output = new Output(this, entry.getKey());
-                    output.setType(entry.getValue().getClass());
                     this.outputs.add(output);
                 }
             }
@@ -236,7 +231,7 @@ public class Process implements IProcess, GroovyObject {
         LOGGER.debug("Starting the execution of '" + this.getTitle() + "'.");
         if(inputs != null && inputDataMap != null && (inputs.size() < inputDataMap.size() || inputs.size()-defaultValues.size() > inputDataMap.size())){
             LOGGER.error("The number of the input data map and the number of process input are different, should" +
-                    " be between " + (inputDataMap.size()-defaultValues.size()) + " and " + inputDataMap.size() + ".");
+                    " be between " + (closure.getMaximumNumberOfParameters()-defaultValues.size()) + " and " + closure.getMaximumNumberOfParameters() + ".");
             return false;
         }
         Object result;

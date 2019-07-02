@@ -39,16 +39,19 @@ package org.orbisgis.processmanager;
 import groovy.lang.Closure;
 import groovy.lang.GroovyCodeSource;
 import groovy.lang.GroovyShell;
+import org.codehaus.groovy.runtime.InvokerHelper;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.orbisgis.processmanager.inoutput.Input;
 import org.orbisgis.processmanager.inoutput.Output;
 import org.orbisgis.processmanagerapi.IProcess;
+import org.orbisgis.processmanagerapi.inoutput.IInput;
+import org.orbisgis.processmanagerapi.inoutput.IOutput;
 
+import java.util.Arrays;
 import java.util.LinkedHashMap;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.orbisgis.processmanagerapi.IProcess.WpsType.GeoServer;
 
 /**
  * Test class dedicated to {@link Process} class.
@@ -210,5 +213,109 @@ public class ProcessTest {
         assertEquals("5698toto[t, a, t, a]3.56", mapper.getResults().get("out1").toString());
         assertEquals(4, mapper.getResults().get("out2"));
         assertEquals("toto", mapper.getResults().get("out3"));
+    }
+
+    @Test
+    void testBadProcess(){
+        assertFalse(new Process(null, null, null, new LinkedHashMap<>(), null, null, new Closure(null) {
+            @Override
+            public int getMaximumNumberOfParameters() {
+                return 2;
+            }
+        }).execute(new LinkedHashMap<>()));
+
+        assertFalse(new Process(null, null, null, new LinkedHashMap<>(), null, null, null).execute(null));
+
+
+        LinkedHashMap<String, Object> inputs = new LinkedHashMap<>();
+        inputs.put("in", String.class);
+        LinkedHashMap<String, Object> outputs = new LinkedHashMap<>();
+        outputs.put("out", String.class);
+        Process p = new Process(null, null, null, inputs, outputs, null, new Closure(null) {
+            @Override
+            public int getMaximumNumberOfParameters() {
+                return 1;
+            }
+            @Override
+            public Object call(Object... args){
+                Arrays.asList(args).forEach(Object::toString);
+                return new LinkedHashMap<>();
+            }
+        });
+        LinkedHashMap<String, Object> data = new LinkedHashMap<>();
+        data.put("in", null);
+        assertFalse(p.execute(data));
+
+        inputs = new LinkedHashMap<>();
+        inputs.put("in", String.class);
+        outputs = new LinkedHashMap<>();
+        outputs.put("out", String.class);
+        p = new Process(null, null, null, inputs, outputs, null, new Closure(null) {
+            @Override
+            public int getMaximumNumberOfParameters() {
+                return 1;
+            }
+            @Override
+            public Object call(Object... args){
+                return new LinkedHashMap<>();
+            }
+        });
+        data = new LinkedHashMap<>();
+        data.put("in", null);
+        assertFalse(p.execute(data));
+
+        fullProcess.execute(new LinkedHashMap<>());
+        data = new LinkedHashMap<>();
+        data.put("in3", "toto");
+        data.put("in", "toto");
+        assertFalse(fullProcess.execute(data));
+    }
+
+    @Test
+    void testNewInstance(){
+        IProcess p = fullProcess.newInstance();
+        assertEquals(fullProcess.getTitle(), p.getTitle());
+        assertEquals(fullProcess.getDescription(), p.getDescription());
+        assertEquals(fullProcess.getKeywords(), p.getKeywords());
+        assertEquals(fullProcess.getInputs(), p.getInputs());
+        assertEquals(fullProcess.getOutputs(), p.getOutputs());
+        assertEquals(fullProcess.getVersion(), p.getVersion());
+        assertNotEquals(fullProcess.getIdentifier(), p.getIdentifier());
+    }
+
+    @Test
+    void testInvokeMethod(){
+        assertEquals("title", fullProcess.invokeMethod("getTitle", null));
+        assertEquals("1.0.0", fullProcess.invokeMethod("getVersion", null));
+    }
+
+    @Test
+    void testGetProperty(){
+        assertTrue(fullProcess.getProperty("in1") instanceof IInput);
+        assertTrue(fullProcess.getProperty("in2") instanceof IInput);
+        assertTrue(fullProcess.getProperty("in3") instanceof IInput);
+        assertTrue(fullProcess.getProperty("in4") instanceof IInput);
+        assertTrue(fullProcess.getProperty("out1") instanceof IOutput);
+        assertTrue(fullProcess.getProperty("out2") instanceof IOutput);
+        assertTrue(fullProcess.getProperty("out3") instanceof IOutput);
+        assertEquals("title", fullProcess.getProperty("title"));
+    }
+
+    @Test
+    void testSetProperty(){
+        assertEquals("title", fullProcess.getProperty("title"));
+        fullProcess.setProperty("title", "toto");
+        assertEquals("toto", fullProcess.getProperty("title"));
+        fullProcess.setProperty("title", "title");
+        assertEquals("title", fullProcess.getProperty("title"));
+    }
+
+    @Test
+    void testMetaClass(){
+        assertEquals(InvokerHelper.getMetaClass(Process.class), fullProcess.getMetaClass());
+        fullProcess.setMetaClass(InvokerHelper.getMetaClass(ProcessTest.class));
+        assertEquals(InvokerHelper.getMetaClass(ProcessTest.class), fullProcess.getMetaClass());
+        fullProcess.setMetaClass(InvokerHelper.getMetaClass(Process.class));
+        assertEquals(InvokerHelper.getMetaClass(Process.class), fullProcess.getMetaClass());
     }
 }

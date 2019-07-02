@@ -51,6 +51,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Implementation of the {@link IProcess} interface dedicated to the local creation and execution of process (no link with
@@ -348,7 +350,7 @@ public class Process implements IProcess, GroovyObject {
                 IInput input = inputs.get(i);
                 builder.append("\t").append(input.getName()).append(": [name: '").append(input.getName()).append("'");
                 if (input.getTitle() != null) {
-                    builder.append(", title: ").append(input.getTitle());
+                    builder.append(", title: '").append(input.getTitle()).append("'");
                 }
                 builder.append(", type: ").append(input.getType().getTypeName()).append(".class]");
                 if (i < inputs.size() - 1) {
@@ -363,7 +365,7 @@ public class Process implements IProcess, GroovyObject {
                 IOutput output = outputs.get(i);
                 builder.append("\t").append(output.getName()).append(": [name: '").append(output.getName()).append("'");
                 if (output.getTitle() != null) {
-                    builder.append(", title: ").append(output.getTitle());
+                    builder.append(", title: '").append(output.getTitle()).append("'");
                 }
                 builder.append(", type: ").append(output.getType().getTypeName()).append(".class]");
                 if(i<outputs.size()-1) {
@@ -372,9 +374,17 @@ public class Process implements IProcess, GroovyObject {
             }
             builder.append("\n]\n");
         }
-        builder.append("def run(inputs) ");
-        builder.append(classNode.getDeclaredMethods("doCall").get(0).getCode().getText());
-        builder.append("\n");
+        builder.append("def run(input) {\n");
+        final String[] code = {classNode.getDeclaredMethods("doCall").get(0).getCode().getText()};
+        code[0] = code[0].substring(1, code[0].length()-1);
+        inputs.stream().map(IInput::getName).forEach(name -> {
+            Matcher matcher = Pattern.compile("[^\\d\\w](" + name + ")[^\\d\\w]").matcher(code[0]);
+            while(matcher.find()) {
+                code[0] = matcher.usePattern(Pattern.compile(name)).replaceAll("input." + name);
+            }
+        });
+        builder.append(code[0]);
+        builder.append("\n}");
         return builder.toString();
     }
 

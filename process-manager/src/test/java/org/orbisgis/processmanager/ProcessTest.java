@@ -48,6 +48,9 @@ import org.orbisgis.processmanagerapi.IProcess;
 import org.orbisgis.processmanagerapi.inoutput.IInput;
 import org.orbisgis.processmanagerapi.inoutput.IOutput;
 
+import java.io.File;
+import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 
@@ -317,5 +320,12 @@ public class ProcessTest {
         assertEquals(InvokerHelper.getMetaClass(ProcessTest.class), fullProcess.getMetaClass());
         fullProcess.setMetaClass(InvokerHelper.getMetaClass(Process.class));
         assertEquals(InvokerHelper.getMetaClass(Process.class), fullProcess.getMetaClass());
+    }
+
+    @Test
+    void testGeoServerWps() throws URISyntaxException, IOException {
+        Object obj = new GroovyShell(this.getClass().getClassLoader()).
+                evaluate(new File(this.getClass().getResource("process.groovy").toURI()));
+        System.out.println(obj);
     }
 }

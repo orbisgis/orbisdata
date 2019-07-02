@@ -1,19 +1,24 @@
+import org.locationtech.jts.geom.Geometry
 import org.orbisgis.processmanager.ProcessManager
 import org.orbisgis.processmanager.inoutput.Input
+import org.orbisgis.processmanager.inoutput.Output
 import org.orbisgis.processmanagerapi.IProcess
 
 def input = {Input.create()}
+def output = { Output.create()}
 
 IProcess p = ProcessManager.processManager.create()
+        .title("Buffer")
+        .description("Buffers a geometry")
         .inputs([
-                in1:String,
-                in2: input().title("input 2").type(String).mandatory()
+                geom: input().title("The geometry to buffer").type(Geometry),
+                distance: input().title("The buffer distance").type(Double)
         ])
         .outputs([
-                out:String,
+                result: output().title("The buffered geometry").type(Geometry),
         ])
-        .closure { in1, in2 ->
-            return [out: in1+in2]
+        .closure { geom, distance ->
+            return [result: geom.buffer(distance)]
         }
         .process
 

@@ -38,6 +38,7 @@ package org.orbisgis.processmanager;
 
 import groovy.lang.Closure;
 import groovy.lang.GroovyShell;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.orbisgis.processmanagerapi.IProcess;
 
@@ -49,45 +50,31 @@ import static org.junit.jupiter.api.Assertions.*;
  * @author Erwan Bocher (CNRS)
  * @author Sylvain PALOMINOS (UBS 2019)
  */
-public class ProcessFactoryTest {
+public class ProcessManagerTest {
 
-    /**
-     * Test dedicated to the {@link ProcessFactory#isDefault()} and {@link ProcessFactory#isLocked()} methods.
-     */
-    @Test
-    void testAttributes(){
-        ProcessFactory pf1 = new ProcessFactory();
-        assertFalse(pf1.isDefault());
-        assertFalse(pf1.isLocked());
+    public static Closure cl;
 
-        ProcessFactory pf2 = new ProcessFactory(true, true);
-        assertTrue(pf2.isDefault());
-        assertTrue(pf2.isLocked());
+    @BeforeAll
+    public static void beforeAll(){
+        String string = "({\n" +
+                "            title \"simple process\"\n" +
+                "            description \"description\"\n" +
+                "            keywords \"key1\", \"key2\"\n" +
+                "            inputs inputA: String, inputB: String\n" +
+                "            outputs outputA: String\n" +
+                "            version \"version\"\n" +
+                "            closure { inputA, inputB -> [outputA: inputA + inputB] }\n" +
+                "        })";
+        cl = (Closure)new GroovyShell().evaluate(string);
     }
 
     /**
-     * Test dedicated to the {@link ProcessFactory#registerProcess(IProcess)} method.
-     */
-    @Test
-    void testRegister(){
-        IProcess process = new Process(null, null, null, null, null, null, null);
-
-        ProcessFactory pf1 = new ProcessFactory();
-        pf1.registerProcess(process);
-        assertNotNull(pf1.getProcess(process.getIdentifier()));
-
-        ProcessFactory pf2 = new ProcessFactory(true, true);
-        pf2.registerProcess(process);
-        assertNull(pf2.getProcess(process.getIdentifier()));
-    }
-
-    /**
-     * Test dedicated to the {@link ProcessFactory#create()} and {@link ProcessFactory#create(Closure)} methods.
+     * Test dedicated to the {@link ProcessManager#create()} and {@link ProcessManager#create(Closure)} methods.
      */
     @Test
     void testCreate(){
-        ProcessFactory pf1 = new ProcessFactory();
-        assertNotNull(pf1.create());
+        ProcessManager pm = ProcessManager.getProcessManager();
+        assertNotNull(pm.create());
 
         String string = "({\n" +
                 "            title \"simple process\"\n" +
@@ -99,7 +86,7 @@ public class ProcessFactoryTest {
                 "            closure { inputA, inputB -> [outputA: inputA + inputB] }\n" +
                 "        })";
         Closure cl = (Closure)new GroovyShell().evaluate(string);
-        IProcess process = pf1.create(cl);
+        IProcess process = pm.create(cl);
 
         assertNotNull(process);
         assertEquals("simple process", process.getTitle());
@@ -108,5 +95,43 @@ public class ProcessFactoryTest {
         assertArrayEquals(new String[]{"key1", "key2"}, process.getKeywords());
         assertEquals(2, process.getInputs().size());
         assertEquals(1, process.getOutputs().size());
+    }
+
+    /**
+     * Test dedicated to the {@link ProcessManager#factoryIds()},
+     * {@link ProcessManager#factory(String)}, {@link ProcessManager#factory()},
+     * {@link ProcessManager#createFactory(String)}, {@link ProcessManager#createFactory()} methods.
+     */
+    @Test
+    void testFactories(){
+        ProcessManager pm = ProcessManager.getProcessManager();
+        assertNotNull(ProcessManager.createFactory());
+        assertNotNull(ProcessManager.createFactory("Mayor_DeFacto_Ry"));
+
+        assertNotNull(pm.factory());
+        assertNotNull(pm.factory("orbisgis"));
+        assertNotNull(pm.factory("Mayor_DeFacto_Ry"));
+
+        assertEquals(2, pm.factoryIds().size());
+        assertTrue(pm.factoryIds().contains("orbisgis"));
+        assertTrue(pm.factoryIds().contains("Mayor_DeFacto_Ry"));
+
+    }
+
+    /**
+     * Test dedicated to the {@link ProcessManager#process(String)} and {@link ProcessManager#process(String, String)} methods.
+     */
+    @Test
+    void testProcess(){
+        ProcessManager pm = ProcessManager.getProcessManager();
+        assertNotNull(ProcessManager.createFactory("Mayor_DeFacto_Ry"));
+        String id1 = pm.factory().create(cl).getIdentifier();
+        String id2 = pm.factory("Mayor_DeFacto_Ry").create(cl).getIdentifier();
+
+        assertNull(pm.process(id2));
+        assertNotNull(pm.process(id1));
+
+        assertNull(pm.process(id1, "Mayor_DeFacto_Ry"));
+        assertNotNull(pm.process(id2, "Mayor_DeFacto_Ry"));
     }
 }

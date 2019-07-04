@@ -146,7 +146,7 @@ public class Process implements IProcess, GroovyObject {
                     output.setType((Class)entry.getValue());
                     this.outputs.add(output);
                 }
-                else if(entry.getValue() instanceof Output) {
+                else {
                     Output output = (Output)entry.getValue();
                     output.setProcess(this);
                     output.setName(entry.getKey());
@@ -218,14 +218,14 @@ public class Process implements IProcess, GroovyObject {
             return false;
         }
         LOGGER.debug("Starting the execution of '" + this.getTitle() + "'.");
-        if(inputs != null && inputDataMap != null && (inputs.size() < inputDataMap.size() || inputs.size()-defaultValues.size() > inputDataMap.size())){
+        if(inputDataMap != null && (inputs.size() < inputDataMap.size() || inputs.size()-defaultValues.size() > inputDataMap.size())){
             LOGGER.error("The number of the input data map and the number of process input are different, should" +
                     " be between " + (closure.getMaximumNumberOfParameters()-defaultValues.size()) + " and " + closure.getMaximumNumberOfParameters() + ".");
             return false;
         }
         Object result;
         try {
-            if(inputs != null && inputs.size() != 0) {
+            if(inputs.size() != 0) {
                 Closure cl = getClosureWithCurry(inputDataMap);
                 if(cl == null){
                     return false;

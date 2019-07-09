@@ -287,7 +287,7 @@ public abstract class JdbcTable extends DefaultResultSet implements IJdbcTable, 
         }
         DataType dataType = getColumnDataType(columnName);
         Objects.requireNonNull(dataType);
-        if(dataType.name.equals("OTHER")){
+        if("OTHER".equals(dataType.name)){
             try {
                 return SFSUtilities.getGeometryTypeNameFromCode(
                         SFSUtilities.getGeometryType(jdbcDataSource.getConnection(), tableLocation, columnName));
@@ -411,7 +411,12 @@ public abstract class JdbcTable extends DefaultResultSet implements IJdbcTable, 
 
     @Override
     public ISpatialTable getSpatialTable() {
-        return (ISpatialTable)asType(ISpatialTable.class);
+        if(isSpatial()) {
+            return (ISpatialTable) asType(ISpatialTable.class);
+        }
+        else{
+            return null;
+        }
     }
 
     @Override
@@ -505,6 +510,12 @@ public abstract class JdbcTable extends DefaultResultSet implements IJdbcTable, 
 
             return printer;
         }
-        return this;
+        else if(ITable.class.equals(clazz)) {
+            return this;
+        }
+        else if(ISpatialTable.class.equals(clazz)) {
+            return null;
+        }
+        return null;
     }
 }

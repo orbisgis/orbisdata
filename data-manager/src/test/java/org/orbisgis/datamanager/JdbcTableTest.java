@@ -498,7 +498,7 @@ public class JdbcTableTest {
     @Test
     public void testGetTable() {
         assertNotNull(getTable().getTable());
-        assertNotNull(getTable().getSpatialTable());
+        assertNull(getTable().getSpatialTable());
     }
 
     /**
@@ -507,7 +507,8 @@ public class JdbcTableTest {
     @Test
     public void testAsType() {
         assertNotNull(getTable().asType(ITable.class));
-        assertNotNull(getTable().asType(ISpatialTable.class));
+        assertTrue(getTable().asType(ITable.class) instanceof ITable);
+        assertNull(getTable().asType(ISpatialTable.class));
         assertEquals("+-------------------+\n" +
                 "|     ORBISGIS      |\n" +
                 "+-------------------+-------------------+-------------------+-------------------+-------------------+\n" +

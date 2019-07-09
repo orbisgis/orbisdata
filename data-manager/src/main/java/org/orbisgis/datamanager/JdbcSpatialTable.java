@@ -40,15 +40,14 @@ import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.SpatialResultSet;
 import org.h2gis.utilities.SpatialResultSetMetaData;
 import org.h2gis.utilities.TableLocation;
+import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
 import org.orbisgis.datamanagerapi.dataset.DataBaseType;
 import org.orbisgis.datamanagerapi.dataset.ISpatialTable;
 
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -106,6 +105,58 @@ public abstract class JdbcSpatialTable extends JdbcTable implements ISpatialTabl
             LOGGER.error("Unable to get the geometry.\n" + e.getLocalizedMessage());
         }
         return null;
+    }
+
+    @Override
+    public List<String> getGeometricColumns(){
+        try {
+            return SFSUtilities.getGeometryFields(getJdbcDataSource().getConnection(), getTableLocation());
+        } catch (SQLException e) {
+            LOGGER.error("Unable to get the geometric columns.\n" + e.getLocalizedMessage());
+        }
+        return null;
+    }
+
+    @Override
+    public Envelope getExtend() {
+        try {
+            Connection conn = getJdbcDataSource().getConnection();
+            List<String> names = SFSUtilities.getGeometryFields(conn, getTableLocation());
+            if(names.isEmpty()){
+                LOGGER.error("There is no geometric field.");
+                return null;
+            }
+            return SFSUtilities.getTableEnvelope(conn, getTableLocation(), names.get(0));
+        } catch (SQLException e) {
+            LOGGER.error("Unable to get the table estimated extend.\n" + e.getLocalizedMessage());
+        }
+        return null;
+    }
+
+    @Override
+    public Geometry getEstimatedExtend() {
+        try {
+            Connection conn = getJdbcDataSource().getConnection();
+            List<String> names = SFSUtilities.getGeometryFields(conn, getTableLocation());
+            if(names.isEmpty()){
+                LOGGER.error("There is no geometric field.");
+                return null;
+            }
+            return SFSUtilities.getEstimatedExtent(conn, getTableLocation(), names.get(0));
+        } catch (SQLException e) {
+            LOGGER.error("Unable to get the table estimated extend.\n" + e.getLocalizedMessage());
+        }
+        return null;
+    }
+
+    @Override
+    public int getSrid() {
+        try {
+            return SFSUtilities.getSRID(getJdbcDataSource().getConnection(), getTableLocation());
+        } catch (SQLException e) {
+            LOGGER.error("Unable to get the table SRID.\n" + e.getLocalizedMessage());
+        }
+        return -1;
     }
 
     @Override

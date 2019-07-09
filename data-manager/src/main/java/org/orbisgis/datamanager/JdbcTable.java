@@ -63,7 +63,9 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 import static org.orbisgis.commons.printer.ICustomPrinter.CellPosition.*;
 
@@ -138,10 +140,37 @@ public abstract class JdbcTable extends DefaultResultSet implements IJdbcTable, 
         return resultSet;
     }
 
+    /**
+     * Return the {@link ResultSet} with a limit set to 0.
+     *
+     * @return The {@link ResultSet} with a limit set to 0.
+     */
+    protected ResultSet getResultSetLimit0(){
+        ResultSet resultSet;
+        try {
+            if(getBaseQuery().contains(" LIMIT ")){
+                resultSet = getResultSet();
+            }
+            else {
+                resultSet = jdbcDataSource.getConnection().createStatement().executeQuery(getBaseQuery() + " LIMIT 0");
+            }
+        } catch (SQLException e) {
+            LOGGER.error("Unable to execute the query '"+getBaseQuery()+"'.\n"+e.getLocalizedMessage());
+            return null;
+        }
+        try {
+            resultSet.beforeFirst();
+        } catch (SQLException e) {
+            LOGGER.error("Unable to go before the first ResultSet row.\n" + e.getLocalizedMessage());
+            return null;
+        }
+        return resultSet;
+    }
+
     @Override
     public ResultSetMetaData getMetaData(){
         try {
-            ResultSet rs = getResultSet();
+            ResultSet rs = getResultSetLimit0();
             if(rs == null){
                 LOGGER.error("The ResultSet is null.");
             }
@@ -211,11 +240,63 @@ public abstract class JdbcTable extends DefaultResultSet implements IJdbcTable, 
     @Override
     public Collection<String> getColumnNames() {
         try {
-            return JDBCUtilities.getFieldNames(getResultSet().getMetaData());
+            return JDBCUtilities.getFieldNames(getResultSetLimit0().getMetaData());
         } catch (SQLException e) {
             LOGGER.error("Unable to get the collection of columns names");
             return null;
         }
+    }
+
+    @Override
+    public Map<String, String> getColumns(){
+        Map<String, String> map = new HashMap<>();
+        for(String name : getColumnNames()){
+            map.put(name, getColumnsType(name));
+        }
+        return map;
+    }
+
+    private DataType getColumnDataType(String columnName){
+        boolean found = false;
+        int type = -1;
+        ResultSet rs;
+        try {
+            rs = jdbcDataSource.getConnection().getMetaData().getColumns(tableLocation.getCatalog(null),
+                    tableLocation.getSchema(null), TableLocation.capsIdentifier(tableLocation.getTable(),
+                            getDbType().equals(DataBaseType.H2GIS)), null);
+        } catch (SQLException e) {
+            LOGGER.error("Unable to get the connection MetaData.\n"+e.getLocalizedMessage());
+            return null;
+        }
+        try {
+            while (rs.next() && !found) {
+                found = rs.getString("COLUMN_NAME").equalsIgnoreCase(columnName);
+                type = DataType.convertSQLTypeToValueType(rs.getInt("DATA_TYPE"));
+            }
+        } catch (SQLException e) {
+            LOGGER.error("Unable to read the ResultSet.\n"+e.getLocalizedMessage());
+            return null;
+        }
+        return DataType.getDataType(type);
+    }
+
+    @Override
+    public String getColumnsType(String columnName){
+        if(!hasColumn(columnName)){
+            return null;
+        }
+        DataType dataType = getColumnDataType(columnName);
+        Objects.requireNonNull(dataType);
+        if(dataType.name.equals("OTHER")){
+            try {
+                return SFSUtilities.getGeometryTypeNameFromCode(
+                        SFSUtilities.getGeometryType(jdbcDataSource.getConnection(), tableLocation, columnName));
+            } catch (SQLException e) {
+                LOGGER.error("Unable to get the geometric type of the column '" + columnName + "'\n" +
+                        e.getLocalizedMessage());
+            }
+        }
+        return dataType.name;
     }
 
     @Override
@@ -228,7 +309,6 @@ public abstract class JdbcTable extends DefaultResultSet implements IJdbcTable, 
         if(!hasColumn(columnName)){
             return false;
         }
-
         if(Geometry.class.isAssignableFrom(clazz)){
             String str = null;
             try {
@@ -242,23 +322,17 @@ public abstract class JdbcTable extends DefaultResultSet implements IJdbcTable, 
                     (clazz.getSimpleName()+"M").equalsIgnoreCase(str) ||
                     (clazz.getSimpleName()+"ZM").equalsIgnoreCase(str);
         }
-        else {
-            ResultSet rs;
-            int type = DataType.getTypeFromClass(clazz);
-            boolean hasGoodType = false;
-            try {
-                rs = jdbcDataSource.getConnection().getMetaData().getColumns(tableLocation.getCatalog(null),
-                        tableLocation.getSchema(null), TableLocation.capsIdentifier(tableLocation.getTable(),
-                                getDbType().equals(DataBaseType.H2GIS)), null);
-                while (rs.next() && !hasGoodType) {
-                    hasGoodType = (DataType.convertSQLTypeToValueType(rs.getInt("DATA_TYPE")) == type ||
-                            rs.getInt("DATA_TYPE") == type)&&
-                            rs.getString("COLUMN_NAME").equalsIgnoreCase(columnName);
-                }
-            } catch (SQLException e) {
-                LOGGER.error("Unable to get the type of the column '" + columnName + "'\n" + e.getLocalizedMessage());
+        else{
+            DataType dataType = getColumnDataType(columnName);
+            if(dataType == null){
+                return false;
             }
-            return hasGoodType;
+            DataType dtClass = DataType.getDataType(DataType.getTypeFromClass(clazz));
+            if(dataType.equals(dtClass)){
+                return true;
+            }
+            DataType dtSql = DataType.getDataType(DataType.convertSQLTypeToValueType(DataType.getTypeFromClass(clazz)));
+            return dataType.equals(dtSql);
         }
     }
 

@@ -56,14 +56,28 @@ public interface ITable extends IDataSet {
      * @param closure {@link Closure} to apply to each row.
      */
     void eachRow(Closure closure);
-    
+
     /**
      * Get all column names from the underlying table. If there isn't any column, return an empty {@link Collection}.
      * If an error occurs on requesting the column, return null.
      *
-     * @return A {@link Collection} containing the name of the column
+     * @return A {@link Collection} containing the name of the column.
      */
     Collection<String> getColumnNames();
+
+    /**
+     * Get all column information from the underlying table.
+     *
+     * @return A {@link Map} containing the information of the column.
+     */
+    Map<String, String> getColumns();
+
+    /**
+     * Get the type of the column from the underlying table.
+     *
+     * @return The type of the column.
+     */
+    String getColumnsType(String columnName);
 
     /**
      * Return true if the {@link ITable} contains a column with the given name with the given type (case sensible).

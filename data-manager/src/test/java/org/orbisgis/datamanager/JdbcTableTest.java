@@ -64,6 +64,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -448,6 +449,29 @@ public class JdbcTableTest {
 
         assertNotNull(table.getProperty("data"));
         assertThrows(InvokerInvocationException.class, () -> table.invokeMethod("dupMethod", null));
+    }
+
+    /**
+     * Test the {@link JdbcTable#getColumnsType(String)} method.
+     */
+    @Test
+    public void testGetColumnsType() {
+        assertEquals("GEOMETRY", getTable().getColumnsType(COL_THE_GEOM));
+        assertEquals("INTEGER", getTable().getColumnsType(COL_ID));
+        assertEquals("VARCHAR", getTable().getColumnsType(COL_MEANING));
+        assertNull(getTable().getColumnsType("NOT_A_COLUMN"));
+    }
+
+    /**
+     * Test the {@link JdbcTable#getColumns()} method.
+     */
+    @Test
+    public void testGetColumns() {
+        Map<String, String> map = getTable().getColumns();
+        String[] keys = {COL_THE_GEOM2, COL_THE_GEOM, COL_ID, COL_VALUE, COL_MEANING};
+        String[] values = {"POINTZ", "GEOMETRY", "INTEGER", "DOUBLE", "VARCHAR"};
+        assertArrayEquals(keys, map.keySet().toArray());
+        assertArrayEquals(values, map.values().toArray());
     }
 
     /**

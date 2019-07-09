@@ -69,7 +69,7 @@ public class ProcessManagerTest {
     }
 
     /**
-     * Test dedicated to the {@link ProcessManager#create()} and {@link ProcessManager#create(Closure)} methods.
+     * Test the {@link ProcessManager#create()} and {@link ProcessManager#create(Closure)} methods.
      */
     @Test
     void testCreate(){
@@ -98,7 +98,7 @@ public class ProcessManagerTest {
     }
 
     /**
-     * Test dedicated to the {@link ProcessManager#factoryIds()},
+     * Test the {@link ProcessManager#factoryIds()},
      * {@link ProcessManager#factory(String)}, {@link ProcessManager#factory()},
      * {@link ProcessManager#createFactory(String)}, {@link ProcessManager#createFactory()} methods.
      */
@@ -119,7 +119,7 @@ public class ProcessManagerTest {
     }
 
     /**
-     * Test dedicated to the {@link ProcessManager#process(String)} and {@link ProcessManager#process(String, String)} methods.
+     * Test the {@link ProcessManager#process(String)} and {@link ProcessManager#process(String, String)} methods.
      */
     @Test
     void testProcess(){

@@ -52,7 +52,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class ProcessFactoryTest {
 
     /**
-     * Test dedicated to the {@link ProcessFactory#isDefault()} and {@link ProcessFactory#isLocked()} methods.
+     * Test the {@link ProcessFactory#isDefault()} and {@link ProcessFactory#isLocked()} methods.
      */
     @Test
     void testAttributes(){
@@ -66,7 +66,7 @@ public class ProcessFactoryTest {
     }
 
     /**
-     * Test dedicated to the {@link ProcessFactory#registerProcess(IProcess)} method.
+     * Test the {@link ProcessFactory#registerProcess(IProcess)} method.
      */
     @Test
     void testRegister(){
@@ -82,7 +82,7 @@ public class ProcessFactoryTest {
     }
 
     /**
-     * Test dedicated to the {@link ProcessFactory#create()} and {@link ProcessFactory#create(Closure)} methods.
+     * Test the {@link ProcessFactory#create()} and {@link ProcessFactory#create(Closure)} methods.
      */
     @Test
     void testCreate(){

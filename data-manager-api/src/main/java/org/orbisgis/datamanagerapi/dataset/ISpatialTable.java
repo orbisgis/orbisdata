@@ -38,8 +38,10 @@ package org.orbisgis.datamanagerapi.dataset;
 
 import org.h2gis.utilities.SpatialResultSet;
 import org.h2gis.utilities.SpatialResultSetMetaData;
+import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -61,6 +63,34 @@ public interface ISpatialTable extends IJdbcTable, SpatialResultSet {
 
     @Override
     Geometry getGeometry();
+
+    /**
+     * Return the list of the table geometric columns.
+     *
+     * @return The list of the table geometric columns.
+     */
+    List<String> getGeometricColumns();
+
+    /**
+     * Return the full extend {@link Geometry} of the first geometry column of the table.
+     *
+     * @return The full extend {@link Geometry} of the first geometry column of the table.
+     */
+    Envelope getExtend();
+
+    /**
+     * Return the estimated extend {@link Geometry} of the first geometry column of the table.
+     *
+     * @return The estimated extend {@link Geometry} of the first geometry column of the table.
+     */
+    Geometry getEstimatedExtend();
+
+    /**
+     * Return the SRID code of the first geometry column of the table.
+     *
+     * @return The SRID code of the first geometry column of the table.
+     */
+    int getSrid();
 
     /**
      * Returns a {@link Map} containing the field names as key and the SFS geometry type (well known name) as value.

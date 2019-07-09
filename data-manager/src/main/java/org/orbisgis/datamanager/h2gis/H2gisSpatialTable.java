@@ -39,7 +39,6 @@ package org.orbisgis.datamanager.h2gis;
 import org.h2gis.utilities.TableLocation;
 import org.h2gis.utilities.wrapper.SpatialResultSetImpl;
 import org.h2gis.utilities.wrapper.StatementWrapper;
-import org.locationtech.jts.geom.Geometry;
 import org.orbisgis.datamanager.JdbcDataSource;
 import org.orbisgis.datamanager.JdbcSpatialTable;
 import org.orbisgis.datamanagerapi.dataset.DataBaseType;

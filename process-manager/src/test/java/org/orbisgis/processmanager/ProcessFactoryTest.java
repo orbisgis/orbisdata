@@ -96,7 +96,7 @@ public class ProcessFactoryTest {
                 "            inputs inputA: String, inputB: String\n" +
                 "            outputs outputA: String\n" +
                 "            version \"version\"\n" +
-                "            closure { inputA, inputB -> [outputA: inputA + inputB] }\n" +
+                "            run { inputA, inputB -> [outputA: inputA + inputB] }\n" +
                 "        })";
         Closure cl = (Closure)new GroovyShell().evaluate(string);
         IProcess process = pf1.create(cl);

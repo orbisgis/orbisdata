@@ -117,7 +117,7 @@ public abstract class InOutPut implements IInOutPut {
     }
 
     @Override
-    public String[] getKeyWords() {
+    public String[] getKeywords() {
         return keywords;
     }
 

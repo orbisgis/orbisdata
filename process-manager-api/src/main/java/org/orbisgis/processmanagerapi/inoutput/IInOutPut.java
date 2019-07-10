@@ -128,5 +128,5 @@ public interface IInOutPut {
      *
      * @return The keywords of the input/output.
      */
-    String[] getKeyWords();
+    String[] getKeywords();
 }

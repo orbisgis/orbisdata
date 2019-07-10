@@ -36,8 +36,11 @@
  */
 package org.orbisgis.processmanager.inoutput;
 
+import groovy.lang.MissingMethodException;
 import org.orbisgis.processmanagerapi.IProcess;
 import org.orbisgis.processmanagerapi.inoutput.IOutput;
+
+import java.util.Arrays;
 
 /**
  * Implementation of the {@link IOutput} interface.
@@ -82,5 +85,31 @@ public class Output extends InOutPut implements IOutput {
     public Output setType(Class type) {
         super.setType(type);
         return this;
+    }
+
+    public Object methodMissing(String name, Object args) {
+        Object[] objs = (Object[])args;
+        if(objs.length > 0) {
+            switch (name) {
+                case "type":
+                    if (objs[0] instanceof Class) {
+                        return setType((Class) objs[0]);
+                    }
+                case "keywords":
+                    if (Arrays.stream(objs).allMatch(String.class::isInstance)) {
+                        String[] array = Arrays.stream(objs).toArray(String[]::new);
+                        return setKeywords(array);
+                    }
+                case "description":
+                    if (objs[0] instanceof String) {
+                        return setDescription((String) objs[0]);
+                    }
+                case "title":
+                    if (objs[0] instanceof String) {
+                        return setTitle((String) objs[0]);
+                    }
+            }
+        }
+        throw new MissingMethodException(name, this.getClass(), (Object[])args);
     }
 }

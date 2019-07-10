@@ -113,7 +113,7 @@ public interface IProcessBuilder {
      *
      * @return A {@link IProcessBuilder} to continue the building.
      */
-    IProcessBuilder closure(Closure closure);
+    IProcessBuilder run(Closure closure);
 
     /**
      * Build and return the process.

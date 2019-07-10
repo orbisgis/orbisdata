@@ -114,7 +114,7 @@ public class ProcessBuilder implements IProcessBuilder {
     }
 
     @Override
-    public IProcessBuilder closure(Closure closure) {
+    public IProcessBuilder run(Closure closure) {
         this.closure = closure;
         return this;
     }

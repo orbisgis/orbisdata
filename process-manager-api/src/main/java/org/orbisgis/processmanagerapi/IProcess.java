@@ -122,4 +122,13 @@ public interface IProcess {
      * @return A {@link Map} with the output name as key and its {@link Class} as value.
      */
     List<IOutput> getOutputs();
+
+    /**
+     * Call the {@link IProcess#execute(LinkedHashMap)} method.
+     *
+     * @param inputDataMap Map of the inputs with the name as key and the input value as value.
+     *
+     * @return True if the execution is successful, false otherwise.
+     */
+    boolean call(LinkedHashMap<String, Object> inputDataMap);
 }

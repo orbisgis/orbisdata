@@ -493,4 +493,9 @@ public class ProcessMapper implements IProcessMapper {
         link(new Input(inputEntry.getValue(), inputEntry.getKey()))
                 .to(new Output(outputEntry.getValue(), outputEntry.getKey()));
     }
+
+    @Override
+    public boolean call(LinkedHashMap<String, Object> inputDataMap){
+        return execute(inputDataMap);
+    }
 }

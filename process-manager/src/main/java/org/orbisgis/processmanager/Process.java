@@ -329,4 +329,9 @@ public class Process implements IProcess, GroovyObject {
     public void setMetaClass(MetaClass metaClass) {
         this.metaClass = metaClass;
     }
+
+    @Override
+    public boolean call(LinkedHashMap<String, Object> inputDataMap){
+        return execute(inputDataMap);
+    }
 }

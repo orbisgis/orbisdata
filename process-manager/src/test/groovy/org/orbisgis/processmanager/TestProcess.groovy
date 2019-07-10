@@ -53,7 +53,7 @@ class TestProcess {
     void testProcessCreation(){
 
         assertFalse processManager.create({}).execute()
-        assertTrue  processManager.create({closure {1+1}}).execute()
+        assertTrue  processManager.create({run {1+1}}).execute()
 
         String[] arr = ["key1", "key2"]
 
@@ -64,7 +64,7 @@ class TestProcess {
                 .inputs([inputA : String, inputB : String])
                 .outputs([outputA : String])
                 .version("version")
-                .closure({ inputA, inputB -> [outputA : inputA+inputB] })
+                .run({ inputA, inputB -> [outputA: inputA+inputB] })
                 .process
         process.execute([inputA : "tata", inputB : "toto"])
         assertEquals "tatatoto", process.results.outputA
@@ -82,7 +82,7 @@ class TestProcess {
             inputs inputA: String, inputB: String
             outputs outputA: String
             version "version"
-            closure { inputA, inputB -> [outputA: inputA + inputB] }
+            run { inputA, inputB -> [outputA: inputA + inputB] }
         })
         process.execute([inputA : "tata", inputB : "toto"])
         assertEquals "tatatoto", process.results.outputA
@@ -100,7 +100,7 @@ class TestProcess {
             inputs inputA: String, inputB: String
             outputs outputA: String
             version "version"
-            closure { inputA, inputB -> [outputA: inputA + inputB] }
+            run { inputA, inputB -> [outputA: inputA + inputB] }
         })
 
         process([inputA : "tata", inputB : "toto"])
@@ -119,7 +119,7 @@ class TestProcess {
                 .title("simple process")
                 .inputs([inputA : String, inputB : String])
                 .outputs([outputA : String])
-                .closure({ inputA, inputB -> [outputA : inputA+inputB] })
+                .run({ inputA, inputB -> [outputA: inputA+inputB] })
                 .process
         process.execute([inputA : "tata", inputB : "toto"])
         assertEquals "tatatoto", process.getResults().outputA
@@ -131,7 +131,7 @@ class TestProcess {
             title "OrbisGIS"
             inputs inputA: String
             outputs outputA: String
-            closure { inputA -> [outputA: inputA.replace("OrbisGIS", "Bretagne")] }
+            run { inputA -> [outputA: inputA.replace("OrbisGIS", "Bretagne")] }
         })
 
         p.execute([inputA: 'OrbisGIS is nice'])
@@ -151,7 +151,7 @@ class TestProcess {
             title "With database"
             inputs inputA: ITable
             outputs outputA: String
-            closure { inputA -> [outputA: inputA.columnNames] }
+            run { inputA -> [outputA: inputA.columnNames] }
         })
 
 
@@ -166,7 +166,7 @@ class TestProcess {
             title "Create a buffer around a geometry"
             inputs inputA: Geometry, distance: double
             outputs outputA: Geometry
-            closure { inputA, distance -> [outputA: inputA.buffer(distance)] }
+            run { inputA, distance -> [outputA: inputA.buffer(distance)] }
         })
 
         p.execute([inputA : new WKTReader().read("POINT(1 1)"), distance : 10] )
@@ -192,7 +192,7 @@ class TestProcess {
             title "Array"
             inputs inputA: String[]
             outputs outputA: String
-            closure { inputA -> [outputA: inputA[1]] }
+            run { inputA -> [outputA: inputA[1]] }
         })
 
 
@@ -207,7 +207,7 @@ class TestProcess {
             title "simple process"
             inputs inputA: String, inputB: "toto"
             outputs outputA: String
-            closure { inputA, inputB -> [outputA: inputA + inputB] }
+            run { inputA, inputB -> [outputA: inputA + inputB] }
         })
 
         assertTrue p.execute([inputA : "tata"])
@@ -232,7 +232,7 @@ class TestProcess {
             title "simple process"
             inputs inputA: String, inputB: "tyty", inputC: 5.23d, inputD: Double
             outputs outputA: String
-            closure { inputA, inputB, inputC, inputD -> [outputA: inputA + inputB + inputC + inputD] }
+            run { inputA, inputB, inputC, inputD -> [outputA: inputA + inputB + inputC + inputD] }
         })
         assertTrue process.execute([inputA : "tata", inputB : "toto", inputC : 1.0d, inputD : 2.1d])
         assertEquals "tatatoto1.02.1", process.getResults().outputA
@@ -257,13 +257,13 @@ class TestProcess {
             title "pA"
             inputs inA1: String, inA2: String
             outputs outA1: String
-            closure { inA1, inA2 -> [outA1: inA1 + inA2] }
+            run { inA1, inA2 -> [outA1: inA1 + inA2] }
         })
         def pB = processManager.factory("map1").create({
             title "pB"
             inputs inB1: String
             outputs outB1: String
-            closure { inB1 -> [outB1: inB1 + inB1] }
+            run { inB1 -> [outB1: inB1 + inB1] }
         })
 
         def mapper = new ProcessMapper()
@@ -289,19 +289,19 @@ class TestProcess {
                 title "pA"
                 inputs inA1:String
                 outputs outA1:String
-                closure {inA1 ->[outA1:inA1.toUpperCase()]}
+                run { inA1 ->[outA1:inA1.toUpperCase()]}
         })
         def pB = processManager.factory("map2").create({
             title "pB"
             inputs inB1: String, inB2: String
             outputs outB1: String
-            closure { inB1, inB2 -> [outB1: inB2 + inB1] }
+            run { inB1, inB2 -> [outB1: inB2 + inB1] }
         })
         def pC = processManager.factory("map2").create({
             title "pC"
             inputs inC1: String, inC2: String
             outputs outC1: String, outC2: String
-            closure { inC1, inC2 -> [outC1: inC1 + inC2, outC2: inC2 + inC1] }
+            run { inC1, inC2 -> [outC1: inC1 + inC2, outC2: inC2 + inC1] }
         })
 
         def mapper = new ProcessMapper()
@@ -329,20 +329,20 @@ class TestProcess {
             title "process"
             inputs in1: String
             outputs out1: String
-            closure { in1 -> [out1: in1.toUpperCase()] }
+            run { in1 -> [out1: in1.toUpperCase()] }
         })
         def pB = processManager.factory("map3").create({
             title "pB"
             inputs in1: String, in2: String
             outputs out1: String
-            closure { in1, in2 -> [out1: in2 + in1] }
+            run { in1, in2 -> [out1: in2 + in1] }
         })
         def pC = processManager.factory("map3").getProcess(pB.getIdentifier())
         def pD = processManager.factory("map3").create({
             title "pD"
             inputs in1: String, in2: String
             outputs out1: String, out2: String
-            closure { in1, in2 -> [out1: in1.toLowerCase(), out2: in2 + in1] }
+            run { in1, in2 -> [out1: in1.toLowerCase(), out2: in2 + in1] }
         })
 
         def mapper = new ProcessMapper()
@@ -370,7 +370,7 @@ class TestProcess {
             title "pA"
             inputs inA1: String, inA2: String
             outputs outA1: String
-            closure { inA1, inA2 -> [outA1: inA1 + inA2] }
+            run { inA1, inA2 -> [outA1: inA1 + inA2] }
         })
         def pA2 = processManager.factory("map4").getProcess(pA1.getIdentifier())
         def pA3 = processManager.factory("map4").getProcess(pA1.getIdentifier())
@@ -399,14 +399,14 @@ class TestProcess {
             title "pA"
             inputs inA1: String, inA2: String
             outputs outA1: String
-            closure { inA1, inA2 -> [outA1: inA1 + inA2] }
+            run { inA1, inA2 -> [outA1: inA1 + inA2] }
         })
         def pA2 = processManager.factory("map5").getProcess(pA1.getIdentifier())
         def pB1 = processManager.factory("map5").create({
             title "pB"
             inputs inB1: String, inB2: String
             outputs outB1: String
-            closure { inB1, inB2 -> [outB1: inB1 + " or " + inB2] }
+            run { inB1, inB2 -> [outB1: inB1 + " or " + inB2] }
         })
         def pB2 = processManager.factory("map5").getProcess(pB1.getIdentifier())
 
@@ -447,13 +447,13 @@ class TestProcess {
             title "pA"
             inputs inA1: String, inA2: String
             outputs outA1: String
-            closure { inA1, inA2 -> [outA1: inA1 + inA2] }
+            run { inA1, inA2 -> [outA1: inA1 + inA2] }
         })
         def pB = processManager.factory("map1").create({
             title "pB"
             inputs inB1: String
             outputs outB1: String
-            closure { inB1 -> [outB1: inB1 + inB1] }
+            run { inB1 -> [outB1: inB1 + inB1] }
         })
 
         def mapper = new ProcessMapper()

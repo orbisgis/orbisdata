@@ -67,7 +67,7 @@ public class ProcessBuilderTest {
 
         IProcessFactory factory = ProcessManager.createFactory();
         IProcess process = new ProcessBuilder(factory).title("title").description("description")
-                .keywords(new String[]{"key1", "key2"}).inputs(inputs).outputs(outputs).closure(null)
+                .keywords(new String[]{"key1", "key2"}).inputs(inputs).outputs(outputs).run(null)
                 .version("version").getProcess();
 
         assertEquals("title", process.getTitle());

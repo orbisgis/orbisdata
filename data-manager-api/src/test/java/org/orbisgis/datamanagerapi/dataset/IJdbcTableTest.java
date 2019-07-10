@@ -409,6 +409,8 @@ public class IJdbcTableTest {
         @Override public <T> T unwrap(Class<T> aClass) {return null;}
         @Override public boolean isWrapperFor(Class<?> aClass) {return false;}
         @Override public Collection<String> getColumnNames() {return null;}
+        @Override public Map<String, String> getColumns() {return null;}
+        @Override public String getColumnsType(String columnName) {return null;}
         @Override public boolean hasColumn(String columnName, Class clazz) {return false;}
         @Override public int getRowCount() {return 0;}
         @Override public Collection<String> getUniqueValues(String column) {return null;}

@@ -53,17 +53,18 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.Point;
+import org.orbisgis.commons.printer.Ascii;
+import org.orbisgis.commons.printer.Html;
 import org.orbisgis.datamanager.h2gis.H2gisSpatialTable;
 import org.orbisgis.datamanagerapi.dataset.*;
+import org.orbisgis.datamanagerapi.dsl.IOptionBuilder;
 
 import java.io.File;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -448,6 +449,102 @@ public class JdbcTableTest {
 
         assertNotNull(table.getProperty("data"));
         assertThrows(InvokerInvocationException.class, () -> table.invokeMethod("dupMethod", null));
+    }
+
+    /**
+     * Test the {@link JdbcTable#getColumnsType(String)} method.
+     */
+    @Test
+    public void testGetColumnsType() {
+        assertEquals("GEOMETRY", getTable().getColumnsType(COL_THE_GEOM));
+        assertEquals("INTEGER", getTable().getColumnsType(COL_ID));
+        assertEquals("VARCHAR", getTable().getColumnsType(COL_MEANING));
+        assertNull(getTable().getColumnsType("NOT_A_COLUMN"));
+    }
+
+    /**
+     * Test the {@link JdbcTable#getColumns()} method.
+     */
+    @Test
+    public void testGetColumns() {
+        Map<String, String> map = getTable().getColumns();
+        String[] keys = {COL_THE_GEOM2, COL_THE_GEOM, COL_ID, COL_VALUE, COL_MEANING};
+        String[] values = {"POINTZ", "GEOMETRY", "INTEGER", "DOUBLE", "VARCHAR"};
+        assertArrayEquals(keys, map.keySet().toArray());
+        assertArrayEquals(values, map.values().toArray());
+    }
+
+    /**
+     * Test the sql building method.
+     */
+    @Test
+    public void testSqlBuilding() {
+        Map<String, IOptionBuilder.Order> map = new HashMap<>();
+        map.put("toto", IOptionBuilder.Order.ASC);
+        map.put("tata", IOptionBuilder.Order.DESC);
+
+        assertEquals("SELECT * FROM ORBISGIS WHERE toto", getTable().where("toto").toString().trim());
+        assertEquals("SELECT * FROM ORBISGIS GROUP BY toto", getTable().groupBy("toto").toString().trim());
+        assertEquals("SELECT * FROM ORBISGIS GROUP BY toto, tata", getTable().groupBy("toto", "tata").toString().trim());
+        assertEquals("SELECT * FROM ORBISGIS ORDER BY toto", getTable().orderBy("toto").toString().trim());
+        assertEquals("SELECT * FROM ORBISGIS ORDER BY toto ASC", getTable().orderBy("toto", IOptionBuilder.Order.ASC).toString().trim());
+        assertEquals("SELECT * FROM ORBISGIS ORDER BY toto ASC, tata DESC", getTable().orderBy(map).toString().trim());
+        assertEquals("SELECT * FROM ORBISGIS LIMIT 0", getTable().limit(0).toString().trim());
+    }
+
+    /**
+     * Test the {@link JdbcTable#getTable()} and {@link JdbcTable#getSpatialTable()} methods.
+     */
+    @Test
+    public void testGetTable() {
+        assertNotNull(getTable().getTable());
+        assertNull(getTable().getSpatialTable());
+    }
+
+    /**
+     * Test the {@link JdbcTable#getTable()} method.
+     */
+    @Test
+    public void testAsType() {
+        assertNotNull(getTable().asType(ITable.class));
+        assertTrue(getTable().asType(ITable.class) instanceof ITable);
+        assertNull(getTable().asType(ISpatialTable.class));
+        assertEquals("+-------------------+\n" +
+                "|     ORBISGIS      |\n" +
+                "+-------------------+-------------------+-------------------+-------------------+-------------------+\n" +
+                "|     THE_GEOM      |     THE_GEOM2     |        ID         |       VALUE       |      MEANING      |\n" +
+                "+-------------------+-------------------+-------------------+-------------------+-------------------+\n" +
+                "|POINT (0 0)        |POINT (1 1)        |                  1|                2.3|Simple points      |\n" +
+                "|POINT (0 1)        |POINT (10 11)      |                  2|              0.568|3D point           |\n" +
+                "+-------------------+-------------------+-------------------+-------------------+-------------------+\n",
+                getTable().asType(Ascii.class).toString());
+        assertEquals("<table>\n" +
+                "<caption>ORBISGIS</caption>\n" +
+                "<tr></tr>\n" +
+                "<tr>\n" +
+                "<th align=\"CENTER\">THE_GEOM</th>\n" +
+                "<th align=\"CENTER\">THE_GEOM2</th>\n" +
+                "<th align=\"CENTER\">ID</th>\n" +
+                "<th align=\"CENTER\">VALUE</th>\n" +
+                "<th align=\"CENTER\">MEANING</th>\n" +
+                "</tr>\n" +
+                "<tr></tr>\n" +
+                "<tr>\n" +
+                "<td align=\"LEFT\">POINT (0 0)</td>\n" +
+                "<td align=\"LEFT\">POINT (1 1)</td>\n" +
+                "<td align=\"RIGHT\">1</td>\n" +
+                "<td align=\"RIGHT\">2.3</td>\n" +
+                "<td align=\"LEFT\">Simple points</td>\n" +
+                "</tr>\n" +
+                "<tr>\n" +
+                "<td align=\"LEFT\">POINT (0 1)</td>\n" +
+                "<td align=\"LEFT\">POINT (10 11)</td>\n" +
+                "<td align=\"RIGHT\">2</td>\n" +
+                "<td align=\"RIGHT\">0.568</td>\n" +
+                "<td align=\"LEFT\">3D point</td>\n" +
+                "</tr>\n" +
+                "<tr></tr>\n" +
+                "</table>\n", getTable().asType(Html.class).toString());
     }
 
     /**

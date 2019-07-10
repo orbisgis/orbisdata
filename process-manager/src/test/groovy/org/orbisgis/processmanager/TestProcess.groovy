@@ -92,6 +92,25 @@ class TestProcess {
         assertEquals 2, process.inputs.size()
         assertEquals 1, process.outputs.size()
         assertEquals "version", process.version
+
+        process = processManager.create({
+            title "simple process"
+            description "description"
+            keywords "key1", "key2"
+            inputs inputA: String, inputB: String
+            outputs outputA: String
+            version "version"
+            closure { inputA, inputB -> [outputA: inputA + inputB] }
+        })
+
+        process([inputA : "tata", inputB : "toto"])
+        assertEquals "tatatoto", process.results.outputA
+        assertEquals "simple process", process.title
+        assertEquals "description", process.description
+        assertArrayEquals arr, process.keywords
+        assertEquals 2, process.inputs.size()
+        assertEquals 1, process.outputs.size()
+        assertEquals "version", process.version
     }
 
     @Test

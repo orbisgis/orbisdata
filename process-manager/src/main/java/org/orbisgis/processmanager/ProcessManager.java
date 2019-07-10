@@ -69,7 +69,7 @@ public class ProcessManager implements IProcessManager {
      */
     private ProcessManager(){
         processFactoryMap = new HashMap<>();
-        processFactoryMap.put(DEFAULT_FACTORY_NAME, new ProcessFactory(true, true));
+        processFactoryMap.put(DEFAULT_FACTORY_NAME, new ProcessFactory(false, true));
     }
 
     /**

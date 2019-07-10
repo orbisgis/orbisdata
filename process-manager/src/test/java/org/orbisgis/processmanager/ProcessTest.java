@@ -283,9 +283,6 @@ public class ProcessTest {
 
         //Test empty inputs
         assertFalse(fullProcess.execute(new LinkedHashMap<>()));
-
-        //Test null inputs
-        assertFalse(fullProcess.execute(null));
     }
 
     @Test

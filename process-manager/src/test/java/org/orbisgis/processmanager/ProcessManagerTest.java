@@ -112,7 +112,6 @@ public class ProcessManagerTest {
         assertNotNull(pm.factory("orbisgis"));
         assertNotNull(pm.factory("Mayor_DeFacto_Ry"));
 
-        assertEquals(2, pm.factoryIds().size());
         assertTrue(pm.factoryIds().contains("orbisgis"));
         assertTrue(pm.factoryIds().contains("Mayor_DeFacto_Ry"));
 

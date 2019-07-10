@@ -79,11 +79,21 @@ public class ProcessMapper implements IProcessMapper {
     private List<IProcessCheck> beforeList = new ArrayList<>();
     /** List of check to do after process execution */
     private List<IProcessCheck> afterList = new ArrayList<>();
+    /** Title of the mapper. */
+    private String title;
+
+    /**
+     * Main empty constructor.
+     */
+    public ProcessMapper(){
+        this(null);
+    }
 
     /**
      * Main constructor.
      */
-    public ProcessMapper(){
+    public ProcessMapper(String title){
+        this.title = title;
         inputOutputMap = new HashMap<>();
         aliases = new HashMap<>();
     }
@@ -155,7 +165,8 @@ public class ProcessMapper implements IProcessMapper {
         }
         if (!isBetween &&
                 outputs.stream().noneMatch(iOutput -> iOutput.getName().equals(output.getName()) &&
-                        iOutput.getProcess().getIdentifier().equals(output.getProcess().getIdentifier()))) {
+                        iOutput.getProcess().getIdentifier().equals(output.getProcess().getIdentifier())) &&
+                getAlias(output.getName(), process) == null) {
             outputs.add(output);
         }
     }
@@ -215,7 +226,7 @@ public class ProcessMapper implements IProcessMapper {
     /**
      * Link the inputs, the outputs and the aliases to prepare the execution.
      */
-    private void link(){
+    private boolean link(){
         executionTree = new ArrayList<>();
         results = new HashMap<>();
         processList = new ArrayList<>();
@@ -239,7 +250,9 @@ public class ProcessMapper implements IProcessMapper {
         if(!iterableProcessList.isEmpty()){
             LOGGER.error("Unable to link the processes '"+
                     iterableProcessList.stream().map(IProcess::getTitle).collect(Collectors.joining(","))+"'");
+            return false;
         }
+        return true;
     }
 
     @Override
@@ -308,7 +321,9 @@ public class ProcessMapper implements IProcessMapper {
 
     @Override
     public boolean execute(LinkedHashMap<String, Object> inputDataMap) {
-        link();
+        if(!link()){
+            return false;
+        }
         Map<String, Object> dataMap = inputDataMap == null ?  new HashMap<>() : new HashMap<>(inputDataMap);
         //Iterate over the execution tree
         for(List<IProcess> processes : executionTree){
@@ -343,8 +358,8 @@ public class ProcessMapper implements IProcessMapper {
         for(String key : process.getResults().keySet()){
             boolean isBetween = false;
             for(Map.Entry<IInOutPut, IInOutPut> entry : inputOutputMap.entrySet()){
-                if(entry.getKey().getName().equals(key) &&
-                        entry.getKey().getProcess().getIdentifier().equals(process.getIdentifier())){
+                if(entry.getValue().getName().equals(key) &&
+                        entry.getValue().getProcess().getIdentifier().equals(process.getIdentifier())){
                     isBetween = true;
                 }
             }
@@ -362,7 +377,7 @@ public class ProcessMapper implements IProcessMapper {
 
     @Override
     public String getTitle() {
-        return null;
+        return title;
     }
 
     @Override
@@ -430,27 +445,24 @@ public class ProcessMapper implements IProcessMapper {
 
         @Override
         public void to(IInOutPut... inOutPuts) {
+            if(inOutPuts.length == 0){
+                LOGGER.error("The input/output list should not be empty.");
+                return;
+            }
+            if(Arrays.stream(inOutPuts).anyMatch(iInOutPut -> iInOutPut instanceof IInput) &&
+                    Arrays.stream(inOutPuts).anyMatch(iInOutPut -> iInOutPut instanceof IOutput)){
+                LOGGER.error("Input and outputs should not be mixed.");
+                return;
+            }
             if(!inputList.isEmpty()) {
-                boolean allOutputs = true;
-                for(IInOutPut inOutPut : inOutPuts){
-                    if(inOutPut.getProcess().getOutputs().stream().noneMatch(output -> output.getName().equals(inOutPut.getName()))) {
-                        allOutputs = false;
-                    }
-                }
-                if(!allOutputs){
+                if(Arrays.stream(inOutPuts).noneMatch(iInOutPut -> iInOutPut instanceof IOutput)){
                     LOGGER.error("Inputs should be link to outputs.");
                     return;
                 }
                 outputList.addAll(Arrays.asList(inOutPuts));
             }
-            if(!outputList.isEmpty()) {
-                boolean allInputs = true;
-                for(IInOutPut inOutPut : inOutPuts){
-                    if(inOutPut.getProcess().getInputs().stream().noneMatch(input -> input.getName().equals(inOutPut.getName()))) {
-                        allInputs = false;
-                    }
-                }
-                if(!allInputs){
+            else if(!outputList.isEmpty()) {
+                if(Arrays.stream(inOutPuts).noneMatch(iInOutPut -> iInOutPut instanceof IInput)){
                     LOGGER.error("Outputs should be link to inputs.");
                     return;
                 }

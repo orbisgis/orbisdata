@@ -36,11 +36,8 @@
  */
 package org.orbisgis.processmanager.inoutput;
 
-import groovy.lang.MissingMethodException;
 import org.orbisgis.processmanagerapi.IProcess;
 import org.orbisgis.processmanagerapi.inoutput.IOutput;
-
-import java.util.Arrays;
 
 /**
  * Implementation of the {@link IOutput} interface.

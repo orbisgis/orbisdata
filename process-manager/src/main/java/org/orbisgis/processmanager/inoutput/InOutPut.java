@@ -159,6 +159,8 @@ public abstract class InOutPut implements IInOutPut {
                     if (objs[0] instanceof String) {
                         return setTitle((String) objs[0]);
                     }
+                default:
+                    throw new MissingMethodException(name, this.getClass(), (Object[])args);
             }
         }
         throw new MissingMethodException(name, this.getClass(), (Object[])args);

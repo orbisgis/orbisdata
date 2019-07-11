@@ -128,5 +128,15 @@ public interface IInOutPut {
      *
      * @return The keywords of the input/output.
      */
-    String[] getKeyWords();
+    String[] getKeywords();
+
+    /**
+     * Methods used by groovy to simplify the syntax.
+     *
+     * @param name Name of the methods.
+     * @param args Object array of the method argument.
+     *
+     * @return Method result.
+     */
+    Object methodMissing(String name, Object args);
 }

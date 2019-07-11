@@ -36,6 +36,21 @@
  */
 package org.orbisgis.processmanager.check;
 
+import groovy.lang.Closure;
+import groovy.lang.GroovyShell;
+import org.junit.jupiter.api.Test;
+import org.orbisgis.processmanager.ProcessManager;
+import org.orbisgis.processmanager.ProcessMapper;
+import org.orbisgis.processmanager.Process;
+import org.orbisgis.processmanagerapi.check.ICheckClosureBuilder;
+import org.orbisgis.processmanagerapi.check.ICheckDataBuilder;
+import org.orbisgis.processmanagerapi.check.ICheckOptionBuilder;
+import org.orbisgis.processmanagerapi.check.IProcessCheck;
+
+import java.util.LinkedHashMap;
+
+import static org.junit.jupiter.api.Assertions.*;
+
 /**
  * Test class dedicated to {@link CheckOptionBuilder} class.
  *
@@ -43,4 +58,81 @@ package org.orbisgis.processmanager.check;
  * @author Sylvain PALOMINOS (UBS 2019)
  */
 public class CheckOptionBuilderTest {
+
+    /**
+     * Test the building of the check options.
+     */
+    @Test
+    public void buildingTest(){
+        ICheckDataBuilder dataBuilder = new ProcessMapper().after(null);
+        assertNotNull(dataBuilder);
+
+        ICheckClosureBuilder closureBuilder = dataBuilder.with("toto", "tata");
+        assertNotNull(closureBuilder);
+
+        ICheckOptionBuilder optionBuilder = closureBuilder.check((Closure)new GroovyShell().evaluate("({true})"));
+        assertNotNull(optionBuilder);
+
+        optionBuilder = optionBuilder.continueOnFail("continue");
+        assertNotNull(optionBuilder);
+
+        optionBuilder = optionBuilder.continueOnSuccess("continue");
+        assertNotNull(optionBuilder);
+
+        optionBuilder = optionBuilder.stopOnFail("continue");
+        assertNotNull(optionBuilder);
+
+        optionBuilder = optionBuilder.stopOnSuccess("continue");
+        assertNotNull(optionBuilder);
+    }
+
+    /**
+     * Test the {@link ProcessCheck} class.
+     */
+    @Test
+    public void processCheckTest(){
+        ProcessCheck processCheck = new ProcessCheck(null);
+        assertNull(processCheck.getProcess());
+
+        processCheck.setClosure(null);
+        ProcessCheck finalProcessCheck = processCheck;
+        assertThrows(IllegalStateException.class, () -> finalProcessCheck.run(null));
+
+        processCheck.setClosure((Closure)new GroovyShell().evaluate("({1+1})"));
+        ProcessCheck finalProcessCheck2 = processCheck;
+        assertThrows(IllegalStateException.class, () -> finalProcessCheck2.run(null));
+
+        LinkedHashMap<String, Object> inputs = new LinkedHashMap<>();
+        inputs.put("toto", String.class);
+        LinkedHashMap<String, Object> outputs = new LinkedHashMap<>();
+        outputs.put("tata", String.class);
+        LinkedHashMap<String, Object> data = new LinkedHashMap<>();
+        data.put("toto", "tata");
+        data.put("tata", "toto");
+        Process process = (Process)ProcessManager.createFactory().create().inputs(inputs).outputs(outputs).getProcess();
+        processCheck = new ProcessCheck(process);
+        assertEquals(process.getIdentifier(), processCheck.getProcess().getIdentifier());
+
+        ProcessCheck finalProcessCheck1 = processCheck;
+        processCheck.onFail(IProcessCheck.CONTINUE, "continue fail");
+        processCheck.fail();
+        processCheck.onFail(IProcessCheck.STOP, "stop fail");
+        assertThrows(IllegalStateException.class, finalProcessCheck1::fail);
+        processCheck.onSuccess(IProcessCheck.STOP, "continue success");
+        assertThrows(IllegalStateException.class, finalProcessCheck1::success);
+        processCheck.onSuccess(IProcessCheck.CONTINUE, "continue success");
+        processCheck.success();
+
+        processCheck.setInOutputs(process.getProperty("toto"), process.getProperty("tata"));
+        processCheck.setClosure((Closure)new GroovyShell().evaluate("({a, b ->b == 'tata'})"));
+        processCheck.run(data);
+
+        processCheck = new ProcessCheck(process);
+        processCheck.onFail(IProcessCheck.STOP, "stop fail");
+        processCheck.onSuccess(IProcessCheck.CONTINUE, "continue success");
+        processCheck.setInOutputs(process.getProperty("toto"), process.getProperty("tata"));
+        processCheck.setClosure((Closure)new GroovyShell().evaluate("({a, b -> b != 'tata'})"));
+        ProcessCheck finalProcessCheck3 = processCheck;
+        assertThrows(IllegalStateException.class, () -> finalProcessCheck3.run(data));
+    }
 }

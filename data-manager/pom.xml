@@ -113,6 +113,7 @@
                 <configuration>
                     <excludes>
                         <exclude>org/orbisgis/datamanager/postgis/*.class</exclude>
+                        <exclude>org/orbisgis/datamanager/DefaultResultSet.class</exclude>
                     </excludes>
                 </configuration>
             </plugin>

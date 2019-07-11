@@ -139,6 +139,9 @@ public abstract class InOutPut implements IInOutPut {
 
     @Override
     public Object methodMissing(String name, Object args) {
+        if(args == null){
+            throw new MissingMethodException(name, this.getClass(), (Object[])args);
+        }
         Object[] objs = (Object[])args;
         if(objs.length > 0) {
             switch (name) {

@@ -36,6 +36,7 @@
  */
 package org.orbisgis.processmanager.inoutput;
 
+import groovy.lang.MissingMethodException;
 import org.junit.jupiter.api.Test;
 import org.orbisgis.processmanager.ProcessManager;
 import org.orbisgis.processmanagerapi.IProcess;
@@ -50,6 +51,9 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 public class InputOutputTest {
 
+    /**
+     * Test the {@link Input} class.
+     */
     @Test
     public void testInput(){
         Input input1 = Input.call();
@@ -91,6 +95,9 @@ public class InputOutputTest {
         assertNull(input3.getType());
     }
 
+    /**
+     * Test the {@link Output} class.
+     */
     @Test
     public void testOutput(){
         Output output1 = Output.call();
@@ -115,9 +122,28 @@ public class InputOutputTest {
         assertEquals(String.class, output2.getType());
     }
 
+    /**
+     * Test the {@link InOutPut#toString()} method.
+     */
     @Test
     public void testToString(){
         IProcess process = ProcessManager.getProcessManager().create().getProcess();
         assertEquals("name:"+process.getIdentifier(), new Output(process, "name").toString());
+    }
+
+    /**
+     * Test the {@link Output#methodMissing(String, Object)} and {@link Input#methodMissing(String, Object)} methods.
+     */
+    @Test
+    public void testMissingMethodException(){
+        Output output = new Output(null, null);
+
+        assertThrows(MissingMethodException.class, () -> output.methodMissing("title", null));
+        assertThrows(MissingMethodException.class, () -> output.methodMissing("title", new Object[]{}));
+        assertThrows(MissingMethodException.class, () -> output.methodMissing("title", new Object[]{1}));
+        assertThrows(MissingMethodException.class, () -> output.methodMissing("type", new Object[]{1}));
+        assertThrows(MissingMethodException.class, () -> output.methodMissing("keywords", new Object[]{1}));
+        assertThrows(MissingMethodException.class, () -> output.methodMissing("description", new Object[]{1}));
+        assertThrows(MissingMethodException.class, () -> output.methodMissing("toto", new Object[]{1}));
     }
 }

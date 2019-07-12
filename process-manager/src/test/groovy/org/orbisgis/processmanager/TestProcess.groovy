@@ -66,7 +66,7 @@ class TestProcess {
                 .version("version")
                 .run({ inputA, inputB -> [outputA: inputA+inputB] })
                 .process
-        process.execute([inputA : "tata", inputB : "toto"])
+        process([inputA : "tata", inputB : "toto"])
         assertEquals "tatatoto", process.results.outputA
         assertEquals "simple process", process.title
         assertEquals "description", process.description
@@ -84,7 +84,7 @@ class TestProcess {
             version "version"
             run { inputA, inputB -> [outputA: inputA + inputB] }
         })
-        process.execute([inputA : "tata", inputB : "toto"])
+        process([inputA : "tata", inputB : "toto"])
         assertEquals "tatatoto", process.results.outputA
         assertEquals "simple process", process.title
         assertEquals "description", process.description
@@ -121,7 +121,7 @@ class TestProcess {
                 .outputs([outputA : String])
                 .run({ inputA, inputB -> [outputA: inputA+inputB] })
                 .process
-        process.execute([inputA : "tata", inputB : "toto"])
+        process([inputA : "tata", inputB : "toto"])
         assertEquals "tatatoto", process.getResults().outputA
     }
 
@@ -134,14 +134,14 @@ class TestProcess {
             run { inputA -> [outputA: inputA.replace("OrbisGIS", "Bretagne")] }
         })
 
-        p.execute([inputA: 'OrbisGIS is nice'])
+        p([inputA: 'OrbisGIS is nice'])
         assertTrue(p.results.outputA.equals("Bretagne is nice"))
     }
 
     @Test
     void testSimpleProcess3(){
         def h2GIS = H2GIS.open([databaseName: './target/loadH2GIS'])
-        h2GIS.execute("""
+        h2GIS("""
                 DROP TABLE IF EXISTS h2gis, super;
                 CREATE TABLE h2gis (id int, the_geom geometry(point));
                 INSERT INTO h2gis VALUES (1, 'POINT(10 10)'::GEOMETRY), (2, 'POINT(1 1)'::GEOMETRY);
@@ -155,7 +155,7 @@ class TestProcess {
         })
 
 
-        p.execute([inputA : h2GIS.getSpatialTable("h2gis")])
+        p([inputA : h2GIS.getSpatialTable("h2gis")])
         assertTrue(p.results.outputA.equals(["ID", "THE_GEOM"]))
     }
 
@@ -169,7 +169,7 @@ class TestProcess {
             run { inputA, distance -> [outputA: inputA.buffer(distance)] }
         })
 
-        p.execute([inputA : new WKTReader().read("POINT(1 1)"), distance : 10] )
+        p([inputA : new WKTReader().read("POINT(1 1)"), distance : 10] )
         assertTrue new WKTReader().read("POLYGON ((11 1, 10.807852804032304 " +
                 "-0.9509032201612824, 10.238795325112868 -2.826834323650898, 9.314696123025453 -4.555702330196022, " +
                 "8.071067811865476 -6.071067811865475, 6.555702330196023 -7.314696123025453, 4.826834323650898 " +
@@ -196,7 +196,7 @@ class TestProcess {
         })
 
 
-        p.execute([inputA :["A", "B", "C"]])
+        p([inputA :["A", "B", "C"]])
         assertEquals "B", p.getResults().outputA
     }
 
@@ -210,19 +210,19 @@ class TestProcess {
             run { inputA, inputB -> [outputA: inputA + inputB] }
         })
 
-        assertTrue p.execute([inputA : "tata"])
+        assertTrue p([inputA : "tata"])
         assertEquals "tatatoto", p.getResults().outputA
     }
 
     @Test
     void testProcessWithDefaultValue2(){
-        def process = processManager.factory("test").create(
-                "simple process",
-                [inputA : "tata", inputB : String],
-                [outputA : String],
-                { inputA, inputB -> [outputA : inputA+inputB] }
-        )
-        assertTrue process.execute([inputB : "toti"])
+        def process = processManager.factory("test").create({
+            title "simple process"
+            inputs inputA: "tata", inputB: String
+            outputs outputA: String
+            run { inputA, inputB -> [outputA: inputA + inputB] }
+        })
+        assertTrue process([inputB : "toti"])
         assertEquals "tatatoti", process.getResults().outputA
     }
 
@@ -234,16 +234,16 @@ class TestProcess {
             outputs outputA: String
             run { inputA, inputB, inputC, inputD -> [outputA: inputA + inputB + inputC + inputD] }
         })
-        assertTrue process.execute([inputA : "tata", inputB : "toto", inputC : 1.0d, inputD : 2.1d])
+        assertTrue process([inputA : "tata", inputB : "toto", inputC : 1.0d, inputD : 2.1d])
         assertEquals "tatatoto1.02.1", process.getResults().outputA
-        assertTrue process.execute([inputA : "tata", inputC : 1.0d, inputD : 2.1d])
+        assertTrue process([inputA : "tata", inputC : 1.0d, inputD : 2.1d])
         assertEquals "tatatyty1.02.1", process.getResults().outputA
-        assertTrue process.execute([inputA : "tata", inputB : "toto", inputD : 2.1d])
+        assertTrue process([inputA : "tata", inputB : "toto", inputD : 2.1d])
         assertEquals "tatatoto5.232.1", process.getResults().outputA
-        assertTrue process.execute([inputA : "tata", inputD : 2.1d])
+        assertTrue process([inputA : "tata", inputD : 2.1d])
         assertEquals "tatatyty5.232.1", process.getResults().outputA
-        assertFalse process.execute([inputD : 2.1d])
-        assertFalse process.execute([inputA : "tata", inputB : "toto"])
+        assertFalse process([inputD : 2.1d])
+        assertFalse process([inputA : "tata", inputB : "toto"])
     }
 
     /**
@@ -268,7 +268,7 @@ class TestProcess {
 
         def mapper = new ProcessMapper()
         mapper.link(pA.outA1).to(pB.inB1)
-        assertTrue mapper.execute([inA1: "t", inA2: "a"])
+        assertTrue mapper([inA1: "t", inA2: "a"])
         assertEquals "tata", mapper.getResults().outB1
     }
 
@@ -309,7 +309,7 @@ class TestProcess {
         mapper.link(pB.outB1).to(pC.inC2)
         mapper.link(pA.outA1).to(pC.inC1)
 
-        assertTrue mapper.execute([inA1: "a", inB2: "b"])
+        assertTrue mapper([inA1: "a", inB2: "b"])
         assertEquals "AbA", mapper.getResults().outC1
         assertEquals "bAA", mapper.getResults().outC2
     }
@@ -354,7 +354,7 @@ class TestProcess {
         mapper.link(pB.out1).to(pD.in1)
         mapper.link(pC.out1).to(pD.in2)
 
-        assertTrue mapper.execute([a: "a", b: "b", c: "c"])
+        assertTrue mapper([a: "a", b: "b", c: "c"])
         assertEquals "ba", mapper.getResults().out1
         assertEquals "cAbA", mapper.getResults().out2
     }
@@ -380,7 +380,7 @@ class TestProcess {
         mapper.link(pA1.outA1).to(pA2.inA2)
         mapper.link(pA2.outA1).to(pA3.inA1)
         mapper.link(pA2.outA1).to(pA3.inA2)
-        assertTrue mapper.execute([inA1: "t", inA2: "a"])
+        assertTrue mapper([inA1: "t", inA2: "a"])
         assertEquals "tatatata", mapper.getResults().outA1
     }
 
@@ -426,7 +426,7 @@ class TestProcess {
         mapper.link(pB1.outB1).to("outD")
         mapper.link(pB2.outB1).to("outK")
 
-        assertTrue mapper.execute([inputD: "D", inputK: "K", commonInput: "common"])
+        assertTrue mapper([inputD: "D", inputK: "K", commonInput: "common"])
         assertFalse mapper.getResults().containsKey("outB1")
         assertEquals "commonD or commonD", mapper.getResults().outD
         assertEquals "commonK or commonK", mapper.getResults().outK
@@ -465,7 +465,7 @@ class TestProcess {
         mapper.before(pB).with(pB.inB1, pA.outA1).check({inB1, outA1 ->inB1 == "ta" && outA1 == inB1}).stopOnFail("Fail")
         mapper.after(pB).with(pB.outB1).check({outB1 ->outB1 == "tata"}).stopOnFail("Fail")
 
-        assertTrue mapper.execute([inA1: "t", inA2: "a"])
+        assertTrue mapper([inA1: "t", inA2: "a"])
         assertEquals "tata", mapper.getResults().outB1
     }
 }

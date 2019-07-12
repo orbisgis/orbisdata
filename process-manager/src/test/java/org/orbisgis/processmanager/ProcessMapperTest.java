@@ -68,25 +68,27 @@ public class ProcessMapperTest {
     private static Process pC;
 
     @BeforeAll
-    public static void init(){
+    public static void init() {
         LinkedHashMap<String, Object> pAInputMap = new LinkedHashMap<>();
         pAInputMap.put("inA1", String.class);
         pAInputMap.put("inA2", String.class);
         LinkedHashMap<String, Object> pAOutputMap = new LinkedHashMap<>();
         pAOutputMap.put("outA1", String.class);
-        pA1 = (Process)processManager.factory("map5").create("pA", pAInputMap, pAOutputMap, new Closure(null) {
-            public int getMaximumNumberOfParameters() {
-                return 2;
-            }
-            @Override
-            public Object call(Object... arguments) {
-                Map<String, Object> map = new HashMap<>();
-                map.put("outA1", arguments[0].toString() + arguments[1].toString());
-                return map;
-            }
-        });
+        pA1 = (Process) processManager.factory("map5").create().title("pA").inputs(pAInputMap).outputs(pAOutputMap)
+                .run(new Closure(null) {
+                    public int getMaximumNumberOfParameters() {
+                        return 2;
+                    }
 
-        pA2 = (Process)pA1.newInstance();
+                    @Override
+                    public Object call(Object... arguments) {
+                        Map<String, Object> map = new HashMap<>();
+                        map.put("outA1", arguments[0].toString() + arguments[1].toString());
+                        return map;
+                    }
+                }).getProcess();
+
+        pA2 = (Process) pA1.newInstance();
 
 
         LinkedHashMap<String, Object> pBInputMap = new LinkedHashMap<>();
@@ -94,19 +96,21 @@ public class ProcessMapperTest {
         pBInputMap.put("inB2", String.class);
         LinkedHashMap<String, Object> pBOutputMap = new LinkedHashMap<>();
         pBOutputMap.put("outB1", String.class);
-        pB1 = (Process)processManager.factory("map5").create("pB", pBInputMap, pBOutputMap, new Closure(null) {
-            public int getMaximumNumberOfParameters() {
-                return 2;
-            }
-            @Override
-            public Object call(Object... arguments) {
-                Map<String, Object> map = new HashMap<>();
-                map.put("outB1", arguments[1].toString() + " or " + arguments[0].toString());
-                return map;
-            }
-        });
+        pB1 = (Process) processManager.factory("map5").create().title("pB").inputs(pBInputMap).outputs(pBOutputMap)
+                .run(new Closure(null) {
+                    public int getMaximumNumberOfParameters() {
+                        return 2;
+                    }
 
-        pB2 = (Process)pB1.newInstance();
+                    @Override
+                    public Object call(Object... arguments) {
+                        Map<String, Object> map = new HashMap<>();
+                        map.put("outB1", arguments[1].toString() + " or " + arguments[0].toString());
+                        return map;
+                    }
+                }).getProcess();
+
+        pB2 = (Process) pB1.newInstance();
 
 
         LinkedHashMap<String, Object> pCInputMap = new LinkedHashMap<>();
@@ -116,18 +120,20 @@ public class ProcessMapperTest {
         pCOutputMap.put("outC1", String.class);
         pCOutputMap.put("outC2", String.class);
 
-        pC = (Process)processManager.factory("map2").create("pC", pCInputMap, pCOutputMap, new Closure(null) {
-            public int getMaximumNumberOfParameters() {
-                return 2;
-            }
-            @Override
-            public Object call(Object... arguments) {
-                Map<String, Object> map = new HashMap<>();
-                map.put("outC1", arguments[0].toString() + arguments[1].toString());
-                map.put("outC2", arguments[1].toString() + arguments[0].toString());
-                return map;
-            }
-        });
+        pC = (Process) processManager.factory("map2").create().title("pC").inputs(pCInputMap).outputs(pCOutputMap)
+                .run(new Closure(null) {
+                    public int getMaximumNumberOfParameters() {
+                        return 2;
+                    }
+
+                    @Override
+                    public Object call(Object... arguments) {
+                        Map<String, Object> map = new HashMap<>();
+                        map.put("outC1", arguments[0].toString() + arguments[1].toString());
+                        map.put("outC2", arguments[1].toString() + arguments[0].toString());
+                        return map;
+                    }
+                }).getProcess();
     }
 
     /**
@@ -148,22 +154,24 @@ public class ProcessMapperTest {
         pAInputMap.put("inA1", String.class);
         LinkedHashMap<String, Object> pAOutputMap = new LinkedHashMap<>();
         pAOutputMap.put("outA1", String.class);
-        Process pA = (Process)processManager.factory("map2").create("pA", pAInputMap, pAOutputMap, new Closure(this) {
-            public int getMaximumNumberOfParameters() {
-                return 1;
-            }
-            @Override
-            public Object call(Object... arguments) {
-                Map<String, Object> map = new HashMap<>();
-                map.put("outA1", arguments[0].toString().toUpperCase());
-                return map;
-            }
-        });
+        Process pA = (Process) processManager.factory("map2").create().title("pA").inputs(pAInputMap)
+                .outputs(pAOutputMap).run(new Closure(this) {
+                    public int getMaximumNumberOfParameters() {
+                        return 1;
+                    }
+
+                    @Override
+                    public Object call(Object... arguments) {
+                        Map<String, Object> map = new HashMap<>();
+                        map.put("outA1", arguments[0].toString().toUpperCase());
+                        return map;
+                    }
+                }).getProcess();
 
         IProcessMapper mapper = new ProcessMapper();
-        mapper.link((IInOutPut)pA.getProperty("outA1")).to((IInOutPut)pB1.getProperty("inB1"));
-        mapper.link((IInOutPut)pB1.getProperty("outB1")).to((IInOutPut)pC.getProperty("inC2"));
-        mapper.link((IInOutPut)pA.getProperty("outA1")).to((IInOutPut)pC.getProperty("inC1"));
+        mapper.link((IInOutPut) pA.getProperty("outA1")).to((IInOutPut) pB1.getProperty("inB1"));
+        mapper.link((IInOutPut) pB1.getProperty("outB1")).to((IInOutPut) pC.getProperty("inC2"));
+        mapper.link((IInOutPut) pA.getProperty("outA1")).to((IInOutPut) pC.getProperty("inC1"));
 
         Closure cl = (Closure) new GroovyShell().evaluate("({1+1 == 2})");
 
@@ -280,7 +288,7 @@ public class ProcessMapperTest {
     }
 
     /**
-     * Test the methods {@link IProcessMapper#link(IInOutPut...)},
+     * Test the methods {@link ProcessMapper#link(IInOutPut...)},
      * {@link org.orbisgis.processmanagerapi.ILinker#to(String)} and
      * {@link org.orbisgis.processmanagerapi.ILinker#to(IInOutPut...)} methods in case of bad linking.
      */
@@ -318,8 +326,8 @@ public class ProcessMapperTest {
     }
 
     /**
-     * Test the methods {@link IProcessMapper#getTitle()}, {@link IProcessMapper#getDescription()},
-     * {@link IProcessMapper#getKeywords()}, {@link IProcessMapper#getVersion()} methods;
+     * Test the methods {@link ProcessMapper#getTitle()}, {@link ProcessMapper#getDescription()},
+     * {@link ProcessMapper#getKeywords()}, {@link ProcessMapper#getVersion()} methods.
      */
     @Test
     public void getAttributes(){
@@ -337,7 +345,7 @@ public class ProcessMapperTest {
     }
 
     /**
-     * Test the methods {@link IProcessMapper#after(IProcess)}, {@link IProcessMapper#before(IProcess)}  methods;
+     * Test the methods {@link ProcessMapper#after(IProcess)}, {@link ProcessMapper#before(IProcess)}  methods.
      */
     @Test
     public void getChecker(){

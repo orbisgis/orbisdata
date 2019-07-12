@@ -285,6 +285,9 @@ public class ProcessTest {
         assertFalse(fullProcess.execute(new LinkedHashMap<>()));
     }
 
+    /**
+     * Test the methods {@link Process#newInstance()} method.
+     */
     @Test
     void testNewInstance(){
         IProcess p = fullProcess.newInstance();
@@ -297,12 +300,18 @@ public class ProcessTest {
         assertNotEquals(fullProcess.getIdentifier(), p.getIdentifier());
     }
 
+    /**
+     * Test the methods {@link Process#invokeMethod(String, Object)} method.
+     */
     @Test
     void testInvokeMethod(){
         assertEquals("title", fullProcess.invokeMethod("getTitle", null));
         assertEquals("1.0.0", fullProcess.invokeMethod("getVersion", null));
     }
 
+    /**
+     * Test the methods {@link Process#getProperty(String)} method.
+     */
     @Test
     void testGetProperty(){
         assertTrue(fullProcess.getProperty("in1") instanceof IInput);
@@ -315,6 +324,9 @@ public class ProcessTest {
         assertEquals("title", fullProcess.getProperty("title"));
     }
 
+    /**
+     * Test the methods {@link Process#getProperty(String)} and {@link Process#setProperty(String, Object)} methods.
+     */
     @Test
     void testSetProperty(){
         assertEquals("title", fullProcess.getProperty("title"));
@@ -324,6 +336,9 @@ public class ProcessTest {
         assertEquals("title", fullProcess.getProperty("title"));
     }
 
+    /**
+     * Test the methods {@link Process#getMetaClass()} method.
+     */
     @Test
     void testMetaClass(){
         assertEquals(InvokerHelper.getMetaClass(Process.class), fullProcess.getMetaClass());

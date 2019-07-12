@@ -310,7 +310,13 @@ public class ProcessMapper implements IProcessMapper {
                         }
                     }
                 });
-                processInData.put(in.getName(), data[0]);
+                //Do not add null value for optional input
+                if(in.isOptional() && data[0] == null) {
+                    processInData.put(in.getName(), in.getDefaultValue());
+                }
+                else {
+                    processInData.put(in.getName(), data[0]);
+                }
             }
         }
         return processInData;

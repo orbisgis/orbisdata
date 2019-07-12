@@ -86,12 +86,12 @@ public class ProcessManager implements IProcessManager {
 
     @Override
     public IProcessBuilder create() {
-        return new ProcessBuilder(processFactoryMap.get(DEFAULT_FACTORY_NAME));
+        return new ProcessBuilder(processFactoryMap.get(DEFAULT_FACTORY_NAME), processFactoryMap.get(DEFAULT_FACTORY_NAME));
     }
 
     @Override
     public IProcess create(@DelegatesTo(IProcessBuilder.class) Closure cl) {
-        IProcessBuilder builder = new ProcessBuilder(processFactoryMap.get(DEFAULT_FACTORY_NAME));
+        IProcessBuilder builder = new ProcessBuilder(processFactoryMap.get(DEFAULT_FACTORY_NAME), processFactoryMap.get(DEFAULT_FACTORY_NAME));
         Closure code = cl.rehydrate(builder, this, this);
         code.setResolveStrategy(Closure.DELEGATE_FIRST);
         code.call();

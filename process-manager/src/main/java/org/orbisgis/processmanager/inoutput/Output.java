@@ -56,6 +56,13 @@ public class Output extends InOutPut implements IOutput {
         super(process, name);
     }
 
+    /**
+     * Empty constructor.
+     */
+    public Output() {
+        super(null, null);
+    }
+
     public static Output call() {
         return new Output(null, null);
     }

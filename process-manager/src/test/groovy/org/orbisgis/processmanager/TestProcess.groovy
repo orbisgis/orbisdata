@@ -41,6 +41,7 @@ import org.locationtech.jts.geom.Geometry
 import org.locationtech.jts.io.WKTReader
 import org.orbisgis.datamanager.h2gis.H2GIS
 import org.orbisgis.datamanagerapi.dataset.ITable
+import org.orbisgis.processmanager.inoutput.Input
 import org.orbisgis.processmanagerapi.IProcessManager
 
 import static org.junit.jupiter.api.Assertions.*
@@ -435,7 +436,7 @@ class TestProcess {
     }
 
     /**
-     *  --> -----      ----
+     *  X-> -----      ----
      *     |  pA | -> | pB |-->
      *  --> -----      ----
      *
@@ -445,7 +446,7 @@ class TestProcess {
     void testMapping6(){
         def pA = processManager.factory("map1").create({
             title "pA"
-            inputs inA1: String, inA2: String
+            inputs inA1: new Input().type(String).optional("t"), inA2: String
             outputs outA1: String
             run { inA1, inA2 -> [outA1: inA1 + inA2] }
         })
@@ -465,7 +466,7 @@ class TestProcess {
         mapper.before(pB).with(pB.inB1, pA.outA1).check({inB1, outA1 ->inB1 == "ta" && outA1 == inB1}).stopOnFail("Fail")
         mapper.after(pB).with(pB.outB1).check({outB1 ->outB1 == "tata"}).stopOnFail("Fail")
 
-        assertTrue mapper([inA1: "t", inA2: "a"])
+        assertTrue mapper([inA2: "a"])
         assertEquals "tata", mapper.getResults().outB1
     }
 }

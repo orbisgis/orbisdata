@@ -59,6 +59,13 @@ public class Input extends InOutPut implements IInput {
         super(process, name);
     }
 
+    /**
+     * Empty constructor.
+     */
+    public Input() {
+        super(null, null);
+    }
+
     public static Input call() {
         return new Input(null, null);
     }

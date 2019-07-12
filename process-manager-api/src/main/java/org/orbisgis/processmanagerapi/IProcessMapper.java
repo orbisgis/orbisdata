@@ -51,6 +51,13 @@ import java.util.UUID;
 public interface IProcessMapper extends IProcess {
 
     /**
+     * Return a new instance of the process.
+     *
+     * @return A process new instance.
+     */
+    IProcessMapper newInstance();
+
+    /**
      * Start to link the given inputs/outputs.
      *
      * @param inOutPuts Inputs or outputs to link.

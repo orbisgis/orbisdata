@@ -40,6 +40,7 @@ import groovy.lang.Closure;
 import groovy.lang.GroovyShell;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.orbisgis.processmanager.inoutput.InOutPut;
 import org.orbisgis.processmanagerapi.IProcess;
 import org.orbisgis.processmanagerapi.IProcessManager;
 import org.orbisgis.processmanagerapi.IProcessMapper;
@@ -244,6 +245,32 @@ public class ProcessMapperTest {
 
 
     /**
+     *  --> -----
+     *     |  pA |-->
+     *  --> -----
+     *
+     *  --> -----
+     *     |  pA |-->
+     *  --> -----
+     */
+    @Test
+    public void testMapping4() {
+
+        IProcessMapper mapper = new ProcessMapper();
+
+        mapper.link((IInOutPut)pA1.getProperty("inA1"), (IInOutPut)pA2.getProperty("inA1")).to("commonInput");
+        mapper.link((IInOutPut)pA1.getProperty("inA2")).to("inputD");
+        mapper.link((IInOutPut)pA2.getProperty("inA2")).to("inputK");
+
+        LinkedHashMap<String, Object> dataMap = new LinkedHashMap<>();
+        dataMap.put("inputD", "D");
+        dataMap.put("inputK", "K");
+        dataMap.put("commonInput", "common");
+        assertTrue(mapper.call(dataMap));
+    }
+
+
+    /**
      */
     @Test
     public void testMapping3() {
@@ -352,5 +379,24 @@ public class ProcessMapperTest {
         IProcessMapper mapper = new ProcessMapper();
         assertNotNull(mapper.after(null));
         assertNotNull(mapper.before(null));
+    }
+
+    /**
+     * Test the methods {@link ProcessMapper#newInstance()} method.
+     */
+    @Test
+    void testNewInstance(){
+        IProcessMapper mapper = new ProcessMapper();
+        mapper.link((InOutPut)pA1.getProperty("inA1")).to("in");
+        mapper.link((InOutPut)pA1.getProperty("outA1")).to("out");
+        mapper.execute(null);
+        IProcessMapper mapper2 = mapper.newInstance();
+        assertEquals(mapper.getTitle(), mapper2.getTitle());
+        assertEquals(mapper.getDescription(), mapper2.getDescription());
+        assertEquals(mapper.getKeywords(), mapper2.getKeywords());
+        assertEquals(mapper.getInputs(), mapper2.getInputs());
+        assertEquals(mapper.getOutputs(), mapper2.getOutputs());
+        assertEquals(mapper.getVersion(), mapper2.getVersion());
+        assertNotEquals(mapper.getIdentifier(), mapper2.getIdentifier());
     }
 }

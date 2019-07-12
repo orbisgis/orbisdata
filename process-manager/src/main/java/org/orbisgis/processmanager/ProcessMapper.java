@@ -266,7 +266,7 @@ public class ProcessMapper implements IProcessMapper {
     }
 
     @Override
-    public IProcess newInstance() {
+    public IProcessMapper newInstance() {
         ProcessMapper mapper = new ProcessMapper();
         mapper.aliases = aliases;
         mapper.processList = new ArrayList<>(processList);
@@ -311,7 +311,10 @@ public class ProcessMapper implements IProcessMapper {
                     }
                 });
                 //Do not add null value for optional input
-                if(!in.isOptional() && data[0] != null) {
+                if(in.isOptional() && data[0] == null) {
+                    processInData.put(in.getName(), in.getDefaultValue());
+                }
+                else {
                     processInData.put(in.getName(), data[0]);
                 }
             }

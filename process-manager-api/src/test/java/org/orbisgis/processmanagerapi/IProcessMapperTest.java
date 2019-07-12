@@ -101,7 +101,7 @@ public class IProcessMapperTest {
         @Override public ILinker link(IInOutPut... inOutPuts) {return null;}
         @Override public ICheckDataBuilder before(IProcess process) {return null;}
         @Override public ICheckDataBuilder after(IProcess process) {return null;}
-        @Override public IProcess newInstance() {return null;}
+        @Override public IProcessMapper newInstance() {return null;}
         @Override public boolean execute(LinkedHashMap<String, Object> inputDataMap) {return false;}
         @Override public String getTitle() {return null;}
         @Override public Map<String, Object> getResults() {return null;}

@@ -42,6 +42,7 @@ import org.locationtech.jts.io.WKTReader
 import org.orbisgis.datamanager.h2gis.H2GIS
 import org.orbisgis.datamanagerapi.dataset.ITable
 import org.orbisgis.processmanager.inoutput.Input
+import org.orbisgis.processmanager.inoutput.Output
 import org.orbisgis.processmanagerapi.IProcessManager
 
 import static org.junit.jupiter.api.Assertions.*
@@ -447,7 +448,7 @@ class TestProcess {
         def pA = processManager.factory("map1").create({
             title "pA"
             inputs inA1: new Input().type(String).optional("t"), inA2: String
-            outputs outA1: String
+            outputs outA1: new Output().type(String)
             run { inA1, inA2 -> [outA1: inA1 + inA2] }
         })
         def pB = processManager.factory("map1").create({

@@ -370,18 +370,22 @@ public class JdbcTableTest {
      */
     @Test
     public void testSave() {
+        new File("./target/save1.json").delete();
         assertFalse(new File("./target/save1.json").exists());
         assertTrue(getTable().save("./target/save1.json"));
         assertTrue(new File("./target/save1.json").exists());
 
+        new File("./target/save2.json").delete();
         assertFalse(new File("./target/save2.json").exists());
         assertTrue(getTable().save("./target/save2.json"), "UTF8");
         assertTrue(new File("./target/save2.json").exists());
 
+        new File("./target/save3.json").delete();
         assertFalse(new File("./target/save3.json").exists());
         assertTrue(getTempTable().save("./target/save3.json"));
         assertTrue(new File("./target/save3.json").exists());
 
+        new File("./target/save4.json").delete();
         assertFalse(new File("./target/save4.json").exists());
         assertTrue(getTempTable().save("./target/save4.json"), "UTF8");
         assertTrue(new File("./target/save4.json").exists());

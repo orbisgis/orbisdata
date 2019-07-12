@@ -38,6 +38,7 @@ package org.orbisgis.processmanager;
 
 import groovy.lang.Closure;
 import groovy.lang.DelegatesTo;
+import groovy.lang.Script;
 import org.orbisgis.processmanagerapi.IProcess;
 import org.orbisgis.processmanagerapi.IProcessBuilder;
 import org.orbisgis.processmanagerapi.IProcessFactory;
@@ -47,7 +48,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 
 /**
- * Implementation of the IProcessManager.
+ * Implementation of the {@link IProcessFactory}.
  *
  * @author Erwan Bocher (CNRS)
  * @author Sylvain PALOMINOS (UBS 2019)
@@ -55,9 +56,9 @@ import java.util.List;
 public class ProcessFactory implements IProcessFactory {
 
     /** Indicated if the process creation is allowed. */
-    private boolean isLock;
+    protected boolean isLock;
     /** Indicates if the factory should be used as the default one. */
-    private boolean isDefault;
+    protected boolean isDefault;
     /** List of the processes created with this factory. */
     private List<IProcess> processList;
 
@@ -110,12 +111,12 @@ public class ProcessFactory implements IProcessFactory {
 
     @Override
     public IProcessBuilder create() {
-        return new ProcessBuilder(this);
+        return new ProcessBuilder(this, this);
     }
 
     @Override
     public IProcess create(@DelegatesTo(IProcessBuilder.class) Closure cl) {
-        IProcessBuilder builder = new ProcessBuilder(this);
+        IProcessBuilder builder = new ProcessBuilder(this, this);
         Closure code = cl.rehydrate(builder, this, this);
         code.setResolveStrategy(Closure.DELEGATE_FIRST);
         return ((IProcessBuilder)code.call()).getProcess();

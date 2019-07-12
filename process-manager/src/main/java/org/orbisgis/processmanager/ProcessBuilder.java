@@ -53,6 +53,8 @@ public class ProcessBuilder implements IProcessBuilder {
 
     /** {@link IProcessFactory} used to register the process.*/
     private IProcessFactory factory;
+    /** Delegate for the closure */
+    private Object delegate;
     /** Title of the process.*/
     private String title;
     /** Human readable description of the process.*/
@@ -72,9 +74,11 @@ public class ProcessBuilder implements IProcessBuilder {
      * Main constructor.
      *
      * @param factory {@link IProcessFactory} used to register the process.
+     * @param delegate Delegate for the closure.
      */
-    public ProcessBuilder(IProcessFactory factory){
+    public ProcessBuilder(IProcessFactory factory, Object delegate){
         this.factory = factory;
+        this.delegate = delegate;
     }
 
     @Override
@@ -116,6 +120,10 @@ public class ProcessBuilder implements IProcessBuilder {
     @Override
     public IProcessBuilder run(Closure closure) {
         this.closure = closure;
+        if(closure != null) {
+            this.closure.setDelegate(delegate);
+            this.closure.setResolveStrategy(Closure.DELEGATE_FIRST);
+        }
         return this;
     }
 

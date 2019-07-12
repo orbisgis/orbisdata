@@ -120,8 +120,10 @@ public class ProcessBuilder implements IProcessBuilder {
     @Override
     public IProcessBuilder run(Closure closure) {
         this.closure = closure;
-        this.closure.setDelegate(delegate);
-        this.closure.setResolveStrategy(Closure.DELEGATE_FIRST);
+        if(closure != null) {
+            this.closure.setDelegate(delegate);
+            this.closure.setResolveStrategy(Closure.DELEGATE_FIRST);
+        }
         return this;
     }
 

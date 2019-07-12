@@ -36,6 +36,8 @@
  */
 package org.orbisgis.processmanager;
 
+import groovy.lang.Closure;
+import groovy.lang.GroovyShell;
 import org.junit.jupiter.api.Test;
 import org.orbisgis.processmanagerapi.IProcess;
 import org.orbisgis.processmanagerapi.IProcessFactory;
@@ -66,7 +68,7 @@ public class ProcessBuilderTest {
         outputs.put("out2", String.class);
 
         IProcessFactory factory = ProcessManager.createFactory();
-        IProcess process = new ProcessBuilder(factory).title("title").description("description")
+        IProcess process = new ProcessBuilder(factory, factory).title("title").description("description")
                 .keywords(new String[]{"key1", "key2"}).inputs(inputs).outputs(outputs).run(null)
                 .version("version").getProcess();
 

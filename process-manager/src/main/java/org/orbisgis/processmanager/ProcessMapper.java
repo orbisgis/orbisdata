@@ -497,15 +497,6 @@ public class ProcessMapper implements IProcessMapper {
         }
     }
 
-    @Deprecated
-    public void link(LinkedHashMap<String, IProcess> map){
-        Iterator<Map.Entry<String, IProcess>> it = map.entrySet().iterator();
-        Map.Entry<String, IProcess> inputEntry = it.next();
-        Map.Entry<String, IProcess> outputEntry = it.next();
-        link(new Input(inputEntry.getValue(), inputEntry.getKey()))
-                .to(new Output(outputEntry.getValue(), outputEntry.getKey()));
-    }
-
     @Override
     public boolean call(LinkedHashMap<String, Object> inputDataMap){
         return execute(inputDataMap);

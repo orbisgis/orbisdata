@@ -43,8 +43,6 @@ import org.orbisgis.processmanagerapi.IProcess;
 import org.orbisgis.processmanagerapi.IProcessBuilder;
 import org.orbisgis.processmanagerapi.IProcessFactory;
 
-import java.util.LinkedHashMap;
-
 /**
  * Implementation of the {@link IProcessFactory} class dedicated to Groovy.
  *

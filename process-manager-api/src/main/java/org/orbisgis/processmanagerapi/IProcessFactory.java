@@ -39,8 +39,6 @@ package org.orbisgis.processmanagerapi;
 import groovy.lang.Closure;
 import groovy.lang.DelegatesTo;
 
-import java.util.LinkedHashMap;
-
 /**
  * This interface defines the methods dedicated to the process creation and managing.
  *

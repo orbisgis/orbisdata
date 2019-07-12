@@ -43,8 +43,6 @@ import org.orbisgis.processmanagerapi.IProcess;
 import org.orbisgis.processmanagerapi.IProcessBuilder;
 import org.orbisgis.processmanagerapi.IProcessFactory;
 
-import java.util.LinkedHashMap;
-
 /**
  * Implementation of the {@link IProcessFactory} class dedicated to Groovy.
  *
@@ -85,101 +83,5 @@ public abstract class GroovyProcessFactory extends Script implements IProcessFac
         Closure code = cl.rehydrate(builder, this, this);
         code.setResolveStrategy(Closure.DELEGATE_FIRST);
         return ((IProcessBuilder)code.call()).getProcess();
-    }
-
-    @Deprecated
-    @Override
-    public IProcess create(String title, String description, String[] keywords, LinkedHashMap<String, Object> inputs, LinkedHashMap<String, Object> outputs, String version, Closure closure) {
-        return factory.create(title, description, keywords, inputs, outputs, version, closure);
-    }
-
-    @Deprecated
-    @Override
-    public IProcess create(String title, String description, String[] keywords, LinkedHashMap<String, Object> inputs, LinkedHashMap<String, Object> outputs, Closure closure) {
-        return factory.create(title, description, keywords, inputs, outputs, closure);
-    }
-
-    @Deprecated
-    @Override
-    public IProcess create(String title, String description, String[] keywords, LinkedHashMap<String, Object> outputs, String version, Closure closure) {
-        return factory.create(title, description, keywords, outputs, version, closure);
-    }
-
-    @Deprecated
-    @Override
-    public IProcess create(String title, String description, String[] keywords, LinkedHashMap<String, Object> outputs, Closure closure) {
-        return factory.create(title, description, keywords, outputs, closure);
-    }
-
-    @Deprecated
-    @Override
-    public IProcess create(String title, String description, LinkedHashMap<String, Object> inputs, LinkedHashMap<String, Object> outputs, String version, Closure closure) {
-        return factory.create(title, description, inputs, outputs, version, closure);
-    }
-
-    @Deprecated
-    @Override
-    public IProcess create(String title, String description, LinkedHashMap<String, Object> inputs, LinkedHashMap<String, Object> outputs, Closure closure) {
-        return factory.create(title, description, inputs, outputs, closure);
-    }
-
-    @Deprecated
-    @Override
-    public IProcess create(String title, String description, LinkedHashMap<String, Object> outputs, String version, Closure closure) {
-        return factory.create(title, description, outputs, version, closure);
-    }
-
-    @Deprecated
-    @Override
-    public IProcess create(String title, String description, LinkedHashMap<String, Object> outputs, Closure closure) {
-        return factory.create(title, description, outputs, closure);
-    }
-
-    @Deprecated
-    @Override
-    public IProcess create(String title, String[] keywords, LinkedHashMap<String, Object> inputs, LinkedHashMap<String, Object> outputs, String version, Closure closure) {
-        return factory.create(title, keywords, inputs, outputs, version, closure);
-    }
-
-    @Deprecated
-    @Override
-    public IProcess create(String title, String[] keywords, LinkedHashMap<String, Object> inputs, LinkedHashMap<String, Object> outputs, Closure closure) {
-        return factory.create(title, keywords, inputs, outputs, closure);
-    }
-
-    @Deprecated
-    @Override
-    public IProcess create(String title, String[] keywords, LinkedHashMap<String, Object> outputs, String version, Closure closure) {
-        return factory.create(title, keywords, outputs, version, closure);
-    }
-
-    @Deprecated
-    @Override
-    public IProcess create(String title, String[] keywords, LinkedHashMap<String, Object> outputs, Closure closure) {
-        return factory.create(title, keywords, outputs, closure);
-    }
-
-    @Deprecated
-    @Override
-    public IProcess create(String title, LinkedHashMap<String, Object> inputs, LinkedHashMap<String, Object> outputs, String version, Closure closure) {
-        return factory.create(title, inputs, outputs, version, closure);
-    }
-
-    @Deprecated
-    @Override
-    public IProcess create(String title, LinkedHashMap<String, Object> inputs, LinkedHashMap<String, Object> outputs, Closure closure) {
-        return factory.create(title, inputs, outputs, closure);
-    }
-
-    @Deprecated
-    @Override
-    public IProcess create(String title, LinkedHashMap<String, Object> outputs, String version, Closure closure) {
-        return factory.create(title, outputs, version, closure);
-    }
-
-    @Deprecated
-    @Override
-    public IProcess create(String title, LinkedHashMap<String, Object> outputs, Closure closure) {
-        return factory.create(title, outputs, closure);
     }
 }

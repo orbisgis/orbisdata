@@ -36,8 +36,6 @@
  */
 package org.orbisgis.processmanager;
 
-import groovy.lang.Closure;
-import groovy.lang.GroovyShell;
 import org.junit.jupiter.api.Test;
 import org.orbisgis.processmanagerapi.IProcess;
 import org.orbisgis.processmanagerapi.IProcessFactory;

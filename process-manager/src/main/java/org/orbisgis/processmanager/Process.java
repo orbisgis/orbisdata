@@ -239,6 +239,17 @@ public class Process implements IProcess, GroovyObject {
             LOGGER.error("Error while executing the process.\n"+e.getLocalizedMessage());
             return false;
         }
+        return checkResults(result);
+    }
+
+    /**
+     * Check and store the results of the process execution.
+     *
+     * @param result Result of the process execution.
+     *
+     * @return True if the execution hes been successful, false otherwise.
+     */
+    private boolean checkResults(Object result){
         if(!(result instanceof Map)){
             HashMap<String, Object> map = new HashMap<>();
             map.put("result", result);

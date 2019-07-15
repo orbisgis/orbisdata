@@ -722,6 +722,10 @@ public class JdbcDataSourceTest {
         assertNotNull(table);
         assertEquals(name, table.getName());
         ds1.execute("DROP TABLE IF EXISTS LOADTABLE, NAME");
+        table = ds1.load(url, true);
+        assertNotNull(table);
+        assertEquals("LOADTABLE", table.getName());
+        ds1.execute("DROP TABLE IF EXISTS LOADTABLE, NAME");
         table = ds1.load(url, name, "UTF8", true);
         assertNotNull(table);
         assertEquals(name, table.getName());
@@ -734,6 +738,10 @@ public class JdbcDataSourceTest {
         table = ds2.load(url, name);
         assertNotNull(table);
         assertEquals(name, table.getName());
+        ds2.execute("DROP TABLE IF EXISTS LOADTABLE, NAME");
+        table = ds2.load(url, true);
+        assertNotNull(table);
+        assertEquals("LOADTABLE", table.getName());
         ds2.execute("DROP TABLE IF EXISTS LOADTABLE, NAME");
         table = ds2.load(url, name, true);
         assertNotNull(table);
@@ -751,6 +759,10 @@ public class JdbcDataSourceTest {
         table = ds3.load(url, name);
         assertNotNull(table);
         assertEquals(name, table.getName());
+        ds3.execute("DROP TABLE IF EXISTS LOADTABLE, NAME");
+        table = ds3.load(url, true);
+        assertNotNull(table);
+        assertEquals("LOADTABLE", table.getName());
         ds3.execute("DROP TABLE IF EXISTS LOADTABLE, NAME");
         table = ds3.load(url, name, true);
         assertNotNull(table);

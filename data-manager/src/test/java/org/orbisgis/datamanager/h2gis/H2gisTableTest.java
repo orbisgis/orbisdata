@@ -34,46 +34,41 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.datamanager.dsl;
+package org.orbisgis.datamanager.h2gis;
 
-import org.orbisgis.datamanager.JdbcDataSource;
-import org.orbisgis.datamanagerapi.dsl.IConditionOrOptionBuilder;
+
+import org.junit.jupiter.api.Test;
+import org.orbisgis.datamanagerapi.dataset.ISpatialTable;
+import org.orbisgis.datamanagerapi.dataset.ITable;
+
+import java.sql.SQLException;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
- * Implementation of IConditionOrOptionBuilder
+ * Test class dedicated to the {@link H2gisTable} class.
  *
  * @author Erwan Bocher (CNRS)
  * @author Sylvain PALOMINOS (UBS 2019)
  */
-public class ConditionOrOptionBuilder extends OptionBuilder implements IConditionOrOptionBuilder {
-
-    private StringBuilder query;
-    private JdbcDataSource dataSource;
+public class H2gisTableTest {
 
     /**
-     * Main constructor.
-     *
-     * @param request    String request coming from the ISelectBuilder.
-     * @param dataSource JdbcDataSource where the request will be executed.
+     * Test the {@link H2gisSpatialTable#asType(Class)} method.
      */
-    public ConditionOrOptionBuilder(String request, JdbcDataSource dataSource) {
-        super(request, dataSource);
-        query = new StringBuilder();
-        query.append(request).append(" ");
-        this.dataSource = dataSource;
-    }
-
-    @Override
-    public IConditionOrOptionBuilder and(String condition) {
-        query.append("AND ");
-        query.append(condition);
-        return new ConditionOrOptionBuilder(query.toString(), dataSource);
-    }
-
-    @Override
-    public IConditionOrOptionBuilder or(String condition) {
-        query.append("OR ");
-        query.append(condition);
-        return new ConditionOrOptionBuilder(query.toString(), dataSource);
+    @Test
+    public void testAsType(){
+        H2GIS h2gis = H2GIS.open("./target/test");
+        try {
+            h2gis.execute("DROP TABLE IF EXISTS NAME; CREATE TABLE name");
+        } catch (SQLException e) {
+            fail(e);
+        }
+        ITable table = h2gis.getTable("name");
+        assertTrue(table.asType(ISpatialTable.class) instanceof ISpatialTable);
+        assertTrue(table.asType(ITable.class) instanceof ITable);
+        assertTrue(table.asType(H2gisSpatialTable.class) instanceof H2gisSpatialTable);
+        assertTrue(table.asType(H2gisTable.class) instanceof H2gisTable);
+        assertNull(table.asType(String.class));
     }
 }

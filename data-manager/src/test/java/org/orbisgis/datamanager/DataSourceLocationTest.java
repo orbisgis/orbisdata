@@ -36,11 +36,11 @@
  */
 package org.orbisgis.datamanager;
 
+import org.junit.jupiter.api.Test;
+
 import java.io.File;
 import java.net.URI;
 import java.net.URL;
-
-import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 

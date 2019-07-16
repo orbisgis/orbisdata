@@ -111,14 +111,4 @@ public class OptionBuilder extends BuilderResult implements IOptionBuilder {
     protected String getQuery() {
         return query.toString();
     }
-
-    @Override
-    public ITable getTable() {
-        return ((ITable)asType(ITable.class));
-    }
-
-    @Override
-    public ISpatialTable getSpatialTable() {
-        return ((ISpatialTable)asType(ISpatialTable.class));
-    }
 }

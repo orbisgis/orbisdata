@@ -46,6 +46,7 @@ import org.orbisgis.datamanager.h2gis.H2gisTable;
 import org.orbisgis.datamanager.postgis.PostgisSpatialTable;
 import org.orbisgis.datamanager.postgis.PostgisTable;
 import org.orbisgis.datamanagerapi.dataset.ISpatialTable;
+import org.orbisgis.datamanagerapi.dataset.ITable;
 import org.orbisgis.datamanagerapi.dsl.IBuilderResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -108,7 +109,7 @@ public abstract class BuilderResult implements IBuilderResult {
                     return new H2gisSpatialTable(new TableLocation(name), getQuery(), (StatementWrapper) statement,
                             getDataSource());
                 }
-                else{
+                else if(clazz == ITable.class) {
                     return new H2gisTable(new TableLocation(name), getQuery(), (StatementWrapper) statement, getDataSource());
                 }
             case POSTGIS:
@@ -120,7 +121,7 @@ public abstract class BuilderResult implements IBuilderResult {
                     return new PostgisSpatialTable(new TableLocation(name), getQuery(),
                             (org.h2gis.postgis_jts.StatementWrapper)statement, getDataSource());
                 }
-                else{
+                else if(clazz == ITable.class) {
                     return new PostgisTable(new TableLocation(name), getQuery(),
                             (org.h2gis.postgis_jts.StatementWrapper)statement, getDataSource());
                 }
@@ -131,5 +132,15 @@ public abstract class BuilderResult implements IBuilderResult {
     @Override
     public String toString(){
         return getQuery();
+    }
+
+    @Override
+    public ITable getTable() {
+        return (ITable)this.asType(ITable.class);
+    }
+
+    @Override
+    public ISpatialTable getSpatialTable() {
+        return (ISpatialTable)this.asType(ISpatialTable.class);
     }
 }

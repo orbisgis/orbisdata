@@ -64,7 +64,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * Test class dedicated to the {@link BuilderResult} class.
  *
  * @author Erwan Bocher (CNRS)
- * @author Sylvain PALOMINOS (UBS 2018)
+ * @author Sylvain PALOMINOS (UBS 2019)
  */
 public class BuilderResultTest {
 

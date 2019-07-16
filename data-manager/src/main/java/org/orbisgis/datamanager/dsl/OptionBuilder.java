@@ -37,8 +37,6 @@
 package org.orbisgis.datamanager.dsl;
 
 import org.orbisgis.datamanager.JdbcDataSource;
-import org.orbisgis.datamanagerapi.dataset.ISpatialTable;
-import org.orbisgis.datamanagerapi.dataset.ITable;
 import org.orbisgis.datamanagerapi.dsl.IOptionBuilder;
 
 import java.util.Map;

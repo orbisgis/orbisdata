@@ -271,10 +271,16 @@ public class JdbcDataSourceTest {
     public void testSelect() throws NoSuchFieldException, IllegalAccessException {
         assertEquals("SELECT *  ", getQuery(ds1.select()));
         assertEquals("SELECT toto, tata  ", getQuery(ds1.select("toto", "tata")));
+        assertEquals("SELECT *  ", getQuery(ds1.select((String[]) null)));
+        assertEquals("SELECT *  ", getQuery(ds1.select()));
         assertEquals("SELECT *  ", getQuery(ds2.select()));
         assertEquals("SELECT toto, tata  ", getQuery(ds2.select("toto", "tata")));
+        assertEquals("SELECT *  ", getQuery(ds2.select((String[]) null)));
+        assertEquals("SELECT *  ", getQuery(ds2.select()));
         assertEquals("SELECT *  ", getQuery(ds3.select()));
         assertEquals("SELECT toto, tata  ", getQuery(ds3.select("toto", "tata")));
+        assertEquals("SELECT *  ", getQuery(ds3.select((String[]) null)));
+        assertEquals("SELECT *  ", getQuery(ds3.select()));
     }
 
     /**
@@ -304,6 +310,7 @@ public class JdbcDataSourceTest {
         File file = new File(url.toURI());
 
         assertTrue(ds1.executeScript(file.getAbsolutePath(), map));
+        assertFalse(ds1.executeScript("toto", map));
         String str = ds1.rows("SELECT * FROM script").stream().map(Objects::toString).collect(Collectors.joining("\n"));
         assertEquals("{ID=1}\n{ID=11}\n{ID=51}", str);
         assertTrue(ds1.executeScript(url.toURI().toString(), map));
@@ -314,6 +321,7 @@ public class JdbcDataSourceTest {
         assertEquals("{ID=1}\n{ID=11}\n{ID=51}", str);
 
         assertTrue(ds2.executeScript(file.getAbsolutePath(), map));
+        assertFalse(ds2.executeScript("toto", map));
         str = ds2.rows("SELECT * FROM script").stream().map(Objects::toString).collect(Collectors.joining("\n"));
         assertEquals("{ID=1}\n{ID=11}\n{ID=51}", str);
         assertTrue(ds2.executeScript(url.toURI().toString(), map));
@@ -324,6 +332,7 @@ public class JdbcDataSourceTest {
         assertEquals("{ID=1}\n{ID=11}\n{ID=51}", str);
 
         assertTrue(ds3.executeScript(file.getAbsolutePath(), map));
+        assertFalse(ds3.executeScript("toto", map));
         str = ds3.rows("SELECT * FROM script").stream().map(Objects::toString).collect(Collectors.joining("\n"));
         assertEquals("{ID=1}\n{ID=11}\n{ID=51}", str);
         assertTrue(ds3.executeScript(url.toURI().toString(), map));
@@ -453,7 +462,7 @@ public class JdbcDataSourceTest {
      * Test the link methods.
      */
     @Test
-    public void testLink() throws SQLException, URISyntaxException {
+    public void testLink() throws SQLException, URISyntaxException, MalformedURLException {
         URL url = this.getClass().getResource("linkTable.dbf");
         URI uri = url.toURI();
         File file = new File(uri);
@@ -492,6 +501,13 @@ public class JdbcDataSourceTest {
         assertNull(ds2.link(path, "LINKTABLE", true));
         ds3.execute("DROP TABLE IF EXISTS LINKTABLE");
         assertNull(ds3.link(path, "LINKTABLE", true));
+
+        ds1.execute("DROP TABLE IF EXISTS LINKTABLE");
+        assertNull(ds1.link("$toto", true));
+        ds2.execute("DROP TABLE IF EXISTS LINKTABLE");
+        assertNull(ds2.link("$toto", true));
+        ds3.execute("DROP TABLE IF EXISTS LINKTABLE");
+        assertNull(ds3.link("$toto", true));
 
 
 

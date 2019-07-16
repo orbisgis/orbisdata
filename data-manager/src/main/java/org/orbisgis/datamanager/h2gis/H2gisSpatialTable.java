@@ -51,6 +51,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 /**
+ * Implementation of {@link ISpatialTable} for H2GIS.
+ *
  * @author Erwan Bocher (CNRS)
  * @author Sylvain PALOMINOS (UBS 2018-2019)
  */

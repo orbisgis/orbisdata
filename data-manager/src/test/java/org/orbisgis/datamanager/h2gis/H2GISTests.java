@@ -34,7 +34,7 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.datamanager;
+package org.orbisgis.datamanager.h2gis;
 
 import groovy.lang.Closure;
 import org.junit.jupiter.api.Test;
@@ -46,6 +46,7 @@ import org.orbisgis.datamanagerapi.dataset.ISpatialTable;
 import org.orbisgis.datamanagerapi.dataset.ITable;
 import org.osgi.service.jdbc.DataSourceFactory;
 
+import java.io.File;
 import java.sql.SQLException;
 import java.sql.Time;
 import java.util.ArrayList;
@@ -56,8 +57,8 @@ import java.util.Map;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.orbisgis.datamanagerapi.dsl.IOptionBuilder.Order.DESC;
 
-
 /**
+ * Test class dedicated to the {@link H2GIS} class.
  *
  * @author Erwan Bocher (CNRS)
  * @author Sylvain PALOMINOS (UBS 2018)
@@ -68,6 +69,7 @@ public class H2GISTests {
     public void openH2GIS(){
         assertNotNull(H2GIS.open("./target/openH2GIS1"));
         assertNotNull(H2GIS.open("./target/openH2GIS2", "sa", "sa"));
+        assertNull(H2GIS.open(new File("file")));
     }
 
     @Test
@@ -129,8 +131,9 @@ public class H2GISTests {
         Map<String, String> map = new HashMap<>();
         map.put(DataSourceFactory.JDBC_DATABASE_NAME, "./target/loadH2GIS2");
         H2GIS h2GIS = H2GIS.open(map);
-        h2GIS.execute("DROP TABLE IF EXISTS h2gis; CREATE TABLE h2gis (id int, the_geom geometry(point));" +
-                "insert into h2gis values (1, 'POINT(10 10)'::GEOMETRY), (2, 'POINT(1 1)'::GEOMETRY);");
+        h2GIS.execute("DROP TABLE IF EXISTS h2gis, noGeom; CREATE TABLE h2gis (id int, the_geom geometry(point));" +
+                "insert into h2gis values (1, 'POINT(10 10)'::GEOMETRY), (2, 'POINT(1 1)'::GEOMETRY);" +
+                "CREATE TABLE noGeom (id int);");
 
         ArrayList<String> values = new ArrayList<>();
         h2GIS.getSpatialTable("h2gis").eachRow(new Closure(null){
@@ -143,6 +146,8 @@ public class H2GISTests {
         assertEquals(2,values.size());
         assertEquals("POINT (10 10)", values.get(0));
         assertEquals("POINT (1 1)", values.get(1));
+
+        assertNull(h2GIS.getSpatialTable("noGeom"));
     }
 
     @Test

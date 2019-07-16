@@ -73,24 +73,4 @@ public class WhereBuilder extends OptionBuilder implements IWhereBuilderOrOption
         query.append(condition);
         return new ConditionOrOptionBuilder(query.toString(), dataSource);
     }
-
-    @Override
-    protected JdbcDataSource getDataSource() {
-        return dataSource;
-    }
-
-    @Override
-    protected String getQuery() {
-        return query.toString();
-    }
-
-    @Override
-    public ITable getTable() {
-         return ((ITable)asType(ITable.class));
-    }
-
-    @Override
-    public ISpatialTable getSpatialTable() {
-        return ((ISpatialTable)asType(ISpatialTable.class));
-    }
 }

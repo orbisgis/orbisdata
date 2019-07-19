@@ -392,6 +392,20 @@ public class JdbcTableTest {
     }
 
     /**
+     * Test the {@link JdbcTable#getFirstRow()} method.
+     */
+    @Test
+    public void testGetFirstRow() {
+        JdbcTable table = getTable();
+        assertEquals(5, table.getFirstRow().size());
+        assertEquals("POINT (0 0)", table.getFirstRow().get(0).toString());
+        assertEquals("POINT (1 1)", table.getFirstRow().get(1).toString());
+        assertEquals(1, table.getFirstRow().get(2));
+        assertEquals(2.3, table.getFirstRow().get(3));
+        assertEquals("Simple points", table.getFirstRow().get(4));
+    }
+
+    /**
      * Test the {@link JdbcTable#invokeMethod(String, Object)} method.
      */
     @Test

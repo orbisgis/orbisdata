@@ -289,6 +289,7 @@ public class ITableTest {
         @Override public void eachRow(Closure closure) {/*Does nothing*/}
         @Override public Collection<String> getUniqueValues(String column) {return null;}
         @Override public boolean save(String filePath, String encoding) {return true;}
+        @Override public List<Object> getFirstRow() {return null;}
         @Override public String getLocation() {return null;}
         @Override public String getName() {return null;}
         @Override public Object getMetaData() {return null;}

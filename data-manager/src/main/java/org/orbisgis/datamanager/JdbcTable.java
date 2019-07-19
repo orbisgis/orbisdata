@@ -62,10 +62,7 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 import static org.orbisgis.commons.printer.ICustomPrinter.CellPosition.*;
 
@@ -141,18 +138,18 @@ public abstract class JdbcTable extends DefaultResultSet implements IJdbcTable, 
     }
 
     /**
-     * Return the {@link ResultSet} with a limit set to 0.
+     * Return the {@link ResultSet} with a limit set to 1.
      *
-     * @return The {@link ResultSet} with a limit set to 0.
+     * @return The {@link ResultSet} with a limit set to 1.
      */
-    protected ResultSet getResultSetLimit0(){
+    protected ResultSet getResultSetLimit1(){
         ResultSet resultSet;
         try {
             if(getBaseQuery().contains(" LIMIT ")){
                 resultSet = getResultSet();
             }
             else {
-                resultSet = jdbcDataSource.getConnection().createStatement().executeQuery(getBaseQuery() + " LIMIT 0");
+                resultSet = jdbcDataSource.getConnection().createStatement().executeQuery(getBaseQuery() + " LIMIT 1");
             }
         } catch (SQLException e) {
             LOGGER.error("Unable to execute the query '"+getBaseQuery()+"'.\n"+e.getLocalizedMessage());
@@ -170,7 +167,7 @@ public abstract class JdbcTable extends DefaultResultSet implements IJdbcTable, 
     @Override
     public ResultSetMetaData getMetaData(){
         try {
-            ResultSet rs = getResultSetLimit0();
+            ResultSet rs = getResultSetLimit1();
             if(rs == null){
                 LOGGER.error("The ResultSet is null.");
             }
@@ -240,7 +237,7 @@ public abstract class JdbcTable extends DefaultResultSet implements IJdbcTable, 
     @Override
     public Collection<String> getColumnNames() {
         try {
-            return JDBCUtilities.getFieldNames(getResultSetLimit0().getMetaData());
+            return JDBCUtilities.getFieldNames(getResultSetLimit1().getMetaData());
         } catch (SQLException e) {
             LOGGER.error("Unable to get the collection of columns names");
             return null;
@@ -417,6 +414,22 @@ public abstract class JdbcTable extends DefaultResultSet implements IJdbcTable, 
         else{
             return null;
         }
+    }
+
+    @Override
+    public List<Object> getFirstRow(){
+        List<Object> list = new ArrayList<>();
+        ResultSet rs = getResultSetLimit1();
+        try {
+            if(rs.next()){
+                for(int i=1; i<=getColumnCount(); i++){
+                    list.add(rs.getObject(i));
+                }
+            }
+        } catch (SQLException e) {
+            LOGGER.error("Unable to query the table.\n" + e.getLocalizedMessage());
+        }
+        return list;
     }
 
     @Override

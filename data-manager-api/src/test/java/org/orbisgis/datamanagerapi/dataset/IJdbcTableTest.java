@@ -48,10 +48,8 @@ import java.io.Reader;
 import java.math.BigDecimal;
 import java.net.URL;
 import java.sql.*;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.Map;
+import java.sql.Date;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -415,6 +413,7 @@ public class IJdbcTableTest {
         @Override public int getRowCount() {return 0;}
         @Override public Collection<String> getUniqueValues(String column) {return null;}
         @Override public boolean save(String filePath, String encoding) {return false;}
+        @Override public List<Object> getFirstRow() {return null;}
         @Override public IConditionOrOptionBuilder where(String condition) {return null;}
         @Override public IOptionBuilder groupBy(String... fields) {return null;}
         @Override public IOptionBuilder orderBy(Map<String, Order> orderByMap) {return null;}

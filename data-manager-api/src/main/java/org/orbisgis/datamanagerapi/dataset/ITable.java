@@ -178,5 +178,12 @@ public interface ITable extends IDataSet {
      * @return True is the file has been saved, false otherwise.
      */
     boolean save(String filePath, String encoding);
+
+    /**
+     * Return the values of the first row in a {@link List}. If there is no row, return an empty list.
+     *
+     * @return The values of the first row in a {@link List}.
+     */
+    List<Object> getFirstRow();
     
 }

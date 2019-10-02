@@ -36,12 +36,47 @@
  */
 package org.orbisgis.datamanagerapi.dataset;
 
+import org.orbisgis.commons.annotations.NotNull;
+import org.orbisgis.commons.annotations.Nullable;
+
 /**
- * Enumeration of the supported databases.
- *
- * @author Erwan Bocher (CNRS)
- * @author Sylvain PALOMINOS (UBS 2018-2019)
+ * Interface describing the location of a {@link ITable} under the pattern 'dataSource : catalog.schema.table'
  */
-public enum DataBaseType {
-    H2GIS, POSTGIS, OTHER
+public interface ITableLocation {
+
+    /**
+     * Return the name of the table of the {@link ITable}.
+     * @return The name of the table
+     */
+    @NotNull
+    String getTable();
+
+    /**
+     * Returns the schema of the {@link ITable} if exists, otherwise, return null.
+     * @return The schema or null.
+     */
+    @Nullable
+    String getSchema();
+
+    /**
+     * Returns the catalog of the {@link ITable} if exists, otherwise, return null.
+     * @return The catalog or null.
+     */
+    @Nullable
+    String getCatalog();
+
+    /**
+     * Return the name of the dataSource of the {@link ITable}.
+     * @return The name of the dataSource
+     */
+    @NotNull
+    String getDataSource();
+
+    /**
+     * Return the String representation of the table location for the given database type.
+     * @param type Type of teh database.
+     * @return The String representation of the table location.
+     */
+    @NotNull
+    String toString(@Nullable DataBaseType type);
 }

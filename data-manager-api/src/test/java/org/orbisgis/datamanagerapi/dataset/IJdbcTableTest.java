@@ -37,7 +37,6 @@
 package org.orbisgis.datamanagerapi.dataset;
 
 import groovy.lang.Closure;
-import org.h2gis.utilities.TableLocation;
 import org.junit.jupiter.api.Test;
 import org.orbisgis.datamanagerapi.dsl.IConditionOrOptionBuilder;
 import org.orbisgis.datamanagerapi.dsl.IOptionBuilder;
@@ -79,7 +78,7 @@ public class IJdbcTableTest {
     public void testGetName(){
         assertEquals(LOCATION.toLowerCase().substring(LOCATION.lastIndexOf(".")+1),
                 new DummyJdbcTable(DataBaseType.POSTGIS, LOCATION, true).getName());
-        assertEquals(LOCATION.toUpperCase().substring(LOCATION.lastIndexOf(".")+1),
+        assertEquals(LOCATION.toLowerCase().substring(LOCATION.lastIndexOf(".")+1),
                 new DummyJdbcTable(DataBaseType.H2GIS, LOCATION, true).getName());
     }
 
@@ -142,7 +141,7 @@ public class IJdbcTableTest {
     private static class DummyJdbcTable implements IJdbcTable{
 
         /** Fake data location. */
-        private TableLocation location;
+        private ITableLocation location;
         /** Fake database type. */
         private DataBaseType databaseType;
         /** Fake row index. */
@@ -162,7 +161,39 @@ public class IJdbcTableTest {
          * @param isIterable True if iterable, false otherwise.
          */
         private DummyJdbcTable(DataBaseType databaseType, String location, boolean isIterable){
-            this.location = TableLocation.parse(location, databaseType.equals(DataBaseType.H2GIS));
+            this.location = new ITableLocation() {
+                @Override
+                public String getTable() {
+                    return location.split("\\.")[2].toLowerCase();
+                }
+
+                @Override
+                public String getSchema() {
+                    return location.split("\\.")[1].toLowerCase();
+                }
+
+                @Override
+                public String getCatalog() {
+                    return location.split("\\.")[0].toLowerCase();
+                }
+
+                @Override
+                public String getDataSource() {
+                    return null;
+                }
+
+                @Override
+                public String toString(DataBaseType type) {
+                    switch (type){
+                        case H2GIS:
+                            return location.toUpperCase();
+                        case POSTGIS:
+                            return getCatalog()+"."+getSchema()+".\""+getTable()+"\"";
+                        default:
+                            return location;
+                    }
+                }
+            };
             this.databaseType = databaseType;
             this.isIterable = isIterable;
         }
@@ -182,7 +213,7 @@ public class IJdbcTableTest {
         public String getParameterMethod(String param1){return param1;}
         public void dupMethod() throws IllegalAccessException {throw new IllegalAccessException();}
 
-        @Override public TableLocation getTableLocation() {return location;}
+        @Override public ITableLocation getTableLocation() {return location;}
         @Override public DataBaseType getDbType() {return databaseType;}
         @Override public ResultSetMetaData getMetaData() {return new RowSetMetaDataImpl();}
         @Override public boolean isSpatial() {return false;}

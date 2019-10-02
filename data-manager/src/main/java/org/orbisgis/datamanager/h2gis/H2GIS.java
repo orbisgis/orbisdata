@@ -42,10 +42,10 @@ import org.h2gis.functions.factory.H2GISFunctions;
 import org.h2gis.functions.io.utility.FileUtil;
 import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.SFSUtilities;
-import org.h2gis.utilities.TableLocation;
 import org.h2gis.utilities.wrapper.ConnectionWrapper;
 import org.h2gis.utilities.wrapper.StatementWrapper;
 import org.orbisgis.datamanager.JdbcDataSource;
+import org.orbisgis.datamanager.TableLocation;
 import org.orbisgis.datamanagerapi.dataset.DataBaseType;
 import org.orbisgis.datamanagerapi.dataset.ISpatialTable;
 import org.orbisgis.datamanagerapi.dataset.ITable;
@@ -216,14 +216,14 @@ public class H2GIS extends JdbcDataSource {
         }
         String query = String.format("SELECT * FROM %s", name);
         try {
-            if(!SFSUtilities.getGeometryFields(getConnection(), new TableLocation(name)).isEmpty()) {
-                return new H2gisSpatialTable(new TableLocation(name), query, statement, this);
+            if(!SFSUtilities.getGeometryFields(getConnection(), new TableLocation(this.getLocation().toString(), name)).isEmpty()) {
+                return new H2gisSpatialTable(new TableLocation(this.getLocation().toString(), name), query, statement, this);
             }
         } catch (SQLException e) {
             LOGGER.error("Unable to check if table '" + name + "' contains geometric fields.\n" +
                     e.getLocalizedMessage());
         }
-        return new H2gisTable(new TableLocation(name), query, statement, this);
+        return new H2gisTable(new TableLocation(this.getLocation().toString(), name), query, statement, this);
     }
 
     @Override

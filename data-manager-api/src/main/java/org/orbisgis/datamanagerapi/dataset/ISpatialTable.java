@@ -36,8 +36,6 @@
  */
 package org.orbisgis.datamanagerapi.dataset;
 
-import org.h2gis.utilities.SpatialResultSet;
-import org.h2gis.utilities.SpatialResultSetMetaData;
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
 
@@ -50,18 +48,12 @@ import java.util.Map;
  * @author Erwan Bocher (CNRS)
  * @author Sylvain PALOMINOS (UBS 2018-2019)
  */
-public interface ISpatialTable extends IJdbcTable, SpatialResultSet {
+public interface ISpatialTable extends IJdbcTable {
 
-    @Override
-    SpatialResultSetMetaData getMetaData();
-
-    @Override
     Geometry getGeometry(int columnIndex);
 
-    @Override
     Geometry getGeometry(String columnLabel);
 
-    @Override
     Geometry getGeometry();
 
     /**

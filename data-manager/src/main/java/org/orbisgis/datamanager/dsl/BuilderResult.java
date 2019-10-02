@@ -37,10 +37,10 @@
 package org.orbisgis.datamanager.dsl;
 
 import groovy.lang.Closure;
-import org.h2gis.utilities.TableLocation;
 import org.h2gis.utilities.wrapper.StatementWrapper;
 import org.orbisgis.commons.printer.ICustomPrinter;
 import org.orbisgis.datamanager.JdbcDataSource;
+import org.orbisgis.datamanager.TableLocation;
 import org.orbisgis.datamanager.h2gis.H2gisSpatialTable;
 import org.orbisgis.datamanager.h2gis.H2gisTable;
 import org.orbisgis.datamanager.postgis.PostgisSpatialTable;
@@ -106,11 +106,13 @@ public abstract class BuilderResult implements IBuilderResult {
                     break;
                 }
                 if(clazz == ISpatialTable.class) {
-                    return new H2gisSpatialTable(new TableLocation(name), getQuery(), (StatementWrapper) statement,
+                    return new H2gisSpatialTable(new TableLocation(getDataSource().getLocation().toString(), name),
+                            getQuery(), (StatementWrapper) statement,
                             getDataSource());
                 }
                 else if(clazz == ITable.class) {
-                    return new H2gisTable(new TableLocation(name), getQuery(), (StatementWrapper) statement, getDataSource());
+                    return new H2gisTable(new TableLocation(getDataSource().getLocation().toString(), name),
+                            getQuery(), (StatementWrapper) statement, getDataSource());
                 }
             case POSTGIS:
                 if(!(statement instanceof org.h2gis.postgis_jts.StatementWrapper)){
@@ -118,12 +120,12 @@ public abstract class BuilderResult implements IBuilderResult {
                     break;
                 }
                 if(clazz == ISpatialTable.class) {
-                    return new PostgisSpatialTable(new TableLocation(name), getQuery(),
-                            (org.h2gis.postgis_jts.StatementWrapper)statement, getDataSource());
+                    return new PostgisSpatialTable(new TableLocation(getDataSource().getLocation().toString(), name),
+                            getQuery(), (org.h2gis.postgis_jts.StatementWrapper)statement, getDataSource());
                 }
                 else if(clazz == ITable.class) {
-                    return new PostgisTable(new TableLocation(name), getQuery(),
-                            (org.h2gis.postgis_jts.StatementWrapper)statement, getDataSource());
+                    return new PostgisTable(new TableLocation(getDataSource().getLocation().toString(), name),
+                            getQuery(), (org.h2gis.postgis_jts.StatementWrapper)statement, getDataSource());
                 }
         }
         return null;

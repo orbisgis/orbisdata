@@ -40,8 +40,6 @@ import groovy.lang.GroovyObject;
 import groovy.lang.MissingMethodException;
 import org.orbisgis.datamanagerapi.dataset.ISpatialTable;
 import org.orbisgis.datamanagerapi.dataset.ITable;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.InputStream;
@@ -57,9 +55,6 @@ import java.util.Map;
  * @author Sylvain PALOMINOS (UBS 2018-2019)
  */
 public interface IJdbcDataSource extends IDataSource, GroovyObject {
-
-    /** Interface {@link Logger} */
-    Logger LOGGER = LoggerFactory.getLogger(IJdbcDataSource.class);
 
     /**
      * Close the underlying database.
@@ -609,7 +604,7 @@ public interface IJdbcDataSource extends IDataSource, GroovyObject {
         try {
             return getMetaClass().invokeMethod(this, name, args);
         } catch (MissingMethodException e) {
-            LOGGER.debug("Unable to find the '"+name+"' methods, trying with the getter");
+            //LOGGER.debug("Unable to find the '"+name+"' methods, trying with the getter");
             return getMetaClass()
                     .invokeMethod(this, "get" + name.substring(0, 1).toUpperCase() + name.substring(1), args);
         }
@@ -618,7 +613,7 @@ public interface IJdbcDataSource extends IDataSource, GroovyObject {
     @Override
     default Object getProperty(String propertyName) {
         if(propertyName == null){
-            LOGGER.error("Trying to get null property name.");
+            //LOGGER.error("Trying to get null property name.");
             return null;
         }
         return getMetaClass().getProperty(this, propertyName);

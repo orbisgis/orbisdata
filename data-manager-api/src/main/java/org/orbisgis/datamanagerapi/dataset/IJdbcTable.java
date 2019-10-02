@@ -37,10 +37,7 @@
 package org.orbisgis.datamanagerapi.dataset;
 
 import groovy.lang.Closure;
-import org.h2gis.utilities.TableLocation;
 import org.orbisgis.datamanagerapi.dsl.IWhereBuilderOrOptionBuilder;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
@@ -53,17 +50,15 @@ import java.util.Iterator;
  */
 public interface IJdbcTable extends ITable, ResultSet, IWhereBuilderOrOptionBuilder {
 
-    /** Interface {@link Logger} */
-    Logger LOGGER = LoggerFactory.getLogger(IJdbcTable.class);
     /** {@link String} name of the metadata property */
     String META_PROPERTY = "meta";
 
     /**
-     * Return the {@link TableLocation} of the {@link IJdbcTable}.
+     * Return the {@link ITableLocation} of the {@link IJdbcTable}.
      *
-     * @return The {@link TableLocation}.
+     * @return The {@link ITableLocation}.
      */
-    TableLocation getTableLocation();
+    ITableLocation getTableLocation();
 
     /**
      * Return the {@link DataBaseType} type of the {@link IJdbcTable}.
@@ -98,7 +93,7 @@ public interface IJdbcTable extends ITable, ResultSet, IWhereBuilderOrOptionBuil
 
     @Override
     default String getLocation() {
-        return getTableLocation().toString(getDbType().equals(DataBaseType.H2GIS));
+        return getTableLocation().toString(getDbType());
     }
 
     @Override
@@ -111,7 +106,7 @@ public interface IJdbcTable extends ITable, ResultSet, IWhereBuilderOrOptionBuil
         try {
             return new ResultSetIterator(this);
         } catch (SQLException e) {
-            LOGGER.error(e.getLocalizedMessage());
+            //LOGGER.error(e.getLocalizedMessage());
             return new ResultSetIterator();
         }
     }

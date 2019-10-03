@@ -45,7 +45,6 @@ import org.codehaus.groovy.runtime.GStringImpl;
 import org.codehaus.groovy.runtime.InvokerHelper;
 import org.h2gis.functions.factory.H2GISDBFactory;
 import org.h2gis.utilities.JDBCUtilities;
-import org.h2gis.utilities.TableLocation;
 import org.h2gis.utilities.wrapper.ConnectionWrapper;
 import org.h2gis.utilities.wrapper.StatementWrapper;
 import org.junit.jupiter.api.BeforeAll;
@@ -989,7 +988,7 @@ public class JdbcDataSourceTest {
             }
             try {
                 return new H2gisTable(
-                        new TableLocation(s),
+                        new TableLocation(null, s),
                         "SELECT * FROM "+s,
                         new StatementWrapper(this.getConnection().createStatement(), connectionWrapper),
                         this);
@@ -1012,7 +1011,7 @@ public class JdbcDataSourceTest {
             }
             try {
                 return new H2gisSpatialTable(
-                        new TableLocation(s),
+                        new TableLocation(null, s),
                         "SELECT * FROM "+s,
                         new StatementWrapper(this.getConnection().createStatement(), connectionWrapper),
                         this);

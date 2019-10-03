@@ -37,9 +37,9 @@
 package org.orbisgis.datamanager.postgis;
 
 import org.h2gis.postgis_jts.StatementWrapper;
-import org.h2gis.utilities.TableLocation;
 import org.orbisgis.datamanager.JdbcDataSource;
 import org.orbisgis.datamanager.JdbcSpatialTable;
+import org.orbisgis.datamanager.TableLocation;
 import org.orbisgis.datamanagerapi.dataset.DataBaseType;
 import org.orbisgis.datamanagerapi.dataset.ISpatialTable;
 import org.orbisgis.datamanagerapi.dataset.ITable;
@@ -92,10 +92,10 @@ public class PostgisSpatialTable extends JdbcSpatialTable {
     @Override
     public Object asType(Class clazz) {
         if (clazz == ITable.class || clazz == PostgisTable.class) {
-            return new PostgisTable(getTableLocation(), getBaseQuery(), (StatementWrapper)getStatement(),
+            return new PostgisTable((TableLocation)getTableLocation(), getBaseQuery(), (StatementWrapper)getStatement(),
                     getJdbcDataSource());
         } else if (clazz == ISpatialTable.class || clazz == PostgisSpatialTable.class) {
-            return new PostgisSpatialTable(getTableLocation(), getBaseQuery(), (StatementWrapper)getStatement(),
+            return new PostgisSpatialTable((TableLocation)getTableLocation(), getBaseQuery(), (StatementWrapper)getStatement(),
                     getJdbcDataSource());
         } else {
             return super.asType(clazz);

@@ -45,7 +45,6 @@ import org.codehaus.groovy.runtime.InvokerInvocationException;
 import org.h2.jdbc.JdbcResultSetMetaData;
 import org.h2gis.functions.factory.H2GISDBFactory;
 import org.h2gis.utilities.JDBCUtilities;
-import org.h2gis.utilities.TableLocation;
 import org.h2gis.utilities.wrapper.ConnectionWrapper;
 import org.h2gis.utilities.wrapper.StatementWrapper;
 import org.junit.jupiter.api.BeforeAll;
@@ -148,9 +147,9 @@ public class JdbcTableTest {
             statement.execute("CREATE TEMPORARY TABLE "+TEMP_NAME+" ("+COL_THE_GEOM+" GEOMETRY, "+COL_THE_GEOM2+" GEOMETRY(POINT Z)," +
                     COL_ID+" INTEGER, "+COL_VALUE+" FLOAT, "+COL_MEANING+" VARCHAR)");
 
-            tableLocation = new TableLocation(TABLE_NAME);
-            linkedLocation = new TableLocation(LINKED_NAME);
-            tempLocation = new TableLocation(TEMP_NAME);
+            tableLocation = new TableLocation(BASE_DATABASE, TABLE_NAME);
+            linkedLocation = new TableLocation(BASE_DATABASE, LINKED_NAME);
+            tempLocation = new TableLocation(BASE_DATABASE, TEMP_NAME);
         } catch (Exception e) {
             fail(e);
         }
@@ -188,13 +187,28 @@ public class JdbcTableTest {
         assertNotNull(getTable());
     }
 
+
+    /**
+     * Test the {@link IJdbcTable#getLocation()} method.
+     */
+    @Test
+    public void testGetLocation() throws SQLException {
+        assertEquals("\"catalog\".\"schema\".\"table\"", new DummyJdbcTable(DataBaseType.POSTGIS, dataSource,
+                new TableLocation(BASE_DATABASE, "catalog", "schema", "table"),
+                dataSource.getConnection().createStatement(), "not a request").getLocation());
+        assertEquals("\"catalog\".\"schema\".\"table\"", new DummyJdbcTable(DataBaseType.H2GIS, dataSource,
+                new TableLocation(BASE_DATABASE, "catalog", "schema", "table"),
+                dataSource.getConnection().createStatement(), "not a request").getLocation());
+        assertEquals(BASE_DATABASE, new TableLocation(BASE_DATABASE, "catalog", "schema", "table").getDataSource());
+    }
+
     /**
      * Test the {@link JdbcTable#getResultSet()} constructor.
      */
     @Test
     public void testGetResultSet() throws SQLException {
         assertNotNull(getTable().getResultSet());
-        JdbcTable table = new DummyJdbcTable(null, dataSource, new TableLocation("tab"),
+        JdbcTable table = new DummyJdbcTable(null, dataSource, new TableLocation(BASE_DATABASE, "tab"),
                 dataSource.getConnection().createStatement(), "not a request");
         assertNull(table.getResultSet());
     }
@@ -205,7 +219,7 @@ public class JdbcTableTest {
     @Test
     public void testGetMetadata() throws SQLException {
         assertNotNull(getTable().getMetaData());
-        JdbcTable table = new DummyJdbcTable(null, dataSource, new TableLocation("tab"),
+        JdbcTable table = new DummyJdbcTable(null, dataSource, new TableLocation(BASE_DATABASE, "tab"),
                 dataSource.getConnection().createStatement(), "not a request");
         assertNull(table.getMetaData());
     }
@@ -591,7 +605,8 @@ public class JdbcTableTest {
                 return null;
             }
             String query = String.format("SELECT * FROM %s", tableName);
-            return new H2gisSpatialTable(new TableLocation(tableName), query, new StatementWrapper(statement, new ConnectionWrapper(connection)), this);}
+            return new H2gisSpatialTable(new TableLocation(BASE_DATABASE, tableName), query,
+                    new StatementWrapper(statement, new ConnectionWrapper(connection)), this);}
         @Override public Collection<String> getTableNames() {
             try {
                 return JDBCUtilities.getTableNames(connection.getMetaData(), null, null, null, null);

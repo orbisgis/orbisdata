@@ -43,7 +43,6 @@ import org.codehaus.groovy.runtime.InvokerHelper;
 import org.h2.value.DataType;
 import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.SFSUtilities;
-import org.h2gis.utilities.TableLocation;
 import org.locationtech.jts.geom.Geometry;
 import org.orbisgis.commons.printer.Ascii;
 import org.orbisgis.commons.printer.Html;
@@ -51,12 +50,11 @@ import org.orbisgis.commons.printer.ICustomPrinter;
 import org.orbisgis.datamanager.dsl.OptionBuilder;
 import org.orbisgis.datamanager.dsl.WhereBuilder;
 import org.orbisgis.datamanager.io.IOMethods;
-import org.orbisgis.datamanagerapi.dataset.DataBaseType;
-import org.orbisgis.datamanagerapi.dataset.IJdbcTable;
-import org.orbisgis.datamanagerapi.dataset.ISpatialTable;
-import org.orbisgis.datamanagerapi.dataset.ITable;
+import org.orbisgis.datamanagerapi.dataset.*;
 import org.orbisgis.datamanagerapi.dsl.IConditionOrOptionBuilder;
 import org.orbisgis.datamanagerapi.dsl.IOptionBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
@@ -72,6 +70,8 @@ import static org.orbisgis.commons.printer.ICustomPrinter.CellPosition.*;
  * .getTableLocation() ).
  */
 public abstract class JdbcTable extends DefaultResultSet implements IJdbcTable, GroovyObject {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(JdbcTable.class);
 
     /** Default width of the columns in ascii print */
     private static final int ASCII_COLUMN_WIDTH = 20;
@@ -190,7 +190,7 @@ public abstract class JdbcTable extends DefaultResultSet implements IJdbcTable, 
     }
 
     @Override
-    public TableLocation getTableLocation() {
+    public ITableLocation getTableLocation() {
         return tableLocation;
     }
 
@@ -258,8 +258,8 @@ public abstract class JdbcTable extends DefaultResultSet implements IJdbcTable, 
         int type = -1;
         ResultSet rs;
         try {
-            rs = jdbcDataSource.getConnection().getMetaData().getColumns(tableLocation.getCatalog(null),
-                    tableLocation.getSchema(null), TableLocation.capsIdentifier(tableLocation.getTable(),
+            rs = jdbcDataSource.getConnection().getMetaData().getColumns(tableLocation.getCatalog(),
+                    tableLocation.getSchema(), TableLocation.capsIdentifier(tableLocation.getTable(),
                             getDbType().equals(DataBaseType.H2GIS)), null);
         } catch (SQLException e) {
             LOGGER.error("Unable to get the connection MetaData.\n"+e.getLocalizedMessage());
@@ -337,7 +337,7 @@ public abstract class JdbcTable extends DefaultResultSet implements IJdbcTable, 
     public int getRowCount(){
         try {
             return JDBCUtilities.getRowCount(jdbcDataSource.getConnection(),
-                    getTableLocation().toString(getDbType().equals(DataBaseType.H2GIS)));
+                    getTableLocation().toString(getDbType()));
         } catch (SQLException e) {
             LOGGER.error("Unable to get the row count on "+tableLocation.toString()+".\n"+e.getLocalizedMessage());
             return -1;
@@ -348,7 +348,7 @@ public abstract class JdbcTable extends DefaultResultSet implements IJdbcTable, 
     public Collection<String> getUniqueValues(String column){
         try {
             return JDBCUtilities.getUniqueFieldValues(jdbcDataSource.getConnection(),
-                    getTableLocation().toString(getDbType().equals(DataBaseType.H2GIS)),
+                    getTableLocation().toString(getDbType()),
                     column);
         } catch (SQLException e) {
             LOGGER.error("Unable to request unique values fo the column '"+column+"'.\n"+e.getLocalizedMessage());
@@ -359,7 +359,7 @@ public abstract class JdbcTable extends DefaultResultSet implements IJdbcTable, 
     @Override
     public boolean save(String filePath, String encoding) {
         try {
-            return IOMethods.saveAsFile(getStatement().getConnection(), getTableLocation().toString(true),
+            return IOMethods.saveAsFile(getStatement().getConnection(), getTableLocation().toString(getDbType()),
                     filePath,encoding);
         } catch (SQLException e) {
             LOGGER.error("Cannot save the table.\n" + e.getLocalizedMessage());

@@ -40,7 +40,6 @@ import groovy.sql.Sql;
 import org.h2gis.functions.factory.H2GISDBFactory;
 import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.SFSUtilities;
-import org.h2gis.utilities.TableLocation;
 import org.h2gis.utilities.wrapper.SpatialResultSetImpl;
 import org.h2gis.utilities.wrapper.StatementWrapper;
 import org.junit.jupiter.api.BeforeAll;
@@ -50,6 +49,8 @@ import org.orbisgis.datamanagerapi.dataset.DataBaseType;
 import org.orbisgis.datamanagerapi.dataset.IDataSet;
 import org.orbisgis.datamanagerapi.dataset.ISpatialTable;
 import org.orbisgis.datamanagerapi.dataset.ITable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -67,6 +68,9 @@ import static org.junit.jupiter.api.Assertions.*;
  * @author Sylvain PALOMINOS (UBS 2019)
  */
 public class JdbcSpatialTableTest {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(JdbcSpatialTableTest.class);
+
     /** Database connection */
     private static Connection connection;
     /** Connection statement */
@@ -268,7 +272,7 @@ public class JdbcSpatialTableTest {
                 return null;
             }
             String query = String.format("SELECT * FROM %s", name);
-            return new DummyJdbcSpatialTable(new TableLocation(name), query, statement, this);
+            return new DummyJdbcSpatialTable(new TableLocation(null, name), query, statement, this);
         }
         @Override public Collection<String> getTableNames() {
             try {

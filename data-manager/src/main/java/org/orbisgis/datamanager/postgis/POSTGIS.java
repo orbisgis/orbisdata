@@ -6,8 +6,8 @@ import org.h2gis.postgis_jts.StatementWrapper;
 import org.h2gis.postgis_jts_osgi.DataSourceFactoryImpl;
 import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.SFSUtilities;
-import org.h2gis.utilities.TableLocation;
 import org.orbisgis.datamanager.JdbcDataSource;
+import org.orbisgis.datamanager.TableLocation;
 import org.orbisgis.datamanagerapi.dataset.DataBaseType;
 import org.orbisgis.datamanagerapi.dataset.ISpatialTable;
 import org.orbisgis.datamanagerapi.dataset.ITable;
@@ -153,14 +153,14 @@ public class POSTGIS extends JdbcDataSource {
         }
         String query = String.format("SELECT * FROM %s", tableName);
         try {
-            if(!SFSUtilities.getGeometryFields(getConnection(), new TableLocation(tableName)).isEmpty()) {
-                return new PostgisSpatialTable(new TableLocation(tableName), query, statement, this);
+            if(!SFSUtilities.getGeometryFields(getConnection(), new TableLocation(this.getLocation().toString(), tableName)).isEmpty()) {
+                return new PostgisSpatialTable(new TableLocation(this.getLocation().toString(), tableName), query, statement, this);
             }
         } catch (SQLException e) {
             LOGGER.error("Unable to check if table '" + tableName + "' contains geometric fields.\n" +
                     e.getLocalizedMessage());
         }
-        return new PostgisTable(new TableLocation(tableName), query, statement, this);
+        return new PostgisTable(new TableLocation(this.getLocation().toString(), tableName), query, statement, this);
     }
 
     @Override
@@ -183,8 +183,8 @@ public class POSTGIS extends JdbcDataSource {
         }
         String query = String.format("SELECT * FROM %s", tableName);
         try {
-            if(!SFSUtilities.getGeometryFields(getConnection(), new TableLocation(tableName)).isEmpty()) {
-                return new PostgisSpatialTable(new TableLocation(tableName), query, statement, this);
+            if(!SFSUtilities.getGeometryFields(getConnection(), new TableLocation(this.getLocation().toString(), tableName)).isEmpty()) {
+                return new PostgisSpatialTable(new TableLocation(this.getLocation().toString(), tableName), query, statement, this);
             }
         } catch (SQLException e) {
             LOGGER.error("Unable to check if table '" + tableName + "' contains geometric fields.\n" +

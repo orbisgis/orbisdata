@@ -108,6 +108,22 @@ public class ProcessTest {
     }
 
     @Test
+    void testNullResult(){
+        Closure cl = new Closure(null) {
+            @Override
+            public Object call() {
+                return null;
+            }
+        };
+
+        LinkedHashMap<String, Object> outputs = new LinkedHashMap<>();
+        outputs.put("out1", Output.call().setType(int.class));
+
+        assertFalse(new Process("title", "description", new String[]{"test", "process"}, new LinkedHashMap<>(),
+                outputs, "1.0.0", cl).execute(new LinkedHashMap<>()));
+    }
+
+    @Test
     void testProcessProperties(){
         assertNull(miniProcess.getTitle());
         assertNull(miniProcess.getDescription());

@@ -116,6 +116,16 @@ class TestProcess {
     }
 
     @Test
+    void testNullResult(){
+        def process = processManager.create()
+                .title("simple process")
+                .run({ return })
+                .process
+        assertTrue process()
+        assertTrue process.getResults().keySet().contains("result")
+    }
+
+    @Test
     void testSimpleProcess(){
         def process = processManager.create()
                 .title("simple process")

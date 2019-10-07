@@ -239,7 +239,12 @@ public class Process implements IProcess, GroovyObject {
             LOGGER.error("Error while executing the process.\n"+e.getLocalizedMessage());
             return false;
         }
-        return checkResults(result);
+        if(result == null && outputs.size() != 0){
+            return false;
+        }
+        else {
+            return checkResults(result);
+        }
     }
 
     /**

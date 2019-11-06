@@ -57,5 +57,5 @@ public interface IWhereBuilderOrOptionBuilder extends IOptionBuilder {
      *
      * @return {@link IConditionOrOptionBuilder} instance to continue building.
      */
-    IConditionOrOptionBuilder where(String condition);
+    IConditionOrOptionBuilder where(String condition);    
 }

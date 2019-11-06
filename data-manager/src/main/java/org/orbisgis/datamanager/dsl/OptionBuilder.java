@@ -67,10 +67,7 @@ public class OptionBuilder extends BuilderResult implements IOptionBuilder {
     @Override
     public IOptionBuilder groupBy(String... fields) {
         query.append("GROUP BY ");
-        for(String field : fields){
-            query.append(field).append(", ");
-        }
-        query.deleteCharAt(query.length()-2);
+        query.append(String.join(",", fields));
         return new OptionBuilder(query.toString(), dataSource);
     }
 

@@ -201,5 +201,14 @@ public class BuilderResultTest {
             return null;
         }
         @Override public IDataSet getDataSet(String name) {return null;}
+        
+        @Override
+        public boolean hasTable(String tableName) {
+            try {
+                return JDBCUtilities.tableExists(connection, tableName);
+            } catch (SQLException ex) {
+                return false;
+            }
+        }
     }
 }

@@ -237,4 +237,13 @@ public class H2GIS extends JdbcDataSource {
             return null;
         }
     }
+
+    @Override
+    public boolean hasTable(String tableName) {
+        try {
+            return JDBCUtilities.tableExists(connectionWrapper,tableName);
+        } catch (SQLException ex) {
+            return false;
+        }
+    }
 }

@@ -127,12 +127,6 @@ public abstract class JdbcTable extends DefaultResultSet implements IJdbcTable, 
                 LOGGER.error("Unable to execute the query '"+getBaseQuery()+"'.\n"+e.getLocalizedMessage());
                 return null;
             }
-            try {
-                resultSet.beforeFirst();
-            } catch (SQLException e) {
-                LOGGER.error("Unable to go before the first ResultSet row.\n" + e.getLocalizedMessage());
-                return null;
-            }
         }
         return resultSet;
     }
@@ -185,7 +179,7 @@ public abstract class JdbcTable extends DefaultResultSet implements IJdbcTable, 
      *
      * @return The parent DataSource.
      */
-    protected JdbcDataSource getJdbcDataSource(){
+    public JdbcDataSource getJdbcDataSource(){
         return jdbcDataSource;
     }
 
@@ -247,9 +241,9 @@ public abstract class JdbcTable extends DefaultResultSet implements IJdbcTable, 
     @Override
     public Map<String, String> getColumns(){
         Map<String, String> map = new HashMap<>();
-        for(String name : getColumnNames()){
+        getColumnNames().forEach((name) -> {
             map.put(name, getColumnsType(name));
-        }
+        });
         return map;
     }
 
@@ -370,7 +364,7 @@ public abstract class JdbcTable extends DefaultResultSet implements IJdbcTable, 
     private String getQuery(){
         return "SELECT * FROM " + getTableLocation().getTable().toUpperCase();
     }
-
+   
     @Override
     public IConditionOrOptionBuilder where(String condition) {
         return new WhereBuilder(getQuery(), getJdbcDataSource()).where(condition);

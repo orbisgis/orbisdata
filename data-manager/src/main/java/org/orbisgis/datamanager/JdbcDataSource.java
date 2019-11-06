@@ -197,17 +197,12 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, ISe
     public IFromBuilder select(String... fields) {
         StringBuilder query = new StringBuilder();
         query.append("SELECT ");
-        StringBuilder columns = new StringBuilder();
         if(fields != null && fields.length > 0){
-           for(String field : fields){
-                columns.append(field).append(", ");
-            }
-            columns.deleteCharAt(columns.length()-2);
+           query.append(String.join(",", fields));
         }
         else{
-            columns.append("* ");
+            query.append("* ");
         }
-        query.append(columns);
         return new FromBuilder(query.toString(), this);
     }
 

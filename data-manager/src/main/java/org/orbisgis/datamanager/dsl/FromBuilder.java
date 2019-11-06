@@ -65,11 +65,7 @@ public class FromBuilder implements IFromBuilder {
 
     @Override
     public IWhereBuilderOrOptionBuilder from(String... tables) {
-        query.append("FROM ");
-        for(String table : tables){
-            query.append(table).append(", ");
-        }
-        query.deleteCharAt(query.length()-2);
+        query.append("FROM ").append(String.join(",", tables));        
         return new WhereBuilder(query.toString(), dataSource);
     }
 }

@@ -269,15 +269,15 @@ public class JdbcDataSourceTest {
     @Test
     public void testSelect() throws NoSuchFieldException, IllegalAccessException {
         assertEquals("SELECT *  ", getQuery(ds1.select()));
-        assertEquals("SELECT toto, tata  ", getQuery(ds1.select("toto", "tata")));
+        assertEquals("SELECT toto,tata ", getQuery(ds1.select("toto", "tata")));
         assertEquals("SELECT *  ", getQuery(ds1.select((String[]) null)));
         assertEquals("SELECT *  ", getQuery(ds1.select()));
         assertEquals("SELECT *  ", getQuery(ds2.select()));
-        assertEquals("SELECT toto, tata  ", getQuery(ds2.select("toto", "tata")));
+        assertEquals("SELECT toto,tata ", getQuery(ds2.select("toto", "tata")));
         assertEquals("SELECT *  ", getQuery(ds2.select((String[]) null)));
         assertEquals("SELECT *  ", getQuery(ds2.select()));
         assertEquals("SELECT *  ", getQuery(ds3.select()));
-        assertEquals("SELECT toto, tata  ", getQuery(ds3.select("toto", "tata")));
+        assertEquals("SELECT toto,tata ", getQuery(ds3.select("toto", "tata")));
         assertEquals("SELECT *  ", getQuery(ds3.select((String[]) null)));
         assertEquals("SELECT *  ", getQuery(ds3.select()));
     }
@@ -936,6 +936,21 @@ public class JdbcDataSourceTest {
         assertTrue(names.contains("JDBCDATASOURCETEST.PUBLIC.TEST"));
         assertTrue(names.contains("JDBCDATASOURCETEST.PUBLIC.SPATIAL_REF_SYS"));
     }
+    
+    /**
+     * Test the {@link JdbcDataSource#hasTable()} method.
+     */
+    @Test
+    public void testHasTable() {
+        Collection<String> names = ds1.getTableNames();
+        assertNotNull(names);
+        assertEquals(36, names.size());
+        assertTrue(ds1.hasTable("GEOMETRY_COLUMNS"));
+        assertTrue(ds1.hasTable("TEST"));
+        assertTrue(ds1.hasTable("JDBCDATASOURCETEST.PUBLIC.SPATIAL_REF_SYS"));
+    }
+    
+    
 
     /**
      * Test the {@link JdbcDataSource#getDataSet(String)} method.
@@ -1019,6 +1034,16 @@ public class JdbcDataSourceTest {
                 e.printStackTrace();
             }
             return null;
+        }
+        
+        @Override
+        public boolean hasTable(String tableName) {
+            try {
+                ConnectionWrapper connectionWrapper = new ConnectionWrapper(this.getConnection());
+                return JDBCUtilities.tableExists(connectionWrapper, tableName);
+            } catch (SQLException ex) {
+                return false;
+            }
         }
     }
 }

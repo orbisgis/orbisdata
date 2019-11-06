@@ -326,6 +326,7 @@ public class H2GISTests {
 
         assertTrue(h2GIS.hasTable("TABLE1"));
         assertTrue(h2GIS.hasTable("TABLE2"));
+        assertTrue(h2GIS.hasTable("table1"));
         assertFalse(h2GIS.hasTable("OrbisGIS"));
     }
 }

@@ -214,5 +214,6 @@ public class IJdbcDataSourceTest {
         @Override public void setMetaClass(MetaClass metaClass) {/*Does nothing*/}
         @Override public IDataSet getDataSet(String name) {return null;}
         @Override public IDataSourceLocation getLocation() {return null;}
+        @Override public boolean hasTable(String tableName) {return false;}
     }
 }

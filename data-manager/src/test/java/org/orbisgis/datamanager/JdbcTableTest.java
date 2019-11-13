@@ -90,18 +90,22 @@ public class JdbcTableTest {
     private static TableLocation linkedLocation;
     /** Temporary table location */
     private static TableLocation tempLocation;
+    /** Empty table location */
+    private static TableLocation emptyLocation;
 
     private static final String BASE_DATABASE = JdbcTableTest.class.getSimpleName();
     private static final String TABLE_NAME = "ORBISGIS";
     private static final String BASE_QUERY = "SELECT * FROM "+TABLE_NAME;
     private static final String TEMP_NAME = "TEMPTABLE";
     private static final String TEMP_QUERY = "SELECT * FROM "+TEMP_NAME;
+    private static final String EMPTY_NAME = "ORBISGIS_EMPTY";
+    private static final String EMPTY_QUERY = "SELECT * FROM "+EMPTY_NAME;
     private static final String LINKED_DATABASE = JdbcTableTest.class.getSimpleName()+"linked";
     private static final String LINKED_NAME = "LINKEDTABLE";
     private static final String LINKED_QUERY = "SELECT * FROM "+LINKED_NAME;
 
     private static final String COL_THE_GEOM = "THE_GEOM";
-    private static final String COL_THE_GEOM2 = "THE_GEOM2";
+    private static final String COL_THE_GEOM2 = "the_geom2";
     private static final String COL_ID = "ID";
     private static final String COL_VALUE = "VALUE";
     private static final String COL_MEANING = "MEANING";
@@ -137,7 +141,7 @@ public class JdbcTableTest {
                     COL_ID+" INTEGER, "+COL_VALUE+" FLOAT, "+COL_MEANING+" VARCHAR)");
 
             statement = connection.createStatement();
-            statement.execute("DROP TABLE IF EXISTS "+TABLE_NAME+","+LINKED_NAME+","+TEMP_NAME);
+            statement.execute("DROP TABLE IF EXISTS "+TABLE_NAME+","+LINKED_NAME+","+TEMP_NAME+","+EMPTY_NAME);
             statement.execute("CREATE TABLE "+TABLE_NAME+" ("+COL_THE_GEOM+" GEOMETRY, "+COL_THE_GEOM2+" GEOMETRY(POINT Z)," +
                     COL_ID+" INTEGER, "+COL_VALUE+" FLOAT, "+COL_MEANING+" VARCHAR)");
             statement.execute("INSERT INTO "+TABLE_NAME+" VALUES ('POINT(0 0)', 'POINT(1 1 0)', 1, 2.3, 'Simple points')");
@@ -146,10 +150,13 @@ public class JdbcTableTest {
                     "','sa','sa','"+TABLE_NAME+"')");
             statement.execute("CREATE TEMPORARY TABLE "+TEMP_NAME+" ("+COL_THE_GEOM+" GEOMETRY, "+COL_THE_GEOM2+" GEOMETRY(POINT Z)," +
                     COL_ID+" INTEGER, "+COL_VALUE+" FLOAT, "+COL_MEANING+" VARCHAR)");
+            statement.execute("CREATE TABLE "+EMPTY_NAME+" ("+COL_THE_GEOM+" GEOMETRY, "+COL_THE_GEOM2+" GEOMETRY(POINT Z)," +
+                    COL_ID+" INTEGER, "+COL_VALUE+" FLOAT, "+COL_MEANING+" VARCHAR)");
 
             tableLocation = new TableLocation(BASE_DATABASE, TABLE_NAME);
             linkedLocation = new TableLocation(BASE_DATABASE, LINKED_NAME);
             tempLocation = new TableLocation(BASE_DATABASE, TEMP_NAME);
+            emptyLocation = new TableLocation(BASE_DATABASE, EMPTY_NAME);
         } catch (Exception e) {
             fail(e);
         }
@@ -177,6 +184,14 @@ public class JdbcTableTest {
      */
     private DummyJdbcTable getTempTable(){
         return new DummyJdbcTable(DataBaseType.H2GIS, dataSource, tempLocation, statement, TEMP_QUERY);
+    }
+
+    /**
+     * Returns an empty {@link DummyJdbcTable} for test purpose.
+     * @return An empty {@link DummyJdbcTable} for test purpose.
+     */
+    private DummyJdbcTable getEmptyTable(){
+        return new DummyJdbcTable(DataBaseType.H2GIS, dataSource, emptyLocation, statement, EMPTY_QUERY);
     }
 
     /**
@@ -459,6 +474,21 @@ public class JdbcTableTest {
         assertNull(table.getProperty(null));
         assertTrue(table.getProperty("meaning") instanceof JdbcColumn);
         assertEquals("MEANING", ((JdbcColumn)table.getProperty("meaning")).getName());
+        assertTrue(table.getProperty(COL_THE_GEOM.toUpperCase()) instanceof JdbcColumn);
+        assertTrue(table.getProperty(COL_THE_GEOM.toLowerCase()) instanceof JdbcColumn);
+
+        JdbcTable empty = getEmptyTable();
+        assertDoesNotThrow(empty::beforeFirst);
+        assertThrows(MissingPropertyException.class, () -> empty.getProperty("getLocation"));
+        assertEquals(empty.getLocation(), empty.getProperty("location"));
+        assertEquals(JdbcResultSetMetaData.class, empty.getProperty("meta").getClass());
+        assertArrayEquals(new Object[]{"string", 0.2}, (Object[])empty.getProperty("data"));
+        assertEquals("tutu", empty.getProperty("privateData"));
+        assertNull(empty.getProperty(null));
+        assertTrue(empty.getProperty("meaning") instanceof JdbcColumn);
+        assertEquals("MEANING", ((JdbcColumn)empty.getProperty("meaning")).getName());
+        assertTrue(empty.getProperty(COL_THE_GEOM.toUpperCase()) instanceof JdbcColumn);
+        assertTrue(empty.getProperty(COL_THE_GEOM.toLowerCase()) instanceof JdbcColumn);
     }
 
     /**
@@ -500,7 +530,7 @@ public class JdbcTableTest {
     @Test
     public void testGetColumns() {
         Map<String, String> map = getTable().getColumns();
-        String[] keys = {COL_THE_GEOM2, COL_THE_GEOM, COL_ID, COL_VALUE, COL_MEANING};
+        String[] keys = {COL_THE_GEOM2.toUpperCase(), COL_THE_GEOM, COL_ID, COL_VALUE, COL_MEANING};
         String[] values = {"POINTZ", "GEOMETRY", "INTEGER", "DOUBLE", "VARCHAR"};
         assertArrayEquals(keys, map.keySet().toArray());
         assertArrayEquals(values, map.values().toArray());
@@ -515,6 +545,7 @@ public class JdbcTableTest {
         map.put("toto", IOptionBuilder.Order.ASC);
         map.put("tata", IOptionBuilder.Order.DESC);
 
+        assertEquals("SELECT TOTO, tata, TIti FROM ORBISGIS WHERE toto", getTable().columns("TOTO", "tata", "TIti").where("toto").toString().trim());
         assertEquals("SELECT * FROM ORBISGIS WHERE toto", getTable().where("toto").toString().trim());
         assertEquals("SELECT * FROM ORBISGIS GROUP BY toto", getTable().groupBy("toto").toString().trim());
         assertEquals("SELECT * FROM ORBISGIS GROUP BY toto, tata", getTable().groupBy("toto", "tata").toString().trim());

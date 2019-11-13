@@ -199,6 +199,8 @@ public class POSTGIS extends JdbcDataSource {
         try {
             return JDBCUtilities.tableExists(connectionWrapper,TableLocation.parse(tableName, false).toString());
         } catch (SQLException ex) {
+            LOGGER.error("Cannot find the table '" + tableName + ".\n" +
+                    ex.getLocalizedMessage());
             return false;
         }
     }

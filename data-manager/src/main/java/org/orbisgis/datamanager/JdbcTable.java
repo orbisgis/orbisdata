@@ -179,7 +179,7 @@ public abstract class JdbcTable extends DefaultResultSet implements IJdbcTable, 
      *
      * @return The parent DataSource.
      */
-    public JdbcDataSource getJdbcDataSource(){
+    protected JdbcDataSource getJdbcDataSource(){
         return jdbcDataSource;
     }
 

@@ -243,6 +243,8 @@ public class H2GIS extends JdbcDataSource {
         try {
             return JDBCUtilities.tableExists(connectionWrapper,TableLocation.parse(tableName, true).toString());
         } catch (SQLException ex) {
+            LOGGER.error("Cannot find the table '" + tableName + ".\n" +
+                    ex.getLocalizedMessage());
             return false;
         }
     }

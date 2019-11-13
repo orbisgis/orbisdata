@@ -938,7 +938,7 @@ public class JdbcDataSourceTest {
     }
     
     /**
-     * Test the {@link JdbcDataSource#hasTable()} method.
+     * Test the {@link JdbcDataSource#hasTable(String)} method.
      */
     @Test
     public void testHasTable() {

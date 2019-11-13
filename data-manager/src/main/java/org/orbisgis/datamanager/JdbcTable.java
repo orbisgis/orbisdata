@@ -53,6 +53,7 @@ import org.orbisgis.datamanager.io.IOMethods;
 import org.orbisgis.datamanagerapi.dataset.*;
 import org.orbisgis.datamanagerapi.dsl.IConditionOrOptionBuilder;
 import org.orbisgis.datamanagerapi.dsl.IOptionBuilder;
+import org.orbisgis.datamanagerapi.dsl.IWhereBuilderOrOptionBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -61,6 +62,7 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static org.orbisgis.commons.printer.ICustomPrinter.CellPosition.*;
 
@@ -132,18 +134,25 @@ public abstract class JdbcTable extends DefaultResultSet implements IJdbcTable, 
     }
 
     /**
-     * Return the {@link ResultSet} with a limit set to 1.
+     * Return the {@link ResultSet} with a limit.
      *
-     * @return The {@link ResultSet} with a limit set to 1.
+     * @param limit Limit of the result set.
+     *
+     * @return The {@link ResultSet} with a limit.
      */
-    protected ResultSet getResultSetLimit1(){
+    private ResultSet getResultSetLimit(int limit){
+        int _limit = limit;
+        if(_limit < 0){
+            LOGGER.warn("The ResultSet limit should not be under 0. Set it to 0.");
+            _limit = 0;
+        }
         ResultSet resultSet;
         try {
             if(getBaseQuery().contains(" LIMIT ")){
                 resultSet = getResultSet();
             }
             else {
-                resultSet = jdbcDataSource.getConnection().createStatement().executeQuery(getBaseQuery() + " LIMIT 1");
+                resultSet = jdbcDataSource.getConnection().createStatement().executeQuery(getBaseQuery() + " LIMIT " + _limit);
             }
         } catch (SQLException e) {
             LOGGER.error("Unable to execute the query '"+getBaseQuery()+"'.\n"+e.getLocalizedMessage());
@@ -161,7 +170,7 @@ public abstract class JdbcTable extends DefaultResultSet implements IJdbcTable, 
     @Override
     public ResultSetMetaData getMetaData(){
         try {
-            ResultSet rs = getResultSetLimit1();
+            ResultSet rs = getResultSetLimit(0);
             if(rs == null){
                 LOGGER.error("The ResultSet is null.");
             }
@@ -231,7 +240,11 @@ public abstract class JdbcTable extends DefaultResultSet implements IJdbcTable, 
     @Override
     public Collection<String> getColumnNames() {
         try {
-            return JDBCUtilities.getFieldNames(getResultSetLimit1().getMetaData());
+            return JDBCUtilities
+                    .getFieldNames(getResultSetLimit(0).getMetaData())
+                    .stream()
+                    .map(this::formatColumnName)
+                    .collect(Collectors.toCollection(ArrayList::new));
         } catch (SQLException e) {
             LOGGER.error("Unable to get the collection of columns names");
             return null;
@@ -364,7 +377,16 @@ public abstract class JdbcTable extends DefaultResultSet implements IJdbcTable, 
     private String getQuery(){
         return "SELECT * FROM " + getTableLocation().getTable().toUpperCase();
     }
-   
+
+    private String getQuery(String ... columns){
+        return "SELECT " + String.join(", ", columns) + " FROM " + getTableLocation().getTable().toUpperCase();
+    }
+
+    @Override
+    public IWhereBuilderOrOptionBuilder columns(String... columns){
+        return new WhereBuilder(getQuery(columns), getJdbcDataSource());
+    }
+
     @Override
     public IConditionOrOptionBuilder where(String condition) {
         return new WhereBuilder(getQuery(), getJdbcDataSource()).where(condition);
@@ -413,7 +435,7 @@ public abstract class JdbcTable extends DefaultResultSet implements IJdbcTable, 
     @Override
     public List<Object> getFirstRow(){
         List<Object> list = new ArrayList<>();
-        ResultSet rs = getResultSetLimit1();
+        ResultSet rs = getResultSetLimit(1);
         try {
             if(rs.next()){
                 for(int i=1; i<=getColumnCount(); i++){
@@ -450,10 +472,10 @@ public abstract class JdbcTable extends DefaultResultSet implements IJdbcTable, 
         Collection<String> columns = getColumnNames();
         if(columns!= null &&
                 (columns.contains(propertyName.toLowerCase()) || columns.contains(propertyName.toUpperCase()))
-                || "id".equals(propertyName)) {
+                || "id".equalsIgnoreCase(propertyName)) {
             try {
-                if(isBeforeFirst()){
-                    return new JdbcColumn(propertyName, this.getName(), getJdbcDataSource());
+                if(isBeforeFirst() || (this.getRow() == 0 && this.getRowCount() == 0)){
+                    return new JdbcColumn(formatColumnName(propertyName), this.getName(), getJdbcDataSource());
                 }
                 return getObject(propertyName);
             } catch (SQLException e) {
@@ -524,5 +546,16 @@ public abstract class JdbcTable extends DefaultResultSet implements IJdbcTable, 
             return null;
         }
         return null;
+    }
+
+    /**
+     * Format the column according to the DB type.
+     *
+     * @param column Columne name to format.
+     *
+     * @return The formatted column name.
+     */
+    private String formatColumnName(String column){
+        return getDbType()==DataBaseType.H2GIS ? column.toUpperCase() : column.toLowerCase();
     }
 }

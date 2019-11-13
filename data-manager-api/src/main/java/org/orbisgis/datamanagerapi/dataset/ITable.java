@@ -75,6 +75,7 @@ public interface ITable extends IDataSet {
     /**
      * Get the type of the column from the underlying table.
      *
+     * @param columnName set the name of the column
      * @return The type of the column.
      */
     String getColumnsType(String columnName);

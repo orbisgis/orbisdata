@@ -40,6 +40,7 @@ import groovy.lang.Closure;
 import org.junit.jupiter.api.Test;
 import org.orbisgis.datamanagerapi.dsl.IConditionOrOptionBuilder;
 import org.orbisgis.datamanagerapi.dsl.IOptionBuilder;
+import org.orbisgis.datamanagerapi.dsl.IWhereBuilderOrOptionBuilder;
 
 import javax.sql.rowset.RowSetMetaDataImpl;
 import java.io.InputStream;
@@ -454,5 +455,6 @@ public class IJdbcTableTest {
         @Override public Object asType(Class clazz) {return null;}
         @Override public ITable getTable() {return null;}
         @Override public ISpatialTable getSpatialTable() {return null;}
+        @Override public IWhereBuilderOrOptionBuilder columns(String... columns) {return null;}
     }
 }

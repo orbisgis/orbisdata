@@ -37,6 +37,7 @@
 package org.orbisgis.datamanagerapi.dataset;
 
 import groovy.lang.Closure;
+import org.orbisgis.datamanagerapi.dsl.IColumnsBuilder;
 import org.orbisgis.datamanagerapi.dsl.IWhereBuilderOrOptionBuilder;
 
 import java.sql.ResultSet;
@@ -48,7 +49,7 @@ import java.util.Iterator;
  * Extension of the {@link ITable} specially dedicated to the JDBC databases thanks to the extension of the
  * {@link ResultSet} interface. It also extends the {@link IWhereBuilderOrOptionBuilder} for the SQL requesting
  */
-public interface IJdbcTable extends ITable, ResultSet, IWhereBuilderOrOptionBuilder {
+public interface IJdbcTable extends ITable, ResultSet, IWhereBuilderOrOptionBuilder, IColumnsBuilder {
 
     /** {@link String} name of the metadata property */
     String META_PROPERTY = "meta";

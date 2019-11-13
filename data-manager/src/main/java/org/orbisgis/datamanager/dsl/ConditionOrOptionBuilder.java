@@ -40,7 +40,7 @@ import org.orbisgis.datamanager.JdbcDataSource;
 import org.orbisgis.datamanagerapi.dsl.IConditionOrOptionBuilder;
 
 /**
- * Implementation of IConditionOrOptionBuilder
+ * Implementation of {@link IConditionOrOptionBuilder}
  *
  * @author Erwan Bocher (CNRS)
  * @author Sylvain PALOMINOS (UBS 2019)

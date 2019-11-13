@@ -140,10 +140,11 @@ public abstract class JdbcTable extends DefaultResultSet implements IJdbcTable, 
      *
      * @return The {@link ResultSet} with a limit.
      */
-    protected ResultSet getResultSetLimit(int limit){
-        if(limit < 0){
+    private ResultSet getResultSetLimit(int limit){
+        int _limit = limit;
+        if(_limit < 0){
             LOGGER.warn("The ResultSet limit should not be under 0. Set it to 0.");
-            limit = 0;
+            _limit = 0;
         }
         ResultSet resultSet;
         try {
@@ -151,7 +152,7 @@ public abstract class JdbcTable extends DefaultResultSet implements IJdbcTable, 
                 resultSet = getResultSet();
             }
             else {
-                resultSet = jdbcDataSource.getConnection().createStatement().executeQuery(getBaseQuery() + " LIMIT " + limit);
+                resultSet = jdbcDataSource.getConnection().createStatement().executeQuery(getBaseQuery() + " LIMIT " + _limit);
             }
         } catch (SQLException e) {
             LOGGER.error("Unable to execute the query '"+getBaseQuery()+"'.\n"+e.getLocalizedMessage());

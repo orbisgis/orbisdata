@@ -314,4 +314,19 @@ public class H2GISTests {
         assertEquals(2, (int) values3.get(3));
         assertEquals(1, (int) values3.get(4));
     }
+    
+    @Test
+    public void hasTable() throws SQLException {
+        Map<String, String> map = new HashMap<>();
+        map.put(DataSourceFactory.JDBC_DATABASE_NAME, "./target/loadH2GIS");
+        H2GIS h2GIS = H2GIS.open(map);
+        h2GIS.execute("DROP TABLE IF EXISTS table1, table2; " +
+                "CREATE TABLE table1 (id int, the_geom geometry(point));" +
+                "CREATE TABLE table2 (id int, the_geom geometry(point));");
+
+        assertTrue(h2GIS.hasTable("TABLE1"));
+        assertTrue(h2GIS.hasTable("TABLE2"));
+        assertTrue(h2GIS.hasTable("table1"));
+        assertFalse(h2GIS.hasTable("OrbisGIS"));
+    }
 }

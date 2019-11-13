@@ -548,7 +548,7 @@ public class JdbcTableTest {
         assertEquals("SELECT TOTO, tata, TIti FROM ORBISGIS WHERE toto", getTable().columns("TOTO", "tata", "TIti").where("toto").toString().trim());
         assertEquals("SELECT * FROM ORBISGIS WHERE toto", getTable().where("toto").toString().trim());
         assertEquals("SELECT * FROM ORBISGIS GROUP BY toto", getTable().groupBy("toto").toString().trim());
-        assertEquals("SELECT * FROM ORBISGIS GROUP BY toto, tata", getTable().groupBy("toto", "tata").toString().trim());
+        assertEquals("SELECT * FROM ORBISGIS GROUP BY toto,tata", getTable().groupBy("toto", "tata").toString().trim());
         assertEquals("SELECT * FROM ORBISGIS ORDER BY toto", getTable().orderBy("toto").toString().trim());
         assertEquals("SELECT * FROM ORBISGIS ORDER BY toto ASC", getTable().orderBy("toto", IOptionBuilder.Order.ASC).toString().trim());
         assertEquals("SELECT * FROM ORBISGIS ORDER BY toto ASC, tata DESC", getTable().orderBy(map).toString().trim());
@@ -646,6 +646,15 @@ public class JdbcTableTest {
                 }
         return null;}
         @Override public IDataSet getDataSet(String name) {return null;}
+        
+        @Override
+        public boolean hasTable(String tableName) {
+            try {
+                return JDBCUtilities.tableExists(connection, tableName);
+            } catch (SQLException ex) {
+                return false;
+            }
+        }
     }
 
 

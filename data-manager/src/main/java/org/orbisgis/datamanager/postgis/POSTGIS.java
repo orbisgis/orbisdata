@@ -193,4 +193,13 @@ public class POSTGIS extends JdbcDataSource {
         LOGGER.error("The table '" + tableName + "' is not a spatial table.");
         return null;
     }
+    
+    @Override
+    public boolean hasTable(String tableName) {
+        try {
+            return JDBCUtilities.tableExists(connectionWrapper,TableLocation.parse(tableName, false).toString());
+        } catch (SQLException ex) {
+            return false;
+        }
+    }
 }

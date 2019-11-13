@@ -115,5 +115,5 @@ public interface IJdbcTable extends ITable, ResultSet, IWhereBuilderOrOptionBuil
     @Override
     default void eachRow(Closure closure){
         this.forEach(closure::call);
-    }
+    }    
 }

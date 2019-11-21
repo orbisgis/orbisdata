@@ -95,7 +95,7 @@ public interface IJdbcDataSource extends IDataSource, GroovyObject {
      *
      * @param tableName Name of the table to check.
      *
-     * @return True if the table is found, false otherwise.
+     * @return True if {@link ITable} is found, false otherwise.
      */
     boolean hasTable(String tableName);
 

@@ -564,7 +564,6 @@ class GroovyH2GISTest {
         h2GIS.getSpatialTable("orbisgis").the_geom.createSpatialIndex()
         assertTrue h2GIS.getSpatialTable("orbisgis").the_geom.indexed
         assertTrue h2GIS.getSpatialTable("orbisgis").the_geom.spatialIndexed
-        h2GIS.getSpatialTable("orbisgis").the_geom.createSpatialIndex()
     }
 
     @Test
@@ -629,5 +628,5 @@ class GroovyH2GISTest {
         """)
         def concat = ""
         println h2GIS.firstRow("select count(*) as nb from h2gis").nb
-    }
+    }   
 }

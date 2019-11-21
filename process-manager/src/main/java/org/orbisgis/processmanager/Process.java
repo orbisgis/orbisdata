@@ -213,24 +213,26 @@ public class Process implements IProcess, GroovyObject {
 
     @Override
     public boolean execute(LinkedHashMap<String, Object> inputDataMap) {
+        LinkedHashMap<String, Object> map = (inputDataMap == null ? new LinkedHashMap<>() : inputDataMap);
         if(closure == null){
             LOGGER.error("The process should have a Closure defined.");
             return false;
         }
         LOGGER.debug("Starting the execution of '" + this.getTitle() + "'.");
-        if(inputDataMap != null && (inputs.size() < inputDataMap.size() || inputs.size()-defaultValues.size() > inputDataMap.size())){
+        if((inputs.size() < map.size() || inputs.size()-defaultValues.size() > map.size())){
             LOGGER.error("The number of the input data map and the number of process input are different, should" +
-                    " be between " + (closure.getMaximumNumberOfParameters()-defaultValues.size()) + " and " + closure.getMaximumNumberOfParameters() + ".");
+                    " be between " + (closure.getMaximumNumberOfParameters()-defaultValues.size()) + " and " +
+                    closure.getMaximumNumberOfParameters() + ".");
             return false;
         }
         Object result;
         try {
             if(inputs.size() != 0) {
-                Closure cl = getClosureWithCurry(inputDataMap);
+                Closure cl = getClosureWithCurry(map);
                 if(cl == null){
                     return false;
                 }
-                result = cl.call(getClosureArgs(inputDataMap));
+                result = cl.call(getClosureArgs(map));
             }
             else {
                 result = closure.call();

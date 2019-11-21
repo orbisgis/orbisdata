@@ -480,5 +480,43 @@ class TestProcess {
         assertTrue mapper([inA2: "a"])
         assertEquals "tata", mapper.getResults().outB1
     }
+
+    @Test
+    void testOnlyOneOptionalInput() {
+        String[] arr = ["key1", "key2"]
+        def process = processManager.create()
+                .title("simple process")
+                .description("description")
+                .keywords("key1", "key2")
+                .inputs([inputA: ["key1", "key2"], inputB: String])
+                .outputs([outputA: String])
+                .version("version")
+                .run({ inputA, inputB -> [outputA: inputA] })
+                .process
+        assertTrue process.execute([inputB: String])
+        assertFalse process.results.isEmpty()
+        assertTrue process.results.containsKey("outputA")
+        assertEquals arr.join(""), process.results.outputA.join("")
+    }
+
+    @Test
+    void testBadTypeInput() {
+        String[] arr = ["key1", "key2"]
+        def process = processManager.create()
+                .title("simple process")
+                .description("description")
+                .keywords("key1", "key2")
+                .inputs([inputA: String[], inputB: "toto"])
+                .outputs([outputA: String])
+                .version("version")
+                .run({ inputA, inputB -> [outputA: inputA] })
+                .process
+        assertFalse process.execute([inputB: 56D])
+        assertTrue process.results.isEmpty()
+        //assertFalse process.execute([inputA: arr])
+        //assertTrue process.results.isEmpty()
+        assertTrue process.execute([inputA: ["key1", "key2"]])
+        assertFalse process.results.isEmpty()
+    }
 }
 

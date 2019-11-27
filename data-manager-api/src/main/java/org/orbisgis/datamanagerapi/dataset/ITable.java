@@ -37,7 +37,6 @@
 package org.orbisgis.datamanagerapi.dataset;
 
 import groovy.lang.Closure;
-import org.orbisgis.datamanagerapi.dsl.IWhereBuilderOrOptionBuilder;
 
 import java.util.Collection;
 import java.util.List;

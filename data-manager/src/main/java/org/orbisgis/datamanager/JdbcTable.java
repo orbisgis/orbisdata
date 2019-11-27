@@ -53,7 +53,6 @@ import org.orbisgis.datamanager.io.IOMethods;
 import org.orbisgis.datamanagerapi.dataset.*;
 import org.orbisgis.datamanagerapi.dsl.IConditionOrOptionBuilder;
 import org.orbisgis.datamanagerapi.dsl.IOptionBuilder;
-import org.orbisgis.datamanagerapi.dsl.IWhereBuilderOrOptionBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

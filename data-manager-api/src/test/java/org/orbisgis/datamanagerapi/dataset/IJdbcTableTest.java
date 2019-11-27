@@ -40,15 +40,14 @@ import groovy.lang.Closure;
 import org.junit.jupiter.api.Test;
 import org.orbisgis.datamanagerapi.dsl.IConditionOrOptionBuilder;
 import org.orbisgis.datamanagerapi.dsl.IOptionBuilder;
-import org.orbisgis.datamanagerapi.dsl.IWhereBuilderOrOptionBuilder;
 
 import javax.sql.rowset.RowSetMetaDataImpl;
 import java.io.InputStream;
 import java.io.Reader;
 import java.math.BigDecimal;
 import java.net.URL;
-import java.sql.*;
 import java.sql.Date;
+import java.sql.*;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;

@@ -53,7 +53,6 @@ import org.orbisgis.datamanager.io.IOMethods;
 import org.orbisgis.datamanagerapi.dataset.*;
 import org.orbisgis.datamanagerapi.dsl.IConditionOrOptionBuilder;
 import org.orbisgis.datamanagerapi.dsl.IOptionBuilder;
-import org.orbisgis.datamanagerapi.dsl.IWhereBuilderOrOptionBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -375,7 +374,7 @@ public abstract class JdbcTable extends DefaultResultSet implements IJdbcTable, 
     }
 
     private String getQuery(){
-        return "SELECT * FROM " + getTableLocation().getTable().toUpperCase();
+        return baseQuery.trim();
     }
 
     private String getQuery(String ... columns){
@@ -383,8 +382,25 @@ public abstract class JdbcTable extends DefaultResultSet implements IJdbcTable, 
     }
 
     @Override
-    public IWhereBuilderOrOptionBuilder columns(String... columns){
-        return new WhereBuilder(getQuery(columns), getJdbcDataSource());
+    public ITable columns(String... columns){
+        WhereBuilder builder = new WhereBuilder(getQuery(columns), getJdbcDataSource());
+        if(isSpatial()){
+            return builder.getSpatialTable();
+        }
+        else {
+            return builder.getTable();
+        }
+    }
+
+    @Override
+    public ITable columns(List<String> columns){
+        WhereBuilder builder = new WhereBuilder(getQuery(columns.toArray(new String[0])), getJdbcDataSource());
+        if(isSpatial()){
+            return builder.getSpatialTable();
+        }
+        else {
+            return builder.getTable();
+        }
     }
 
     @Override

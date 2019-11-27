@@ -186,5 +186,29 @@ public interface ITable extends IDataSet {
      * @return The values of the first row in a {@link List}.
      */
     List<Object> getFirstRow();
-    
+
+    /**
+     * Indicates the columns use for the selection.
+     *
+     * @param columns Array of the columns use for the selection.
+     *
+     * @return Filtered {@link ITable}.
+     */
+    ITable columns(String... columns);
+
+    /**
+     * Indicates the columns use for the selection.
+     *
+     * @param columns List of the columns use for the selection.
+     *
+     * @return Filtered {@link ITable}.
+     */
+    ITable columns(List<String> columns);
+
+    /**
+     * Return true if the {@link ITable} is spatial.
+     *
+     * @return True if the {@link ITable} is spatial.
+     */
+    boolean isSpatial();
 }

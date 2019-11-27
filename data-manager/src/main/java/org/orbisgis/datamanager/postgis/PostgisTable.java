@@ -37,9 +37,9 @@
 package org.orbisgis.datamanager.postgis;
 
 import org.h2gis.postgis_jts.StatementWrapper;
-import org.orbisgis.datamanager.TableLocation;
 import org.orbisgis.datamanager.JdbcDataSource;
 import org.orbisgis.datamanager.JdbcTable;
+import org.orbisgis.datamanager.TableLocation;
 import org.orbisgis.datamanagerapi.dataset.DataBaseType;
 import org.orbisgis.datamanagerapi.dataset.ISpatialTable;
 import org.orbisgis.datamanagerapi.dataset.ITable;

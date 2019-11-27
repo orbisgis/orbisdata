@@ -158,7 +158,7 @@ public class H2GISTests {
                 "insert into h2gis values (1, 'POINT(10 10)'::GEOMETRY), (2, 'POINT(1 1)'::GEOMETRY);");
 
         ArrayList<String> values = new ArrayList<>();
-        h2GIS.getSpatialTable("h2gis").where("id=2").eachRow(new Closure(null){
+        ((IJdbcTable)h2GIS.getSpatialTable("h2gis")).where("id=2").eachRow(new Closure(null){
             @Override
             public Object call(Object argument) {
                 values.add(((ISpatialTable)argument).getGeometry().toString());
@@ -195,7 +195,7 @@ public class H2GISTests {
         h2GIS.getSpatialTable("h2gis").eachRow(new Closure(null){
             @Override
             public Object call(Object argument) {
-                ISpatialTable sp = ((ISpatialTable) argument);
+                IJdbcTable sp = ((IJdbcTable) argument);
                 try {
                     sp.updateInt(2, 3);
                     sp.updateRow();
@@ -212,7 +212,7 @@ public class H2GISTests {
             @Override
             public Object call(Object argument) {
                 try {
-                    values.add(((ISpatialTable)argument).getInt(2));
+                    values.add(((IJdbcTable)argument).getInt(2));
                 } catch (SQLException e) {
                     e.printStackTrace();
                 }

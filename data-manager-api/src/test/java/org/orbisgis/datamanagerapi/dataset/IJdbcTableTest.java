@@ -40,15 +40,14 @@ import groovy.lang.Closure;
 import org.junit.jupiter.api.Test;
 import org.orbisgis.datamanagerapi.dsl.IConditionOrOptionBuilder;
 import org.orbisgis.datamanagerapi.dsl.IOptionBuilder;
-import org.orbisgis.datamanagerapi.dsl.IWhereBuilderOrOptionBuilder;
 
 import javax.sql.rowset.RowSetMetaDataImpl;
 import java.io.InputStream;
 import java.io.Reader;
 import java.math.BigDecimal;
 import java.net.URL;
-import java.sql.*;
 import java.sql.Date;
+import java.sql.*;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -446,6 +445,8 @@ public class IJdbcTableTest {
         @Override public Collection<String> getUniqueValues(String column) {return null;}
         @Override public boolean save(String filePath, String encoding) {return false;}
         @Override public List<Object> getFirstRow() {return null;}
+        @Override public ITable columns(String... columns) { return null;}
+        @Override public ITable columns(List<String> columns) { return null; }
         @Override public IConditionOrOptionBuilder where(String condition) {return null;}
         @Override public IOptionBuilder groupBy(String... fields) {return null;}
         @Override public IOptionBuilder orderBy(Map<String, Order> orderByMap) {return null;}
@@ -455,6 +456,5 @@ public class IJdbcTableTest {
         @Override public Object asType(Class clazz) {return null;}
         @Override public ITable getTable() {return null;}
         @Override public ISpatialTable getSpatialTable() {return null;}
-        @Override public IWhereBuilderOrOptionBuilder columns(String... columns) {return null;}
     }
 }

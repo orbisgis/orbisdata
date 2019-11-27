@@ -545,7 +545,13 @@ public class JdbcTableTest {
         map.put("toto", IOptionBuilder.Order.ASC);
         map.put("tata", IOptionBuilder.Order.DESC);
 
-        assertEquals("SELECT TOTO, tata, TIti FROM ORBISGIS WHERE toto", getTable().columns("TOTO", "tata", "TIti").where("toto").toString().trim());
+        List<String> columns = new ArrayList<>();
+        columns.add("TOTO");
+        columns.add("tata");
+        columns.add("TIti");
+
+        assertEquals("SELECT TOTO, tata, TIti FROM ORBISGIS WHERE toto", ((JdbcTable)getTable().columns("TOTO", "tata", "TIti")).where("toto").toString().trim());
+        assertEquals("SELECT TOTO, tata, TIti FROM ORBISGIS WHERE toto", ((JdbcTable)getTable().columns(columns)).where("toto").toString().trim());
         assertEquals("SELECT * FROM ORBISGIS WHERE toto", getTable().where("toto").toString().trim());
         assertEquals("SELECT * FROM ORBISGIS GROUP BY toto", getTable().groupBy("toto").toString().trim());
         assertEquals("SELECT * FROM ORBISGIS GROUP BY toto,tata", getTable().groupBy("toto", "tata").toString().trim());

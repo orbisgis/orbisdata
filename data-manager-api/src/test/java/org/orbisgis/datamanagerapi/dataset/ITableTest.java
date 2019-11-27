@@ -290,6 +290,9 @@ public class ITableTest {
         @Override public Collection<String> getUniqueValues(String column) {return null;}
         @Override public boolean save(String filePath, String encoding) {return true;}
         @Override public List<Object> getFirstRow() {return null;}
+        @Override public ITable columns(String... columns) { return null; }
+        @Override public ITable columns(List<String> columns) { return null; }
+        @Override public boolean isSpatial() { return false; }
         @Override public String getLocation() {return null;}
         @Override public String getName() {return null;}
         @Override public Object getMetaData() {return null;}

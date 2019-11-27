@@ -48,7 +48,7 @@ import java.util.Map;
  * @author Erwan Bocher (CNRS)
  * @author Sylvain PALOMINOS (UBS 2018-2019)
  */
-public interface ISpatialTable extends IJdbcTable {
+public interface ISpatialTable extends ITable {
 
     Geometry getGeometry(int columnIndex);
 

@@ -446,6 +446,8 @@ public class IJdbcTableTest {
         @Override public Collection<String> getUniqueValues(String column) {return null;}
         @Override public boolean save(String filePath, String encoding) {return false;}
         @Override public List<Object> getFirstRow() {return null;}
+        @Override public ITable columns(String... columns) { return null;}
+        @Override public ITable columns(List<String> columns) { return null; }
         @Override public IConditionOrOptionBuilder where(String condition) {return null;}
         @Override public IOptionBuilder groupBy(String... fields) {return null;}
         @Override public IOptionBuilder orderBy(Map<String, Order> orderByMap) {return null;}
@@ -455,6 +457,5 @@ public class IJdbcTableTest {
         @Override public Object asType(Class clazz) {return null;}
         @Override public ITable getTable() {return null;}
         @Override public ISpatialTable getSpatialTable() {return null;}
-        @Override public IWhereBuilderOrOptionBuilder columns(String... columns) {return null;}
     }
 }

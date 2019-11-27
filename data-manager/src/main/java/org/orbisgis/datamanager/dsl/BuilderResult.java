@@ -37,6 +37,7 @@
 package org.orbisgis.datamanager.dsl;
 
 import groovy.lang.Closure;
+import org.h2gis.utilities.wrapper.ConnectionWrapper;
 import org.h2gis.utilities.wrapper.StatementWrapper;
 import org.orbisgis.commons.printer.ICustomPrinter;
 import org.orbisgis.datamanager.JdbcDataSource;
@@ -102,8 +103,8 @@ public abstract class BuilderResult implements IBuilderResult {
             default:
             case H2GIS:
                 if(!(statement instanceof StatementWrapper)){
-                    LOGGER.error("The statement class not compatible with the database.");
-                    break;
+                    LOGGER.warn("The statement class not compatible with the database.");
+                    statement = new StatementWrapper(statement, new ConnectionWrapper(getDataSource().getConnection()));
                 }
                 if(clazz == ISpatialTable.class) {
                     return new H2gisSpatialTable(new TableLocation(getDataSource().getLocation().toString(), name),

@@ -562,6 +562,25 @@ public class JdbcTableTest {
     }
 
     /**
+     * Test the {@link JdbcTable#columns(String...)} and {@link JdbcTable#columns(List)} methods.
+     */
+    @Test
+    public void testColumns() {
+        JdbcTable table = getTable();
+        JdbcSpatialTable spatialTable = (JdbcSpatialTable)dataSource.getSpatialTable(TABLE_NAME);
+
+        List<String> columns = new ArrayList<>();
+        columns.add("TOTO");
+        columns.add("tata");
+        columns.add("TIti");
+
+        assertEquals("SELECT TOTO, tata, TIti FROM ORBISGIS WHERE toto", ((JdbcTable)table.columns("TOTO", "tata", "TIti")).where("toto").toString().trim());
+        assertEquals("SELECT TOTO, tata, TIti FROM ORBISGIS WHERE toto", ((JdbcTable)table.columns(columns)).where("toto").toString().trim());
+        assertEquals("SELECT TOTO, tata, TIti FROM ORBISGIS WHERE toto", ((JdbcTable)spatialTable.columns("TOTO", "tata", "TIti")).where("toto").toString().trim());
+        assertEquals("SELECT TOTO, tata, TIti FROM ORBISGIS WHERE toto",((JdbcTable) spatialTable.columns(columns)).where("toto").toString().trim());
+    }
+
+    /**
      * Test the {@link JdbcTable#getTable()} and {@link JdbcTable#getSpatialTable()} methods.
      */
     @Test

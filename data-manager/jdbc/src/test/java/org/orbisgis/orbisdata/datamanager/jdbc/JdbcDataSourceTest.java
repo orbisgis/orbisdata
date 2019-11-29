@@ -61,6 +61,7 @@ import org.orbisgis.orbisdata.datamanager.api.dsl.IFromBuilder;
 import javax.sql.DataSource;
 import java.io.File;
 import java.io.InputStream;
+import java.io.PrintWriter;
 import java.lang.reflect.Field;
 import java.net.MalformedURLException;
 import java.net.URI;
@@ -68,6 +69,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.sql.SQLFeatureNotSupportedException;
 import java.sql.Statement;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -80,16 +82,16 @@ import static org.junit.jupiter.api.Assertions.*;
  * @author Erwan Bocher (CNRS)
  * @author Sylvain PALOMINOS (UBS 2019)
  */
-public class JdbcDataSourceTest {
+class JdbcDataSourceTest {
 
-    static final String DB_NAME = "target/JdbcDataSourceTest";
-    static final String DB_LINK_NAME = "./target/dbToLink";
-    static DummyJdbcDataSource ds1;
-    static DummyJdbcDataSource ds2;
-    static DummyJdbcDataSource ds3;
+    private static final String DB_NAME = "target/JdbcDataSourceTest";
+    private static final String DB_LINK_NAME = "./target/dbToLink";
+    private static DummyJdbcDataSource ds1;
+    private static DummyJdbcDataSource ds2;
+    private static DummyJdbcDataSource ds3;
 
     @BeforeAll
-    public static void beforeAll() throws SQLException {
+    static void beforeAll() throws SQLException {
         H2GIS h2gis = H2GIS.open(DB_LINK_NAME);
         h2gis.execute("DROP TABLE IF EXISTS linkedtable");
         h2gis.execute("CREATE TABLE linkedtable(id int, the_geom GEOMETRY, text varchar)");
@@ -102,7 +104,7 @@ public class JdbcDataSourceTest {
      * @throws SQLException Sql exception.
      */
     @BeforeEach
-    public void init() throws SQLException {
+    void init() throws SQLException {
         DataSource dataSource = H2GISDBFactory.createDataSource(new File(DB_NAME).toURI().toString(), true);
         Connection connection = dataSource.getConnection();
         Sql sql = new Sql(connection);
@@ -120,10 +122,52 @@ public class JdbcDataSourceTest {
     }
 
     /**
+     * Test the methods coming from {@link DataSource}.
+     */
+    @Test
+    void testDataSourceMethods() throws SQLException {
+        assertNotNull(ds1.getDataSource());
+        assertNotNull(ds1.getConnection("sa", "sa"));
+        assertEquals(ds1.getLogWriter(), ds1.getLogWriter());
+        ds1.setLogWriter(null);
+        assertNull(ds1.getLogWriter());
+        assertEquals(ds1.getDataSource().getLoginTimeout(), ds1.getLoginTimeout());
+        ds1.setLoginTimeout(123456);
+        assertEquals(123456, ds1.getLoginTimeout());
+        assertEquals(ds1.getDataSource().unwrap(DataSource.class), ds1.unwrap(DataSource.class));
+        assertEquals(ds1.getDataSource().isWrapperFor(DataSource.class), ds1.isWrapperFor(DataSource.class));
+        assertEquals(ds1.getDataSource().getParentLogger(), ds1.getParentLogger());
+
+        assertNull(ds2.getDataSource());
+        assertNull(ds2.getConnection("sa", "sa"));
+        assertNull(ds2.getLogWriter());
+        ds2.setLogWriter(null);
+        assertNull(ds2.getLogWriter());
+        assertEquals(-1, ds2.getLoginTimeout());
+        ds2.setLoginTimeout(123456);
+        assertEquals(-1, ds2.getLoginTimeout());
+        assertNull(ds2.unwrap(DataSource.class));
+        assertFalse(ds2.isWrapperFor(DataSource.class));
+        assertNull(ds2.getParentLogger());
+
+        assertNull(ds3.getDataSource());
+        assertNull(ds3.getConnection("sa", "sa"));
+        assertNull(ds3.getLogWriter());
+        ds3.setLogWriter(null);
+        assertNull(ds3.getLogWriter());
+        assertEquals(-1, ds3.getLoginTimeout());
+        ds3.setLoginTimeout(123456);
+        assertEquals(-1, ds3.getLoginTimeout());
+        assertNull(ds3.unwrap(DataSource.class));
+        assertFalse(ds3.isWrapperFor(DataSource.class));
+        assertNull(ds3.getParentLogger());
+    }
+
+    /**
      * Test the {@link JdbcDataSource#getConnection()} method.
      */
     @Test
-    public void testGetConnection() {
+    void testGetConnection() {
         assertNotNull(ds1.getConnection());
         assertNotNull(ds2.getConnection());
         assertNotNull(ds3.getConnection());
@@ -133,7 +177,7 @@ public class JdbcDataSourceTest {
      * Test the {@link JdbcDataSource#getDataBaseType()} method.
      */
     @Test
-    public void testGetDataBaseType() {
+    void testGetDataBaseType() {
         assertEquals(DataBaseType.H2GIS, ds1.getDataBaseType());
         assertEquals(DataBaseType.POSTGIS, ds2.getDataBaseType());
         assertNull(ds3.getDataBaseType());
@@ -143,7 +187,7 @@ public class JdbcDataSourceTest {
      * Test the {@link JdbcDataSource#execute(GString)} method.
      */
     @Test
-    public void testExecute() throws SQLException {
+    void testExecute() throws SQLException {
         GString gstring1 = new GStringImpl(new String[]{"test"}, new String[]{"SELECT * FROM "});
         GString gstring2 = new GStringImpl(new String[]{"test"}, new String[]{"UPDATE ", " SET text='titi' WHERE id=3"});
         GString gstring3 = new GStringImpl(new String[]{}, new String[]{"SELECT * FROM test"});
@@ -165,7 +209,7 @@ public class JdbcDataSourceTest {
      * Test the {@link JdbcDataSource#firstRow(GString)} method.
      */
     @Test
-    public void testFirstRow() throws SQLException {
+    void testFirstRow() throws SQLException {
         GString gstring1 = new GStringImpl(new String[]{"test"}, new String[]{"SELECT * FROM "});
         GString gstring3 = new GStringImpl(new String[]{}, new String[]{"SELECT * FROM test"});
 
@@ -188,7 +232,7 @@ public class JdbcDataSourceTest {
      * Test the {@link JdbcDataSource#rows(GString)} method.
      */
     @Test
-    public void testRows() throws SQLException {
+    void testRows() throws SQLException {
         GString gstring1 = new GStringImpl(new String[]{"test"}, new String[]{"SELECT * FROM "});
         GString gstring3 = new GStringImpl(new String[]{}, new String[]{"SELECT * FROM test"});
 
@@ -218,7 +262,7 @@ public class JdbcDataSourceTest {
      * Test the {@link JdbcDataSource#eachRow(GString, Closure)} method.
      */
     @Test
-    public void testEachRow() throws SQLException {
+    void testEachRow() throws SQLException {
         GString gstring1 = new GStringImpl(new String[]{"test"}, new String[]{"SELECT * FROM "});
         GString gstring3 = new GStringImpl(new String[]{}, new String[]{"SELECT * FROM test"});
         final String[] collect = {""};
@@ -267,7 +311,7 @@ public class JdbcDataSourceTest {
      * Test the {@link JdbcDataSource#select(String...)} method.
      */
     @Test
-    public void testSelect() throws NoSuchFieldException, IllegalAccessException {
+    void testSelect() throws NoSuchFieldException, IllegalAccessException {
         assertEquals("SELECT *  ", getQuery(ds1.select()));
         assertEquals("SELECT toto,tata ", getQuery(ds1.select("toto", "tata")));
         assertEquals("SELECT *  ", getQuery(ds1.select((String[]) null)));
@@ -302,7 +346,7 @@ public class JdbcDataSourceTest {
      * Test the {@link JdbcDataSource#executeScript(String, Map)} method.
      */
     @Test
-    public void testExecuteMethod1() throws URISyntaxException, SQLException {
+    void testExecuteMethod1() throws URISyntaxException, SQLException {
         Map<String, String> map = new HashMap<>();
         map.put("intArg", "51");
         URL url = this.getClass().getResource("simpleWithArgs.sql");
@@ -350,7 +394,7 @@ public class JdbcDataSourceTest {
      * Test the {@link JdbcDataSource#executeScript(InputStream, Map)} method.
      */
     @Test
-    public void testExecuteMethod2() throws SQLException {
+    void testExecuteMethod2() throws SQLException {
         Map<String, String> map = new HashMap<>();
         map.put("intArg", "51");
 
@@ -377,7 +421,7 @@ public class JdbcDataSourceTest {
      * Test the {@link JdbcDataSource#setMetaClass(MetaClass)} and {@link JdbcDataSource#getMetaClass()} methods.
      */
     @Test
-    public void testMetaClassMethods() {
+    void testMetaClassMethods() {
         assertEquals(InvokerHelper.getMetaClass(DummyJdbcDataSource.class), ds1.getMetaClass());
         ds1.setMetaClass(InvokerHelper.getMetaClass(this));
         assertEquals(InvokerHelper.getMetaClass(this), ds1.getMetaClass());
@@ -395,7 +439,7 @@ public class JdbcDataSourceTest {
      * Test the save methods.
      */
     @Test
-    public void testSave() throws SQLException, MalformedURLException {
+    void testSave() throws SQLException, MalformedURLException {
         ds1.execute("DROP TABLE IF EXISTS load");
         ds2.execute("DROP TABLE IF EXISTS load");
         ds3.execute("DROP TABLE IF EXISTS load");
@@ -461,7 +505,7 @@ public class JdbcDataSourceTest {
      * Test the link methods.
      */
     @Test
-    public void testLink() throws SQLException, URISyntaxException, MalformedURLException {
+    void testLink() throws SQLException, URISyntaxException, MalformedURLException {
         URL url = this.getClass().getResource("linkTable.dbf");
         URI uri = url.toURI();
         File file = new File(uri);
@@ -616,7 +660,7 @@ public class JdbcDataSourceTest {
      * Test the load from an existing database methods.
      */
     @Test
-    public void loadFromDB() throws SQLException {
+    void loadFromDB() throws SQLException {
         Map<String, String> map = new HashMap<>();
         map.put("url", "jdbc:h2:" + DB_LINK_NAME);
         String tableName = "LINKEDTABLE";
@@ -664,7 +708,7 @@ public class JdbcDataSourceTest {
      * Test the load file path methods.
      */
     @Test
-    public void testLoadPath() throws SQLException, URISyntaxException {
+    void testLoadPath() throws SQLException, URISyntaxException {
         URL url = this.getClass().getResource("loadTable.dbf");
         URI uri = url.toURI();
         File file = new File(uri);
@@ -901,7 +945,7 @@ public class JdbcDataSourceTest {
      * Test the {@link JdbcDataSource#getLocation()} method.
      */
     @Test
-    public void testGetLocation() {
+    void testGetLocation() {
         assertNotNull(ds1.getLocation());
         assertEquals(new File(DB_NAME).getAbsolutePath(), ds1.getLocation().asType(String.class));
         assertNotNull(ds2.getLocation());
@@ -914,7 +958,7 @@ public class JdbcDataSourceTest {
      * Test the {@link JdbcDataSource#getTableNames()} method.
      */
     @Test
-    public void testGetTableNames() {
+    void testGetTableNames() {
         Collection<String> names = ds1.getTableNames();
         assertNotNull(names);
         assertEquals(36, names.size());
@@ -941,7 +985,7 @@ public class JdbcDataSourceTest {
      * Test the {@link JdbcDataSource#hasTable(String)} method.
      */
     @Test
-    public void testHasTable() {
+    void testHasTable() {
         Collection<String> names = ds1.getTableNames();
         assertNotNull(names);
         assertEquals(36, names.size());
@@ -956,7 +1000,7 @@ public class JdbcDataSourceTest {
      * Test the {@link JdbcDataSource#getDataSet(String)} method.
      */
     @Test
-    public void testGetDataSet() {
+    void testGetDataSet() {
         Object dataset = ds1.getDataSet("TEST");
         assertTrue(dataset instanceof ISpatialTable);
         dataset = ds1.getDataSet("GEOMETRY_COLUMNS");

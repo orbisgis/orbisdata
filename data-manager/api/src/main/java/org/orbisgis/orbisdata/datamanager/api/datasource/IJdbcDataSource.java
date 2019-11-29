@@ -41,6 +41,7 @@ import groovy.lang.MissingMethodException;
 import org.orbisgis.orbisdata.datamanager.api.dataset.ISpatialTable;
 import org.orbisgis.orbisdata.datamanager.api.dataset.ITable;
 
+import javax.sql.DataSource;
 import java.io.File;
 import java.io.InputStream;
 import java.net.URI;
@@ -54,7 +55,7 @@ import java.util.Map;
  * @author Erwan Bocher (CNRS)
  * @author Sylvain PALOMINOS (UBS 2018-2019)
  */
-public interface IJdbcDataSource extends IDataSource, GroovyObject {
+public interface IJdbcDataSource extends IDataSource, GroovyObject, DataSource {
 
     /**
      * Close the underlying database.

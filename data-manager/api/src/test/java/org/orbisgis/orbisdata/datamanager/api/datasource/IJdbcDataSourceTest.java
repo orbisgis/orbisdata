@@ -48,10 +48,15 @@ import org.orbisgis.orbisdata.datamanager.api.dataset.ITable;
 
 import java.io.File;
 import java.io.InputStream;
+import java.io.PrintWriter;
 import java.net.URI;
 import java.net.URL;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.SQLFeatureNotSupportedException;
 import java.util.Collection;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -215,5 +220,14 @@ public class IJdbcDataSourceTest {
         @Override public IDataSet getDataSet(String name) {return null;}
         @Override public IDataSourceLocation getLocation() {return null;}
         @Override public boolean hasTable(String tableName) {return false;}
+        @Override public Connection getConnection() throws SQLException { return null; }
+        @Override public Connection getConnection(String s, String s1) throws SQLException { return null; }
+        @Override public PrintWriter getLogWriter() throws SQLException { return null; }
+        @Override public void setLogWriter(PrintWriter printWriter) throws SQLException { }
+        @Override public void setLoginTimeout(int i) throws SQLException { }
+        @Override public int getLoginTimeout() throws SQLException { return 0; }
+        @Override public Logger getParentLogger() throws SQLFeatureNotSupportedException { return null; }
+        @Override public <T> T unwrap(Class<T> aClass) throws SQLException { return null; }
+        @Override public boolean isWrapperFor(Class<?> aClass) throws SQLException { return false; }
     }
 }

@@ -15,9 +15,7 @@
     <packaging>pom</packaging>
     <modules>
         <module>commons</module>
-        <module>data-manager-api</module>
         <module>data-manager</module>
-        <module>process-manager-api</module>
         <module>process-manager</module>
     </modules>
 
@@ -30,6 +28,42 @@
         <maven.compiler.source>8</maven.compiler.source>
         <site.basedir>${project.basedir}</site.basedir>
     </properties>
+
+    <!-- Dependencies -->
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.orbisgis.orbisdata</groupId>
+                <artifactId>commons</artifactId>
+                <version>${project.version}</version>
+                <scope>compile</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.orbisgis.orbisdata.datamanager</groupId>
+                <artifactId>api</artifactId>
+                <version>${project.version}</version>
+                <scope>compile</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.orbisgis.orbisdata.datamanager</groupId>
+                <artifactId>jdbc</artifactId>
+                <version>${project.version}</version>
+                <scope>compile</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.orbisgis.orbisdata.processmanager</groupId>
+                <artifactId>api</artifactId>
+                <version>${project.version}</version>
+                <scope>compile</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.orbisgis.orbisdata.processmanager</groupId>
+                <artifactId>process</artifactId>
+                <version>${project.version}</version>
+                <scope>compile</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
     <!-- Build Settings -->
     <build>

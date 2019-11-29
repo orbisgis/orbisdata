@@ -52,6 +52,7 @@ import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.TableLocation;
 import org.h2gis.utilities.URIUtilities;
+import org.h2gis.utilities.wrapper.DataSourceWrapper;
 import org.orbisgis.orbisdata.datamanager.jdbc.dsl.FromBuilder;
 import org.orbisgis.orbisdata.datamanager.jdbc.io.IOMethods;
 import org.orbisgis.orbisdata.datamanager.api.dataset.DataBaseType;
@@ -71,6 +72,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.sql.SQLFeatureNotSupportedException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -92,6 +94,8 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, ISe
     private MetaClass metaClass;
     /** Type of the database */
     private DataBaseType databaseType;
+    /** Wrapped {@link DataSource} */
+    private DataSource dataSource;
 
     /**
      * Constructor to create a {@link JdbcDataSource} from a {@link Sql} object.
@@ -100,6 +104,7 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, ISe
      */
     public JdbcDataSource(Sql parent, DataBaseType databaseType) {
         super(parent);
+        this.dataSource = parent.getDataSource();
         this.metaClass = InvokerHelper.getMetaClass(getClass());
         this.databaseType = databaseType;
         LOG.setLevel(Level.OFF);
@@ -112,6 +117,7 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, ISe
      */
     public JdbcDataSource(DataSource dataSource, DataBaseType databaseType) {
         super(dataSource);
+        this.dataSource = dataSource;
         this.metaClass = InvokerHelper.getMetaClass(getClass());
         this.databaseType = databaseType;
         LOG.setLevel(Level.OFF);
@@ -124,9 +130,81 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, ISe
      */
     public JdbcDataSource(Connection connection, DataBaseType databaseType) {
         super(connection);
+        this.dataSource = null;
         this.metaClass = InvokerHelper.getMetaClass(getClass());
         this.databaseType = databaseType;
         LOG.setLevel(Level.OFF);
+    }
+
+    @Override
+    public Connection getConnection(String var1, String var2) throws SQLException {
+        if(this.dataSource != null) {
+            return this.dataSource.getConnection(var1, var2);
+        }
+        LOGGER.error("Unable to get the DataSource.\n");
+        return null;
+    }
+
+    public PrintWriter getLogWriter() throws SQLException {
+        if(this.dataSource != null) {
+            return this.dataSource.getLogWriter();
+        }
+        LOGGER.error("Unable to get the DataSource.\n");
+        return null;
+    }
+
+    public void setLogWriter(PrintWriter writer) throws SQLException {
+        if(this.dataSource != null) {
+            this.dataSource.setLogWriter(writer);
+        }
+        LOGGER.error("Unable to get the DataSource.\n");
+    }
+
+    public void setLoginTimeout(int time) throws SQLException {
+        if(this.dataSource != null) {
+            this.dataSource.setLoginTimeout(time);
+        }
+        LOGGER.error("Unable to get the DataSource.\n");
+    }
+
+    public int getLoginTimeout() throws SQLException {
+        if(this.dataSource != null) {
+            return this.dataSource.getLoginTimeout();
+        }
+        LOGGER.error("Unable to get the DataSource.\n");
+        return -1;
+    }
+
+    @Override
+    public <T> T unwrap(Class<T> aClass) throws SQLException {
+        if(this.dataSource != null) {
+            return this.dataSource.unwrap(aClass);
+        }
+        LOGGER.error("Unable to get the DataSource.\n");
+        return null;
+    }
+
+    @Override
+    public boolean isWrapperFor(Class<?> aClass) throws SQLException {
+        if(this.dataSource != null) {
+            return this.dataSource.isWrapperFor(aClass);
+        }
+        LOGGER.error("Unable to get the DataSource.\n");
+        return false;
+    }
+
+    @Override
+    public java.util.logging.Logger getParentLogger() throws SQLFeatureNotSupportedException {
+        if(this.dataSource != null) {
+            return this.dataSource.getParentLogger();
+        }
+        LOGGER.error("Unable to get the DataSource.\n");
+        return null;
+    }
+
+    @Override
+    public DataSource getDataSource() {
+        return this.dataSource;
     }
 
     @Override

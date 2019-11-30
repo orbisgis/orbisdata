@@ -56,6 +56,26 @@ public interface ISpatialTable extends ITable {
 
     Geometry getGeometry();
 
+    IRaster getRaster(int columnIndex);
+
+    IRaster getRaster(String columnLabel);
+
+    IRaster getRaster();
+
+    /**
+     * Return the list of the table spatial columns.
+     *
+     * @return The list of the table spatial columns.
+     */
+    List<String> getSpatialColumns();
+
+    /**
+     * Return the list of the table raster columns.
+     *
+     * @return The list of the table raster columns.
+     */
+    List<String> getRasterColumns();
+
     /**
      * Return the list of the table geometric columns.
      *

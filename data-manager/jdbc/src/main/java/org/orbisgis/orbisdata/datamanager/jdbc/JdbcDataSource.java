@@ -52,7 +52,6 @@ import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.TableLocation;
 import org.h2gis.utilities.URIUtilities;
-import org.h2gis.utilities.wrapper.DataSourceWrapper;
 import org.orbisgis.orbisdata.datamanager.jdbc.dsl.FromBuilder;
 import org.orbisgis.orbisdata.datamanager.jdbc.io.IOMethods;
 import org.orbisgis.orbisdata.datamanager.api.dataset.DataBaseType;

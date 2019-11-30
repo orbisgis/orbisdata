@@ -50,7 +50,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * Test class dedicated to {@link ResultSetIterator}.
  *
  * @author Erwan Bocher (CNRS)
- * @author Sylvain PALOMINOS 'UBS 2019)
+ * @author Sylvain PALOMINOS (UBS 2019)
  */
 public class ResultSetIteratorTest {
 

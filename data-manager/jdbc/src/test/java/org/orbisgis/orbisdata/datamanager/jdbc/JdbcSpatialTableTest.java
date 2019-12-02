@@ -154,14 +154,34 @@ public class JdbcSpatialTableTest {
         assertNull(table.getGeometry(COL_ID));
     }
 
+
     /**
-     * Test the {@link JdbcSpatialTable#getGeometricColumns()} method.
+     * Test the {@link JdbcSpatialTable#getRaster()}, {@link JdbcSpatialTable#getRaster(int)},
+     * {@link JdbcSpatialTable#getRaster(String)} methods.
      */
     @Test
-    public void testGetGeometricColumns(){
+    public void testGetRaster(){
+        ISpatialTable table = dataSource.getSpatialTable(TABLE_NAME);
+        assertThrows(UnsupportedOperationException.class, table::getRaster);
+        assertThrows(UnsupportedOperationException.class, () -> table.getRaster(0));
+        assertThrows(UnsupportedOperationException.class, () -> table.getRaster("col"));
+    }
+
+    /**
+     * Test the {@link JdbcSpatialTable#getGeometricColumns()} and
+     * {@link JdbcSpatialTable#getRasterColumns()} and {@link JdbcSpatialTable#getSpatialColumns()} methods.
+     */
+    @Test
+    public void testGetColumns(){
         assertEquals(2, dataSource.getSpatialTable(TABLE_NAME).getGeometricColumns().size());
         assertTrue(dataSource.getSpatialTable(TABLE_NAME).getGeometricColumns().contains(COL_THE_GEOM));
         assertTrue(dataSource.getSpatialTable(TABLE_NAME).getGeometricColumns().contains(COL_THE_GEOM2));
+
+        assertEquals(0, dataSource.getSpatialTable(TABLE_NAME).getRasterColumns().size());
+
+        assertEquals(2, dataSource.getSpatialTable(TABLE_NAME).getSpatialColumns().size());
+        assertTrue(dataSource.getSpatialTable(TABLE_NAME).getSpatialColumns().contains(COL_THE_GEOM));
+        assertTrue(dataSource.getSpatialTable(TABLE_NAME).getSpatialColumns().contains(COL_THE_GEOM2));
     }
 
     /**

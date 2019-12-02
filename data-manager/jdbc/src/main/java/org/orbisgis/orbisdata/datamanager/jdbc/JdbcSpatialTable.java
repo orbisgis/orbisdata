@@ -42,11 +42,13 @@ import org.h2gis.utilities.SpatialResultSetMetaData;
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
 import org.orbisgis.orbisdata.datamanager.api.dataset.DataBaseType;
+import org.orbisgis.orbisdata.datamanager.api.dataset.IRaster;
 import org.orbisgis.orbisdata.datamanager.api.dataset.ISpatialTable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -108,6 +110,34 @@ public abstract class JdbcSpatialTable extends JdbcTable implements ISpatialTabl
             LOGGER.error("Unable to get the geometry.\n" + e.getLocalizedMessage());
         }
         return null;
+    }
+
+    @Override
+    public IRaster getRaster(int columnIndex){
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public IRaster getRaster(String columnLabel){
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public IRaster getRaster(){
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public List<String> getSpatialColumns(){
+        List<String> list = new ArrayList<>();
+        list.addAll(getRasterColumns());
+        list.addAll(getGeometricColumns());
+        return list;
+    }
+
+    @Override
+    public List<String> getRasterColumns(){
+        return new ArrayList<>();
     }
 
     @Override

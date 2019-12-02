@@ -50,11 +50,69 @@ import java.util.Map;
  */
 public interface ISpatialTable extends ITable {
 
+    /**
+     * Returns the {@link Geometry} value of the given column at the current row.
+     *
+     * @param columnIndex Index of the geometric column.
+     *
+     * @return The {@link Geometry} value of the given column at the current row.
+     */
     Geometry getGeometry(int columnIndex);
 
+    /**
+     * Returns the {@link Geometry} value of the given column at the current row.
+     *
+     * @param columnLabel Label of the geometric column.
+     *
+     * @return The {@link Geometry} value of the given column at the current row.
+     */
     Geometry getGeometry(String columnLabel);
 
+    /**
+     * Returns the {@link Geometry} value of the first geometric column at the current row.
+     *
+     * @return The {@link Geometry} value of the first geometric column at the current row.
+     */
     Geometry getGeometry();
+
+    /**
+     * Returns the {@link IRaster} value of the given column at the current row.
+     *
+     * @param columnIndex Index of the raster column.
+     *
+     * @return The {@link IRaster} value of the given column at the current row.
+     */
+    IRaster getRaster(int columnIndex);
+
+    /**
+     * Returns the {@link IRaster} value of the given column at the current row.
+     *
+     * @param columnLabel Label of the raster column.
+     *
+     * @return The {@link IRaster} value of the given column at the current row.
+     */
+    IRaster getRaster(String columnLabel);
+
+    /**
+     * Returns the {@link IRaster} value of the first raster column at the current row.
+     *
+     * @return The {@link IRaster} value of the first raster column at the current row.
+     */
+    IRaster getRaster();
+
+    /**
+     * Return the list of the table spatial columns.
+     *
+     * @return The list of the table spatial columns.
+     */
+    List<String> getSpatialColumns();
+
+    /**
+     * Return the list of the table raster columns.
+     *
+     * @return The list of the table raster columns.
+     */
+    List<String> getRasterColumns();
 
     /**
      * Return the list of the table geometric columns.

@@ -237,7 +237,7 @@ public abstract class JdbcTable extends DefaultResultSet implements IJdbcTable, 
     }
 
     @Override
-    public Collection<String> getColumnNames() {
+    public Collection<String> getColumns() {
         try {
             return JDBCUtilities
                     .getFieldNames(getResultSetLimit(0).getMetaData())
@@ -251,9 +251,9 @@ public abstract class JdbcTable extends DefaultResultSet implements IJdbcTable, 
     }
 
     @Override
-    public Map<String, String> getColumns(){
+    public Map<String, String> getColumnsTypes(){
         Map<String, String> map = new HashMap<>();
-        getColumnNames().forEach((name) -> {
+        getColumns().forEach((name) -> {
             map.put(name, getColumnsType(name));
         });
         return map;
@@ -304,7 +304,7 @@ public abstract class JdbcTable extends DefaultResultSet implements IJdbcTable, 
 
     @Override
     public boolean hasColumn(String columnName){
-        return getColumnNames().contains(TableLocation.capsIdentifier(columnName, getDbType().equals(DataBaseType.H2GIS)));
+        return getColumns().contains(TableLocation.capsIdentifier(columnName, getDbType().equals(DataBaseType.H2GIS)));
     }
 
     @Override
@@ -485,7 +485,7 @@ public abstract class JdbcTable extends DefaultResultSet implements IJdbcTable, 
         if(propertyName.equals(META_PROPERTY)){
             return getMetaData();
         }
-        Collection<String> columns = getColumnNames();
+        Collection<String> columns = getColumns();
         if(columns!= null &&
                 (columns.contains(propertyName.toLowerCase()) || columns.contains(propertyName.toUpperCase()))
                 || "id".equalsIgnoreCase(propertyName)) {
@@ -525,7 +525,7 @@ public abstract class JdbcTable extends DefaultResultSet implements IJdbcTable, 
             else{
                 return this;
             }
-            Collection<String> columnNames = getColumnNames();
+            Collection<String> columnNames = getColumns();
 
             printer.startTable(ASCII_COLUMN_WIDTH, columnNames.size());
             printer.appendTableTitle(this.getName());

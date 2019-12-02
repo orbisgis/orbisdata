@@ -321,7 +321,7 @@ public class JdbcTableTest {
     }
 
     /**
-     * Test the {@link JdbcTable#getColumnNames()} method.
+     * Test the {@link JdbcTable#getColumns()} method.
      */
     @Test
     public void testGetColumnNames(){
@@ -331,7 +331,7 @@ public class JdbcTableTest {
         colList.add(TableLocation.capsIdentifier(COL_ID, true));
         colList.add(TableLocation.capsIdentifier(COL_VALUE, true));
         colList.add(TableLocation.capsIdentifier(COL_MEANING, true));
-        assertEquals(colList, getTable().getColumnNames());
+        assertEquals(colList, getTable().getColumns());
     }
 
     /**
@@ -525,11 +525,11 @@ public class JdbcTableTest {
     }
 
     /**
-     * Test the {@link JdbcTable#getColumns()} method.
+     * Test the {@link JdbcTable#getColumnsTypes()} method.
      */
     @Test
     public void testGetColumns() {
-        Map<String, String> map = getTable().getColumns();
+        Map<String, String> map = getTable().getColumnsTypes();
         String[] keys = {COL_THE_GEOM2.toUpperCase(), COL_THE_GEOM, COL_ID, COL_VALUE, COL_MEANING};
         String[] values = {"POINTZ", "GEOMETRY", "INTEGER", "DOUBLE", "VARCHAR"};
         assertArrayEquals(keys, map.keySet().toArray());

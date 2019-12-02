@@ -294,8 +294,8 @@ class GroovyH2GISTest {
                 CREATE TABLE h2gis (id int, the_geom geometry(point));
                 INSERT INTO h2gis VALUES (1, 'POINT(10 10)'::GEOMETRY), (2, 'POINT(1 1)'::GEOMETRY);
         """)
-        assertEquals("ID,THE_GEOM", h2GIS.getSpatialTable("h2gis").columnNames.join(","))
-        assertTrue(h2GIS.getSpatialTable("h2gis").columnNames.indexOf("THE_GEOM")!=-1)
+        assertEquals("ID,THE_GEOM", h2GIS.getSpatialTable("h2gis").columns.join(","))
+        assertTrue(h2GIS.getSpatialTable("h2gis").columns.indexOf("THE_GEOM")!=-1)
     }
 
     @Test
@@ -334,7 +334,7 @@ class GroovyH2GISTest {
         """)
         h2GIS.save("externalTable", 'target/externalFile.shp' )
         def table = h2GIS.link('target/externalFile.shp', 'super',true) as ITable
-        assertEquals("PK,THE_GEOM,ID", table.columnNames.join(","))
+        assertEquals("PK,THE_GEOM,ID", table.columns.join(","))
     }
 
     @Test
@@ -350,7 +350,7 @@ class GroovyH2GISTest {
         table.save('target/supersave.shp')
         h2GIS.load( 'target/supersave.shp',true )
         assertTrue(h2GIS.tableNames.contains("SECONDH2GIS.PUBLIC.SUPERSAVE"))
-        assertEquals("PK,THE_GEOM,ID", table.columnNames.join(","))
+        assertEquals("PK,THE_GEOM,ID", table.columns.join(","))
     }
     
     @Test

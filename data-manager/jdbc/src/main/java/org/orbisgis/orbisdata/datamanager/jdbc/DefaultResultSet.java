@@ -1,5 +1,5 @@
 /*
- * Bundle DataManager API is part of the OrbisGIS platform
+ * Bundle DataManager is part of the OrbisGIS platform
  *
  * OrbisGIS is a java GIS application dedicated to research in GIScience.
  * OrbisGIS is developed by the GIS group of the DECIDE team of the
@@ -46,6 +46,8 @@ import java.util.Map;
 
 /**
  * Default implementation of the {@link ResultSet}
+ *
+ * @author Sylvain PALOMINOS (UBS LAB-STICC 2019)
  */
 public abstract class DefaultResultSet implements ResultSet {
 

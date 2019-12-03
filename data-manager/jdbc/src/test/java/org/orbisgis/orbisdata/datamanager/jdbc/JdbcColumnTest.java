@@ -1,5 +1,5 @@
 /*
- * Bundle DataManager is part of the OrbisGIS platform
+ * Bundle DataFrame is part of the OrbisGIS platform
  *
  * OrbisGIS is a java GIS application dedicated to research in GIScience.
  * OrbisGIS is developed by the GIS group of the DECIDE team of the

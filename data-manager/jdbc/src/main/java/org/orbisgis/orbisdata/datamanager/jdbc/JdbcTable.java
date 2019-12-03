@@ -382,24 +382,24 @@ public abstract class JdbcTable extends DefaultResultSet implements IJdbcTable, 
     }
 
     @Override
-    public ITable columns(String... columns){
+    public IJdbcTable columns(String... columns){
         WhereBuilder builder = new WhereBuilder(getQuery(columns), getJdbcDataSource());
         if(isSpatial()){
-            return builder.getSpatialTable();
+            return (IJdbcTable)builder.getSpatialTable();
         }
         else {
-            return builder.getTable();
+            return (IJdbcTable)builder.getTable();
         }
     }
 
     @Override
-    public ITable columns(List<String> columns){
+    public IJdbcTable columns(List<String> columns){
         WhereBuilder builder = new WhereBuilder(getQuery(columns.toArray(new String[0])), getJdbcDataSource());
         if(isSpatial()){
-            return builder.getSpatialTable();
+            return (IJdbcTable)builder.getSpatialTable();
         }
         else {
-            return builder.getTable();
+            return (IJdbcTable)builder.getTable();
         }
     }
 

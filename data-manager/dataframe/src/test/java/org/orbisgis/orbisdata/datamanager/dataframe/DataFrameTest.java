@@ -9,7 +9,6 @@ import smile.math.matrix.DenseMatrix;
 import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.UUID;
@@ -17,7 +16,7 @@ import java.util.UUID;
 import static org.junit.jupiter.api.Assertions.*;
 
 
-public class DataFrameTest {
+class DataFrameTest {
 
     @Test
     void testDataFrameFromTable() throws SQLException, IOException {
@@ -87,10 +86,9 @@ public class DataFrameTest {
         assertNotNull(df02.toMatrix());
 
         int i=0;
-        Iterator<BaseVector> it = df.iterator();
-        while(it.hasNext()){
+        for (BaseVector baseVector : df) {
             i++;
-            assertEquals(5, it.next().size());
+            assertEquals(5, baseVector.size());
         }
         assertEquals(9, i);
         assertEquals(5, df.stream().count());

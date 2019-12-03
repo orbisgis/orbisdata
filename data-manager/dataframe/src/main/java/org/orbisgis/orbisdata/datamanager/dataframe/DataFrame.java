@@ -9,8 +9,8 @@ import smile.data.Tuple;
 import smile.data.type.DataType;
 import smile.data.type.StructField;
 import smile.data.type.StructType;
-import smile.data.vector.Vector;
 import smile.data.vector.*;
+import smile.data.vector.Vector;
 import smile.math.matrix.DenseMatrix;
 import smile.math.matrix.Matrix;
 
@@ -361,7 +361,6 @@ public class DataFrame implements smile.data.DataFrame, ITable<BaseVector> {
             StructType schema = getStructure(jdbcTable);
             ArrayList<Tuple> rows = new ArrayList<>();
             while(jdbcTable.next()) {
-                Tuple t = toTuple(jdbcTable, schema);
                 rows.add(toTuple(jdbcTable, schema));
             }
             return of(smile.data.DataFrame.of(rows));
@@ -376,7 +375,7 @@ public class DataFrame implements smile.data.DataFrame, ITable<BaseVector> {
         for(Map.Entry<String, String> entry : table.getColumnsTypes().entrySet()){
             i--;
             String type = entry.getValue().equalsIgnoreCase("GEOMETRY") ? "VARCHAR" : entry.getValue();
-            DataType dataType = DataType.of(JDBCType.valueOf(type), false, ((IJdbcTable) table).getDbType().toString());
+            DataType dataType = DataType.of(JDBCType.valueOf(type), false, (table).getDbType().toString());
             fields[i] = new StructField(entry.getKey(), dataType);
         }
 
@@ -444,7 +443,7 @@ public class DataFrame implements smile.data.DataFrame, ITable<BaseVector> {
 
         for(int i = 0; i < row.length; ++i) {
             row[i] = rs.getObject(i + 1);
-            if (row[i] instanceof java.sql.Date) {
+            if (row[i] instanceof Date) {
                 row[i] = ((Date)row[i]).toLocalDate();
             } else if (row[i] instanceof Time) {
                 row[i] = ((Time)row[i]).toLocalTime();

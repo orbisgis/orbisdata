@@ -55,7 +55,7 @@ import static org.junit.jupiter.api.Assertions.*;
  *
  * @author Sylvain PALOMINOS (UBS LAB-STICC 2019)
  */
-class DataFrameTest {
+public class DataFrameTest {
 
     @Test
     void testDataFrameFromTable() throws SQLException, IOException {

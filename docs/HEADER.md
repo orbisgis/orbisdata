@@ -12,7 +12,7 @@ UNIVERSITÉ DE BRETAGNE-SUD
 Institut Universitaire de Technologie de Vannes
 8, Rue Montaigne - BP 561 56017 Vannes Cedex
 
-DataManager API  is distributed under GPL 3 license.
+DataManager API  is distributed under LGPL 3 license.
 
 Copyright (C) 2019 CNRS (Lab-STICC UMR CNRS 6285)
 

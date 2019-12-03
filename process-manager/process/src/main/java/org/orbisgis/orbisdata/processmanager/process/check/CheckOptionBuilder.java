@@ -13,7 +13,7 @@
  * Institut Universitaire de Technologie de Vannes
  * 8, Rue Montaigne - BP 561 56017 Vannes Cedex
  *
- * ProcessManager is distributed under GPL 3 license.
+ * ProcessManager is distributed under LGPL 3 license.
  *
  * Copyright (C) 2018 CNRS (Lab-STICC UMR CNRS 6285)
  *

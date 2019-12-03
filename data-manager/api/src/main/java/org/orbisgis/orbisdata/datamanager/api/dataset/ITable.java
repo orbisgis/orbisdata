@@ -48,14 +48,16 @@ import java.util.Map;
  * @author Erwan Bocher (CNRS)
  * @author Sylvain PALOMINOS (UBS 2018-2019)
  */
-public interface ITable extends IDataSet {
+public interface ITable<T> extends IMatrix<T> {
 
     /**
      * Apply the given {@link Closure} to each row.
      *
      * @param closure {@link Closure} to apply to each row.
      */
-    void eachRow(Closure closure);
+    default void eachRow(Closure closure){
+        this.forEach(closure::call);
+    }
 
     /**
      * Get all column names from the underlying table. If there isn't any column, return an empty {@link Collection}.
@@ -63,14 +65,14 @@ public interface ITable extends IDataSet {
      *
      * @return A {@link Collection} containing the name of the column.
      */
-    Collection<String> getColumnNames();
+    Collection<String> getColumns();
 
     /**
      * Get all column information from the underlying table.
      *
      * @return A {@link Map} containing the information of the column.
      */
-    Map<String, String> getColumns();
+    Map<String, String> getColumnsTypes();
 
     /**
      * Get the type of the column from the underlying table.
@@ -78,7 +80,7 @@ public interface ITable extends IDataSet {
      * @param columnName set the name of the column
      * @return The type of the column.
      */
-    String getColumnsType(String columnName);
+    String getColumnType(String columnName);
 
     /**
      * Return true if the {@link ITable} contains a column with the given name with the given type (case sensible).
@@ -98,7 +100,7 @@ public interface ITable extends IDataSet {
      * @return True if the column is found, false otherwise.
      */
     default boolean hasColumn(String columnName){
-        return getColumnNames().contains(columnName);
+        return getColumns().contains(columnName);
     }
 
     /**
@@ -129,7 +131,7 @@ public interface ITable extends IDataSet {
      * @return The count of columns.
      */
     default int getColumnCount(){
-        return getColumnNames().size();
+        return getColumns().size();
     }
 
     /**
@@ -140,13 +142,12 @@ public interface ITable extends IDataSet {
     int getRowCount();
 
     /**
-     * Return true if the {@link ITable} is empty (no lines), false otherwise.
+     * Return the row count.
+     * The thrown exception is for compatibility purpose.
      *
-     * @return True if the {@link ITable} is empty (no lines), false otherwise.
+     * @return The row count.
      */
-    default boolean isEmpty(){
-        return getRowCount() == 0;
-    }
+    int getRow() throws Exception;
 
     /**
      * Return a {@link Collection} of all the unique values of the {@link ITable}. This method can take a lot of time and
@@ -211,4 +212,17 @@ public interface ITable extends IDataSet {
      * @return True if the {@link ITable} is spatial.
      */
     boolean isSpatial();
+
+
+    default int getNDim(){
+        return 2;
+    }
+
+    default boolean isEmpty(){
+        return getRowCount() == 0;
+    }
+
+    default int[] getShape(){
+        return new int[]{getColumnCount(), getRowCount()};
+    }
 }

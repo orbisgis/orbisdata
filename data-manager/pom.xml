@@ -17,6 +17,7 @@
     <modules>
         <module>api</module>
         <module>jdbc</module>
+        <module>dataframe</module>
     </modules>
 
     <!-- Properties -->

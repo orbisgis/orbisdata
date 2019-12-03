@@ -37,48 +37,23 @@
 package org.orbisgis.orbisdata.datamanager.api.dataset;
 
 /**
- * Raw collection of data, no matter its structure.
+ * Multi-dimensional structured data.
  *
- * @author Erwan Bocher (CNRS)
- * @author Sylvain PALOMINOS (UBS 2018-2019)
+ * @author Sylvain PALOMINOS (UBS LAB-STICC 2019)
  */
-public interface IDataSet<T> extends Iterable<T> {
+public interface IMatrix<T> extends IDataSet<T>{
 
     /**
-     * Get the location of {@link IDataSet}.
-     * The returned {@link String} can be anything to locate the data (URI, URL, file path ...)
+     * Return the number of dimensions of the {@link IMatrix}.
      *
-     * @return The location of the data.
+     * @return The number of dimensions of the {@link IMatrix}.
      */
-    String getLocation();
+    int getNDim();
 
     /**
-     * Get the human readable name of the {@link IDataSet}.
+     * Returns the shape of the {@link IMatrix}. The returned array contains the size of each dimensions.
      *
-     * @return The name of the {@link IDataSet}.
+     * @return the shape of the {@link IMatrix}.
      */
-    String getName();
-
-    /**
-     * Get the metadata object of the {@link IDataSet}.
-     *
-     * @return The metadata object.
-     */
-    Object getMetaData();
-
-    /**
-     * Convert the current object into another with the given class.
-     *
-     * @param clazz New class of the result.
-     *
-     * @return The current object into an other class.
-     */
-    Object asType(Class clazz);
-
-    /**
-     * Return true if the {@link IDataSet} is empty, false otherwise.
-     *
-     * @return True if the {@link IDataSet} is empty, false otherwise.
-     */
-    boolean isEmpty();
+    int[] getShape();
 }

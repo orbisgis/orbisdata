@@ -235,9 +235,28 @@ public class ITableTest {
     }
 
     /**
+     * Test the {@link ITable#getNDim()} method.
+     */
+    @Test
+    public void testNDim(){
+        assertEquals(2, table.getNDim());
+    }
+
+    /**
+     * Test the {@link ITable#getShape()} method.
+     */
+    @Test
+    public void testGetShape(){
+        int[] shape = table.getShape();
+        assertEquals(2, shape.length);
+        assertEquals(5, shape[0]);
+        assertEquals(4, shape[1]);
+    }
+
+    /**
      * Simple implementation of {@link ITable} for test purpose.
      */
-    private static class DummyTable implements ITable {
+    private static class DummyTable implements ITable<Object> {
 
         /** {@link List} of columns. A column is a list with the column name as first value. */
         private List<List<Object>> columns;
@@ -263,7 +282,7 @@ public class ITableTest {
         }
 
         @Override
-        public Collection<String> getColumnNames() {
+        public Collection<String> getColumns() {
             return columns.stream().map(column -> column.get(0).toString()).collect(Collectors.toList());
         }
 
@@ -286,6 +305,7 @@ public class ITableTest {
                     .orElse(1)-1;
         }
 
+        @Override public int getRow() { return 0; }
         @Override public void eachRow(Closure closure) {/*Does nothing*/}
         @Override public Collection<String> getUniqueValues(String column) {return null;}
         @Override public boolean save(String filePath, String encoding) {return true;}
@@ -298,7 +318,7 @@ public class ITableTest {
         @Override public Object getMetaData() {return null;}
         @Override public Object asType(Class clazz) {return null;}
         @Override public Iterator<Object> iterator() {return new ResultSetIterator();}
-        @Override public Map<String, String> getColumns() {return null;}
-        @Override public String getColumnsType(String columnName) {return null;}
+        @Override public Map<String, String> getColumnsTypes() {return null;}
+        @Override public String getColumnType(String columnName) {return null;}
     }
 }

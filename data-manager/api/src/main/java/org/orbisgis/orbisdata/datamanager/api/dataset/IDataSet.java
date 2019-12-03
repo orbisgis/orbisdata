@@ -42,7 +42,7 @@ package org.orbisgis.orbisdata.datamanager.api.dataset;
  * @author Erwan Bocher (CNRS)
  * @author Sylvain PALOMINOS (UBS 2018-2019)
  */
-public interface IDataSet extends Iterable<Object> {
+public interface IDataSet<T> extends Iterable<T> {
 
     /**
      * Get the location of {@link IDataSet}.

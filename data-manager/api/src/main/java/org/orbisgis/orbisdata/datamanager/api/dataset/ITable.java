@@ -48,14 +48,16 @@ import java.util.Map;
  * @author Erwan Bocher (CNRS)
  * @author Sylvain PALOMINOS (UBS 2018-2019)
  */
-public interface ITable extends IMatrix {
+public interface ITable<T> extends IMatrix<T> {
 
     /**
      * Apply the given {@link Closure} to each row.
      *
      * @param closure {@link Closure} to apply to each row.
      */
-    void eachRow(Closure closure);
+    default void eachRow(Closure closure){
+        this.forEach(closure::call);
+    }
 
     /**
      * Get all column names from the underlying table. If there isn't any column, return an empty {@link Collection}.
@@ -78,7 +80,7 @@ public interface ITable extends IMatrix {
      * @param columnName set the name of the column
      * @return The type of the column.
      */
-    String getColumnsType(String columnName);
+    String getColumnType(String columnName);
 
     /**
      * Return true if the {@link ITable} contains a column with the given name with the given type (case sensible).

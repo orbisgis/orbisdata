@@ -41,7 +41,7 @@ package org.orbisgis.orbisdata.datamanager.api.dataset;
  *
  * @author Sylvain PALOMINOS (UBS LAB-STICC 2019)
  */
-public interface IMatrix extends IDataSet{
+public interface IMatrix<T> extends IDataSet<T>{
 
     /**
      * Return the number of dimensions of the {@link IMatrix}.

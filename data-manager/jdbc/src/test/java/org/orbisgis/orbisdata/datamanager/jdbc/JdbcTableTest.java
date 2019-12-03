@@ -514,14 +514,14 @@ public class JdbcTableTest {
     }
 
     /**
-     * Test the {@link JdbcTable#getColumnsType(String)} method.
+     * Test the {@link JdbcTable#getColumnType(String)} method.
      */
     @Test
     public void testGetColumnsType() {
-        assertEquals("GEOMETRY", getTable().getColumnsType(COL_THE_GEOM));
-        assertEquals("INTEGER", getTable().getColumnsType(COL_ID));
-        assertEquals("VARCHAR", getTable().getColumnsType(COL_MEANING));
-        assertNull(getTable().getColumnsType("NOT_A_COLUMN"));
+        assertEquals("GEOMETRY", getTable().getColumnType(COL_THE_GEOM));
+        assertEquals("INTEGER", getTable().getColumnType(COL_ID));
+        assertEquals("VARCHAR", getTable().getColumnType(COL_MEANING));
+        assertNull(getTable().getColumnType("NOT_A_COLUMN"));
     }
 
     /**

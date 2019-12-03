@@ -254,7 +254,7 @@ public abstract class JdbcTable extends DefaultResultSet implements IJdbcTable, 
     public Map<String, String> getColumnsTypes(){
         Map<String, String> map = new HashMap<>();
         getColumns().forEach((name) -> {
-            map.put(name, getColumnsType(name));
+            map.put(name, getColumnType(name));
         });
         return map;
     }
@@ -284,7 +284,7 @@ public abstract class JdbcTable extends DefaultResultSet implements IJdbcTable, 
     }
 
     @Override
-    public String getColumnsType(String columnName){
+    public String getColumnType(String columnName){
         if(!hasColumn(columnName)){
             return null;
         }

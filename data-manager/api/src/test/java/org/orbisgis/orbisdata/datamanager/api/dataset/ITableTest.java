@@ -256,7 +256,7 @@ public class ITableTest {
     /**
      * Simple implementation of {@link ITable} for test purpose.
      */
-    private static class DummyTable implements ITable {
+    private static class DummyTable implements ITable<Object> {
 
         /** {@link List} of columns. A column is a list with the column name as first value. */
         private List<List<Object>> columns;
@@ -319,6 +319,6 @@ public class ITableTest {
         @Override public Object asType(Class clazz) {return null;}
         @Override public Iterator<Object> iterator() {return new ResultSetIterator();}
         @Override public Map<String, String> getColumnsTypes() {return null;}
-        @Override public String getColumnsType(String columnName) {return null;}
+        @Override public String getColumnType(String columnName) {return null;}
     }
 }

@@ -383,17 +383,17 @@ public class DataFrame implements smile.data.DataFrame, ITable<BaseVector> {
     }
 
     /**
-     * Convert a {@link ITable} into an OrbisData {@link DataFrame}.
+     * Convert a {@link ResultSet} into an OrbisData {@link DataFrame}.
      *
-     * @param table {@link ITable}.
+     * @param rs {@link ResultSet}.
      *
      * @return OrbisData {@link DataFrame}.
      *
-     * @throws SQLException Exception thrown in case or error while manipulation SQL base {@link ITable}.
+     * @throws SQLException Exception thrown in case or error while manipulation SQL base {@link ResultSet}.
      */
-    public static DataFrame of(ITable table) throws SQLException {
-        if(table instanceof IJdbcTable){
-            IJdbcTable jdbcTable = (IJdbcTable)table;
+    public static DataFrame of(ResultSet rs) throws SQLException {
+        if(rs instanceof IJdbcTable){
+            IJdbcTable jdbcTable = (IJdbcTable)rs;
             StructType schema = getStructure(jdbcTable);
             ArrayList<Tuple> rows = new ArrayList<>();
             while(jdbcTable.next()) {
@@ -401,8 +401,9 @@ public class DataFrame implements smile.data.DataFrame, ITable<BaseVector> {
             }
             return of(smile.data.DataFrame.of(rows));
         }
-        LOGGER.error("The class '" + table.getClass().getCanonicalName() + "' is not supported.");
-        return null;
+        else{
+            return of(smile.data.DataFrame.of(rs));
+        }
     }
 
     private static StructType getStructure(IJdbcTable table){

@@ -45,6 +45,8 @@ import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.wrapper.ConnectionWrapper;
 import org.h2gis.utilities.wrapper.StatementWrapper;
 import org.orbisgis.orbisdata.datamanager.jdbc.JdbcDataSource;
+import org.orbisgis.orbisdata.datamanager.jdbc.JdbcSpatialTable;
+import org.orbisgis.orbisdata.datamanager.jdbc.JdbcTable;
 import org.orbisgis.orbisdata.datamanager.jdbc.TableLocation;
 import org.orbisgis.orbisdata.datamanager.api.dataset.DataBaseType;
 import org.orbisgis.orbisdata.datamanager.api.dataset.ISpatialTable;
@@ -194,7 +196,7 @@ public class H2GIS extends JdbcDataSource {
     }
 
     @Override
-    public ITable getTable(String tableName) {
+    public JdbcTable getTable(String tableName) {
         String name = TableLocation.parse(tableName, getDataBaseType().equals(DataBaseType.H2GIS)).toString( getDataBaseType().equals(DataBaseType.H2GIS));
         try {
             if(!JDBCUtilities.tableExists(connectionWrapper,name)){
@@ -224,10 +226,10 @@ public class H2GIS extends JdbcDataSource {
     }
 
     @Override
-    public ISpatialTable getSpatialTable(String tableName) {
+    public JdbcSpatialTable getSpatialTable(String tableName) {
         ITable table = getTable(tableName);
         if(table instanceof ISpatialTable){
-            return (ISpatialTable) table;
+            return (JdbcSpatialTable) table;
         }
         else {
             LOGGER.error("The table '" + table.getName() + "' is not a spatial table.");

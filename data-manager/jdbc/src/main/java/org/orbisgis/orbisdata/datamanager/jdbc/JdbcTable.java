@@ -252,7 +252,7 @@ public abstract class JdbcTable extends DefaultResultSet implements IJdbcTable, 
 
     @Override
     public Map<String, String> getColumnsTypes(){
-        Map<String, String> map = new HashMap<>();
+        Map<String, String> map = new LinkedHashMap<>();
         getColumns().forEach((name) -> {
             map.put(name, getColumnType(name));
         });

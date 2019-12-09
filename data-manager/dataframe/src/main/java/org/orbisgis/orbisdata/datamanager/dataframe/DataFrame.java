@@ -408,33 +408,20 @@ public class DataFrame implements smile.data.DataFrame, ITable<BaseVector> {
 
     private static StructType getStructure(IJdbcTable table){
         StructField[] fields = new StructField[table.getColumnCount()];
-        int i=table.getColumnCount();
+        int i=-1;
         for(Map.Entry<String, String> entry : table.getColumnsTypes().entrySet()){
-            i--;
+            i++;
             String type  = entry.getValue();
             switch (entry.getValue().toUpperCase()) {
                 case "GEOMETRY":
-                    type = "VARCHAR";
-                    break;
-                case "POINT":
-                    type = "VARCHAR";
-                    break;
-                case "MULTIPOINT":
-                    type = "VARCHAR";
-                    break;
-                case "LINESTRING":
-                    type = "VARCHAR";
-                    break;
-                case "MULTILINESTRING":
-                    type = "VARCHAR";
-                    break;
-                case "POLYGON":
-                    type = "VARCHAR";
-                    break;
-                case "MULTIPOLYGON":
-                    type = "VARCHAR";
-                    break;
                 case "GEOMETRYCOLLECTION":
+                case "GEOMCOLLECTION":
+                case "MULTIPOLYGON":
+                case "POLYGON":
+                case "MULTILINESTRING":
+                case "LINESTRING":
+                case "MULTIPOINT":
+                case "POINT":
                     type = "VARCHAR";
                     break;
                 default:

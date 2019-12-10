@@ -165,6 +165,7 @@
             </snapshots>
             <releases>
                 <enabled>false</enabled>
+                <updatePolicy>always</updatePolicy>
             </releases>
         </repository>
     </repositories>

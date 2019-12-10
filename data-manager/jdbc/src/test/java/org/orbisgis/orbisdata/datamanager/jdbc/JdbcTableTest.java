@@ -530,8 +530,8 @@ public class JdbcTableTest {
     @Test
     public void testGetColumns() {
         Map<String, String> map = getTable().getColumnsTypes();
-        String[] keys = {COL_THE_GEOM2.toUpperCase(), COL_THE_GEOM, COL_ID, COL_VALUE, COL_MEANING};
-        String[] values = {"POINTZ", "GEOMETRY", "INTEGER", "DOUBLE", "VARCHAR"};
+        String[] keys = {COL_THE_GEOM, COL_THE_GEOM2.toUpperCase(), COL_ID, COL_VALUE, COL_MEANING};
+        String[] values = {"GEOMETRY", "POINTZ", "INTEGER", "DOUBLE", "VARCHAR"};
         assertArrayEquals(keys, map.keySet().toArray());
         assertArrayEquals(values, map.values().toArray());
     }

@@ -550,8 +550,8 @@ public class JdbcTableTest {
         columns.add("tata");
         columns.add("TIti");
 
-        assertEquals("SELECT TOTO, tata, TIti FROM ORBISGIS WHERE toto", ((JdbcTable)getTable().columns("TOTO", "tata", "TIti")).where("toto").toString().trim());
-        assertEquals("SELECT TOTO, tata, TIti FROM ORBISGIS WHERE toto", ((JdbcTable)getTable().columns(columns)).where("toto").toString().trim());
+        assertEquals("SELECT TOTO, tata, TIti FROM ORBISGIS WHERE toto", (getTable().columns("TOTO", "tata", "TIti")).where("toto").toString().trim());
+        assertEquals("SELECT TOTO, tata, TIti FROM ORBISGIS WHERE toto", (getTable().columns(columns)).where("toto").toString().trim());
         assertEquals("SELECT * FROM ORBISGIS WHERE toto", getTable().where("toto").toString().trim());
         assertEquals("SELECT * FROM ORBISGIS GROUP BY toto", getTable().groupBy("toto").toString().trim());
         assertEquals("SELECT * FROM ORBISGIS GROUP BY toto,tata", getTable().groupBy("toto", "tata").toString().trim());
@@ -574,10 +574,10 @@ public class JdbcTableTest {
         columns.add("tata");
         columns.add("TIti");
 
-        assertEquals("SELECT TOTO, tata, TIti FROM ORBISGIS WHERE toto", ((JdbcTable)table.columns("TOTO", "tata", "TIti")).where("toto").toString().trim());
-        assertEquals("SELECT TOTO, tata, TIti FROM ORBISGIS WHERE toto", ((JdbcTable)table.columns(columns)).where("toto").toString().trim());
-        assertEquals("SELECT TOTO, tata, TIti FROM ORBISGIS WHERE toto", ((JdbcTable)spatialTable.columns("TOTO", "tata", "TIti")).where("toto").toString().trim());
-        assertEquals("SELECT TOTO, tata, TIti FROM ORBISGIS WHERE toto",((JdbcTable) spatialTable.columns(columns)).where("toto").toString().trim());
+        assertEquals("SELECT TOTO, tata, TIti FROM ORBISGIS WHERE toto", (table.columns("TOTO", "tata", "TIti")).where("toto").toString().trim());
+        assertEquals("SELECT TOTO, tata, TIti FROM ORBISGIS WHERE toto", (table.columns(columns)).where("toto").toString().trim());
+        assertEquals("SELECT TOTO, tata, TIti FROM ORBISGIS WHERE toto", (spatialTable.columns("TOTO", "tata", "TIti")).where("toto").toString().trim());
+        assertEquals("SELECT TOTO, tata, TIti FROM ORBISGIS WHERE toto", (spatialTable.columns(columns)).where("toto").toString().trim());
     }
 
     /**

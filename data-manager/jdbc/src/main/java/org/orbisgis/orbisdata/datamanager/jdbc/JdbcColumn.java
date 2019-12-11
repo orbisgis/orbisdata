@@ -167,7 +167,7 @@ public class JdbcColumn implements IJdbcColumn, GroovyObject {;
     public boolean createIndex(){
         if(!isIndexed()) {
             try {
-                dataSource.execute("CREATE INDEX ON "+tableName.toString(isH2)+" ("+
+                dataSource.execute("CREATE INDEX ON "+tableName.toString(isH2)+" USING BTREE ("+
                         TableLocation.quoteIdentifier(name, isH2)+")");
                 return true;
             } catch (SQLException e) {
@@ -183,7 +183,7 @@ public class JdbcColumn implements IJdbcColumn, GroovyObject {;
         if(!isIndexed() && isSpatial()) {
             try {
                 if(isH2){
-                    dataSource.execute("CREATE SPATIAL INDEX ON "+tableName.toString(isH2)+" ("+name+")");
+                    dataSource.execute("CREATE INDEX ON "+tableName.toString(isH2)+" USING RTREE ("+name+")");
                 }
                 else {
                     dataSource.execute("CREATE INDEX ON "+tableName.toString(isH2)+" USING GIST ("+name+")");

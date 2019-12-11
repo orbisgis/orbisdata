@@ -162,10 +162,10 @@
             <url>http://nexus-ng.orbisgis.org/repository/orbisgis-snapshot</url>
             <snapshots>
                 <enabled>true</enabled>
+                <updatePolicy>always</updatePolicy>
             </snapshots>
             <releases>
                 <enabled>false</enabled>
-                <updatePolicy>always</updatePolicy>
             </releases>
         </repository>
     </repositories>

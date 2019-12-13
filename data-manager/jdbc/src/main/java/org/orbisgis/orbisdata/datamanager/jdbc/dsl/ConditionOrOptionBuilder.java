@@ -36,11 +36,11 @@
  */
 package org.orbisgis.orbisdata.datamanager.jdbc.dsl;
 
-import org.orbisgis.orbisdata.datamanager.jdbc.JdbcDataSource;
+import org.orbisgis.orbisdata.datamanager.api.datasource.IJdbcDataSource;
 import org.orbisgis.orbisdata.datamanager.api.dsl.IConditionOrOptionBuilder;
 
 /**
- * Implementation of {@link IConditionOrOptionBuilder}
+ * Implementation of {@link IConditionOrOptionBuilder}.
  *
  * @author Erwan Bocher (CNRS)
  * @author Sylvain PALOMINOS (UBS 2019)
@@ -48,15 +48,15 @@ import org.orbisgis.orbisdata.datamanager.api.dsl.IConditionOrOptionBuilder;
 public class ConditionOrOptionBuilder extends OptionBuilder implements IConditionOrOptionBuilder {
 
     private StringBuilder query;
-    private JdbcDataSource dataSource;
+    private IJdbcDataSource dataSource;
 
     /**
      * Main constructor.
      *
      * @param request    String request coming from the ISelectBuilder.
-     * @param dataSource JdbcDataSource where the request will be executed.
+     * @param dataSource {@link IJdbcDataSource} where the request will be executed.
      */
-    public ConditionOrOptionBuilder(String request, JdbcDataSource dataSource) {
+    public ConditionOrOptionBuilder(String request, IJdbcDataSource dataSource) {
         super(request, dataSource);
         query = new StringBuilder();
         query.append(request).append(" ");

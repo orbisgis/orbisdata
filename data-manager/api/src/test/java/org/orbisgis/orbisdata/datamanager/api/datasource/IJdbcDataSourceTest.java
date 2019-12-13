@@ -42,9 +42,7 @@ import groovy.lang.MissingPropertyException;
 import org.codehaus.groovy.runtime.InvokerHelper;
 import org.codehaus.groovy.runtime.InvokerInvocationException;
 import org.junit.jupiter.api.Test;
-import org.orbisgis.orbisdata.datamanager.api.dataset.IDataSet;
-import org.orbisgis.orbisdata.datamanager.api.dataset.ISpatialTable;
-import org.orbisgis.orbisdata.datamanager.api.dataset.ITable;
+import org.orbisgis.orbisdata.datamanager.api.dataset.*;
 
 import java.io.File;
 import java.io.InputStream;
@@ -162,33 +160,33 @@ public class IJdbcDataSourceTest {
         public void dupMethod() throws DummyException {throw new DummyException();}
 
         @Override public void close() {/*Does nothing*/}
-        @Override public ITable getTable(String tableName) { return null;}
-        @Override public ISpatialTable getSpatialTable(String tableName) {return null;}
+        @Override public IJdbcTable getTable(String tableName) { return null;}
+        @Override public IJdbcSpatialTable getSpatialTable(String tableName) {return null;}
         @Override public Collection<String> getTableNames() {return null;}
-        @Override public ITable load(String filePath) {return null;}
-        @Override public ITable load(String filePath, boolean delete) {return null;}
-        @Override public ITable load(String filePath, String tableName) {return null;}
-        @Override public ITable load(String filePath, String tableName, boolean delete) {return null;}
-        @Override public ITable load(String filePath, String tableName, String encoding, boolean delete) {return null;}
-        @Override public ITable load(URL url) {return null;}
-        @Override public ITable load(URL url, boolean delete) {return null;}
-        @Override public ITable load(URL url, String tableName) {return null;}
-        @Override public ITable load(URL url, String tableName, boolean delete) {return null;}
-        @Override public ITable load(URL url, String tableName, String encoding, boolean delete) {return null;}
-        @Override public ITable load(URI uri) {return null;}
-        @Override public ITable load(URI uri, boolean delete) {return null;}
-        @Override public ITable load(URI uri, String tableName) {return null;}
-        @Override public ITable load(URI uri, String tableName, boolean delete) {return null;}
-        @Override public ITable load(URI uri, String tableName, String encoding, boolean delete) {return null;}
-        @Override public ITable load(File file) {return null;}
-        @Override public ITable load(File file, boolean delete) {return null;}
-        @Override public ITable load(File file, String tableName) {return null;}
-        @Override public ITable load(File file, String tableName, boolean delete) {return null;}
-        @Override public ITable load(File file, String tableName, String encoding, boolean delete) {return null;}
-        @Override public ITable load(Map<String, String> properties, String inputTableName) {return null;}
-        @Override public ITable load(Map<String, String> properties, String inputTableName, String outputTableName) {return null;}
-        @Override public ITable load(Map<String, String> properties, String inputTableName, boolean delete) {return null;}
-        @Override public ITable load(Map<String, String> properties, String inputTableName, String outputTableName, boolean delete) {return null;}
+        @Override public IJdbcTable load(String filePath) {return null;}
+        @Override public IJdbcTable load(String filePath, boolean delete) {return null;}
+        @Override public IJdbcTable load(String filePath, String tableName) {return null;}
+        @Override public IJdbcTable load(String filePath, String tableName, boolean delete) {return null;}
+        @Override public IJdbcTable load(String filePath, String tableName, String encoding, boolean delete) {return null;}
+        @Override public IJdbcTable load(URL url) {return null;}
+        @Override public IJdbcTable load(URL url, boolean delete) {return null;}
+        @Override public IJdbcTable load(URL url, String tableName) {return null;}
+        @Override public IJdbcTable load(URL url, String tableName, boolean delete) {return null;}
+        @Override public IJdbcTable load(URL url, String tableName, String encoding, boolean delete) {return null;}
+        @Override public IJdbcTable load(URI uri) {return null;}
+        @Override public IJdbcTable load(URI uri, boolean delete) {return null;}
+        @Override public IJdbcTable load(URI uri, String tableName) {return null;}
+        @Override public IJdbcTable load(URI uri, String tableName, boolean delete) {return null;}
+        @Override public IJdbcTable load(URI uri, String tableName, String encoding, boolean delete) {return null;}
+        @Override public IJdbcTable load(File file) {return null;}
+        @Override public IJdbcTable load(File file, boolean delete) {return null;}
+        @Override public IJdbcTable load(File file, String tableName) {return null;}
+        @Override public IJdbcTable load(File file, String tableName, boolean delete) {return null;}
+        @Override public IJdbcTable load(File file, String tableName, String encoding, boolean delete) {return null;}
+        @Override public IJdbcTable load(Map<String, String> properties, String inputTableName) {return null;}
+        @Override public IJdbcTable load(Map<String, String> properties, String inputTableName, String outputTableName) {return null;}
+        @Override public IJdbcTable load(Map<String, String> properties, String inputTableName, boolean delete) {return null;}
+        @Override public IJdbcTable load(Map<String, String> properties, String inputTableName, String outputTableName, boolean delete) {return null;}
         @Override public boolean save(String tableName, String filePath) {return false;}
         @Override public boolean save(String tableName, String filePath, String encoding) {return false;}
         @Override public boolean save(String tableName, URI uri) {return false;}
@@ -197,27 +195,28 @@ public class IJdbcDataSourceTest {
         @Override public boolean save(String tableName, URL url, String encoding) {return false;}
         @Override public boolean save(String tableName, File file) {return false;}
         @Override public boolean save(String tableName, File file, String encoding) {return false;}
-        @Override public ITable link(String filePath, String tableName, boolean delete) {return null;}
-        @Override public ITable link(String filePath, String tableName) {return null;}
-        @Override public ITable link(String filePath, boolean delete) {return null;}
-        @Override public ITable link(String filePath) {return null;}
-        @Override public ITable link(URI uri, String tableName, boolean delete) {return null;}
-        @Override public ITable link(URI uri, String tableName) {return null;}
-        @Override public ITable link(URI uri, boolean delete) {return null;}
-        @Override public ITable link(URI uri) {return null;}
-        @Override public ITable link(URL url, String tableName, boolean delete) {return null;}
-        @Override public ITable link(URL url, String tableName) {return null;}
-        @Override public ITable link(URL url, boolean delete) {return null;}
-        @Override public ITable link(URL url) {return null;}
-        @Override public ITable link(File file, String tableName, boolean delete) {return null;}
-        @Override public ITable link(File file, String tableName) {return null;}
-        @Override public ITable link(File file, boolean delete) {return null;}
-        @Override public ITable link(File file) {return null;}
+        @Override public IJdbcTable link(String filePath, String tableName, boolean delete) {return null;}
+        @Override public IJdbcTable link(String filePath, String tableName) {return null;}
+        @Override public IJdbcTable link(String filePath, boolean delete) {return null;}
+        @Override public IJdbcTable link(String filePath) {return null;}
+        @Override public IJdbcTable link(URI uri, String tableName, boolean delete) {return null;}
+        @Override public IJdbcTable link(URI uri, String tableName) {return null;}
+        @Override public IJdbcTable link(URI uri, boolean delete) {return null;}
+        @Override public IJdbcTable link(URI uri) {return null;}
+        @Override public IJdbcTable link(URL url, String tableName, boolean delete) {return null;}
+        @Override public IJdbcTable link(URL url, String tableName) {return null;}
+        @Override public IJdbcTable link(URL url, boolean delete) {return null;}
+        @Override public IJdbcTable link(URL url) {return null;}
+        @Override public IJdbcTable link(File file, String tableName, boolean delete) {return null;}
+        @Override public IJdbcTable link(File file, String tableName) {return null;}
+        @Override public IJdbcTable link(File file, boolean delete) {return null;}
+        @Override public IJdbcTable link(File file) {return null;}
         @Override public boolean executeScript(String fileName, Map<String, String> bindings) {fileScript = true;return true;}
         @Override public boolean executeScript(InputStream stream, Map<String, String> bindings) {streamScript = true;return true;}
+        @Override public DataBaseType getDataBaseType() {return null;}
         @Override public MetaClass getMetaClass() {return InvokerHelper.getMetaClass(DummyDataSource.class);}
         @Override public void setMetaClass(MetaClass metaClass) {/*Does nothing*/}
-        @Override public IDataSet getDataSet(String name) {return null;}
+        @Override public IJdbcTable getDataSet(String name) {return null;}
         @Override public IDataSourceLocation getLocation() {return null;}
         @Override public boolean hasTable(String tableName) {return false;}
         @Override public Connection getConnection() throws SQLException { return null; }

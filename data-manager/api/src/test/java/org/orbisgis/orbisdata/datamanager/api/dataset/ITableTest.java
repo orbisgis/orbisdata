@@ -317,6 +317,7 @@ public class ITableTest {
         @Override public String getName() {return null;}
         @Override public Object getMetaData() {return null;}
         @Override public Object asType(Class clazz) {return null;}
+        @Override public ISummary getSummary() { return null; }
         @Override public Iterator<Object> iterator() {return new ResultSetIterator();}
         @Override public Map<String, String> getColumnsTypes() {return null;}
         @Override public String getColumnType(String columnName) {return null;}

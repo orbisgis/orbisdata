@@ -43,6 +43,7 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.Iterator;
+import java.util.List;
 
 /**
  * Extension of the {@link ITable} specially dedicated to the JDBC databases thanks to the extension of the
@@ -107,5 +108,14 @@ public interface IJdbcTable extends ITable<Object>, ResultSet, IWhereBuilderOrOp
     @Override
     default void eachRow(Closure closure){
         this.forEach(closure::call);
-    }    
+    }
+
+    @Override
+    IJdbcTableSummary getSummary();
+
+    @Override
+    IJdbcTable columns(String... columns);
+
+    @Override
+    IJdbcTable columns(List<String> columns);
 }

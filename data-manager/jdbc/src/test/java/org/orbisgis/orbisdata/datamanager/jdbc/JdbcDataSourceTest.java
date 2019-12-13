@@ -50,18 +50,15 @@ import org.h2gis.utilities.wrapper.StatementWrapper;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.orbisgis.orbisdata.datamanager.api.dataset.*;
+import org.orbisgis.orbisdata.datamanager.api.dsl.IFromBuilder;
 import org.orbisgis.orbisdata.datamanager.jdbc.h2gis.H2GIS;
 import org.orbisgis.orbisdata.datamanager.jdbc.h2gis.H2gisSpatialTable;
 import org.orbisgis.orbisdata.datamanager.jdbc.h2gis.H2gisTable;
-import org.orbisgis.orbisdata.datamanager.api.dataset.DataBaseType;
-import org.orbisgis.orbisdata.datamanager.api.dataset.ISpatialTable;
-import org.orbisgis.orbisdata.datamanager.api.dataset.ITable;
-import org.orbisgis.orbisdata.datamanager.api.dsl.IFromBuilder;
 
 import javax.sql.DataSource;
 import java.io.File;
 import java.io.InputStream;
-import java.io.PrintWriter;
 import java.lang.reflect.Field;
 import java.net.MalformedURLException;
 import java.net.URI;
@@ -69,7 +66,6 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.sql.SQLFeatureNotSupportedException;
 import java.sql.Statement;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -1035,7 +1031,7 @@ class JdbcDataSourceTest {
         }
 
         @Override
-        public ITable getTable(String s) {
+        public IJdbcTable getTable(String s) {
             ConnectionWrapper connectionWrapper = new ConnectionWrapper(this.getConnection());
             try {
                 if(!JDBCUtilities.tableExists(connectionWrapper,s)){
@@ -1058,7 +1054,7 @@ class JdbcDataSourceTest {
         }
 
         @Override
-        public ISpatialTable getSpatialTable(String s) {
+        public IJdbcSpatialTable getSpatialTable(String s) {
             ConnectionWrapper connectionWrapper = new ConnectionWrapper(this.getConnection());
             try {
                 if(!JDBCUtilities.tableExists(connectionWrapper,s)){

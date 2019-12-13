@@ -37,12 +37,14 @@
 package org.orbisgis.orbisdata.datamanager.jdbc.postgis;
 
 import org.h2gis.postgis_jts.StatementWrapper;
+import org.orbisgis.orbisdata.datamanager.api.dataset.DataBaseType;
+import org.orbisgis.orbisdata.datamanager.api.dataset.IJdbcTableSummary;
+import org.orbisgis.orbisdata.datamanager.api.dataset.ISpatialTable;
+import org.orbisgis.orbisdata.datamanager.api.dataset.ITable;
+import org.orbisgis.orbisdata.datamanager.api.datasource.IJdbcDataSource;
 import org.orbisgis.orbisdata.datamanager.jdbc.JdbcDataSource;
 import org.orbisgis.orbisdata.datamanager.jdbc.JdbcSpatialTable;
 import org.orbisgis.orbisdata.datamanager.jdbc.TableLocation;
-import org.orbisgis.orbisdata.datamanager.api.dataset.DataBaseType;
-import org.orbisgis.orbisdata.datamanager.api.dataset.ISpatialTable;
-import org.orbisgis.orbisdata.datamanager.api.dataset.ITable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,6 +52,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 /**
+ * Implementation of {@link ISpatialTable} for PostGIG.
+ *
  * @author Erwan Bocher (CNRS)
  * @author Sylvain PALOMINOS (UBS 2018-2019)
  */
@@ -60,13 +64,13 @@ public class PostgisSpatialTable extends JdbcSpatialTable {
     /**
      * Main constructor.
      *
-     * @param tableLocation TableLocation that identify the represented table.
+     * @param tableLocation {@link TableLocation} that identify the represented table.
      * @param baseQuery Query for the creation of the ResultSet
      * @param statement Statement used to request the database.
      * @param jdbcDataSource DataSource to use for the creation of the resultSet.
      */
     public PostgisSpatialTable(TableLocation tableLocation, String baseQuery, StatementWrapper statement,
-                               JdbcDataSource jdbcDataSource) {
+                               IJdbcDataSource jdbcDataSource) {
         super(DataBaseType.H2GIS, jdbcDataSource, tableLocation, statement, baseQuery);
     }
 
@@ -91,14 +95,19 @@ public class PostgisSpatialTable extends JdbcSpatialTable {
 
     @Override
     public Object asType(Class clazz) {
-        if (clazz == ITable.class || clazz == PostgisTable.class) {
-            return new PostgisTable((TableLocation)getTableLocation(), getBaseQuery(), (StatementWrapper)getStatement(),
-                    getJdbcDataSource());
-        } else if (clazz == ISpatialTable.class || clazz == PostgisSpatialTable.class) {
+        if (ISpatialTable.class.isAssignableFrom(clazz)) {
             return new PostgisSpatialTable((TableLocation)getTableLocation(), getBaseQuery(), (StatementWrapper)getStatement(),
+                    getJdbcDataSource());
+        } else if (ITable.class.isAssignableFrom(clazz)) {
+            return new PostgisTable((TableLocation)getTableLocation(), getBaseQuery(), (StatementWrapper)getStatement(),
                     getJdbcDataSource());
         } else {
             return super.asType(clazz);
         }
+    }
+
+    @Override
+    public IJdbcTableSummary getSummary() {
+        return null;
     }
 }

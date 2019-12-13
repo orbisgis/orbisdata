@@ -10,3 +10,5 @@
 + Wrap the `smile.data.DataFrame` class into `DataFrame` which also implements `ITable` interface and which is compatible with `Geometry` data type
 + The interfaces `IDataSet`, `IMatrix`, `ITable` have a generic type which is the type of their `Iterator` (done to make it compatible with `smile` API)
 + Change the license to LGPL 3
++ Add the interface `IJdbcSpatialTable`.
++ Make the interface/classes overrides parents method return type in order to return their corresponding types.

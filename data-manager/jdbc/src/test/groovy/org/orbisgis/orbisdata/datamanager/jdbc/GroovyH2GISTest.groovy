@@ -41,9 +41,9 @@ import org.locationtech.jts.geom.Geometry
 import org.locationtech.jts.geom.Point
 import org.orbisgis.commons.printer.Ascii
 import org.orbisgis.commons.printer.Html
-import org.orbisgis.orbisdata.datamanager.jdbc.h2gis.H2GIS
 import org.orbisgis.orbisdata.datamanager.api.dataset.ISpatialTable
 import org.orbisgis.orbisdata.datamanager.api.dataset.ITable
+import org.orbisgis.orbisdata.datamanager.jdbc.h2gis.H2GIS
 
 import java.sql.SQLException
 import java.sql.Time
@@ -587,7 +587,7 @@ class GroovyH2GISTest {
                 (h2GIS.getSpatialTable("orbisgis") as Ascii).toString())
         assertEquals(
                 "+-------------------+\n" +
-                "| SQL_QUERY_RESULT  |\n" +
+                "|                   |\n" +
                 "+-------------------+-------------------+-------------------+\n" +
                 "|        ID         |     THE_GEOM      |VERY_LONG_TITLE_...|\n" +
                 "+-------------------+-------------------+-------------------+\n" +

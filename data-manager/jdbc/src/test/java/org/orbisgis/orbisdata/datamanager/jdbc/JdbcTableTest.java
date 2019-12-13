@@ -54,9 +54,10 @@ import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.Point;
 import org.orbisgis.commons.printer.Ascii;
 import org.orbisgis.commons.printer.Html;
-import org.orbisgis.orbisdata.datamanager.jdbc.h2gis.H2gisSpatialTable;
 import org.orbisgis.orbisdata.datamanager.api.dataset.*;
+import org.orbisgis.orbisdata.datamanager.api.datasource.IJdbcDataSource;
 import org.orbisgis.orbisdata.datamanager.api.dsl.IOptionBuilder;
+import org.orbisgis.orbisdata.datamanager.jdbc.h2gis.H2gisSpatialTable;
 
 import java.io.File;
 import java.sql.Connection;
@@ -195,7 +196,7 @@ public class JdbcTableTest {
     }
 
     /**
-     * Test the {@link JdbcTable#JdbcTable(DataBaseType, JdbcDataSource, TableLocation, Statement, String)} constructor.
+     * Test the {@link JdbcTable#JdbcTable(DataBaseType, IJdbcDataSource, TableLocation, Statement, String)} constructor.
      */
     @Test
     public void testConstructor(){
@@ -550,8 +551,8 @@ public class JdbcTableTest {
         columns.add("tata");
         columns.add("TIti");
 
-        assertEquals("SELECT TOTO, tata, TIti FROM ORBISGIS WHERE toto", (getTable().columns("TOTO", "tata", "TIti")).where("toto").toString().trim());
-        assertEquals("SELECT TOTO, tata, TIti FROM ORBISGIS WHERE toto", (getTable().columns(columns)).where("toto").toString().trim());
+        assertEquals("SELECT TOTO, tata, TIti FROM ORBISGIS WHERE toto", getTable().columns("TOTO", "tata", "TIti").where("toto").toString().trim());
+        assertEquals("SELECT TOTO, tata, TIti FROM ORBISGIS WHERE toto", getTable().columns(columns).where("toto").toString().trim());
         assertEquals("SELECT * FROM ORBISGIS WHERE toto", getTable().where("toto").toString().trim());
         assertEquals("SELECT * FROM ORBISGIS GROUP BY toto", getTable().groupBy("toto").toString().trim());
         assertEquals("SELECT * FROM ORBISGIS GROUP BY toto,tata", getTable().groupBy("toto", "tata").toString().trim());
@@ -596,7 +597,7 @@ public class JdbcTableTest {
     public void testAsType() {
         assertNotNull(getTable().asType(ITable.class));
         assertTrue(getTable().asType(ITable.class) instanceof ITable);
-        assertNull(getTable().asType(ISpatialTable.class));
+        assertNotNull(getTable().asType(ISpatialTable.class));
         assertEquals("+-------------------+\n" +
                 "|     ORBISGIS      |\n" +
                 "+-------------------+-------------------+-------------------+-------------------+-------------------+\n" +
@@ -644,8 +645,8 @@ public class JdbcTableTest {
             super(parent, databaseType);
         }
 
-        @Override public ITable getTable(String tableName) {return null;}
-        @Override public ISpatialTable getSpatialTable(String tableName) {
+        @Override public IJdbcTable getTable(String tableName) {return null;}
+        @Override public IJdbcSpatialTable getSpatialTable(String tableName) {
             try {
                 if(!JDBCUtilities.tableExists(connection,
                         TableLocation.parse(tableName, getDataBaseType().equals(DataBaseType.H2GIS)).getTable())){
@@ -670,7 +671,7 @@ public class JdbcTableTest {
 
                 }
         return null;}
-        @Override public IDataSet getDataSet(String name) {return null;}
+        @Override public IJdbcTable getDataSet(String name) {return null;}
         
         @Override
         public boolean hasTable(String tableName) {
@@ -717,5 +718,7 @@ public class JdbcTableTest {
                 throw new SQLException();
             }
         }
+
+        @Override public IJdbcTableSummary getSummary() { return null; }
     }
 }

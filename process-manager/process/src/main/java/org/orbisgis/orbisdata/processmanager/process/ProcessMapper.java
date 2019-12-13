@@ -36,10 +36,6 @@
  */
 package org.orbisgis.orbisdata.processmanager.process;
 
-import org.orbisgis.orbisdata.processmanager.process.check.CheckDataBuilder;
-import org.orbisgis.orbisdata.processmanager.process.check.ProcessCheck;
-import org.orbisgis.orbisdata.processmanager.process.inoutput.Input;
-import org.orbisgis.orbisdata.processmanager.process.inoutput.Output;
 import org.orbisgis.orbisdata.processmanager.api.ILinker;
 import org.orbisgis.orbisdata.processmanager.api.IProcess;
 import org.orbisgis.orbisdata.processmanager.api.IProcessMapper;
@@ -48,6 +44,10 @@ import org.orbisgis.orbisdata.processmanager.api.check.IProcessCheck;
 import org.orbisgis.orbisdata.processmanager.api.inoutput.IInOutPut;
 import org.orbisgis.orbisdata.processmanager.api.inoutput.IInput;
 import org.orbisgis.orbisdata.processmanager.api.inoutput.IOutput;
+import org.orbisgis.orbisdata.processmanager.process.check.CheckDataBuilder;
+import org.orbisgis.orbisdata.processmanager.process.check.ProcessCheck;
+import org.orbisgis.orbisdata.processmanager.process.inoutput.Input;
+import org.orbisgis.orbisdata.processmanager.process.inoutput.Output;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

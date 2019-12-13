@@ -42,8 +42,9 @@ import org.h2gis.utilities.SpatialResultSetMetaData;
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
 import org.orbisgis.orbisdata.datamanager.api.dataset.DataBaseType;
+import org.orbisgis.orbisdata.datamanager.api.dataset.IJdbcSpatialTable;
 import org.orbisgis.orbisdata.datamanager.api.dataset.IRaster;
-import org.orbisgis.orbisdata.datamanager.api.dataset.ISpatialTable;
+import org.orbisgis.orbisdata.datamanager.api.datasource.IJdbcDataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -59,7 +60,7 @@ import java.util.Map;
  * @author Erwan Bocher (CNRS)
  * @author Sylvain PALOMINOS (UBS 2019)
  */
-public abstract class JdbcSpatialTable extends JdbcTable implements ISpatialTable  {
+public abstract class JdbcSpatialTable extends JdbcTable implements IJdbcSpatialTable {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(JdbcTable.class);
 
@@ -72,7 +73,7 @@ public abstract class JdbcSpatialTable extends JdbcTable implements ISpatialTabl
      * @param statement Statement used to request the database.
      * @param jdbcDataSource DataSource to use for the creation of the resultSet.
      */
-    public JdbcSpatialTable(DataBaseType dataBaseType, JdbcDataSource jdbcDataSource, TableLocation tableLocation,
+    public JdbcSpatialTable(DataBaseType dataBaseType, IJdbcDataSource jdbcDataSource, TableLocation tableLocation,
                             Statement statement, String baseQuery) {
         super(dataBaseType, jdbcDataSource, tableLocation, statement, baseQuery);
     }

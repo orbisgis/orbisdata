@@ -6,11 +6,11 @@ import org.h2gis.postgis_jts.StatementWrapper;
 import org.h2gis.postgis_jts_osgi.DataSourceFactoryImpl;
 import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.SFSUtilities;
+import org.orbisgis.orbisdata.datamanager.api.dataset.DataBaseType;
+import org.orbisgis.orbisdata.datamanager.api.dataset.IJdbcSpatialTable;
+import org.orbisgis.orbisdata.datamanager.api.dataset.IJdbcTable;
 import org.orbisgis.orbisdata.datamanager.jdbc.JdbcDataSource;
 import org.orbisgis.orbisdata.datamanager.jdbc.TableLocation;
-import org.orbisgis.orbisdata.datamanager.api.dataset.DataBaseType;
-import org.orbisgis.orbisdata.datamanager.api.dataset.ISpatialTable;
-import org.orbisgis.orbisdata.datamanager.api.dataset.ITable;
 import org.osgi.service.jdbc.DataSourceFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,11 +51,11 @@ public class POSTGIS extends JdbcDataSource {
 
     
     /**
-     * Create an instance of POSTGIS from file
+     * Create an instance of {@link POSTGIS} from file
      *
      * @param file .properties file containing the information for the DataBase opening.
      *
-     * @return POSTGIS object if the DataBase has been successfully open, null otherwise.
+     * @return {@link POSTGIS} object if the DataBase has been successfully open, null otherwise.
      */
     public static POSTGIS open(File file) {
         try {
@@ -73,11 +73,11 @@ public class POSTGIS extends JdbcDataSource {
     }
     
     /**
-     * Create an instance of POSTGIS from properties
+     * Create an instance of {@link POSTGIS} from properties
      *
      * @param properties Properties for the opening of the DataBase.
      *
-     * @return POSTGIS object if the DataBase has been successfully open, null otherwise.
+     * @return {@link POSTGIS} object if the DataBase has been successfully open, null otherwise.
      */
     public static POSTGIS open(Properties properties) {
         Connection connection;
@@ -90,11 +90,11 @@ public class POSTGIS extends JdbcDataSource {
         return new POSTGIS(connection);
     }
     /**
-     * Open the POSTGIS database with the given properties and return the corresponding POSTGIS object.
+     * Open the {@link POSTGIS} database with the given properties and return the corresponding {@link POSTGIS} object.
      *
      * @param properties Map of the properties to use for the database opening.
      *
-     * @return An instantiated POSTGIS object wrapping the Sql object connected to the database.
+     * @return An instantiated {@link POSTGIS} object wrapping the Sql object connected to the database.
      */
     public static POSTGIS open(Map<String, String> properties) {
         Properties props = new Properties();
@@ -104,11 +104,11 @@ public class POSTGIS extends JdbcDataSource {
     }
 
     /**
-     * Open the POSTGIS database at the given path and return the corresponding POSTGIS object.
+     * Open the {@link POSTGIS} database at the given path and return the corresponding {@link POSTGIS} object.
      *
      * @param path Path of the database to open.
      *
-     * @return An instantiated POSTGIS object wrapping the Sql object connected to the database.
+     * @return An instantiated {@link POSTGIS} object wrapping the Sql object connected to the database.
      */
     public static POSTGIS open(String path) {
         Map<String, String> map = new HashMap<>();
@@ -117,13 +117,13 @@ public class POSTGIS extends JdbcDataSource {
     }
 
     /**
-     * Open the POSTGIS database at the given path and return the corresponding POSTGIS object.
+     * Open the {@link POSTGIS} database at the given path and return the corresponding {@link POSTGIS} object.
      *
      * @param path Path of the database to open.
      * @param user User of the database.
      * @param password Password for the user.
      *
-     * @return An instantiated POSTGIS object wrapping the Sql object connected to the database.
+     * @return An instantiated {@link POSTGIS} object wrapping the Sql object connected to the database.
      */
     public static POSTGIS open(String path, String user, String password) {
         Map<String, String> map = new HashMap<>();
@@ -134,7 +134,7 @@ public class POSTGIS extends JdbcDataSource {
     }
 
     @Override
-    public ITable getTable(String tableName) {
+    public IJdbcTable getTable(String tableName) {
         try {
             if(!JDBCUtilities.tableExists(connectionWrapper,
                     TableLocation.parse(tableName, getDataBaseType().equals(DataBaseType.H2GIS)).getTable())){
@@ -164,7 +164,7 @@ public class POSTGIS extends JdbcDataSource {
     }
 
     @Override
-    public ISpatialTable getSpatialTable(String tableName) {
+    public IJdbcSpatialTable getSpatialTable(String tableName) {
         try {
             if(!JDBCUtilities.tableExists(connectionWrapper,
                     TableLocation.parse(tableName, getDataBaseType().equals(DataBaseType.H2GIS)).getTable())){

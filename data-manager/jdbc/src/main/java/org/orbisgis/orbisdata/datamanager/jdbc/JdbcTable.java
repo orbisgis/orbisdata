@@ -47,12 +47,13 @@ import org.locationtech.jts.geom.Geometry;
 import org.orbisgis.commons.printer.Ascii;
 import org.orbisgis.commons.printer.Html;
 import org.orbisgis.commons.printer.ICustomPrinter;
+import org.orbisgis.orbisdata.datamanager.api.dataset.*;
+import org.orbisgis.orbisdata.datamanager.api.datasource.IJdbcDataSource;
+import org.orbisgis.orbisdata.datamanager.api.dsl.IConditionOrOptionBuilder;
+import org.orbisgis.orbisdata.datamanager.api.dsl.IOptionBuilder;
 import org.orbisgis.orbisdata.datamanager.jdbc.dsl.OptionBuilder;
 import org.orbisgis.orbisdata.datamanager.jdbc.dsl.WhereBuilder;
 import org.orbisgis.orbisdata.datamanager.jdbc.io.IOMethods;
-import org.orbisgis.orbisdata.datamanager.api.dataset.*;
-import org.orbisgis.orbisdata.datamanager.api.dsl.IConditionOrOptionBuilder;
-import org.orbisgis.orbisdata.datamanager.api.dsl.IOptionBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -81,7 +82,7 @@ public abstract class JdbcTable extends DefaultResultSet implements IJdbcTable, 
     /** Type of the database */
     private DataBaseType dataBaseType;
     /** DataSource to execute query */
-    private JdbcDataSource jdbcDataSource;
+    private IJdbcDataSource jdbcDataSource;
     /** Table location */
     private TableLocation tableLocation;
     /** Statement */
@@ -100,7 +101,7 @@ public abstract class JdbcTable extends DefaultResultSet implements IJdbcTable, 
      * @param statement Statement used to request the database.
      * @param jdbcDataSource DataSource to use for the creation of the resultSet.
      */
-    public JdbcTable(DataBaseType dataBaseType, JdbcDataSource jdbcDataSource, TableLocation tableLocation,
+    public JdbcTable(DataBaseType dataBaseType, IJdbcDataSource jdbcDataSource, TableLocation tableLocation,
                      Statement statement, String baseQuery){
         this.metaClass = InvokerHelper.getMetaClass(getClass());
         this.dataBaseType = dataBaseType;
@@ -187,7 +188,7 @@ public abstract class JdbcTable extends DefaultResultSet implements IJdbcTable, 
      *
      * @return The parent DataSource.
      */
-    protected JdbcDataSource getJdbcDataSource(){
+    protected IJdbcDataSource getJdbcDataSource(){
         return jdbcDataSource;
     }
 
@@ -434,14 +435,14 @@ public abstract class JdbcTable extends DefaultResultSet implements IJdbcTable, 
     }
 
     @Override
-    public ITable getTable() {
-        return (ITable)asType(ITable.class);
+    public IJdbcTable getTable() {
+        return (IJdbcTable)asType(IJdbcTable.class);
     }
 
     @Override
-    public ISpatialTable getSpatialTable() {
+    public IJdbcSpatialTable getSpatialTable() {
         if(isSpatial()) {
-            return (ISpatialTable) asType(ISpatialTable.class);
+            return (IJdbcSpatialTable) asType(IJdbcSpatialTable.class);
         }
         else{
             return null;
@@ -555,11 +556,8 @@ public abstract class JdbcTable extends DefaultResultSet implements IJdbcTable, 
 
             return printer;
         }
-        else if(ITable.class.equals(clazz)) {
+        else if(ITable.class.isAssignableFrom(clazz)) {
             return this;
-        }
-        else if(ISpatialTable.class.equals(clazz)) {
-            return null;
         }
         return null;
     }

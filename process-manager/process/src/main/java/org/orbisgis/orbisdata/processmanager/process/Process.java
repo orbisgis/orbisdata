@@ -40,12 +40,12 @@ import groovy.lang.Closure;
 import groovy.lang.GroovyObject;
 import groovy.lang.MetaClass;
 import org.codehaus.groovy.runtime.InvokerHelper;
-import org.orbisgis.orbisdata.processmanager.process.inoutput.Input;
-import org.orbisgis.orbisdata.processmanager.process.inoutput.Output;
 import org.orbisgis.orbisdata.processmanager.api.IProcess;
 import org.orbisgis.orbisdata.processmanager.api.inoutput.IInOutPut;
 import org.orbisgis.orbisdata.processmanager.api.inoutput.IInput;
 import org.orbisgis.orbisdata.processmanager.api.inoutput.IOutput;
+import org.orbisgis.orbisdata.processmanager.process.inoutput.Input;
+import org.orbisgis.orbisdata.processmanager.process.inoutput.Output;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

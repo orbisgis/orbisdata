@@ -560,6 +560,8 @@ public class JdbcTableTest {
         assertEquals("SELECT * FROM ORBISGIS ORDER BY toto ASC", getTable().orderBy("toto", IOptionBuilder.Order.ASC).toString().trim());
         assertEquals("SELECT * FROM ORBISGIS ORDER BY toto ASC, tata DESC", getTable().orderBy(map).toString().trim());
         assertEquals("SELECT * FROM ORBISGIS LIMIT 0", getTable().limit(0).toString().trim());
+
+        assertEquals(2, getTable().columns("the_geom").getTable().getRowCount());
     }
 
     /**

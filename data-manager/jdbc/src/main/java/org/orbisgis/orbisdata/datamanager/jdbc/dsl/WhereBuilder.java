@@ -36,13 +36,14 @@
  */
 package org.orbisgis.orbisdata.datamanager.jdbc.dsl;
 
-import org.orbisgis.orbisdata.datamanager.jdbc.JdbcDataSource;
+import org.orbisgis.orbisdata.datamanager.api.datasource.IJdbcDataSource;
 import org.orbisgis.orbisdata.datamanager.api.dsl.IBuilderResult;
 import org.orbisgis.orbisdata.datamanager.api.dsl.IConditionOrOptionBuilder;
 import org.orbisgis.orbisdata.datamanager.api.dsl.IWhereBuilderOrOptionBuilder;
+import org.orbisgis.orbisdata.datamanager.jdbc.JdbcDataSource;
 
 /**
- * Implementation of IWhereBuilderOrOptionBuilder
+ * Implementation of {@link IWhereBuilderOrOptionBuilder}
  *
  * @author Erwan Bocher (CNRS)
  * @author Sylvain PALOMINOS (UBS 2019)
@@ -50,15 +51,15 @@ import org.orbisgis.orbisdata.datamanager.api.dsl.IWhereBuilderOrOptionBuilder;
 public class WhereBuilder extends OptionBuilder implements IWhereBuilderOrOptionBuilder, IBuilderResult {
 
     private StringBuilder query;
-    private JdbcDataSource dataSource;
+    private IJdbcDataSource dataSource;
 
     /**
      * Main constructor.
      *
      * @param request String request coming from the ISelectBuilder.
-     * @param dataSource JdbcDataSource where the request will be executed.
+     * @param dataSource {@link IJdbcDataSource} where the request will be executed.
      */
-    public WhereBuilder(String request, JdbcDataSource dataSource){
+    public WhereBuilder(String request, IJdbcDataSource dataSource){
         super(request, dataSource);
         query = new StringBuilder();
         query.append(request).append(" ");

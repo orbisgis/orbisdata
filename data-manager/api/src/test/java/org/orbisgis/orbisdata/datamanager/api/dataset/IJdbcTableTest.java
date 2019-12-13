@@ -219,6 +219,7 @@ public class IJdbcTableTest {
         @Override public boolean isSpatial() {return false;}
         @Override public boolean isLinked() {return false;}
         @Override public boolean isTemporary() {return false;}
+        @Override public IJdbcTableSummary getSummary() { return null; }
         @Override public boolean next() throws SQLException {
             if(!sqlException) {
                 return rowIndex++ < data.length;
@@ -445,8 +446,8 @@ public class IJdbcTableTest {
         @Override public Collection<String> getUniqueValues(String column) {return null;}
         @Override public boolean save(String filePath, String encoding) {return false;}
         @Override public List<Object> getFirstRow() {return null;}
-        @Override public ITable columns(String... columns) { return null;}
-        @Override public ITable columns(List<String> columns) { return null; }
+        @Override public IJdbcTable columns(String... columns) { return null;}
+        @Override public IJdbcTable columns(List<String> columns) { return null; }
         @Override public IConditionOrOptionBuilder where(String condition) {return null;}
         @Override public IOptionBuilder groupBy(String... fields) {return null;}
         @Override public IOptionBuilder orderBy(Map<String, Order> orderByMap) {return null;}

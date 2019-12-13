@@ -36,12 +36,13 @@
  */
 package org.orbisgis.orbisdata.datamanager.jdbc.dsl;
 
-import org.orbisgis.orbisdata.datamanager.jdbc.JdbcDataSource;
+import org.orbisgis.orbisdata.datamanager.api.datasource.IJdbcDataSource;
 import org.orbisgis.orbisdata.datamanager.api.dsl.IFromBuilder;
 import org.orbisgis.orbisdata.datamanager.api.dsl.IWhereBuilderOrOptionBuilder;
+import org.orbisgis.orbisdata.datamanager.jdbc.JdbcDataSource;
 
 /**
- * Implementation of IFromBuilder
+ * Implementation of {@link IFromBuilder}.
  *
  * @author Erwan Bocher (CNRS)
  * @author Sylvain PALOMINOS (UBS 2019)
@@ -55,7 +56,7 @@ public class FromBuilder implements IFromBuilder {
      * Main constructor.
      *
      * @param request String request coming from the ISelectBuilder.
-     * @param dataSource JdbcDataSource where the request will be executed.
+     * @param dataSource {@link IJdbcDataSource} where the request will be executed.
      */
     public FromBuilder(String request, JdbcDataSource dataSource){
         query = new StringBuilder();

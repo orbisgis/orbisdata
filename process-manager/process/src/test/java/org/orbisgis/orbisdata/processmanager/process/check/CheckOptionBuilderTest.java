@@ -39,13 +39,13 @@ package org.orbisgis.orbisdata.processmanager.process.check;
 import groovy.lang.Closure;
 import groovy.lang.GroovyShell;
 import org.junit.jupiter.api.Test;
-import org.orbisgis.orbisdata.processmanager.process.Process;
-import org.orbisgis.orbisdata.processmanager.process.ProcessManager;
-import org.orbisgis.orbisdata.processmanager.process.ProcessMapper;
 import org.orbisgis.orbisdata.processmanager.api.check.ICheckClosureBuilder;
 import org.orbisgis.orbisdata.processmanager.api.check.ICheckDataBuilder;
 import org.orbisgis.orbisdata.processmanager.api.check.ICheckOptionBuilder;
 import org.orbisgis.orbisdata.processmanager.api.check.IProcessCheck;
+import org.orbisgis.orbisdata.processmanager.process.Process;
+import org.orbisgis.orbisdata.processmanager.process.ProcessManager;
+import org.orbisgis.orbisdata.processmanager.process.ProcessMapper;
 
 import java.util.LinkedHashMap;
 

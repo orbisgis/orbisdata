@@ -38,7 +38,6 @@ package org.orbisgis.orbisdata.datamanager.dataframe;
 
 import org.junit.jupiter.api.Test;
 import org.orbisgis.orbisdata.datamanager.jdbc.h2gis.H2GIS;
-import smile.data.type.DataType;
 import smile.data.vector.BaseVector;
 import smile.math.matrix.DenseMatrix;
 
@@ -181,7 +180,11 @@ public class DataFrameTest {
         assertFalse(df.isSpatial());
         assertEquals("smile.data.DataFrame", df.getLocation());
         assertEquals("DataFrame", df.getName());
+        assertNotNull(df.summary());
+        assertNotNull(df.getMetaData());
         assertEquals(df.summary().toString(), df.getMetaData().toString());
+        assertNotNull(df.getSummary());
+        assertEquals(df.summary().toString(), df.getSummary().toString());
 
         assertNotNull(df.asType(String.class));
         assertNotNull(df.asType(DenseMatrix.class));

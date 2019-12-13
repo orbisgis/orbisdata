@@ -38,8 +38,7 @@ package org.orbisgis.orbisdata.datamanager.api.datasource;
 
 import groovy.lang.GroovyObject;
 import groovy.lang.MissingMethodException;
-import org.orbisgis.orbisdata.datamanager.api.dataset.ISpatialTable;
-import org.orbisgis.orbisdata.datamanager.api.dataset.ITable;
+import org.orbisgis.orbisdata.datamanager.api.dataset.*;
 
 import javax.sql.DataSource;
 import java.io.File;
@@ -63,14 +62,14 @@ public interface IJdbcDataSource extends IDataSource, GroovyObject, DataSource {
     void close();
 
     /**
-     * Return the {@link ITable} contained by the database with the given name. If the table contains a geometric
+     * Return the {@link IJdbcTable} contained by the database with the given name. If the table contains a geometric
      * field, return a {@link ISpatialTable}.
      *
      * @param tableName Name of the requested table.
      *
-     * @return The {@link ITable} with the given name or null if no table is found.
+     * @return The {@link IJdbcTable} with the given name or null if no table is found.
      */
-    ITable getTable(String tableName);
+    IJdbcTable getTable(String tableName);
 
     /**
      * Return a {@link ISpatialTable} contained by the database with the given name. If the table doesn't contains a
@@ -81,7 +80,7 @@ public interface IJdbcDataSource extends IDataSource, GroovyObject, DataSource {
      * @return The {@link ISpatialTable} with the given name or null if no table is found or if the table doesn't
      * contains a geometric field.
      */
-    ISpatialTable getSpatialTable(String tableName);
+    IJdbcSpatialTable getSpatialTable(String tableName);
 
     /**
      * Get all table names from the underlying database.
@@ -96,7 +95,7 @@ public interface IJdbcDataSource extends IDataSource, GroovyObject, DataSource {
      *
      * @param tableName Name of the table to check.
      *
-     * @return True if {@link ITable} is found, false otherwise.
+     * @return True if {@link IJdbcTable} is found, false otherwise.
      */
     boolean hasTable(String tableName);
 
@@ -110,9 +109,9 @@ public interface IJdbcDataSource extends IDataSource, GroovyObject, DataSource {
      *
      * @param filePath Path of the file.
      *
-     * @return The {@link ITable} containing the loaded data.
+     * @return The {@link IJdbcTable} containing the loaded data.
      */
-    ITable load(String filePath);
+    IJdbcTable load(String filePath);
 
     /**
      * Load a file into the database.
@@ -120,9 +119,9 @@ public interface IJdbcDataSource extends IDataSource, GroovyObject, DataSource {
      * @param filePath Path of the file.
      * @param delete True to delete the table if exists, false otherwise.
      *
-     * @return The {@link ITable} containing the loaded data.
+     * @return The {@link IJdbcTable} containing the loaded data.
      */
-    ITable load(String filePath, boolean delete);
+    IJdbcTable load(String filePath, boolean delete);
 
     /**
      * Load a file to the database.
@@ -130,9 +129,9 @@ public interface IJdbcDataSource extends IDataSource, GroovyObject, DataSource {
      * @param filePath Path of the file.
      * @param tableName Name of the table.
      *
-     * @return The {@link ITable} containing the loaded data.
+     * @return The {@link IJdbcTable} containing the loaded data.
      */
-    ITable load(String filePath, String tableName);
+    IJdbcTable load(String filePath, String tableName);
 
     /**
      * Load a file to the database.
@@ -141,9 +140,9 @@ public interface IJdbcDataSource extends IDataSource, GroovyObject, DataSource {
      * @param tableName Name of the table.
      * @param delete True to delete the table if exists, false otherwise.
      *
-     * @return The {@link ITable} containing the loaded data.
+     * @return The {@link IJdbcTable} containing the loaded data.
      */
-    ITable load(String filePath, String tableName, boolean delete);
+    IJdbcTable load(String filePath, String tableName, boolean delete);
 
     /**
      * Load a file to the database.
@@ -153,18 +152,18 @@ public interface IJdbcDataSource extends IDataSource, GroovyObject, DataSource {
      * @param encoding Encoding of the loaded file.
      * @param delete True to delete the table if exists, false otherwise.
      *
-     * @return The {@link ITable} containing the loaded data.
+     * @return The {@link IJdbcTable} containing the loaded data.
      */
-    ITable load(String filePath, String tableName, String encoding, boolean delete);
+    IJdbcTable load(String filePath, String tableName, String encoding, boolean delete);
 
     /**
      * Load a file into the database.
      *
      * @param url {@link URL} of the file.
      *
-     * @return The {@link ITable} containing the loaded data.
+     * @return The {@link IJdbcTable} containing the loaded data.
      */
-    ITable load(URL url);
+    IJdbcTable load(URL url);
 
     /**
      * Load a file into the database.
@@ -172,9 +171,9 @@ public interface IJdbcDataSource extends IDataSource, GroovyObject, DataSource {
      * @param url {@link URL} of the file.
      * @param delete True to delete the table if exists, false otherwise.
      *
-     * @return The {@link ITable} containing the loaded data.
+     * @return The {@link IJdbcTable} containing the loaded data.
      */
-    ITable load(URL url, boolean delete);
+    IJdbcTable load(URL url, boolean delete);
 
     /**
      * Load a file to the database.
@@ -182,9 +181,9 @@ public interface IJdbcDataSource extends IDataSource, GroovyObject, DataSource {
      * @param url {@link URL} of the file.
      * @param tableName Name of the table.
      *
-     * @return The {@link ITable} containing the loaded data.
+     * @return The {@link IJdbcTable} containing the loaded data.
      */
-    ITable load(URL url, String tableName);
+    IJdbcTable load(URL url, String tableName);
 
     /**
      * Load a file to the database.
@@ -193,9 +192,9 @@ public interface IJdbcDataSource extends IDataSource, GroovyObject, DataSource {
      * @param tableName Name of the table.
      * @param delete True to delete the table if exists, false otherwise.
      *
-     * @return The {@link ITable} containing the loaded data.
+     * @return The {@link IJdbcTable} containing the loaded data.
      */
-    ITable load(URL url, String tableName, boolean delete);
+    IJdbcTable load(URL url, String tableName, boolean delete);
 
     /**
      * Load a file to the database.
@@ -205,18 +204,18 @@ public interface IJdbcDataSource extends IDataSource, GroovyObject, DataSource {
      * @param encoding Encoding of the loaded file.
      * @param delete True to delete the table if exists, false otherwise.
      *
-     * @return The {@link ITable} containing the loaded data.
+     * @return The {@link IJdbcTable} containing the loaded data.
      */
-    ITable load(URL url, String tableName, String encoding, boolean delete);
+    IJdbcTable load(URL url, String tableName, String encoding, boolean delete);
 
     /**
      * Load a file into the database.
      *
      * @param uri {@link URI} of the file.
      *
-     * @return The {@link ITable} containing the loaded data.
+     * @return The {@link IJdbcTable} containing the loaded data.
      */
-    ITable load(URI uri);
+    IJdbcTable load(URI uri);
 
     /**
      * Load a file into the database.
@@ -224,9 +223,9 @@ public interface IJdbcDataSource extends IDataSource, GroovyObject, DataSource {
      * @param uri {@link URI} of the file.
      * @param delete True to delete the table if exists, false otherwise.
      *
-     * @return The {@link ITable} containing the loaded data.
+     * @return The {@link IJdbcTable} containing the loaded data.
      */
-    ITable load(URI uri, boolean delete);
+    IJdbcTable load(URI uri, boolean delete);
 
     /**
      * Load a file to the database.
@@ -234,9 +233,9 @@ public interface IJdbcDataSource extends IDataSource, GroovyObject, DataSource {
      * @param uri {@link URI} of the file.
      * @param tableName Name of the table.
      *
-     * @return The {@link ITable} containing the loaded data.
+     * @return The {@link IJdbcTable} containing the loaded data.
      */
-    ITable load(URI uri, String tableName);
+    IJdbcTable load(URI uri, String tableName);
 
     /**
      * Load a file to the database.
@@ -245,9 +244,9 @@ public interface IJdbcDataSource extends IDataSource, GroovyObject, DataSource {
      * @param tableName Name of the table.
      * @param delete True to delete the table if exists, false otherwise.
      *
-     * @return The {@link ITable} containing the loaded data.
+     * @return The {@link IJdbcTable} containing the loaded data.
      */
-    ITable load(URI uri, String tableName, boolean delete);
+    IJdbcTable load(URI uri, String tableName, boolean delete);
 
     /**
      * Load a file to the database.
@@ -257,18 +256,18 @@ public interface IJdbcDataSource extends IDataSource, GroovyObject, DataSource {
      * @param encoding Encoding of the loaded file.
      * @param delete True to delete the table if exists, false otherwise.
      *
-     * @return The {@link ITable} containing the loaded data.
+     * @return The {@link IJdbcTable} containing the loaded data.
      */
-    ITable load(URI uri, String tableName, String encoding, boolean delete);
+    IJdbcTable load(URI uri, String tableName, String encoding, boolean delete);
 
     /**
      * Load a file into the database.
      *
      * @param file {@link File}.
      *
-     * @return The {@link ITable} containing the loaded data.
+     * @return The {@link IJdbcTable} containing the loaded data.
      */
-    ITable load(File file);
+    IJdbcTable load(File file);
 
     /**
      * Load a file into the database.
@@ -276,9 +275,9 @@ public interface IJdbcDataSource extends IDataSource, GroovyObject, DataSource {
      * @param file {@link File}.
      * @param delete True to delete the table if exists, false otherwise.
      *
-     * @return The {@link ITable} containing the loaded data.
+     * @return The {@link IJdbcTable} containing the loaded data.
      */
-    ITable load(File file, boolean delete);
+    IJdbcTable load(File file, boolean delete);
 
     /**
      * Load a file to the database.
@@ -286,9 +285,9 @@ public interface IJdbcDataSource extends IDataSource, GroovyObject, DataSource {
      * @param file {@link File}.
      * @param tableName Name of the table.
      *
-     * @return The {@link ITable} containing the loaded data.
+     * @return The {@link IJdbcTable} containing the loaded data.
      */
-    ITable load(File file, String tableName);
+    IJdbcTable load(File file, String tableName);
 
     /**
      * Load a file to the database.
@@ -297,9 +296,9 @@ public interface IJdbcDataSource extends IDataSource, GroovyObject, DataSource {
      * @param tableName Name of the table.
      * @param delete True to delete the table if exists, false otherwise.
      *
-     * @return The {@link ITable} containing the loaded data.
+     * @return The {@link IJdbcTable} containing the loaded data.
      */
-    ITable load(File file, String tableName, boolean delete);
+    IJdbcTable load(File file, String tableName, boolean delete);
 
     /**
      * Load a file to the database.
@@ -309,9 +308,9 @@ public interface IJdbcDataSource extends IDataSource, GroovyObject, DataSource {
      * @param encoding Encoding of the loaded file.
      * @param delete True to delete the table if exists, false otherwise.
      *
-     * @return The {@link ITable} containing the loaded data.
+     * @return The {@link IJdbcTable} containing the loaded data.
      */
-    ITable load(File file, String tableName, String encoding, boolean delete);
+    IJdbcTable load(File file, String tableName, String encoding, boolean delete);
 
     /**
      * Load a table from another database.
@@ -319,9 +318,9 @@ public interface IJdbcDataSource extends IDataSource, GroovyObject, DataSource {
      * @param properties Properties used to connect to the database.
      * @param inputTableName Name of the table to import.
      *
-     * @return The {@link ITable} containing the loaded data.
+     * @return The {@link IJdbcTable} containing the loaded data.
      */
-    ITable load(Map<String, String> properties, String inputTableName);
+    IJdbcTable load(Map<String, String> properties, String inputTableName);
 
 
     /**
@@ -331,9 +330,9 @@ public interface IJdbcDataSource extends IDataSource, GroovyObject, DataSource {
      * @param inputTableName Name of the table to import.
      * @param outputTableName Name of the imported table in the database.
      *
-     * @return The {@link ITable} containing the loaded data.
+     * @return The {@link IJdbcTable} containing the loaded data.
      */
-    ITable load(Map<String, String> properties, String inputTableName, String outputTableName);
+    IJdbcTable load(Map<String, String> properties, String inputTableName, String outputTableName);
 
     /**
      * Load a table from another database.
@@ -342,9 +341,9 @@ public interface IJdbcDataSource extends IDataSource, GroovyObject, DataSource {
      * @param inputTableName Name of the table to import.
      * @param delete True to delete the outputTableName if exists, false otherwise.
      *
-     * @return The {@link ITable} containing the loaded data.
+     * @return The {@link IJdbcTable} containing the loaded data.
      */
-    ITable load(Map<String, String> properties, String inputTableName, boolean delete);
+    IJdbcTable load(Map<String, String> properties, String inputTableName, boolean delete);
 
     /**
      * Load a table from another database.
@@ -354,9 +353,9 @@ public interface IJdbcDataSource extends IDataSource, GroovyObject, DataSource {
      * @param outputTableName Name of the imported table in the database.
      * @param delete True to delete the outputTableName if exists, false otherwise.
      *
-     * @return The {@link ITable} containing the loaded data.
+     * @return The {@link IJdbcTable} containing the loaded data.
      */
-    ITable load(Map<String, String> properties, String inputTableName, String outputTableName, boolean delete);
+    IJdbcTable load(Map<String, String> properties, String inputTableName, String outputTableName, boolean delete);
 
 
     /* ********************** */
@@ -459,9 +458,9 @@ public interface IJdbcDataSource extends IDataSource, GroovyObject, DataSource {
      * @param tableName Name of the database table.
      * @param delete True to delete the table if exists, false otherwise.
      *
-     * @return A {@link ITable} representing the linked file.
+     * @return A {@link IJdbcTable} representing the linked file.
      */
-    ITable link(String filePath, String tableName, boolean delete);
+    IJdbcTable link(String filePath, String tableName, boolean delete);
 
     /**
      * Link a file to the database.
@@ -469,9 +468,9 @@ public interface IJdbcDataSource extends IDataSource, GroovyObject, DataSource {
      * @param filePath Path of the file.
      * @param tableName Name of the database table.
      *
-     * @return A {@link ITable} representing the linked file.
+     * @return A {@link IJdbcTable} representing the linked file.
      */
-    ITable link(String filePath, String tableName);
+    IJdbcTable link(String filePath, String tableName);
 
     /**
      * Link a file to the database.
@@ -479,18 +478,18 @@ public interface IJdbcDataSource extends IDataSource, GroovyObject, DataSource {
      * @param filePath Path of the file.
      * @param delete True to delete the table if exists, false otherwise.
      *
-     * @return A {@link ITable} representing the linked file.
+     * @return A {@link IJdbcTable} representing the linked file.
      */
-    ITable link(String filePath,  boolean delete);
+    IJdbcTable link(String filePath,  boolean delete);
 
     /**
      * Link a file to the database.
      *
      * @param filePath Path of the file to link.
      *
-     * @return A {@link ITable} representing the linked file.
+     * @return A {@link IJdbcTable} representing the linked file.
      */
-    ITable link(String filePath);
+    IJdbcTable link(String filePath);
 
     /**
      * Link a file to the database.
@@ -499,9 +498,9 @@ public interface IJdbcDataSource extends IDataSource, GroovyObject, DataSource {
      * @param tableName Name of the database table.
      * @param delete True to delete the table if exists, false otherwise.
      *
-     * @return A {@link ITable} representing the linked file.
+     * @return A {@link IJdbcTable} representing the linked file.
      */
-    ITable link(URI uri, String tableName, boolean delete);
+    IJdbcTable link(URI uri, String tableName, boolean delete);
 
     /**
      * Link a file to the database.
@@ -509,9 +508,9 @@ public interface IJdbcDataSource extends IDataSource, GroovyObject, DataSource {
      * @param uri {@link URI} of the file.
      * @param tableName Name of the database table.
      *
-     * @return A {@link ITable} representing the linked file.
+     * @return A {@link IJdbcTable} representing the linked file.
      */
-    ITable link(URI uri, String tableName);
+    IJdbcTable link(URI uri, String tableName);
 
     /**
      * Link a file to the database.
@@ -519,18 +518,18 @@ public interface IJdbcDataSource extends IDataSource, GroovyObject, DataSource {
      * @param uri {@link URI} of the file.
      * @param delete True to delete the table if exists, false otherwise.
      *
-     * @return A {@link ITable} representing the linked file.
+     * @return A {@link IJdbcTable} representing the linked file.
      */
-    ITable link(URI uri,  boolean delete);
+    IJdbcTable link(URI uri,  boolean delete);
 
     /**
      * Link a file to the database.
      *
      * @param uri {@link URI} of the file.
      *
-     * @return A {@link ITable} representing the linked file.
+     * @return A {@link IJdbcTable} representing the linked file.
      */
-    ITable link(URI uri);
+    IJdbcTable link(URI uri);
 
     /**
      * Link a file to the database.
@@ -539,9 +538,9 @@ public interface IJdbcDataSource extends IDataSource, GroovyObject, DataSource {
      * @param tableName Name of the database table.
      * @param delete True to delete the table if exists, false otherwise.
      *
-     * @return A {@link ITable} representing the linked file.
+     * @return A {@link IJdbcTable} representing the linked file.
      */
-    ITable link(URL url, String tableName, boolean delete);
+    IJdbcTable link(URL url, String tableName, boolean delete);
 
     /**
      * Link a file to the database.
@@ -549,9 +548,9 @@ public interface IJdbcDataSource extends IDataSource, GroovyObject, DataSource {
      * @param url {@link URI} of the file.
      * @param tableName Name of the database table.
      *
-     * @return A {@link ITable} representing the linked file.
+     * @return A {@link IJdbcTable} representing the linked file.
      */
-    ITable link(URL url, String tableName);
+    IJdbcTable link(URL url, String tableName);
 
     /**
      * Link a file to the database.
@@ -559,18 +558,18 @@ public interface IJdbcDataSource extends IDataSource, GroovyObject, DataSource {
      * @param url {@link URI} of the file.
      * @param delete True to delete the table if exists, false otherwise.
      *
-     * @return A {@link ITable} representing the linked file.
+     * @return A {@link IJdbcTable} representing the linked file.
      */
-    ITable link(URL url,  boolean delete);
+    IJdbcTable link(URL url,  boolean delete);
 
     /**
      * Link a file to the database.
      *
      * @param url {@link URI} of the file.
      *
-     * @return A {@link ITable} representing the linked file.
+     * @return A {@link IJdbcTable} representing the linked file.
      */
-    ITable link(URL url);
+    IJdbcTable link(URL url);
 
     /**
      * Link a file to the database.
@@ -579,9 +578,9 @@ public interface IJdbcDataSource extends IDataSource, GroovyObject, DataSource {
      * @param tableName Name of the database table.
      * @param delete True to delete the table if exists, false otherwise.
      *
-     * @return A {@link ITable} representing the linked file.
+     * @return A {@link IJdbcTable} representing the linked file.
      */
-    ITable link(File file, String tableName, boolean delete);
+    IJdbcTable link(File file, String tableName, boolean delete);
 
     /**
      * Link a file to the database.
@@ -589,9 +588,9 @@ public interface IJdbcDataSource extends IDataSource, GroovyObject, DataSource {
      * @param file {@link File}.
      * @param tableName Name of the database table.
      *
-     * @return A {@link ITable} representing the linked file.
+     * @return A {@link IJdbcTable} representing the linked file.
      */
-    ITable link(File file, String tableName);
+    IJdbcTable link(File file, String tableName);
 
     /**
      * Link a file to the database.
@@ -599,18 +598,18 @@ public interface IJdbcDataSource extends IDataSource, GroovyObject, DataSource {
      * @param file {@link File}.
      * @param delete True to delete the table if exists, false otherwise.
      *
-     * @return A {@link ITable} representing the linked file.
+     * @return A {@link IJdbcTable} representing the linked file.
      */
-    ITable link(File file,  boolean delete);
+    IJdbcTable link(File file,  boolean delete);
 
     /**
      * Link a file to the database.
      *
      * @param file {@link File}.
      *
-     * @return A {@link ITable} representing the linked file.
+     * @return A {@link IJdbcTable} representing the linked file.
      */
-    ITable link(File file);
+    IJdbcTable link(File file);
 
     /**
      * This method is used to execute a SQL file
@@ -657,6 +656,16 @@ public interface IJdbcDataSource extends IDataSource, GroovyObject, DataSource {
      * @return True if the script has been successfully run, false otherwise.
      */
     boolean executeScript(InputStream stream, Map<String, String> bindings);
+
+    /**
+     * Return the type of the database.
+     *
+     * @return The type of the database.
+     */
+    DataBaseType getDataBaseType();
+
+    @Override
+    IJdbcTable getDataSet(String name);
 
     @Override
     default Object invokeMethod(String name, Object args) {

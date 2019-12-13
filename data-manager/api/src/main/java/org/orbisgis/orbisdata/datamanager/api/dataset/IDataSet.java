@@ -81,4 +81,11 @@ public interface IDataSet<T> extends Iterable<T> {
      * @return True if the {@link IDataSet} is empty, false otherwise.
      */
     boolean isEmpty();
+
+    /**
+     * Return the {@link ISummary} of the {@link IDataSet}.
+     *
+     * @return The {@link ISummary} of the {@link IDataSet}.
+     */
+    ISummary getSummary();
 }

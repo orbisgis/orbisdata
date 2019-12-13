@@ -44,26 +44,26 @@ import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.wrapper.ConnectionWrapper;
 import org.h2gis.utilities.wrapper.StatementWrapper;
+import org.orbisgis.orbisdata.datamanager.api.dataset.*;
 import org.orbisgis.orbisdata.datamanager.jdbc.JdbcDataSource;
 import org.orbisgis.orbisdata.datamanager.jdbc.JdbcSpatialTable;
-import org.orbisgis.orbisdata.datamanager.jdbc.JdbcTable;
 import org.orbisgis.orbisdata.datamanager.jdbc.TableLocation;
-import org.orbisgis.orbisdata.datamanager.api.dataset.DataBaseType;
-import org.orbisgis.orbisdata.datamanager.api.dataset.ISpatialTable;
-import org.orbisgis.orbisdata.datamanager.api.dataset.ITable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
 /**
- * Implementation of the IJdbcDataSource interface dedicated to the usage of an H2/H2GIS database.
+ * Implementation of the {@link JdbcDataSource} interface dedicated to the usage of an H2/H2GIS database.
  *
  * @author Erwan Bocher (CNRS)
  * @author Sylvain PALOMINOS (UBS 2018-2019)
@@ -86,11 +86,11 @@ public class H2GIS extends JdbcDataSource {
     }
 
     /**
-     * Create an instance of H2GIS from properties
+     * Create an instance of {@link H2GIS} from properties
      *
      * @param file .properties file containing the information for the DataBase opening.
      *
-     * @return H2GIS object if the DataBase has been successfully open, null otherwise.
+     * @return {@link H2GIS} object if the DataBase has been successfully open, null otherwise.
      */
     public static H2GIS open(File file) {
         try {
@@ -107,11 +107,11 @@ public class H2GIS extends JdbcDataSource {
     }
 
     /**
-     * Create an instance of H2GIS from properties
+     * Create an instance of {@link H2GIS} from properties
      *
      * @param properties Properties for the opening of the DataBase.
      *
-     * @return H2GIS object if the DataBase has been successfully open, null otherwise.
+     * @return {@link H2GIS} object if the DataBase has been successfully open, null otherwise.
      */
     public static H2GIS open(Properties properties) {
         Connection connection;
@@ -155,11 +155,11 @@ public class H2GIS extends JdbcDataSource {
     }
 
     /**
-     * Open the H2GIS database with the given properties and return the corresponding H2GIS object.
+     * Open the {@link H2GIS} database with the given properties and return the corresponding {@link H2GIS} object.
      *
      * @param properties Map of the properties to use for the database opening.
      *
-     * @return An instantiated H2GIS object wrapping the Sql object connected to the database.
+     * @return An instantiated {@link H2GIS} object wrapping the Sql object connected to the database.
      */
     public static H2GIS open(Map<String, String> properties) {
         Properties props = new Properties();
@@ -168,24 +168,24 @@ public class H2GIS extends JdbcDataSource {
     }
 
     /**
-     * Open the H2GIS database at the given path and return the corresponding H2GIS object.
+     * Open the {@link H2GIS} database at the given path and return the corresponding {@link H2GIS} object.
      *
      * @param path Path of the database to open.
      *
-     * @return An instantiated H2GIS object wrapping the Sql object connected to the database.
+     * @return An instantiated {@link H2GIS} object wrapping the Sql object connected to the database.
      */
     public static H2GIS open(String path) {
         return open(path, "sa", "");
     }
 
     /**
-     * Open the H2GIS database at the given path and return the corresponding H2GIS object.
+     * Open the {@link H2GIS} database at the given path and return the corresponding {@link H2GIS} object.
      *
      * @param path Path of the database to open.
      * @param user User of the database.
      * @param password Password for the user.
      *
-     * @return An instantiated H2GIS object wrapping the Sql object connected to the database.
+     * @return An instantiated {@link H2GIS} object wrapping the Sql object connected to the database.
      */
     public static H2GIS open(String path, String user, String password) {
         Map<String, String> map = new HashMap<>();
@@ -196,7 +196,7 @@ public class H2GIS extends JdbcDataSource {
     }
 
     @Override
-    public JdbcTable getTable(String tableName) {
+    public IJdbcTable getTable(String tableName) {
         String name = TableLocation.parse(tableName, getDataBaseType().equals(DataBaseType.H2GIS)).toString( getDataBaseType().equals(DataBaseType.H2GIS));
         try {
             if(!JDBCUtilities.tableExists(connectionWrapper,name)){
@@ -226,7 +226,7 @@ public class H2GIS extends JdbcDataSource {
     }
 
     @Override
-    public JdbcSpatialTable getSpatialTable(String tableName) {
+    public IJdbcSpatialTable getSpatialTable(String tableName) {
         ITable table = getTable(tableName);
         if(table instanceof ISpatialTable){
             return (JdbcSpatialTable) table;

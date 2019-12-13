@@ -45,10 +45,7 @@ import org.h2gis.utilities.wrapper.StatementWrapper;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.orbisgis.orbisdata.datamanager.api.dataset.DataBaseType;
-import org.orbisgis.orbisdata.datamanager.api.dataset.IDataSet;
-import org.orbisgis.orbisdata.datamanager.api.dataset.ISpatialTable;
-import org.orbisgis.orbisdata.datamanager.api.dataset.ITable;
+import org.orbisgis.orbisdata.datamanager.api.dataset.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -264,6 +261,8 @@ public class JdbcSpatialTableTest {
             }
             return new SpatialResultSetImpl(resultSet, (StatementWrapper) getStatement());
         }
+
+        @Override public IJdbcTableSummary getSummary() { return null; }
     }
 
     /**
@@ -275,8 +274,8 @@ public class JdbcSpatialTableTest {
             super(parent, databaseType);
         }
 
-        @Override public ITable getTable(String tableName) {return null;}
-        @Override public ISpatialTable getSpatialTable(String tableName) {
+        @Override public IJdbcTable getTable(String tableName) {return null;}
+        @Override public IJdbcSpatialTable getSpatialTable(String tableName) {
             String name = TableLocation.parse(tableName, getDataBaseType().equals(DataBaseType.H2GIS)).toString( getDataBaseType().equals(DataBaseType.H2GIS));
             try {
                 if(!JDBCUtilities.tableExists(connection,name)){
@@ -300,7 +299,7 @@ public class JdbcSpatialTableTest {
             } catch (SQLException ignored) {}
             return null;
         }
-        @Override public IDataSet getDataSet(String name) {return null;}
+        @Override public IJdbcTable getDataSet(String name) {return null;}
         
         @Override
         public boolean hasTable(String tableName) {

@@ -68,7 +68,7 @@ public class JdbcColumn implements IJdbcColumn, GroovyObject {;
     private String name;
     /** Name of the table of the column. */
     private TableLocation tableName;
-    /** {@link JdbcDataSource} of the column. */
+    /** {@link IJdbcDataSource} of the column. */
     private JdbcDataSource dataSource;
     /** Indicates if the database is an H2 one. */
     private boolean isH2;
@@ -80,11 +80,11 @@ public class JdbcColumn implements IJdbcColumn, GroovyObject {;
      * @param tableName Name of the table of the column.
      * @param dataSource {@link IJdbcDataSource} of the column.
      */
-    public JdbcColumn(String name, String tableName, JdbcDataSource dataSource){
+    public JdbcColumn(String name, String tableName, IJdbcDataSource dataSource){
         this.isH2 = dataSource.getDataBaseType() == DataBaseType.H2GIS;
         this.name = TableLocation.capsIdentifier(name, isH2);
         this.tableName = TableLocation.parse(tableName, isH2);
-        this.dataSource = dataSource;
+        this.dataSource = (JdbcDataSource)dataSource;
         this.metaClass = InvokerHelper.getMetaClass(JdbcColumn.class);
     }
 

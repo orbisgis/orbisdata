@@ -40,15 +40,15 @@ import groovy.lang.Closure;
 import org.h2gis.utilities.wrapper.ConnectionWrapper;
 import org.h2gis.utilities.wrapper.StatementWrapper;
 import org.orbisgis.commons.printer.ICustomPrinter;
-import org.orbisgis.orbisdata.datamanager.jdbc.JdbcDataSource;
+import org.orbisgis.orbisdata.datamanager.api.dataset.ISpatialTable;
+import org.orbisgis.orbisdata.datamanager.api.dataset.ITable;
+import org.orbisgis.orbisdata.datamanager.api.datasource.IJdbcDataSource;
+import org.orbisgis.orbisdata.datamanager.api.dsl.IBuilderResult;
 import org.orbisgis.orbisdata.datamanager.jdbc.TableLocation;
 import org.orbisgis.orbisdata.datamanager.jdbc.h2gis.H2gisSpatialTable;
 import org.orbisgis.orbisdata.datamanager.jdbc.h2gis.H2gisTable;
 import org.orbisgis.orbisdata.datamanager.jdbc.postgis.PostgisSpatialTable;
 import org.orbisgis.orbisdata.datamanager.jdbc.postgis.PostgisTable;
-import org.orbisgis.orbisdata.datamanager.api.dataset.ISpatialTable;
-import org.orbisgis.orbisdata.datamanager.api.dataset.ITable;
-import org.orbisgis.orbisdata.datamanager.api.dsl.IBuilderResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -57,7 +57,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 /**
- * Implementation of IBuilderResult
+ * Implementation of {@link IBuilderResult}.
  *
  * @author Erwan Bocher (CNRS)
  * @author Sylvain PALOMINOS (UBS 2019)
@@ -71,7 +71,7 @@ public abstract class BuilderResult implements IBuilderResult {
      *
      * @return The database to use to execute the query.
      */
-    protected abstract JdbcDataSource getDataSource();
+    protected abstract IJdbcDataSource getDataSource();
 
     /**
      * Return the query to execute.
@@ -95,23 +95,28 @@ public abstract class BuilderResult implements IBuilderResult {
             statement = getDataSource().getConnection()
                     .createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);
         } catch (SQLException e) {
-            LOGGER.error("Unable to create the StatementWrapper.\n" + e.getLocalizedMessage());
+            LOGGER.error("Unable to create the StatementWrapper.\n", e);
             return null;
         }
-        String name = "SQL_QUERY_RESULT";
+        String name = "";
         switch(getDataSource().getDataBaseType()) {
             default:
             case H2GIS:
                 if(!(statement instanceof StatementWrapper)){
                     LOGGER.warn("The statement class not compatible with the database.");
-                    statement = new StatementWrapper(statement, new ConnectionWrapper(getDataSource().getConnection()));
+                    try {
+                        statement = new StatementWrapper(statement, new ConnectionWrapper(getDataSource().getConnection()));
+                    } catch (SQLException e) {
+                        LOGGER.error("Unable to get the connection from the data source.", e);
+                        return null;
+                    }
                 }
-                if(clazz == ISpatialTable.class) {
+                if(ISpatialTable.class.isAssignableFrom(clazz)) {
                     return new H2gisSpatialTable(new TableLocation(getDataSource().getLocation().toString(), name),
                             getQuery(), (StatementWrapper) statement,
                             getDataSource());
                 }
-                else if(clazz == ITable.class) {
+                else if(ITable.class.isAssignableFrom(clazz)) {
                     return new H2gisTable(new TableLocation(getDataSource().getLocation().toString(), name),
                             getQuery(), (StatementWrapper) statement, getDataSource());
                 }
@@ -120,11 +125,11 @@ public abstract class BuilderResult implements IBuilderResult {
                     LOGGER.error("The statement class not compatible with the database.");
                     break;
                 }
-                if(clazz == ISpatialTable.class) {
+                if(ISpatialTable.class.isAssignableFrom(clazz)) {
                     return new PostgisSpatialTable(new TableLocation(getDataSource().getLocation().toString(), name),
                             getQuery(), (org.h2gis.postgis_jts.StatementWrapper)statement, getDataSource());
                 }
-                else if(clazz == ITable.class) {
+                else if(ITable.class.isAssignableFrom(clazz)) {
                     return new PostgisTable(new TableLocation(getDataSource().getLocation().toString(), name),
                             getQuery(), (org.h2gis.postgis_jts.StatementWrapper)statement, getDataSource());
                 }

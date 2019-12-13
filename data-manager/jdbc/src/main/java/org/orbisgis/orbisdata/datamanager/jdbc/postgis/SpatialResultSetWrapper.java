@@ -113,14 +113,14 @@ public class SpatialResultSetWrapper extends ResultSetWrapper implements Spatial
 
     @Override
     public ResultSetMetaData getMetaData() throws SQLException {
-        return new SpatialResultSetMetaDataImpl(super.getMetaData(), (StatementWrapper)this.getStatement());
+        return new SpatialResultSetMetaDataImpl(super.getMetaData(), (StatementWrapper) this.getStatement());
     }
 
     /**
      * SpatialResultSetMetadata implementation compatible with postgis database.
      */
     //TODO move to the postgis-jts project.
-    private class SpatialResultSetMetaDataImpl extends ResultSetMetaDataWrapper implements SpatialResultSetMetaData {
+    private static class SpatialResultSetMetaDataImpl extends ResultSetMetaDataWrapper implements SpatialResultSetMetaData {
         private int firstGeometryFieldIndex = -1;
         private StatementWrapper statement;
 

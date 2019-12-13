@@ -39,11 +39,11 @@ package org.orbisgis.orbisdata.processmanager.process
 import org.junit.jupiter.api.Test
 import org.locationtech.jts.geom.Geometry
 import org.locationtech.jts.io.WKTReader
-import org.orbisgis.orbisdata.datamanager.jdbc.h2gis.H2GIS
 import org.orbisgis.orbisdata.datamanager.api.dataset.ITable
+import org.orbisgis.orbisdata.datamanager.jdbc.h2gis.H2GIS
+import org.orbisgis.orbisdata.processmanager.api.IProcessManager
 import org.orbisgis.orbisdata.processmanager.process.inoutput.Input
 import org.orbisgis.orbisdata.processmanager.process.inoutput.Output
-import org.orbisgis.orbisdata.processmanager.api.IProcessManager
 
 import static org.junit.jupiter.api.Assertions.*
 

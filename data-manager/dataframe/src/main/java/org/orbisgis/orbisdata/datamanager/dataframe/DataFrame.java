@@ -45,8 +45,8 @@ import smile.data.Tuple;
 import smile.data.type.DataType;
 import smile.data.type.StructField;
 import smile.data.type.StructType;
-import smile.data.vector.*;
 import smile.data.vector.Vector;
+import smile.data.vector.*;
 import smile.math.matrix.DenseMatrix;
 import smile.math.matrix.Matrix;
 
@@ -78,6 +78,15 @@ public class DataFrame implements smile.data.DataFrame, ITable<BaseVector> {
      */
     private smile.data.DataFrame getInternalDataFrame(){
         return internalDataFrame;
+    }
+
+    /**
+     * Set the internal {@link DataFrame}.
+     *
+     * @param dataFrame The internal {@link DataFrame}.
+     */
+    void setInternalDataFrame(smile.data.DataFrame dataFrame){
+        internalDataFrame = dataFrame;
     }
 
     @Override
@@ -203,6 +212,16 @@ public class DataFrame implements smile.data.DataFrame, ITable<BaseVector> {
     @Override
     public boolean isEmpty() {
         return getInternalDataFrame().isEmpty();
+    }
+
+    @Override
+    public Summary getSummary() {
+        return summary();
+    }
+
+    @Override
+    public Summary summary(){
+        return new Summary(getInternalDataFrame().summary());
     }
 
     @Override
@@ -469,8 +488,8 @@ public class DataFrame implements smile.data.DataFrame, ITable<BaseVector> {
         String[] split = line.split(",");
 
         List<StructField> fields = new ArrayList<>();
-        for(int i=0; i<split.length; i++) {
-            fields.add(new StructField(split[i], DataType.of(String.class)));
+        for (String s : split) {
+            fields.add(new StructField(s, DataType.of(String.class)));
         }
         StructType schema = new StructType(fields);
         while ((line = reader.readLine()) != null) {
@@ -512,5 +531,92 @@ public class DataFrame implements smile.data.DataFrame, ITable<BaseVector> {
     @Override
     public String toString(){
         return getInternalDataFrame().toString();
+    }
+
+
+    /* Override methods from SMILE API */
+
+    @Override
+    public DataFrame structure() {
+        return of(getInternalDataFrame().structure());
+    }
+
+    @Override
+    public DataFrame omitNullRows() {
+        return of(getInternalDataFrame().omitNullRows());
+    }
+
+    @Override
+    public DataFrame of(int... index) {
+        return of(getInternalDataFrame().of(index));
+    }
+
+    @Override
+    public DataFrame of(boolean... index) {
+        return of(getInternalDataFrame().of(index));
+    }
+
+    @Override
+    public DataFrame slice(int from, int to) {
+        return of(getInternalDataFrame().slice(from, to));
+    }
+
+    @Override
+    public DataFrame drop(String... cols) {
+        return of(getInternalDataFrame().drop(cols));
+    }
+
+    @Override
+    public DataFrame factorize(String... cols) {
+        return of(getInternalDataFrame().factorize(cols));
+    }
+
+    public static DataFrame of(BaseVector... vectors) {
+        smile.data.DataFrame df = smile.data.DataFrame.of(vectors);
+        return of(df);
+    }
+
+    public static DataFrame of(double[][] data, String... names) {
+        smile.data.DataFrame df = smile.data.DataFrame.of(data, names);
+        return of(df);
+    }
+
+    public static DataFrame of(int[][] data, String... names) {
+        smile.data.DataFrame df = smile.data.DataFrame.of(data, names);
+        return of(df);
+    }
+
+    public static <T> DataFrame of(List<T> data, Class<T> clazz) {
+        smile.data.DataFrame df = smile.data.DataFrame.of(data, clazz);
+        return of(df);
+    }
+
+    public static DataFrame of(Stream<Tuple> data) {
+
+        smile.data.DataFrame df = smile.data.DataFrame.of(data);
+        return of(df);
+    }
+
+    public static DataFrame of(Stream<Tuple> data, StructType schema) {
+
+        smile.data.DataFrame df = smile.data.DataFrame.of(data, schema);
+        return of(df);
+    }
+
+    public static DataFrame of(List<Tuple> data) {
+
+        smile.data.DataFrame df = smile.data.DataFrame.of(data);
+        return of(df);
+    }
+
+    public static DataFrame of(List<Tuple> data, StructType schema) {
+
+        smile.data.DataFrame df = smile.data.DataFrame.of(data, schema);
+        return of(df);
+    }
+
+    public static <T> DataFrame of(Collection<Map<String, T>> data, StructType schema) {
+        smile.data.DataFrame df = smile.data.DataFrame.of(data, schema);
+        return of(df);
     }
 }

@@ -37,12 +37,13 @@
 package org.orbisgis.orbisdata.datamanager.jdbc.h2gis;
 
 import org.h2gis.utilities.wrapper.StatementWrapper;
-import org.orbisgis.orbisdata.datamanager.jdbc.JdbcDataSource;
-import org.orbisgis.orbisdata.datamanager.jdbc.JdbcTable;
-import org.orbisgis.orbisdata.datamanager.jdbc.TableLocation;
 import org.orbisgis.orbisdata.datamanager.api.dataset.DataBaseType;
+import org.orbisgis.orbisdata.datamanager.api.dataset.IJdbcTableSummary;
 import org.orbisgis.orbisdata.datamanager.api.dataset.ISpatialTable;
 import org.orbisgis.orbisdata.datamanager.api.dataset.ITable;
+import org.orbisgis.orbisdata.datamanager.api.datasource.IJdbcDataSource;
+import org.orbisgis.orbisdata.datamanager.jdbc.JdbcTable;
+import org.orbisgis.orbisdata.datamanager.jdbc.TableLocation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -57,26 +58,31 @@ public class H2gisTable extends JdbcTable {
     /**
      * Main constructor.
      *
-     * @param tableLocation TableLocation that identify the represented table.
+     * @param tableLocation {@link TableLocation} that identify the represented table.
      * @param baseQuery Query for the creation of the ResultSet
      * @param statement Statement used to request the database.
      * @param jdbcDataSource DataSource to use for the creation of the resultSet.
      */
     public H2gisTable(TableLocation tableLocation, String baseQuery, StatementWrapper statement,
-                      JdbcDataSource jdbcDataSource) {
+                      IJdbcDataSource jdbcDataSource) {
         super(DataBaseType.H2GIS, jdbcDataSource, tableLocation, statement, baseQuery);
     }
 
     @Override
     public Object asType(Class clazz) {
-        if (clazz == ITable.class || clazz == H2gisTable.class) {
-            return new H2gisTable((TableLocation)getTableLocation(), getBaseQuery(), (StatementWrapper)getStatement(),
-                    getJdbcDataSource());
-        } else if (clazz == ISpatialTable.class || clazz == H2gisSpatialTable.class) {
+        if (ISpatialTable.class.isAssignableFrom(clazz)) {
             return new H2gisSpatialTable((TableLocation)getTableLocation(), getBaseQuery(), (StatementWrapper)getStatement(),
+                    getJdbcDataSource());
+        } else if (ITable.class.isAssignableFrom(clazz)) {
+            return new H2gisTable((TableLocation)getTableLocation(), getBaseQuery(), (StatementWrapper)getStatement(),
                     getJdbcDataSource());
         } else {
             return super.asType(clazz);
         }
+    }
+
+    @Override
+    public IJdbcTableSummary getSummary() {
+        return null;
     }
 }

@@ -342,23 +342,49 @@ public abstract class JdbcTable extends DefaultResultSet implements IJdbcTable, 
 
     @Override
     public int getRowCount(){
-        try {
-            return JDBCUtilities.getRowCount(jdbcDataSource.getConnection(),
-                    getTableLocation().toString(getDbType()));
-        } catch (SQLException e) {
-            LOGGER.error("Unable to get the row count on "+tableLocation.toString()+".\n"+e.getLocalizedMessage());
-            return -1;
+        if(tableLocation.getTable().isEmpty()) {
+            int count = 0;
+            ResultSet rs = getResultSet();
+            try {
+                rs.beforeFirst();
+            } catch (SQLException e) {
+                LOGGER.error("Unable to get the row count on " + tableLocation.toString() + ".\n", e);
+                return -1;
+            }
+            try {
+                while (rs.next()) {
+                    count++;
+                }
+            } catch (SQLException e) {
+                LOGGER.error("Unable to iterate on " + tableLocation.toString() + ".\n", e);
+                return -1;
+            }
+            return count;
+        }
+        else {
+            try {
+                return JDBCUtilities.getRowCount(jdbcDataSource.getConnection(),
+                        getTableLocation().toString(getDbType()));
+            } catch (SQLException e) {
+                LOGGER.error("Unable to get the row count on " + tableLocation.toString() + ".\n", e);
+                return -1;
+            }
         }
     }
 
     @Override
     public Collection<String> getUniqueValues(String column){
-        try {
-            return JDBCUtilities.getUniqueFieldValues(jdbcDataSource.getConnection(),
-                    getTableLocation().toString(getDbType()),
-                    column);
-        } catch (SQLException e) {
-            LOGGER.error("Unable to request unique values fo the column '"+column+"'.\n"+e.getLocalizedMessage());
+        if(tableLocation.getTable().isEmpty()) {
+            LOGGER.error("Unable to request unique values fo the column '" + column + "'.\n");
+        }
+        else {
+            try {
+                return JDBCUtilities.getUniqueFieldValues(jdbcDataSource.getConnection(),
+                        getTableLocation().toString(getDbType()),
+                        column);
+            } catch (SQLException e) {
+                LOGGER.error("Unable to request unique values fo the column '" + column + "'.\n", e);
+            }
         }
         return null;
     }

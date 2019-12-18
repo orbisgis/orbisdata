@@ -38,7 +38,10 @@ package org.orbisgis.orbisdata.datamanager.api.datasource;
 
 import groovy.lang.GroovyObject;
 import groovy.lang.MissingMethodException;
-import org.orbisgis.orbisdata.datamanager.api.dataset.*;
+import org.orbisgis.orbisdata.datamanager.api.dataset.DataBaseType;
+import org.orbisgis.orbisdata.datamanager.api.dataset.IJdbcSpatialTable;
+import org.orbisgis.orbisdata.datamanager.api.dataset.IJdbcTable;
+import org.orbisgis.orbisdata.datamanager.api.dataset.ISpatialTable;
 
 import javax.sql.DataSource;
 import java.io.File;

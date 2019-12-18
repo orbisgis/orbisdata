@@ -263,25 +263,36 @@ public abstract class JdbcTable extends DefaultResultSet implements IJdbcTable, 
     private DataType getColumnDataType(String columnName){
         boolean found = false;
         int type = -1;
-        ResultSet rs;
-        try {
-            rs = jdbcDataSource.getConnection().getMetaData().getColumns(tableLocation.getCatalog(),
-                    tableLocation.getSchema(), TableLocation.capsIdentifier(tableLocation.getTable(),
-                            getDbType().equals(DataBaseType.H2GIS)), null);
-        } catch (SQLException e) {
-            LOGGER.error("Unable to get the connection MetaData.\n"+e.getLocalizedMessage());
-            return null;
-        }
-        try {
-            while (rs.next() && !found) {
-                found = rs.getString("COLUMN_NAME").equalsIgnoreCase(columnName);
-                type = DataType.convertSQLTypeToValueType(rs.getInt("DATA_TYPE"));
+        if(!getName().isEmpty()) {
+            try {
+                ResultSet rs = jdbcDataSource.getConnection().getMetaData().getColumns(tableLocation.getCatalog(),
+                        tableLocation.getSchema(), TableLocation.capsIdentifier(tableLocation.getTable(),
+                                getDbType().equals(DataBaseType.H2GIS)), null);
+                while (rs.next() && !found) {
+                    found = rs.getString("COLUMN_NAME").equalsIgnoreCase(columnName);
+                    type = rs.getInt("DATA_TYPE");
+                }
+            } catch (SQLException e) {
+                LOGGER.error("Unable to get the connection MetaData or to read it", e);
+                return null;
             }
-        } catch (SQLException e) {
-            LOGGER.error("Unable to read the ResultSet.\n"+e.getLocalizedMessage());
-            return null;
         }
-        return DataType.getDataType(type);
+        else{
+            try {
+                ResultSetMetaData metaData = getResultSet().getMetaData();
+                for (int i = 1; i <= metaData.getColumnCount(); i++) {
+                    if (metaData.getColumnName(i).equalsIgnoreCase(columnName)) {
+                        type = metaData.getColumnType(i);
+                        break;
+                    }
+                }
+            }
+            catch(SQLException e){
+                LOGGER.error("unable to request the resultset metadata.", e);
+                return null;
+            }
+        }
+        return DataType.getDataType(DataType.convertSQLTypeToValueType(type));
     }
 
     @Override
@@ -292,6 +303,13 @@ public abstract class JdbcTable extends DefaultResultSet implements IJdbcTable, 
         DataType dataType = getColumnDataType(columnName);
         Objects.requireNonNull(dataType);
         if("OTHER".equals(dataType.name)){
+            return getGeometricType(columnName);
+        }
+        return dataType.name;
+    }
+
+    private String getGeometricType(String columnName){
+        if(!getName().isEmpty()) {
             try {
                 return SFSUtilities.getGeometryTypeNameFromCode(
                         SFSUtilities.getGeometryType(jdbcDataSource.getConnection(), tableLocation, columnName));
@@ -300,7 +318,32 @@ public abstract class JdbcTable extends DefaultResultSet implements IJdbcTable, 
                         e.getLocalizedMessage());
             }
         }
-        return dataType.name;
+        else{
+            Object obj;
+            try {
+                ResultSet rs = getResultSetLimit(1);
+                if(rs == null){
+                    LOGGER.error("Unable to get the resultset.");
+                    return null;
+                }
+                if(!rs.next()){
+                    LOGGER.error("No value in the resultset.");
+                    return null;
+                }
+                obj = rs.getObject(columnName);
+            } catch (SQLException e) {
+                LOGGER.error("Unable to get data from the resultset.", e);
+                return null;
+            }
+            if(obj instanceof Geometry){
+                return SFSUtilities.getGeometryTypeNameFromCode(SFSUtilities.getGeometryTypeFromGeometry((Geometry)obj));
+            }
+            else{
+                LOGGER.error("The get geometry is null.");
+                return null;
+            }
+        }
+        return null;
     }
 
     @Override
@@ -314,13 +357,7 @@ public abstract class JdbcTable extends DefaultResultSet implements IJdbcTable, 
             return false;
         }
         if(Geometry.class.isAssignableFrom(clazz)){
-            String str = null;
-            try {
-                str = SFSUtilities.getGeometryTypeNameFromCode(
-                        SFSUtilities.getGeometryType(jdbcDataSource.getConnection(), tableLocation, columnName));
-            } catch (SQLException e) {
-                LOGGER.error("Unable to get the geometric type of the column '" + columnName + "'\n" + e.getLocalizedMessage());
-            }
+            String str = getGeometricType(columnName);
             return clazz.getSimpleName().equalsIgnoreCase(str) ||
                     (clazz.getSimpleName()+"Z").equalsIgnoreCase(str) ||
                     (clazz.getSimpleName()+"M").equalsIgnoreCase(str) ||
@@ -376,6 +413,7 @@ public abstract class JdbcTable extends DefaultResultSet implements IJdbcTable, 
     public Collection<String> getUniqueValues(String column){
         if(tableLocation.getTable().isEmpty()) {
             LOGGER.error("Unable to request unique values fo the column '" + column + "'.\n");
+            throw new UnsupportedOperationException();
         }
         else {
             try {

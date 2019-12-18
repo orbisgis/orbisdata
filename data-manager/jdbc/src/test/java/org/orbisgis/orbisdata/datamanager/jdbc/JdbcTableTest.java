@@ -58,6 +58,7 @@ import org.orbisgis.orbisdata.datamanager.api.dataset.*;
 import org.orbisgis.orbisdata.datamanager.api.datasource.IJdbcDataSource;
 import org.orbisgis.orbisdata.datamanager.api.dsl.IOptionBuilder;
 import org.orbisgis.orbisdata.datamanager.jdbc.h2gis.H2gisSpatialTable;
+import org.orbisgis.orbisdata.datamanager.jdbc.h2gis.H2gisTable;
 
 import java.io.File;
 import java.sql.Connection;
@@ -75,7 +76,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * @author Sylvain PALOMINOS (UBS 2019)
  */
 //TODO test with a postgis database
-public class JdbcTableTest {
+class JdbcTableTest {
 
     /** Database connection */
     private static Connection connection;
@@ -115,7 +116,7 @@ public class JdbcTableTest {
      * Initialization of the database.
      */
     @BeforeAll
-    public static void init(){
+    static void init(){
         try {
             connection = H2GISDBFactory.createSpatialDataBase(BASE_DATABASE);
             connectionLinked = H2GISDBFactory.createSpatialDataBase(LINKED_DATABASE);
@@ -130,7 +131,7 @@ public class JdbcTableTest {
      * Set the database with some data.
      */
     @BeforeEach
-    public void prepareDB(){
+    void prepareDB(){
         try {
             Statement statementLinked = connectionLinked.createStatement();
             statementLinked.execute("DROP TABLE IF EXISTS "+TABLE_NAME+","+TEMP_NAME);
@@ -196,11 +197,23 @@ public class JdbcTableTest {
     }
 
     /**
+     * Returns a {@link JdbcTable} for test purpose.
+     * @return A {@link JdbcTable} for test purpose.
+     */
+    private JdbcTable getBuiltTable(){
+        return getTable().columns(COL_THE_GEOM, COL_THE_GEOM2, COL_ID, COL_VALUE, COL_MEANING);
+    }
+
+    /**
      * Test the {@link JdbcTable#JdbcTable(DataBaseType, IJdbcDataSource, TableLocation, Statement, String)} constructor.
      */
     @Test
-    public void testConstructor(){
+    void testConstructor(){
         assertNotNull(getTable());
+        assertNotNull(getLinkedTable());
+        assertNotNull(getTempTable());
+        assertNotNull(getEmptyTable());
+        assertNotNull(getBuiltTable());
     }
 
 
@@ -216,14 +229,24 @@ public class JdbcTableTest {
                 new TableLocation(BASE_DATABASE, "catalog", "schema", "table"),
                 dataSource.getConnection().createStatement(), "not a request").getLocation());
         assertEquals(BASE_DATABASE, new TableLocation(BASE_DATABASE, "catalog", "schema", "table").getDataSource());
+
+        assertEquals("\"ORBISGIS\"", getTable().getLocation());
+        assertEquals("\"LINKEDTABLE\"", getLinkedTable().getLocation());
+        assertEquals("\"TEMPTABLE\"", getTempTable().getLocation());
+        assertEquals("\"ORBISGIS_EMPTY\"", getEmptyTable().getLocation());
+        assertEquals("\"\"", getBuiltTable().getLocation());
     }
 
     /**
      * Test the {@link JdbcTable#getResultSet()} constructor.
      */
     @Test
-    public void testGetResultSet() throws SQLException {
+    void testGetResultSet() throws SQLException {
         assertNotNull(getTable().getResultSet());
+        assertNotNull(getLinkedTable().getResultSet());
+        assertNotNull(getTempTable().getResultSet());
+        assertNotNull(getEmptyTable().getResultSet());
+        assertNotNull(getBuiltTable().getResultSet());
         JdbcTable table = new DummyJdbcTable(null, dataSource, new TableLocation(BASE_DATABASE, "tab"),
                 dataSource.getConnection().createStatement(), "not a request");
         assertNull(table.getResultSet());
@@ -233,8 +256,12 @@ public class JdbcTableTest {
      * Test the {@link JdbcTable#getMetaData()} constructor.
      */
     @Test
-    public void testGetMetadata() throws SQLException {
+    void testGetMetadata() throws SQLException {
         assertNotNull(getTable().getMetaData());
+        assertNotNull(getLinkedTable().getMetaData());
+        assertNotNull(getTempTable().getMetaData());
+        assertNotNull(getEmptyTable().getMetaData());
+        assertNotNull(getBuiltTable().getMetaData());
         JdbcTable table = new DummyJdbcTable(null, dataSource, new TableLocation(BASE_DATABASE, "tab"),
                 dataSource.getConnection().createStatement(), "not a request");
         assertNull(table.getMetaData());
@@ -244,88 +271,116 @@ public class JdbcTableTest {
      * Test the {@link JdbcTable#getBaseQuery()} method.
      */
     @Test
-    public void testGetBaseQuery(){
+    void testGetBaseQuery(){
         assertEquals(BASE_QUERY, getTable().getBaseQuery());
+        assertEquals(LINKED_QUERY, getLinkedTable().getBaseQuery());
+        assertEquals(TEMP_QUERY, getTempTable().getBaseQuery());
+        assertEquals(EMPTY_QUERY, getEmptyTable().getBaseQuery());
+        assertEquals("SELECT THE_GEOM, the_geom2, ID, VALUE, MEANING FROM ORBISGIS", getBuiltTable().getBaseQuery().trim());
     }
 
     /**
      * Test the {@link JdbcTable#getJdbcDataSource()} method.
      */
     @Test
-    public void testGetJdbcDataSource(){
+    void testGetJdbcDataSource(){
         assertEquals(dataSource, getTable().getJdbcDataSource());
+        assertEquals(dataSource, getLinkedTable().getJdbcDataSource());
+        assertEquals(dataSource, getTempTable().getJdbcDataSource());
+        assertEquals(dataSource, getEmptyTable().getJdbcDataSource());
+        assertEquals(dataSource, getBuiltTable().getJdbcDataSource());
     }
 
     /**
      * Test the {@link JdbcTable#getTableLocation()} method.
      */
     @Test
-    public void testGetTableLocation(){
+    void testGetTableLocation(){
         assertEquals(tableLocation, getTable().getTableLocation());
+        assertEquals(linkedLocation, getLinkedTable().getTableLocation());
+        assertEquals(tempLocation, getTempTable().getTableLocation());
+        assertEquals(emptyLocation, getEmptyTable().getTableLocation());
+        assertEquals(new TableLocation("ds", ""), getBuiltTable().getTableLocation());
     }
 
     /**
      * Test the {@link JdbcTable#getDbType()} method.
      */
     @Test
-    public void testGetDbType(){
+    void testGetDbType(){
         assertEquals(DataBaseType.H2GIS, getTable().getDbType());
+        assertEquals(DataBaseType.H2GIS, getLinkedTable().getDbType());
+        assertEquals(DataBaseType.H2GIS, getTempTable().getDbType());
+        assertEquals(DataBaseType.H2GIS, getEmptyTable().getDbType());
+        assertEquals(DataBaseType.H2GIS, getBuiltTable().getDbType());
     }
 
     /**
      * Test the {@link JdbcTable#getMetaClass()} method.
      */
     @Test
-    public void testGetMetaClass(){
+    void testGetMetaClass(){
         assertEquals(InvokerHelper.getMetaClass(DummyJdbcTable.class), getTable().getMetaClass());
+        assertEquals(InvokerHelper.getMetaClass(DummyJdbcTable.class), getLinkedTable().getMetaClass());
+        assertEquals(InvokerHelper.getMetaClass(DummyJdbcTable.class), getTempTable().getMetaClass());
+        assertEquals(InvokerHelper.getMetaClass(DummyJdbcTable.class), getEmptyTable().getMetaClass());
+        assertEquals(InvokerHelper.getMetaClass(H2gisTable.class), getBuiltTable().getMetaClass());
     }
 
     /**
      * Test the {@link JdbcTable#setMetaClass(MetaClass)} method.
      */
     @Test
-    public void testSetMetaClass(){
-        DummyJdbcTable table = getTable();
-        MetaClass metaClass = InvokerHelper.getMetaClass(JdbcTableTest.class);
-        table.setMetaClass(metaClass);
-        assertEquals(metaClass, table.getMetaClass());
+    void testSetMetaClass(){
+        List<JdbcTable> tables = Arrays.asList(getTable(), getLinkedTable(), getTempTable(), getEmptyTable(), getBuiltTable());
+        tables.forEach(table -> {
+            MetaClass metaClass = InvokerHelper.getMetaClass(JdbcTableTest.class);
+            table.setMetaClass(metaClass);
+            assertEquals(metaClass, table.getMetaClass());
+        });
     }
 
     /**
      * Test the {@link JdbcTable#isSpatial()} method.
      */
     @Test
-    public void testIsSpatial(){
+    void testIsSpatial(){
         assertFalse(getTable().isSpatial());
         assertFalse(getLinkedTable().isSpatial());
         assertFalse(getTempTable().isSpatial());
+        assertFalse(getEmptyTable().isSpatial());
+        assertFalse(getBuiltTable().isSpatial());
     }
 
     /**
      * Test the {@link JdbcTable#isLinked()} method.
      */
     @Test
-    public void testIsLinked(){
+    void testIsLinked(){
         assertFalse(getTable().isLinked());
         assertTrue(getLinkedTable().isLinked());
         assertFalse(getTempTable().isLinked());
+        assertFalse(getEmptyTable().isLinked());
+        assertFalse(getBuiltTable().isLinked());
     }
 
     /**
      * Test the {@link JdbcTable#isTemporary()} ()} method.
      */
     @Test
-    public void testIsTemporary(){
+    void testIsTemporary(){
         assertFalse(getTable().isTemporary());
         assertFalse(getLinkedTable().isTemporary());
         assertTrue(getTempTable().isTemporary());
+        assertFalse(getEmptyTable().isTemporary());
+        assertFalse(getBuiltTable().isTemporary());
     }
 
     /**
      * Test the {@link JdbcTable#getColumns()} method.
      */
     @Test
-    public void testGetColumnNames(){
+    void testGetColumnNames(){
         List<String> colList = new ArrayList<>();
         colList.add(TableLocation.capsIdentifier(COL_THE_GEOM, true));
         colList.add(TableLocation.capsIdentifier(COL_THE_GEOM2, true));
@@ -333,33 +388,67 @@ public class JdbcTableTest {
         colList.add(TableLocation.capsIdentifier(COL_VALUE, true));
         colList.add(TableLocation.capsIdentifier(COL_MEANING, true));
         assertEquals(colList, getTable().getColumns());
+        assertEquals(colList, getLinkedTable().getColumns());
+        assertEquals(colList, getTempTable().getColumns());
+        assertEquals(colList, getEmptyTable().getColumns());
+        assertEquals(colList, getBuiltTable().getColumns());
     }
 
     /**
      * Test the {@link JdbcTable#hasColumn(String)} method.
      */
     @Test
-    public void testHasColumn(){
-        ITable t = getTable();
-        assertTrue(t.hasColumn(COL_THE_GEOM.toUpperCase()));
-        assertTrue(t.hasColumn(COL_THE_GEOM.toLowerCase()));
-        assertTrue(t.hasColumn(COL_THE_GEOM2));
-        assertFalse(t.hasColumn("the_geom3"));
-        assertTrue(t.hasColumn(COL_ID));
-        assertTrue(t.hasColumn(COL_VALUE));
-        assertTrue(t.hasColumn(COL_MEANING));
+    void testHasColumn(){
+        List<JdbcTable> tables = Arrays.asList(getTable(), getLinkedTable(), getTempTable(), getEmptyTable(), getBuiltTable());
+        tables.forEach(t -> {
+            assertTrue(t.hasColumn(COL_THE_GEOM.toUpperCase()));
+            assertTrue(t.hasColumn(COL_THE_GEOM.toLowerCase()));
+            assertTrue(t.hasColumn(COL_THE_GEOM2));
+            assertFalse(t.hasColumn("the_geom3"));
+            assertTrue(t.hasColumn(COL_ID));
+            assertTrue(t.hasColumn(COL_VALUE));
+            assertTrue(t.hasColumn(COL_MEANING));
+        });
     }
 
     /**
      * Test the {@link JdbcTable#hasColumn(String, Class)} method.
      */
     @Test
-    public void testHasColumnWithClass(){
-        ITable t = getTable();
-        assertTrue(t.hasColumn(COL_THE_GEOM.toUpperCase(), Geometry.class));
-        assertTrue(t.hasColumn(COL_THE_GEOM.toLowerCase(), Geometry.class));
+    void testHasColumnWithClass(){
+        List<JdbcTable> tables = Arrays.asList(getTable(), getTempTable(), getEmptyTable());
+        tables.forEach(t -> {
+            assertTrue(t.hasColumn(COL_THE_GEOM.toUpperCase(), Geometry.class));
+            assertTrue(t.hasColumn(COL_THE_GEOM.toLowerCase(), Geometry.class));
+            assertFalse(t.hasColumn(COL_THE_GEOM2, Geometry.class));
+            assertTrue(t.hasColumn(COL_THE_GEOM2, Point.class));
+            assertTrue(t.hasColumn(COL_ID, Integer.class));
+            assertFalse(t.hasColumn(COL_ID, Long.class));
+            assertTrue(t.hasColumn(COL_VALUE, Float.class));
+            assertTrue(t.hasColumn(COL_VALUE, Double.class));
+            assertFalse(t.hasColumn(COL_VALUE, Integer.class));
+            assertTrue(t.hasColumn(COL_MEANING, String.class));
+            assertFalse(t.hasColumn("not_a_col", String.class));
+        });
+
+        JdbcTable t = getBuiltTable();
+        assertTrue(t.hasColumn(COL_THE_GEOM.toUpperCase(), Point.class));
+        assertTrue(t.hasColumn(COL_THE_GEOM.toLowerCase(), Point.class));
         assertFalse(t.hasColumn(COL_THE_GEOM2, Geometry.class));
         assertTrue(t.hasColumn(COL_THE_GEOM2, Point.class));
+        assertTrue(t.hasColumn(COL_ID, Integer.class));
+        assertFalse(t.hasColumn(COL_ID, Long.class));
+        assertTrue(t.hasColumn(COL_VALUE, Float.class));
+        assertTrue(t.hasColumn(COL_VALUE, Double.class));
+        assertFalse(t.hasColumn(COL_VALUE, Integer.class));
+        assertTrue(t.hasColumn(COL_MEANING, String.class));
+        assertFalse(t.hasColumn("not_a_col", String.class));
+
+        t = getLinkedTable();
+        assertTrue(t.hasColumn(COL_THE_GEOM.toUpperCase(), Geometry.class));
+        assertTrue(t.hasColumn(COL_THE_GEOM.toLowerCase(), Geometry.class));
+        assertTrue(t.hasColumn(COL_THE_GEOM2, Geometry.class));
+        assertFalse(t.hasColumn(COL_THE_GEOM2, Point.class));
         assertTrue(t.hasColumn(COL_ID, Integer.class));
         assertFalse(t.hasColumn(COL_ID, Long.class));
         assertTrue(t.hasColumn(COL_VALUE, Float.class));
@@ -373,17 +462,19 @@ public class JdbcTableTest {
      * Test the {@link JdbcTable#getRowCount()} method.
      */
     @Test
-    public void testGetRowCount() {
+    void testGetRowCount() {
         assertEquals(2, getTable().getRowCount());
         assertEquals(2, getLinkedTable().getRowCount());
         assertEquals(0, getTempTable().getRowCount());
+        assertEquals(0, getEmptyTable().getRowCount());
+        assertEquals(2, getBuiltTable().getRowCount());
     }
 
     /**
      * Test the {@link JdbcTable#getUniqueValues(String)} method.
      */
     @Test
-    public void testGetUniqueValues() {
+    void testGetUniqueValues() {
         assertEquals(2, getTable().getUniqueValues(COL_MEANING).size());
         assertTrue(getTable().getUniqueValues(COL_MEANING).contains("Simple points"));
         assertTrue(getTable().getUniqueValues(COL_MEANING).contains("3D point"));
@@ -393,13 +484,18 @@ public class JdbcTableTest {
         assertTrue(getLinkedTable().getUniqueValues(COL_MEANING).contains("Simple points"));
         assertTrue(getLinkedTable().getUniqueValues(COL_MEANING).contains("3D point"));
         assertEquals(2, getLinkedTable().getUniqueValues(COL_THE_GEOM).size());
+
+        /*assertEquals(2, getBuiltTable().getUniqueValues(COL_MEANING).size());
+        assertTrue(getBuiltTable().getUniqueValues(COL_MEANING).contains("Simple points"));
+        assertTrue(getBuiltTable().getUniqueValues(COL_MEANING).contains("3D point"));
+        assertEquals(2, getBuiltTable().getUniqueValues(COL_THE_GEOM).size());*/
     }
 
     /**
      * Test the {@link JdbcTable#save(String, String)} and {@link JdbcTable#save(String)} methods.
      */
     @Test
-    public void testSave() {
+    void testSave() {
         new File("./target/save1.json").delete();
         assertFalse(new File("./target/save1.json").exists());
         assertTrue(getTable().save("./target/save1.json"));
@@ -425,114 +521,130 @@ public class JdbcTableTest {
      * Test the {@link JdbcTable#getFirstRow()} method.
      */
     @Test
-    public void testGetFirstRow() {
-        JdbcTable table = getTable();
-        assertEquals(5, table.getFirstRow().size());
-        assertEquals("POINT (0 0)", table.getFirstRow().get(0).toString());
-        assertEquals("POINT (1 1)", table.getFirstRow().get(1).toString());
-        assertEquals(1, table.getFirstRow().get(2));
-        assertEquals(2.3, table.getFirstRow().get(3));
-        assertEquals("Simple points", table.getFirstRow().get(4));
+    void testGetFirstRow() {
+        List<JdbcTable> tables = Arrays.asList(getTable(), getLinkedTable(), getBuiltTable());
+        tables.forEach(table -> {
+            assertEquals(5, table.getFirstRow().size());
+            assertEquals("POINT (0 0)", table.getFirstRow().get(0).toString());
+            assertEquals("POINT (1 1)", table.getFirstRow().get(1).toString());
+            assertEquals(1, table.getFirstRow().get(2));
+            assertEquals(2.3, table.getFirstRow().get(3));
+            assertEquals("Simple points", table.getFirstRow().get(4));
+        } );
     }
 
     /**
      * Test the {@link JdbcTable#invokeMethod(String, Object)} method.
      */
     @Test
-    public void testInvokeMethod(){
-        JdbcTable table = getTable();
-        assertEquals(table.getLocation(), table.invokeMethod("getLocation", null));
-        assertEquals(table.getLocation(), table.invokeMethod("location", null));
-        assertArrayEquals(new Object[]{"string", 0.2}, (Object[])table.invokeMethod("getArrayMethod", new Object[]{"string", 0.2}));
-        assertArrayEquals(new Object[]{"string", 0.2}, (Object[])table.invokeMethod("arrayMethod", new Object[]{"string", 0.2}));
-        assertArrayEquals(new Object[]{"string", 0.2}, (Object[])table.invokeMethod("getParametersMethod", new Object[]{"string", 0.2}));
-        assertArrayEquals(new Object[]{"string", 0.2}, (Object[])table.invokeMethod("parametersMethod", new Object[]{"string", 0.2}));
-        assertArrayEquals(new Object[]{"string", "0.2"}, (Object[])table.invokeMethod("getParametersMethod", new Object[]{"string", "0.2"}));
-        assertArrayEquals(new Object[]{"string", "0.2"}, (Object[])table.invokeMethod("parametersMethod", new Object[]{"string", "0.2"}));
-        assertEquals("string", table.invokeMethod("getParameterMethod", new Object[]{"string"}));
-        assertEquals("string", table.invokeMethod("getParameterMethod", "string"));
-        assertEquals("string", table.invokeMethod("parameterMethod", new Object[]{"string"}));
-        assertEquals("string", table.invokeMethod("parameterMethod", "string"));
-        assertEquals(JdbcResultSetMetaData.class, table.invokeMethod("metaData", null).getClass());
+    void testInvokeMethod(){
+        List<JdbcTable> tables = Arrays.asList(getTable(), getLinkedTable(), getEmptyTable(), getTempTable());
+        tables.forEach(table -> {
+            assertEquals(table.getLocation(), table.invokeMethod("getLocation", null));
+            assertEquals(table.getLocation(), table.invokeMethod("location", null));
+            assertArrayEquals(new Object[]{"string", 0.2}, (Object[])table.invokeMethod("getArrayMethod", new Object[]{"string", 0.2}));
+            assertArrayEquals(new Object[]{"string", 0.2}, (Object[])table.invokeMethod("arrayMethod", new Object[]{"string", 0.2}));
+            assertArrayEquals(new Object[]{"string", 0.2}, (Object[])table.invokeMethod("getParametersMethod", new Object[]{"string", 0.2}));
+            assertArrayEquals(new Object[]{"string", 0.2}, (Object[])table.invokeMethod("parametersMethod", new Object[]{"string", 0.2}));
+            assertArrayEquals(new Object[]{"string", "0.2"}, (Object[])table.invokeMethod("getParametersMethod", new Object[]{"string", "0.2"}));
+            assertArrayEquals(new Object[]{"string", "0.2"}, (Object[])table.invokeMethod("parametersMethod", new Object[]{"string", "0.2"}));
+            assertEquals("string", table.invokeMethod("getParameterMethod", new Object[]{"string"}));
+            assertEquals("string", table.invokeMethod("getParameterMethod", "string"));
+            assertEquals("string", table.invokeMethod("parameterMethod", new Object[]{"string"}));
+            assertEquals("string", table.invokeMethod("parameterMethod", "string"));
+            assertEquals(JdbcResultSetMetaData.class, table.invokeMethod("metaData", null).getClass());
 
-        assertThrows(MissingMethodException.class, () -> table.invokeMethod("getLocation", new String[]{"tata", "toto"}));
-        assertThrows(MissingMethodException.class, () -> table.invokeMethod("location", new String[]{"tata", "toto"}));
-        assertNull(table.invokeMethod("getPrivateMethod", null));
-        assertNull(table.invokeMethod("privateMethod", null));
+            assertThrows(MissingMethodException.class, () -> table.invokeMethod("getLocation", new String[]{"tata", "toto"}));
+            assertThrows(MissingMethodException.class, () -> table.invokeMethod("location", new String[]{"tata", "toto"}));
+            assertNull(table.invokeMethod("getPrivateMethod", null));
+            assertNull(table.invokeMethod("privateMethod", null));
+        } );
     }
 
     /**
      * Test the {@link JdbcTable#getProperty(String)} method.
      */
     @Test
-    public void testGetProperty(){
-        JdbcTable table = getTable();
-        assertThrows(MissingPropertyException.class, () -> table.getProperty("getLocation"));
-        assertEquals(table.getLocation(), table.getProperty("location"));
-        assertEquals(JdbcResultSetMetaData.class, table.getProperty("meta").getClass());
-        assertArrayEquals(new Object[]{"string", 0.2}, (Object[])table.getProperty("data"));
-        assertEquals("tutu", table.getProperty("privateData"));
-        assertNull(table.getProperty(null));
-        assertTrue(table.getProperty("meaning") instanceof JdbcColumn);
-        assertEquals("MEANING", ((JdbcColumn)table.getProperty("meaning")).getName());
-        assertTrue(table.getProperty(COL_THE_GEOM.toUpperCase()) instanceof JdbcColumn);
-        assertTrue(table.getProperty(COL_THE_GEOM.toLowerCase()) instanceof JdbcColumn);
-
-        JdbcTable empty = getEmptyTable();
-        assertDoesNotThrow(empty::beforeFirst);
-        assertThrows(MissingPropertyException.class, () -> empty.getProperty("getLocation"));
-        assertEquals(empty.getLocation(), empty.getProperty("location"));
-        assertEquals(JdbcResultSetMetaData.class, empty.getProperty("meta").getClass());
-        assertArrayEquals(new Object[]{"string", 0.2}, (Object[])empty.getProperty("data"));
-        assertEquals("tutu", empty.getProperty("privateData"));
-        assertNull(empty.getProperty(null));
-        assertTrue(empty.getProperty("meaning") instanceof JdbcColumn);
-        assertEquals("MEANING", ((JdbcColumn)empty.getProperty("meaning")).getName());
-        assertTrue(empty.getProperty(COL_THE_GEOM.toUpperCase()) instanceof JdbcColumn);
-        assertTrue(empty.getProperty(COL_THE_GEOM.toLowerCase()) instanceof JdbcColumn);
+    void testGetProperty(){
+        List<JdbcTable> tables = Arrays.asList(getTable(), getEmptyTable(), getTempTable(), getLinkedTable());
+        tables.forEach(table -> {
+                    assertThrows(MissingPropertyException.class, () -> table.getProperty("getLocation"));
+                    assertEquals(table.getLocation(), table.getProperty("location"));
+                    assertEquals(JdbcResultSetMetaData.class, table.getProperty("meta").getClass());
+                    assertArrayEquals(new Object[]{"string", 0.2}, (Object[]) table.getProperty("data"));
+                    assertEquals("tutu", table.getProperty("privateData"));
+                    assertNull(table.getProperty(null));
+                    assertTrue(table.getProperty("meaning") instanceof JdbcColumn);
+                    assertEquals("MEANING", ((JdbcColumn) table.getProperty("meaning")).getName());
+                    assertTrue(table.getProperty(COL_THE_GEOM.toUpperCase()) instanceof JdbcColumn);
+                    assertTrue(table.getProperty(COL_THE_GEOM.toLowerCase()) instanceof JdbcColumn);
+        } );
     }
 
     /**
      * Test the {@link JdbcTable#setProperty(String, Object)} method.
      */
     @Test
-    public void testSetProperty(){
-        JdbcTable table = getTable();
-        assertThrows(MissingPropertyException.class, () -> table.setProperty("getLocation", "tata"));
-        table.setProperty("privateData", "toto");
-        assertEquals("toto", table.getProperty("privateData"));
+    void testSetProperty(){
+        List<JdbcTable> tables = Arrays.asList(getTable(), getEmptyTable(), getTempTable(), getLinkedTable());
+        tables.forEach(table -> {
+            assertThrows(MissingPropertyException.class, () -> table.setProperty("getLocation", "tata"));
+            table.setProperty("privateData", "toto");
+            assertEquals("toto", table.getProperty("privateData"));
+        } );
     }
 
     /**
      * Test the {@link IJdbcTable} methods with {@link SQLException} thrown.
      */
     @Test
-    public void testSQLException() {
-        DummyJdbcTable table = getTable();
-
-        assertNotNull(table.getProperty("data"));
-        assertThrows(InvokerInvocationException.class, () -> table.invokeMethod("dupMethod", null));
+    void testSQLException() {
+        List<JdbcTable> tables = Arrays.asList(getTable(), getEmptyTable(), getTempTable(), getLinkedTable());
+        tables.forEach(table -> {
+            assertNotNull(table.getProperty("data"));
+            assertThrows(InvokerInvocationException.class, () -> table.invokeMethod("dupMethod", null));
+        } );
     }
 
     /**
      * Test the {@link JdbcTable#getColumnType(String)} method.
      */
     @Test
-    public void testGetColumnsType() {
-        assertEquals("GEOMETRY", getTable().getColumnType(COL_THE_GEOM));
-        assertEquals("INTEGER", getTable().getColumnType(COL_ID));
-        assertEquals("VARCHAR", getTable().getColumnType(COL_MEANING));
-        assertNull(getTable().getColumnType("NOT_A_COLUMN"));
+    void testGetColumnsType() {
+        List<JdbcTable> tables = Arrays.asList(getTable(), getEmptyTable(), getTempTable(), getLinkedTable(), getBuiltTable());
+        tables.forEach(table -> {
+            assertEquals("GEOMETRY", getTable().getColumnType(COL_THE_GEOM));
+            assertEquals("INTEGER", getTable().getColumnType(COL_ID));
+            assertEquals("VARCHAR", getTable().getColumnType(COL_MEANING));
+            assertNull(getTable().getColumnType("NOT_A_COLUMN"));
+        } );
     }
 
     /**
      * Test the {@link JdbcTable#getColumnsTypes()} method.
      */
     @Test
-    public void testGetColumns() {
-        Map<String, String> map = getTable().getColumnsTypes();
+    void testGetColumns() {
+        List<JdbcTable> tables = Arrays.asList(getTable(), getEmptyTable(), getTempTable());
+        tables.forEach(table -> {
+            Map<String, String> map = table.getColumnsTypes();
+            String[] keys = {COL_THE_GEOM, COL_THE_GEOM2.toUpperCase(), COL_ID, COL_VALUE, COL_MEANING};
+            String[] values = {"GEOMETRY", "POINTZ", "INTEGER", "DOUBLE", "VARCHAR"};
+            assertArrayEquals(keys, map.keySet().toArray());
+            assertArrayEquals(values, map.values().toArray());
+        });
+
+        JdbcTable table = getBuiltTable();
+        Map<String, String> map = table.getColumnsTypes();
         String[] keys = {COL_THE_GEOM, COL_THE_GEOM2.toUpperCase(), COL_ID, COL_VALUE, COL_MEANING};
-        String[] values = {"GEOMETRY", "POINTZ", "INTEGER", "DOUBLE", "VARCHAR"};
+        String[] values = {"POINT", "POINT", "INTEGER", "DOUBLE", "VARCHAR"};
+        assertArrayEquals(keys, map.keySet().toArray());
+        assertArrayEquals(values, map.values().toArray());
+
+        table = getLinkedTable();
+        map = table.getColumnsTypes();
+        keys = new String[]{COL_THE_GEOM, COL_THE_GEOM2.toUpperCase(), COL_ID, COL_VALUE, COL_MEANING};
+        values = new String[]{"GEOMETRY", "GEOMETRY", "INTEGER", "DOUBLE", "VARCHAR"};
         assertArrayEquals(keys, map.keySet().toArray());
         assertArrayEquals(values, map.values().toArray());
     }
@@ -541,7 +653,7 @@ public class JdbcTableTest {
      * Test the sql building method.
      */
     @Test
-    public void testSqlBuilding() {
+    void testSqlBuilding() {
         Map<String, IOptionBuilder.Order> map = new HashMap<>();
         map.put("toto", IOptionBuilder.Order.ASC);
         map.put("tata", IOptionBuilder.Order.DESC);
@@ -568,7 +680,7 @@ public class JdbcTableTest {
      * Test the {@link JdbcTable#columns(String...)} and {@link JdbcTable#columns(List)} methods.
      */
     @Test
-    public void testColumns() {
+    void testColumns() {
         JdbcTable table = getTable();
         JdbcSpatialTable spatialTable = (JdbcSpatialTable)dataSource.getSpatialTable(TABLE_NAME);
 
@@ -587,9 +699,12 @@ public class JdbcTableTest {
      * Test the {@link JdbcTable#getTable()} and {@link JdbcTable#getSpatialTable()} methods.
      */
     @Test
-    public void testGetTable() {
-        assertNotNull(getTable().getTable());
-        assertNull(getTable().getSpatialTable());
+    void testGetTable() {
+        List<JdbcTable> tables = Arrays.asList(getTable(), getEmptyTable(), getTempTable(), getLinkedTable(), getBuiltTable());
+        tables.forEach(table -> {
+            assertNotNull(table.getTable());
+            assertNull(table.getSpatialTable());
+        });
     }
 
     /**
@@ -609,6 +724,15 @@ public class JdbcTableTest {
                 "|POINT (0 1)        |POINT (10 11)      |                  2|              0.568|3D point           |\n" +
                 "+-------------------+-------------------+-------------------+-------------------+-------------------+\n",
                 getTable().asType(Ascii.class).toString());
+        assertEquals("+-------------------+\n" +
+                "|                   |\n" +
+                "+-------------------+-------------------+-------------------+-------------------+-------------------+\n" +
+                "|     THE_GEOM      |     THE_GEOM2     |        ID         |       VALUE       |      MEANING      |\n" +
+                "+-------------------+-------------------+-------------------+-------------------+-------------------+\n" +
+                "|POINT (0 0)        |POINT (1 1)        |                  1|                2.3|Simple points      |\n" +
+                "|POINT (0 1)        |POINT (10 11)      |                  2|              0.568|3D point           |\n" +
+                "+-------------------+-------------------+-------------------+-------------------+-------------------+\n",
+                getBuiltTable().asType(Ascii.class).toString());
         assertEquals("<table>\n" +
                 "<caption>ORBISGIS</caption>\n" +
                 "<tr></tr>\n" +
@@ -636,6 +760,33 @@ public class JdbcTableTest {
                 "</tr>\n" +
                 "<tr></tr>\n" +
                 "</table>\n", getTable().asType(Html.class).toString());
+        assertEquals("<table>\n" +
+                "<caption></caption>\n" +
+                "<tr></tr>\n" +
+                "<tr>\n" +
+                "<th align=\"CENTER\">THE_GEOM</th>\n" +
+                "<th align=\"CENTER\">THE_GEOM2</th>\n" +
+                "<th align=\"CENTER\">ID</th>\n" +
+                "<th align=\"CENTER\">VALUE</th>\n" +
+                "<th align=\"CENTER\">MEANING</th>\n" +
+                "</tr>\n" +
+                "<tr></tr>\n" +
+                "<tr>\n" +
+                "<td align=\"LEFT\">POINT (0 0)</td>\n" +
+                "<td align=\"LEFT\">POINT (1 1)</td>\n" +
+                "<td align=\"RIGHT\">1</td>\n" +
+                "<td align=\"RIGHT\">2.3</td>\n" +
+                "<td align=\"LEFT\">Simple points</td>\n" +
+                "</tr>\n" +
+                "<tr>\n" +
+                "<td align=\"LEFT\">POINT (0 1)</td>\n" +
+                "<td align=\"LEFT\">POINT (10 11)</td>\n" +
+                "<td align=\"RIGHT\">2</td>\n" +
+                "<td align=\"RIGHT\">0.568</td>\n" +
+                "<td align=\"LEFT\">3D point</td>\n" +
+                "</tr>\n" +
+                "<tr></tr>\n" +
+                "</table>\n", getBuiltTable().asType(Html.class).toString());
     }
 
     /**
@@ -722,5 +873,11 @@ public class JdbcTableTest {
         }
 
         @Override public IJdbcTableSummary getSummary() { return null; }
+        @Override public JdbcTable columns(String... cols){
+            return (JdbcTable)super.columns(cols);
+        }
+        @Override public JdbcTable columns(List<String> cols){
+            return (JdbcTable)super.columns(cols);
+        }
     }
 }

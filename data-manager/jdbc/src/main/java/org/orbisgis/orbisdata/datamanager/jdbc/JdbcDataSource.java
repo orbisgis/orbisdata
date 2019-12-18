@@ -53,7 +53,6 @@ import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.TableLocation;
 import org.h2gis.utilities.URIUtilities;
 import org.orbisgis.orbisdata.datamanager.api.dataset.DataBaseType;
-import org.orbisgis.orbisdata.datamanager.api.dataset.IDataSet;
 import org.orbisgis.orbisdata.datamanager.api.dataset.IJdbcTable;
 import org.orbisgis.orbisdata.datamanager.api.datasource.IDataSourceLocation;
 import org.orbisgis.orbisdata.datamanager.api.datasource.IJdbcDataSource;

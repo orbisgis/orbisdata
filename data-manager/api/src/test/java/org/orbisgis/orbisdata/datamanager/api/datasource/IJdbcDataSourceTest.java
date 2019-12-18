@@ -42,7 +42,9 @@ import groovy.lang.MissingPropertyException;
 import org.codehaus.groovy.runtime.InvokerHelper;
 import org.codehaus.groovy.runtime.InvokerInvocationException;
 import org.junit.jupiter.api.Test;
-import org.orbisgis.orbisdata.datamanager.api.dataset.*;
+import org.orbisgis.orbisdata.datamanager.api.dataset.DataBaseType;
+import org.orbisgis.orbisdata.datamanager.api.dataset.IJdbcSpatialTable;
+import org.orbisgis.orbisdata.datamanager.api.dataset.IJdbcTable;
 
 import java.io.File;
 import java.io.InputStream;

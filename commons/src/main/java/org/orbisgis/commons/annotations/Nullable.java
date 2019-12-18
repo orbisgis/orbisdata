@@ -45,6 +45,6 @@ import java.lang.annotation.Target;
  * @author Erwan Bocher (CNRS)
  * @author Sylvain Palominos (Lab-STICC UBS 2019)
  */
-@Target({ElementType.PARAMETER, ElementType.METHOD})
+@Target({ElementType.FIELD, ElementType.PARAMETER, ElementType.METHOD})
 public @interface Nullable {
 }

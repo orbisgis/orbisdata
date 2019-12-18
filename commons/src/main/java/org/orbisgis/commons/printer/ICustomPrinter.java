@@ -36,6 +36,8 @@
  */
 package org.orbisgis.commons.printer;
 
+import org.orbisgis.commons.annotations.NotNull;
+
 /**
  * Interface used for the customisation of the printing of Java Objects.
  *
@@ -70,26 +72,34 @@ public interface ICustomPrinter {
      *
      * @param value Value to add to the table.
      */
-    void appendTableValue(Object value);
+    void appendTableValue(@NotNull Object value);
 
     /**
      * Add a single value to the table. Linebreak are automatically generated once the column count is reached.
      *
      * @param value Value to add to the table.
      */
-    void appendTableValue(Object value, CellPosition position);
+    void appendTableValue(@NotNull Object value, @NotNull CellPosition position);
 
     /**
      * Add a header value to the table. Linebreak are automatically generated once the column count is reached.
      *
      * @param value Header value to add to the table.
      */
-    void appendTableHeaderValue(Object value, CellPosition position);
+    void appendTableHeaderValue(@NotNull Object value, @NotNull CellPosition position);
 
     /**
      * Add a title to the table.
      *
-     * @param title Title to add to the table.
+     * @param title Not null title to add to the table.
      */
-    void appendTableTitle(Object title);
+    void appendTableTitle(@NotNull Object title);
+
+    /**
+     * Return the not null string representation of the data contained by the {@link ICustomPrinter} in its specific format.
+     *
+     * @return The not null string representation of the data contained by the {@link ICustomPrinter}
+     */
+    @NotNull
+    String toString();
 }

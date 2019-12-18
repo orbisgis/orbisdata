@@ -36,6 +36,8 @@
  */
 package org.orbisgis.commons.printer;
 
+import org.orbisgis.commons.annotations.NotNull;
+
 /**
  * Extension of {@link CustomPrinter} for the printing of data in an Ascii style.
  *
@@ -47,7 +49,7 @@ public class Ascii extends CustomPrinter {
     /**
      * Main constructor.
      *
-     * @param builder {@link StringBuilder} used for building the string.
+     * @param builder Not null {@link StringBuilder} used for building the string.
      */
     public Ascii(StringBuilder builder) {
         super(builder);
@@ -68,10 +70,10 @@ public class Ascii extends CustomPrinter {
     }
 
     @Override
-    public void appendTableValue(Object value, ICustomPrinter.CellPosition position){
+    public void appendTableValue(@NotNull Object value, @NotNull ICustomPrinter.CellPosition position){
         if(isDrawingTable){
             builder.append("|");
-            String cut = value == null ? "" : value.toString();
+            String cut = value.toString();
             if (cut.length() > columnWidth - 1) {
                 cut = cut.substring(0, columnWidth - 4) + "...";
             }
@@ -109,12 +111,12 @@ public class Ascii extends CustomPrinter {
     }
 
     @Override
-    public void appendTableHeaderValue(Object value, ICustomPrinter.CellPosition position){
+    public void appendTableHeaderValue(@NotNull Object value, @NotNull ICustomPrinter.CellPosition position){
         this.appendTableValue(value, position);
     }
 
     @Override
-    public void appendTableTitle(Object value){
+    public void appendTableTitle(@NotNull Object value){
         if(isDrawingTable){
             builder.append("+");
             for (int j = 0; j < columnWidth - 1; j++) {
@@ -124,7 +126,7 @@ public class Ascii extends CustomPrinter {
             builder.append("\n");
 
             builder.append("|");
-            String cut = value == null ? "" : value.toString();
+            String cut = value.toString();
             if (cut.length() > columnWidth - 1) {
                 cut = cut.substring(0, columnWidth - 4) + "...";
             }

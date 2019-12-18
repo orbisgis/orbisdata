@@ -36,6 +36,8 @@
  */
 package org.orbisgis.commons.printer;
 
+import org.orbisgis.commons.annotations.NotNull;
+
 /**
  * Extension of {@link CustomPrinter} for the printing of data in an Html style.
  *
@@ -47,9 +49,9 @@ public class Html extends CustomPrinter {
     /**
      * Main constructor.
      *
-     * @param builder {@link StringBuilder} used for building the string.
+     * @param builder Not null {@link StringBuilder} used for building the string.
      */
-    public Html(StringBuilder builder) {
+    public Html(@NotNull StringBuilder builder) {
         super(builder);
     }
 
@@ -73,7 +75,7 @@ public class Html extends CustomPrinter {
     }
 
     @Override
-    public void appendTableValue(Object value, CellPosition position) {
+    public void appendTableValue(@NotNull Object value, @NotNull CellPosition position) {
         if (isDrawingTable) {
             if(columnIndex == 0){
                 builder.append("<tr>\n");
@@ -93,7 +95,7 @@ public class Html extends CustomPrinter {
     }
 
     @Override
-    public void appendTableHeaderValue(Object value, CellPosition position) {
+    public void appendTableHeaderValue(@NotNull Object value, @NotNull CellPosition position) {
         if (isDrawingTable) {
             if(columnIndex == 0){
                 builder.append("<tr>\n");
@@ -113,7 +115,7 @@ public class Html extends CustomPrinter {
     }
 
     @Override
-    public void appendTableTitle(Object title) {
+    public void appendTableTitle(@NotNull Object title) {
         if(isDrawingTable) {
             builder.append("<caption>");
             builder.append(title);

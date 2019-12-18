@@ -46,7 +46,8 @@ import org.orbisgis.commons.annotations.NotNull;
  */
 public abstract class CustomPrinter implements ICustomPrinter {
 
-    /** {@link StringBuilder} used for the string building */
+    /** Not null {@link StringBuilder} used for the string building */
+    @NotNull
     protected StringBuilder builder;
     /** Width in character number of a single column */
     protected int columnWidth;
@@ -62,10 +63,11 @@ public abstract class CustomPrinter implements ICustomPrinter {
      *
      * @param builder {@link StringBuilder} used for the string building.
      */
-    public CustomPrinter(StringBuilder builder){
+    protected CustomPrinter(@NotNull StringBuilder builder){
         this.builder = builder;
     }
 
+    @NotNull
     @Override
     public String toString(){
         return builder.toString();
@@ -88,7 +90,7 @@ public abstract class CustomPrinter implements ICustomPrinter {
     }
 
     @Override
-    public void appendTableValue(Object value){
+    public void appendTableValue(@NotNull Object value){
         appendTableValue(value, ICustomPrinter.CellPosition.LEFT);
     }
 }

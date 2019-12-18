@@ -40,7 +40,6 @@ import org.orbisgis.orbisdata.datamanager.api.datasource.IJdbcDataSource;
 import org.orbisgis.orbisdata.datamanager.api.dsl.IBuilderResult;
 import org.orbisgis.orbisdata.datamanager.api.dsl.IConditionOrOptionBuilder;
 import org.orbisgis.orbisdata.datamanager.api.dsl.IWhereBuilderOrOptionBuilder;
-import org.orbisgis.orbisdata.datamanager.jdbc.JdbcDataSource;
 
 /**
  * Implementation of {@link IWhereBuilderOrOptionBuilder}

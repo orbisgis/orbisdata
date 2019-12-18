@@ -42,7 +42,6 @@ import org.orbisgis.orbisdata.datamanager.api.dataset.IJdbcTableSummary;
 import org.orbisgis.orbisdata.datamanager.api.dataset.ISpatialTable;
 import org.orbisgis.orbisdata.datamanager.api.dataset.ITable;
 import org.orbisgis.orbisdata.datamanager.api.datasource.IJdbcDataSource;
-import org.orbisgis.orbisdata.datamanager.jdbc.JdbcDataSource;
 import org.orbisgis.orbisdata.datamanager.jdbc.JdbcSpatialTable;
 import org.orbisgis.orbisdata.datamanager.jdbc.TableLocation;
 import org.slf4j.Logger;

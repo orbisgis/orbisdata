@@ -15,7 +15,7 @@
  *
  * Commons is distributed under LGPL 3 license.
  *
- * Copyright (C) 2018 CNRS (Lab-STICC UMR CNRS 6285)
+ * Copyright (C) 2018-2019 CNRS (Lab-STICC UMR CNRS 6285)
  *
  *
  * Commons is free software: you can redistribute it and/or modify it under the
@@ -37,7 +37,7 @@
 package org.orbisgis.commons.printer;
 
 /**
- * Class for the printing of data in an Ascii style.
+ * Extension of {@link CustomPrinter} for the printing of data in an Ascii style.
  *
  * @author Erwan Bocher (CNRS)
  * @author Sylvain PALOMINOS (UBS 2019)
@@ -47,7 +47,7 @@ public class Ascii extends CustomPrinter {
     /**
      * Main constructor.
      *
-     * @param builder StringBuilder used for building the string
+     * @param builder {@link StringBuilder} used for building the string.
      */
     public Ascii(StringBuilder builder) {
         super(builder);

@@ -15,7 +15,7 @@
  *
  * Commons is distributed under LGPL 3 license.
  *
- * Copyright (C) 2018 CNRS (Lab-STICC UMR CNRS 6285)
+ * Copyright (C) 2018-2019 CNRS (Lab-STICC UMR CNRS 6285)
  *
  *
  * Commons is free software: you can redistribute it and/or modify it under the
@@ -36,23 +36,25 @@
  */
 package org.orbisgis.commons.printer;
 
+import org.orbisgis.commons.annotations.NotNull;
+
 /**
- * Root class for the custom printers.
+ * Root implementation of {@link ICustomPrinter} for the custom printers.
  *
  * @author Erwan Bocher (CNRS)
  * @author Sylvain PALOMINOS (UBS 2019)
  */
 public abstract class CustomPrinter implements ICustomPrinter {
 
-    /** {@link StringBuilder} used for the string building. */
+    /** {@link StringBuilder} used for the string building */
     protected StringBuilder builder;
-    /** Width in character number of a single column. */
+    /** Width in character number of a single column */
     protected int columnWidth;
-    /** Count of column. */
+    /** Count of column */
     protected int columnCount;
-    /** True of a table is currently drawn, false otherwise. */
+    /** True of a table is currently drawn, false otherwise */
     protected boolean isDrawingTable;
-    /** Current column index. */
+    /** Current column index */
     protected int columnIndex;
 
     /**

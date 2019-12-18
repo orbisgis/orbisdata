@@ -15,7 +15,7 @@
  *
  * Commons is distributed under LGPL 3 license.
  *
- * Copyright (C) 2018 CNRS (Lab-STICC UMR CNRS 6285)
+ * Copyright (C) 2018-2019 CNRS (Lab-STICC UMR CNRS 6285)
  *
  *
  * Commons is free software: you can redistribute it and/or modify it under the
@@ -41,6 +41,9 @@ import java.lang.annotation.Target;
 
 /**
  * Indicates a not null parameter or methods return.
+ *
+ * @author Erwan Bocher (CNRS)
+ * @author Sylvain Palominos (Lab-STICC UBS 2019)
  */
 @Target({ElementType.PARAMETER, ElementType.METHOD})
 public @interface NotNull {

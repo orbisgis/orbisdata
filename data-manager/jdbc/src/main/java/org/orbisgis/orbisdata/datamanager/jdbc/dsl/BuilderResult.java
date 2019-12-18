@@ -44,6 +44,7 @@ import org.orbisgis.orbisdata.datamanager.api.dataset.ISpatialTable;
 import org.orbisgis.orbisdata.datamanager.api.dataset.ITable;
 import org.orbisgis.orbisdata.datamanager.api.datasource.IJdbcDataSource;
 import org.orbisgis.orbisdata.datamanager.api.dsl.IBuilderResult;
+import org.orbisgis.orbisdata.datamanager.jdbc.JdbcDataSource;
 import org.orbisgis.orbisdata.datamanager.jdbc.TableLocation;
 import org.orbisgis.orbisdata.datamanager.jdbc.h2gis.H2gisSpatialTable;
 import org.orbisgis.orbisdata.datamanager.jdbc.h2gis.H2gisTable;
@@ -71,7 +72,7 @@ public abstract class BuilderResult implements IBuilderResult {
      *
      * @return The database to use to execute the query.
      */
-    protected abstract IJdbcDataSource getDataSource();
+    protected abstract JdbcDataSource getDataSource();
 
     /**
      * Return the query to execute.
@@ -104,12 +105,7 @@ public abstract class BuilderResult implements IBuilderResult {
             case H2GIS:
                 if(!(statement instanceof StatementWrapper)){
                     LOGGER.warn("The statement class not compatible with the database.");
-                    try {
-                        statement = new StatementWrapper(statement, new ConnectionWrapper(getDataSource().getConnection()));
-                    } catch (SQLException e) {
-                        LOGGER.error("Unable to get the connection from the data source.", e);
-                        return null;
-                    }
+                    statement = new StatementWrapper(statement, new ConnectionWrapper(getDataSource().getConnection()));
                 }
                 if(ISpatialTable.class.isAssignableFrom(clazz)) {
                     return new H2gisSpatialTable(new TableLocation(getDataSource().getLocation().toString(), name),

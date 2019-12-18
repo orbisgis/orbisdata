@@ -67,9 +67,11 @@ import java.util.stream.Collectors;
 import static org.orbisgis.commons.printer.ICustomPrinter.CellPosition.*;
 
 /**
- * Contains the methods which are in common to all the IJdbcTable subclasses.
+ * Contains the methods which are in common to all the {@link IJdbcTable} subclasses.
  * Implements the {@link GroovyObject} to simplify the methods calling (i.e. .tableLocation instead of
  * .getTableLocation() ).
+ *
+ * @author Sylvain Palominos (Lab-STICC UBS 2019)
  */
 public abstract class JdbcTable extends DefaultResultSet implements IJdbcTable, GroovyObject {
 
@@ -82,7 +84,7 @@ public abstract class JdbcTable extends DefaultResultSet implements IJdbcTable, 
     /** Type of the database */
     private DataBaseType dataBaseType;
     /** DataSource to execute query */
-    private IJdbcDataSource jdbcDataSource;
+    private JdbcDataSource jdbcDataSource;
     /** Table location */
     private TableLocation tableLocation;
     /** Statement */
@@ -101,7 +103,7 @@ public abstract class JdbcTable extends DefaultResultSet implements IJdbcTable, 
      * @param statement Statement used to request the database.
      * @param jdbcDataSource DataSource to use for the creation of the resultSet.
      */
-    public JdbcTable(DataBaseType dataBaseType, IJdbcDataSource jdbcDataSource, TableLocation tableLocation,
+    public JdbcTable(DataBaseType dataBaseType, JdbcDataSource jdbcDataSource, TableLocation tableLocation,
                      Statement statement, String baseQuery){
         this.metaClass = InvokerHelper.getMetaClass(getClass());
         this.dataBaseType = dataBaseType;
@@ -188,12 +190,12 @@ public abstract class JdbcTable extends DefaultResultSet implements IJdbcTable, 
      *
      * @return The parent DataSource.
      */
-    protected IJdbcDataSource getJdbcDataSource(){
+    protected JdbcDataSource getJdbcDataSource(){
         return jdbcDataSource;
     }
 
     @Override
-    public ITableLocation getTableLocation() {
+    public TableLocation getTableLocation() {
         return tableLocation;
     }
 
@@ -635,5 +637,10 @@ public abstract class JdbcTable extends DefaultResultSet implements IJdbcTable, 
      */
     private String formatColumnName(String column){
         return getDbType()==DataBaseType.H2GIS ? column.toUpperCase() : column.toLowerCase();
+    }
+
+    @Override
+    public JdbcTableSummary getSummary(){
+        return new JdbcTableSummary(getTableLocation(), getColumnCount(), getRowCount());
     }
 }

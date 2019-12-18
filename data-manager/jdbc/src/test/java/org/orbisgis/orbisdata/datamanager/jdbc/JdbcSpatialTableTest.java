@@ -261,8 +261,6 @@ public class JdbcSpatialTableTest {
             }
             return new SpatialResultSetImpl(resultSet, (StatementWrapper) getStatement());
         }
-
-        @Override public IJdbcTableSummary getSummary() { return null; }
     }
 
     /**

@@ -213,15 +213,17 @@ public interface ITable<T> extends IMatrix<T> {
      */
     boolean isSpatial();
 
-
+    @Override
     default int getNDim(){
         return 2;
     }
 
+    @Override
     default boolean isEmpty(){
         return getRowCount() == 0;
     }
 
+    @Override
     default int[] getShape(){
         return new int[]{getColumnCount(), getRowCount()};
     }

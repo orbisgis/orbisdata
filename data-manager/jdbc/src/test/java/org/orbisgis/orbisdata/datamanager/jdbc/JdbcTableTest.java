@@ -205,7 +205,7 @@ class JdbcTableTest {
     }
 
     /**
-     * Test the {@link JdbcTable#JdbcTable(DataBaseType, IJdbcDataSource, TableLocation, Statement, String)} constructor.
+     * Test the {@link JdbcTable#JdbcTable(DataBaseType, JdbcDataSource, TableLocation, Statement, String)} constructor.
      */
     @Test
     void testConstructor(){
@@ -790,6 +790,37 @@ class JdbcTableTest {
     }
 
     /**
+     * Test the {@link JdbcTable#getSummary()} method.
+     */
+    @Test
+    void testGetSummary() {
+        assertEquals("\"ORBISGIS\"; row count : 2; column count : 5", getTable().getSummary().toString());
+        assertEquals("\"ORBISGIS\"", getTable().getSummary().getLocation().toString());
+        assertEquals(5, getTable().getSummary().getColumnCount());
+        assertEquals(2, getTable().getSummary().getRowCount());
+
+        assertEquals("\"\"; row count : 2; column count : 5", getBuiltTable().getSummary().toString());
+        assertEquals("\"\"", getBuiltTable().getSummary().getLocation().toString());
+        assertEquals(5, getBuiltTable().getSummary().getColumnCount());
+        assertEquals(2, getBuiltTable().getSummary().getRowCount());
+
+        assertEquals("\"ORBISGIS_EMPTY\"; row count : 0; column count : 5", getEmptyTable().getSummary().toString());
+        assertEquals("\"ORBISGIS_EMPTY\"", getEmptyTable().getSummary().getLocation().toString());
+        assertEquals(5, getEmptyTable().getSummary().getColumnCount());
+        assertEquals(0, getEmptyTable().getSummary().getRowCount());
+
+        assertEquals("\"TEMPTABLE\"; row count : 0; column count : 5", getTempTable().getSummary().toString());
+        assertEquals("\"TEMPTABLE\"", getTempTable().getSummary().getLocation().toString());
+        assertEquals(5, getTempTable().getSummary().getColumnCount());
+        assertEquals(0, getTempTable().getSummary().getRowCount());
+
+        assertEquals("\"LINKEDTABLE\"; row count : 2; column count : 5", getLinkedTable().getSummary().toString());
+        assertEquals("\"LINKEDTABLE\"", getLinkedTable().getSummary().getLocation().toString());
+        assertEquals(5, getLinkedTable().getSummary().getColumnCount());
+        assertEquals(2, getLinkedTable().getSummary().getRowCount());
+    }
+
+    /**
      * Simple implementation of the {@link JdbcDataSource} abstract class for test purpose.
      */
     private static class DummyJdbcDataSource extends JdbcDataSource {
@@ -872,7 +903,6 @@ class JdbcTableTest {
             }
         }
 
-        @Override public IJdbcTableSummary getSummary() { return null; }
         @Override public JdbcTable columns(String... cols){
             return (JdbcTable)super.columns(cols);
         }

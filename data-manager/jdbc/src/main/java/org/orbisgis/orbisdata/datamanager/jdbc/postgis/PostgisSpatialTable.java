@@ -42,6 +42,7 @@ import org.orbisgis.orbisdata.datamanager.api.dataset.IJdbcTableSummary;
 import org.orbisgis.orbisdata.datamanager.api.dataset.ISpatialTable;
 import org.orbisgis.orbisdata.datamanager.api.dataset.ITable;
 import org.orbisgis.orbisdata.datamanager.api.datasource.IJdbcDataSource;
+import org.orbisgis.orbisdata.datamanager.jdbc.JdbcDataSource;
 import org.orbisgis.orbisdata.datamanager.jdbc.JdbcSpatialTable;
 import org.orbisgis.orbisdata.datamanager.jdbc.TableLocation;
 import org.slf4j.Logger;
@@ -69,7 +70,7 @@ public class PostgisSpatialTable extends JdbcSpatialTable {
      * @param jdbcDataSource DataSource to use for the creation of the resultSet.
      */
     public PostgisSpatialTable(TableLocation tableLocation, String baseQuery, StatementWrapper statement,
-                               IJdbcDataSource jdbcDataSource) {
+                               JdbcDataSource jdbcDataSource) {
         super(DataBaseType.H2GIS, jdbcDataSource, tableLocation, statement, baseQuery);
     }
 
@@ -95,18 +96,13 @@ public class PostgisSpatialTable extends JdbcSpatialTable {
     @Override
     public Object asType(Class clazz) {
         if (ISpatialTable.class.isAssignableFrom(clazz)) {
-            return new PostgisSpatialTable((TableLocation)getTableLocation(), getBaseQuery(), (StatementWrapper)getStatement(),
+            return new PostgisSpatialTable(getTableLocation(), getBaseQuery(), (StatementWrapper)getStatement(),
                     getJdbcDataSource());
         } else if (ITable.class.isAssignableFrom(clazz)) {
-            return new PostgisTable((TableLocation)getTableLocation(), getBaseQuery(), (StatementWrapper)getStatement(),
+            return new PostgisTable(getTableLocation(), getBaseQuery(), (StatementWrapper)getStatement(),
                     getJdbcDataSource());
         } else {
             return super.asType(clazz);
         }
-    }
-
-    @Override
-    public IJdbcTableSummary getSummary() {
-        return null;
     }
 }

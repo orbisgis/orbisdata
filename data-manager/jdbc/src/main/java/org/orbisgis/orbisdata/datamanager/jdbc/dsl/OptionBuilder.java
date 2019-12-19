@@ -38,6 +38,7 @@ package org.orbisgis.orbisdata.datamanager.jdbc.dsl;
 
 import org.orbisgis.orbisdata.datamanager.api.datasource.IJdbcDataSource;
 import org.orbisgis.orbisdata.datamanager.api.dsl.IOptionBuilder;
+import org.orbisgis.orbisdata.datamanager.jdbc.JdbcDataSource;
 
 import java.util.Map;
 
@@ -50,7 +51,7 @@ import java.util.Map;
 public class OptionBuilder extends BuilderResult implements IOptionBuilder {
 
     private StringBuilder query;
-    private IJdbcDataSource dataSource;
+    private JdbcDataSource dataSource;
 
     /**
      * Main constructor.
@@ -58,7 +59,7 @@ public class OptionBuilder extends BuilderResult implements IOptionBuilder {
      * @param request    String request coming from the ISelectBuilder.
      * @param dataSource {@link IJdbcDataSource} where the request will be executed.
      */
-    public OptionBuilder(String request, IJdbcDataSource dataSource) {
+    public OptionBuilder(String request, JdbcDataSource dataSource) {
         query = new StringBuilder();
         query.append(request).append(" ");
         this.dataSource = dataSource;
@@ -98,7 +99,7 @@ public class OptionBuilder extends BuilderResult implements IOptionBuilder {
     }
 
     @Override
-    protected IJdbcDataSource getDataSource() {
+    protected JdbcDataSource getDataSource() {
         return dataSource;
     }
 

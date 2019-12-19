@@ -161,8 +161,6 @@ public class BuilderResultTest {
             }
             return new SpatialResultSetImpl(resultSet, (StatementWrapper) getStatement());
         }
-
-        @Override public IJdbcTableSummary getSummary() { return null; }
     }
 
     /**

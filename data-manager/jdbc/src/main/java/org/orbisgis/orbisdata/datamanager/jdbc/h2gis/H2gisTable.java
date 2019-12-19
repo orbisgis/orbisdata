@@ -42,6 +42,7 @@ import org.orbisgis.orbisdata.datamanager.api.dataset.IJdbcTableSummary;
 import org.orbisgis.orbisdata.datamanager.api.dataset.ISpatialTable;
 import org.orbisgis.orbisdata.datamanager.api.dataset.ITable;
 import org.orbisgis.orbisdata.datamanager.api.datasource.IJdbcDataSource;
+import org.orbisgis.orbisdata.datamanager.jdbc.JdbcDataSource;
 import org.orbisgis.orbisdata.datamanager.jdbc.JdbcTable;
 import org.orbisgis.orbisdata.datamanager.jdbc.TableLocation;
 import org.slf4j.Logger;
@@ -64,25 +65,20 @@ public class H2gisTable extends JdbcTable {
      * @param jdbcDataSource DataSource to use for the creation of the resultSet.
      */
     public H2gisTable(TableLocation tableLocation, String baseQuery, StatementWrapper statement,
-                      IJdbcDataSource jdbcDataSource) {
+                      JdbcDataSource jdbcDataSource) {
         super(DataBaseType.H2GIS, jdbcDataSource, tableLocation, statement, baseQuery);
     }
 
     @Override
     public Object asType(Class clazz) {
         if (ISpatialTable.class.isAssignableFrom(clazz)) {
-            return new H2gisSpatialTable((TableLocation)getTableLocation(), getBaseQuery(), (StatementWrapper)getStatement(),
+            return new H2gisSpatialTable(getTableLocation(), getBaseQuery(), (StatementWrapper)getStatement(),
                     getJdbcDataSource());
         } else if (ITable.class.isAssignableFrom(clazz)) {
-            return new H2gisTable((TableLocation)getTableLocation(), getBaseQuery(), (StatementWrapper)getStatement(),
+            return new H2gisTable(getTableLocation(), getBaseQuery(), (StatementWrapper)getStatement(),
                     getJdbcDataSource());
         } else {
             return super.asType(clazz);
         }
-    }
-
-    @Override
-    public IJdbcTableSummary getSummary() {
-        return null;
     }
 }

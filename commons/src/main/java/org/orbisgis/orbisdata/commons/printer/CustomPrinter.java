@@ -34,9 +34,9 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.commons.printer;
+package org.orbisgis.orbisdata.commons.printer;
 
-import org.orbisgis.commons.annotations.NotNull;
+import org.orbisgis.orbisdata.commons.annotations.NotNull;
 
 /**
  * Root implementation of {@link ICustomPrinter} for the custom printers.

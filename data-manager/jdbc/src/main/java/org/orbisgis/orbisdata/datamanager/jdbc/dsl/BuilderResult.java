@@ -39,7 +39,7 @@ package org.orbisgis.orbisdata.datamanager.jdbc.dsl;
 import groovy.lang.Closure;
 import org.h2gis.utilities.wrapper.ConnectionWrapper;
 import org.h2gis.utilities.wrapper.StatementWrapper;
-import org.orbisgis.commons.printer.ICustomPrinter;
+import org.orbisgis.orbisdata.commons.printer.ICustomPrinter;
 import org.orbisgis.orbisdata.datamanager.api.dataset.ISpatialTable;
 import org.orbisgis.orbisdata.datamanager.api.dataset.ITable;
 import org.orbisgis.orbisdata.datamanager.api.dsl.IBuilderResult;

@@ -39,8 +39,8 @@ package org.orbisgis.orbisdata.datamanager.jdbc
 import org.junit.jupiter.api.Test
 import org.locationtech.jts.geom.Geometry
 import org.locationtech.jts.geom.Point
-import org.orbisgis.commons.printer.Ascii
-import org.orbisgis.commons.printer.Html
+import org.orbisgis.orbisdata.commons.printer.Ascii
+import org.orbisgis.orbisdata.commons.printer.Html
 import org.orbisgis.orbisdata.datamanager.api.dataset.ISpatialTable
 import org.orbisgis.orbisdata.datamanager.api.dataset.ITable
 import org.orbisgis.orbisdata.datamanager.jdbc.h2gis.H2GIS

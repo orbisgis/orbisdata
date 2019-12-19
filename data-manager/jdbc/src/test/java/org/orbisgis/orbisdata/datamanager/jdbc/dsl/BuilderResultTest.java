@@ -43,7 +43,7 @@ import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.wrapper.SpatialResultSetImpl;
 import org.h2gis.utilities.wrapper.StatementWrapper;
 import org.junit.jupiter.api.Test;
-import org.orbisgis.commons.printer.Ascii;
+import org.orbisgis.orbisdata.commons.printer.Ascii;
 import org.orbisgis.orbisdata.datamanager.api.dataset.*;
 import org.orbisgis.orbisdata.datamanager.jdbc.JdbcDataSource;
 import org.orbisgis.orbisdata.datamanager.jdbc.JdbcSpatialTable;

@@ -44,9 +44,9 @@ import org.h2.value.DataType;
 import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.SFSUtilities;
 import org.locationtech.jts.geom.Geometry;
-import org.orbisgis.commons.printer.Ascii;
-import org.orbisgis.commons.printer.Html;
-import org.orbisgis.commons.printer.ICustomPrinter;
+import org.orbisgis.orbisdata.commons.printer.Ascii;
+import org.orbisgis.orbisdata.commons.printer.Html;
+import org.orbisgis.orbisdata.commons.printer.ICustomPrinter;
 import org.orbisgis.orbisdata.datamanager.api.dataset.DataBaseType;
 import org.orbisgis.orbisdata.datamanager.api.dataset.IJdbcSpatialTable;
 import org.orbisgis.orbisdata.datamanager.api.dataset.IJdbcTable;
@@ -65,8 +65,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.*;
 import java.util.stream.Collectors;
-
-import static org.orbisgis.commons.printer.ICustomPrinter.CellPosition.*;
 
 /**
  * Contains the methods which are in common to all the {@link IJdbcTable} subclasses.

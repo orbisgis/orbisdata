@@ -34,17 +34,17 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.commons.annotations;
+package org.orbisgis.orbisdata.commons.annotations;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Target;
 
 /**
- * Indicates a not null parameter or methods return.
+ * Indicates a nullable parameter or methods return.
  *
  * @author Erwan Bocher (CNRS)
  * @author Sylvain Palominos (Lab-STICC UBS 2019)
  */
 @Target({ElementType.FIELD, ElementType.PARAMETER, ElementType.METHOD})
-public @interface NotNull {
+public @interface Nullable {
 }

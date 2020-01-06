@@ -66,6 +66,8 @@ import java.sql.Statement;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static org.orbisgis.orbisdata.commons.printer.ICustomPrinter.CellPosition.*;
+
 /**
  * Contains the methods which are in common to all the {@link IJdbcTable} subclasses.
  * Implements the {@link GroovyObject} to simplify the methods calling (i.e. .tableLocation instead of

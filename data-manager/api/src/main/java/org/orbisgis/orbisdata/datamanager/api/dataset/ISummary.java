@@ -9,8 +9,8 @@ public interface ISummary {
 }
 
 /**
- nbr col
- nbr ligne
- nom + proj champs geom
- commentaires
+ * nbr col
+ * nbr ligne
+ * nom + proj champs geom
+ * commentaires
  */

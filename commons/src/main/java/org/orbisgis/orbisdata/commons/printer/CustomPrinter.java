@@ -46,16 +46,26 @@ import org.orbisgis.orbisdata.commons.annotations.NotNull;
  */
 public abstract class CustomPrinter implements ICustomPrinter {
 
-    /** Not null {@link StringBuilder} used for the string building */
+    /**
+     * Not null {@link StringBuilder} used for the string building
+     */
     @NotNull
     protected StringBuilder builder;
-    /** Width in character number of a single column */
+    /**
+     * Width in character number of a single column
+     */
     protected int columnWidth;
-    /** Count of column */
+    /**
+     * Count of column
+     */
     protected int columnCount;
-    /** True of a table is currently drawn, false otherwise */
+    /**
+     * True of a table is currently drawn, false otherwise
+     */
     protected boolean isDrawingTable;
-    /** Current column index */
+    /**
+     * Current column index
+     */
     protected int columnIndex;
 
     /**
@@ -63,18 +73,18 @@ public abstract class CustomPrinter implements ICustomPrinter {
      *
      * @param builder {@link StringBuilder} used for the string building.
      */
-    protected CustomPrinter(@NotNull StringBuilder builder){
+    protected CustomPrinter(@NotNull StringBuilder builder) {
         this.builder = builder;
     }
 
     @NotNull
     @Override
-    public String toString(){
+    public String toString() {
         return builder.toString();
     }
 
     @Override
-    public void startTable(int columnWidth, int columnCount){
+    public void startTable(int columnWidth, int columnCount) {
         this.columnCount = columnCount;
         this.columnWidth = columnWidth;
         this.columnIndex = 0;
@@ -82,7 +92,7 @@ public abstract class CustomPrinter implements ICustomPrinter {
     }
 
     @Override
-    public void endTable(){
+    public void endTable() {
         this.columnCount = -1;
         this.columnWidth = -1;
         this.columnIndex = -1;
@@ -90,7 +100,7 @@ public abstract class CustomPrinter implements ICustomPrinter {
     }
 
     @Override
-    public void appendTableValue(@NotNull Object value){
+    public void appendTableValue(@NotNull Object value) {
         appendTableValue(value, ICustomPrinter.CellPosition.LEFT);
     }
 }

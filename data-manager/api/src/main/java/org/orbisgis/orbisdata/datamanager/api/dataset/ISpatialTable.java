@@ -54,7 +54,6 @@ public interface ISpatialTable extends ITable<Object> {
      * Returns the {@link Geometry} value of the given column at the current row.
      *
      * @param columnIndex Index of the geometric column.
-     *
      * @return The {@link Geometry} value of the given column at the current row.
      */
     Geometry getGeometry(int columnIndex);
@@ -63,7 +62,6 @@ public interface ISpatialTable extends ITable<Object> {
      * Returns the {@link Geometry} value of the given column at the current row.
      *
      * @param columnLabel Label of the geometric column.
-     *
      * @return The {@link Geometry} value of the given column at the current row.
      */
     Geometry getGeometry(String columnLabel);
@@ -79,7 +77,6 @@ public interface ISpatialTable extends ITable<Object> {
      * Returns the {@link IRaster} value of the given column at the current row.
      *
      * @param columnIndex Index of the raster column.
-     *
      * @return The {@link IRaster} value of the given column at the current row.
      */
     IRaster getRaster(int columnIndex);
@@ -88,7 +85,6 @@ public interface ISpatialTable extends ITable<Object> {
      * Returns the {@link IRaster} value of the given column at the current row.
      *
      * @param columnLabel Label of the raster column.
-     *
      * @return The {@link IRaster} value of the given column at the current row.
      */
     IRaster getRaster(String columnLabel);
@@ -144,6 +140,7 @@ public interface ISpatialTable extends ITable<Object> {
 
     /**
      * Returns a {@link Map} containing the field names as key and the SFS geometry type (well known name) as value.
+     *
      * @return The field names as key and geometry types as value.
      */
     Map<String, String> getGeometryTypes();

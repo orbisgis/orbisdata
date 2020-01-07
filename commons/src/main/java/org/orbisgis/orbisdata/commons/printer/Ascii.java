@@ -53,14 +53,14 @@ public class Ascii extends CustomPrinter {
      */
     public Ascii(@NotNull StringBuilder builder) {
         super(builder);
-        if(this.builder.length() != 0){
+        if (this.builder.length() != 0) {
             builder.append("\n");
         }
     }
 
     @Override
-    public void appendTableLineSeparator(){
-        if(isDrawingTable) {
+    public void appendTableLineSeparator() {
+        if (isDrawingTable) {
             builder.append("+");
             for (int i = 0; i < columnCount; i++) {
                 for (int j = 0; j < columnWidth; j++) {
@@ -73,14 +73,14 @@ public class Ascii extends CustomPrinter {
     }
 
     @Override
-    public void appendTableValue(@NotNull Object value, @NotNull ICustomPrinter.CellPosition position){
-        if(isDrawingTable){
+    public void appendTableValue(@NotNull Object value, @NotNull ICustomPrinter.CellPosition position) {
+        if (isDrawingTable) {
             builder.append("|");
             String cut = value.toString();
             if (cut.length() > columnWidth) {
                 cut = cut.substring(0, columnWidth - 3) + "...";
             }
-            switch(position){
+            switch (position) {
                 case LEFT:
                     builder.append(cut);
                     for (int i = 0; i < (columnWidth - cut.length()); i++) {
@@ -95,17 +95,17 @@ public class Ascii extends CustomPrinter {
                     break;
                 default:
                 case CENTER:
-                    for (int i = 0; i < (columnWidth - cut.length())/2; i++) {
+                    for (int i = 0; i < (columnWidth - cut.length()) / 2; i++) {
                         builder.append(" ");
                     }
                     builder.append(cut);
-                    for (int i = 0; i < (columnWidth - cut.length()) - (columnWidth - cut.length())/2; i++) {
+                    for (int i = 0; i < (columnWidth - cut.length()) - (columnWidth - cut.length()) / 2; i++) {
                         builder.append(" ");
                     }
                     break;
             }
-            columnIndex ++;
-            if(columnIndex == columnCount){
+            columnIndex++;
+            if (columnIndex == columnCount) {
                 columnIndex = 0;
                 builder.append("|");
                 builder.append("\n");
@@ -114,13 +114,13 @@ public class Ascii extends CustomPrinter {
     }
 
     @Override
-    public void appendTableHeaderValue(@NotNull Object value, @NotNull ICustomPrinter.CellPosition position){
+    public void appendTableHeaderValue(@NotNull Object value, @NotNull ICustomPrinter.CellPosition position) {
         this.appendTableValue(value, position);
     }
 
     @Override
-    public void appendTableTitle(@NotNull Object value){
-        if(isDrawingTable){
+    public void appendTableTitle(@NotNull Object value) {
+        if (isDrawingTable) {
             builder.append("+");
             for (int j = 0; j < columnWidth; j++) {
                 builder.append("-");
@@ -133,11 +133,11 @@ public class Ascii extends CustomPrinter {
             if (cut.length() > columnWidth) {
                 cut = cut.substring(0, columnWidth - 3) + "...";
             }
-            for (int i = 0; i < (columnWidth - cut.length())/2; i++) {
+            for (int i = 0; i < (columnWidth - cut.length()) / 2; i++) {
                 builder.append(" ");
             }
             builder.append(cut);
-            for (int i = 0; i < (columnWidth - cut.length()) - (columnWidth - cut.length())/2; i++) {
+            for (int i = 0; i < (columnWidth - cut.length()) - (columnWidth - cut.length()) / 2; i++) {
                 builder.append(" ");
             }
             builder.append("|");

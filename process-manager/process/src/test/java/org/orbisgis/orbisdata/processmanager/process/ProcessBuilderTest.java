@@ -54,7 +54,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class ProcessBuilderTest {
 
     @Test
-    void testProcessBuilder(){
+    void testProcessBuilder() {
 
         LinkedHashMap<String, Object> inputs = new LinkedHashMap<>();
         inputs.put("in1", String.class);

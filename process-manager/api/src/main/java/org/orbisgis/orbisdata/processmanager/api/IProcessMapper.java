@@ -61,7 +61,6 @@ public interface IProcessMapper extends IProcess {
      * Start to link the given inputs/outputs.
      *
      * @param inOutPuts Inputs or outputs to link.
-     *
      * @return A {@link ILinker} object which will do the link.
      */
     ILinker link(IInOutPut... inOutPuts);
@@ -70,7 +69,6 @@ public interface IProcessMapper extends IProcess {
      * Add a {@link IProcessCheck} before the execution of the given {@link IProcess}.
      *
      * @param process {@link IProcess} before which the check should be done.
-     *
      * @return A {@link ICheckDataBuilder} to continue the {@link IProcessCheck} build.
      */
     ICheckDataBuilder before(IProcess process);
@@ -80,28 +78,27 @@ public interface IProcessMapper extends IProcess {
      * Add a {@link IProcessCheck} after the execution of the given {@link IProcess}.
      *
      * @param process {@link IProcess} after which the check should be done.
-     *
      * @return A {@link ICheckDataBuilder} to continue the {@link IProcessCheck} build.
      */
     ICheckDataBuilder after(IProcess process);
 
     @Override
-    default String getVersion(){
+    default String getVersion() {
         return null;
     }
 
     @Override
-    default String getDescription(){
+    default String getDescription() {
         return null;
     }
 
     @Override
-    default String[] getKeywords(){
+    default String[] getKeywords() {
         return null;
     }
 
     @Override
-    default String getIdentifier(){
+    default String getIdentifier() {
         return UUID.randomUUID().toString();
     }
 }

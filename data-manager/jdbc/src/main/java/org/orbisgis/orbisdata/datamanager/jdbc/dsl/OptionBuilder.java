@@ -76,7 +76,7 @@ public class OptionBuilder extends BuilderResult implements IOptionBuilder {
     public IOptionBuilder orderBy(Map<String, Order> orderByMap) {
         query.append("ORDER BY ");
         orderByMap.forEach((key, value) -> query.append(key).append(" ").append(value.name()).append(", "));
-        query.deleteCharAt(query.length()-2);
+        query.deleteCharAt(query.length() - 2);
         return new OptionBuilder(query.toString(), dataSource);
     }
 

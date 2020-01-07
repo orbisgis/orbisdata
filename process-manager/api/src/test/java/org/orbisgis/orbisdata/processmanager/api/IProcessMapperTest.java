@@ -63,7 +63,7 @@ public class IProcessMapperTest {
      * Test the {@link IProcessMapper#getVersion()} method.
      */
     @Test
-    public void testGetVersion(){
+    public void testGetVersion() {
         assertNull(new DummyProcessMapper().getVersion());
     }
 
@@ -71,7 +71,7 @@ public class IProcessMapperTest {
      * Test the {@link IProcessMapper#getDescription()} method.
      */
     @Test
-    public void testGetDescription(){
+    public void testGetDescription() {
         assertNull(new DummyProcessMapper().getDescription());
     }
 
@@ -79,7 +79,7 @@ public class IProcessMapperTest {
      * Test the {@link IProcessMapper#getKeywords()} method.
      */
     @Test
-    public void testGetKeyword(){
+    public void testGetKeyword() {
         assertNull(new DummyProcessMapper().getKeywords());
     }
 
@@ -87,7 +87,7 @@ public class IProcessMapperTest {
      * Test the {@link IProcessMapper#getIdentifier()} method.
      */
     @Test
-    public void testGetIdentifier(){
+    public void testGetIdentifier() {
         Pattern pattern = Pattern.compile("[\\da-f]{8}-[\\da-f]{4}-[\\da-f]{4}-[\\da-f]{4}-[\\da-f]{12}");
         Matcher matcher = pattern.matcher(new DummyProcessMapper().getIdentifier());
         assertTrue(matcher.find());
@@ -98,15 +98,54 @@ public class IProcessMapperTest {
      */
     private class DummyProcessMapper implements IProcessMapper {
 
-        @Override public ILinker link(IInOutPut... inOutPuts) {return null;}
-        @Override public ICheckDataBuilder before(IProcess process) {return null;}
-        @Override public ICheckDataBuilder after(IProcess process) {return null;}
-        @Override public IProcessMapper newInstance() {return null;}
-        @Override public boolean execute(LinkedHashMap<String, Object> inputDataMap) {return false;}
-        @Override public String getTitle() {return null;}
-        @Override public Map<String, Object> getResults() {return null;}
-        @Override public List<IInput> getInputs() {return null;}
-        @Override public List<IOutput> getOutputs() {return null;}
-        @Override public boolean call(LinkedHashMap<String, Object> inputDataMap){return false;}
+        @Override
+        public ILinker link(IInOutPut... inOutPuts) {
+            return null;
+        }
+
+        @Override
+        public ICheckDataBuilder before(IProcess process) {
+            return null;
+        }
+
+        @Override
+        public ICheckDataBuilder after(IProcess process) {
+            return null;
+        }
+
+        @Override
+        public IProcessMapper newInstance() {
+            return null;
+        }
+
+        @Override
+        public boolean execute(LinkedHashMap<String, Object> inputDataMap) {
+            return false;
+        }
+
+        @Override
+        public String getTitle() {
+            return null;
+        }
+
+        @Override
+        public Map<String, Object> getResults() {
+            return null;
+        }
+
+        @Override
+        public List<IInput> getInputs() {
+            return null;
+        }
+
+        @Override
+        public List<IOutput> getOutputs() {
+            return null;
+        }
+
+        @Override
+        public boolean call(LinkedHashMap<String, Object> inputDataMap) {
+            return false;
+        }
     }
 }

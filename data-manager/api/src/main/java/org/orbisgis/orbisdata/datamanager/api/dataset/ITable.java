@@ -55,7 +55,7 @@ public interface ITable<T> extends IMatrix<T> {
      *
      * @param closure {@link Closure} to apply to each row.
      */
-    default void eachRow(Closure closure){
+    default void eachRow(Closure closure) {
         this.forEach(closure::call);
     }
 
@@ -86,8 +86,7 @@ public interface ITable<T> extends IMatrix<T> {
      * Return true if the {@link ITable} contains a column with the given name with the given type (case sensible).
      *
      * @param columnName Name of the column to check.
-     * @param clazz Class of the column to check.
-     *
+     * @param clazz      Class of the column to check.
      * @return True if the column is found, false otherwise.
      */
     boolean hasColumn(String columnName, Class clazz);
@@ -96,10 +95,9 @@ public interface ITable<T> extends IMatrix<T> {
      * Return true if the {@link ITable} contains a column with the given name (case sensible).
      *
      * @param columnName Name of the column to check.
-     *
      * @return True if the column is found, false otherwise.
      */
-    default boolean hasColumn(String columnName){
+    default boolean hasColumn(String columnName) {
         return getColumns().contains(columnName);
     }
 
@@ -107,10 +105,9 @@ public interface ITable<T> extends IMatrix<T> {
      * Return true if the {@link ITable} contains all the column describes in the given {@link Map} (case sensible).
      *
      * @param columnMap {@link Map} containing the columns with the column name as key and the column type as value.
-     *
      * @return True if the columns are found, false otherwise.
      */
-    default boolean hasColumns(Map<String, Class> columnMap){
+    default boolean hasColumns(Map<String, Class> columnMap) {
         return columnMap.entrySet().stream().allMatch(entry -> hasColumn(entry.getKey(), entry.getValue()));
     }
 
@@ -118,10 +115,9 @@ public interface ITable<T> extends IMatrix<T> {
      * Return true if the {@link ITable} contains all the column describes in the given {@link List} (case sensible).
      *
      * @param columnList {@link List} containing the columns with the column name as key and the column type as value.
-     *
      * @return True if the columns are found, false otherwise.
      */
-    default boolean hasColumns(List<String> columnList){
+    default boolean hasColumns(List<String> columnList) {
         return columnList.stream().allMatch(this::hasColumn);
     }
 
@@ -130,7 +126,7 @@ public interface ITable<T> extends IMatrix<T> {
      *
      * @return The count of columns.
      */
-    default int getColumnCount(){
+    default int getColumnCount() {
         return getColumns().size();
     }
 
@@ -155,7 +151,6 @@ public interface ITable<T> extends IMatrix<T> {
      * return null.
      *
      * @param column Name of the column to request.
-     *
      * @return A {@link Collection} of all the unique values of the {@link ITable}.
      */
     Collection<String> getUniqueValues(String column);
@@ -164,7 +159,6 @@ public interface ITable<T> extends IMatrix<T> {
      * Save the {@link ITable} into a file.
      *
      * @param filePath Path of the file to be saved.
-     *
      * @return True is the file has been saved, false otherwise.
      */
     default boolean save(String filePath) {
@@ -176,7 +170,6 @@ public interface ITable<T> extends IMatrix<T> {
      *
      * @param filePath Path of the file to be saved.
      * @param encoding Encoding of the file.
-     *
      * @return True is the file has been saved, false otherwise.
      */
     boolean save(String filePath, String encoding);
@@ -192,7 +185,6 @@ public interface ITable<T> extends IMatrix<T> {
      * Indicates the columns use for the selection.
      *
      * @param columns Array of the columns use for the selection.
-     *
      * @return Filtered {@link ITable}.
      */
     ITable columns(String... columns);
@@ -201,7 +193,6 @@ public interface ITable<T> extends IMatrix<T> {
      * Indicates the columns use for the selection.
      *
      * @param columns List of the columns use for the selection.
-     *
      * @return Filtered {@link ITable}.
      */
     ITable columns(List<String> columns);
@@ -214,17 +205,17 @@ public interface ITable<T> extends IMatrix<T> {
     boolean isSpatial();
 
     @Override
-    default int getNDim(){
+    default int getNDim() {
         return 2;
     }
 
     @Override
-    default boolean isEmpty(){
+    default boolean isEmpty() {
         return getRowCount() == 0;
     }
 
     @Override
-    default int[] getShape(){
+    default int[] getShape() {
         return new int[]{getColumnCount(), getRowCount()};
     }
 }

@@ -72,7 +72,6 @@ public interface IProcessFactory {
      * Returns the process with the given identifier.
      *
      * @param processId Identifier of the process to get.
-     *
      * @return The process with the given identifier.
      */
     IProcess getProcess(String processId);
@@ -90,7 +89,6 @@ public interface IProcessFactory {
      * in this {@link IProcessFactory}.
      *
      * @param cl {@link Closure} delegated to {@link IProcessBuilder}.
-     *
      * @return A {@link IProcess}.
      */
     IProcess create(@DelegatesTo(IProcessBuilder.class) Closure cl);

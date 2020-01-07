@@ -55,7 +55,7 @@ public class GroovyProcessFactoryTest {
      * Test the {@link GroovyProcessFactory#isDefault()} and {@link GroovyProcessFactory#isLocked()} methods.
      */
     @Test
-    void testAttributes(){
+    void testAttributes() {
         GroovyProcessFactory pf1 = new DummyFactory();
         assertFalse(pf1.isDefault());
         assertFalse(pf1.isLocked());
@@ -65,7 +65,7 @@ public class GroovyProcessFactoryTest {
      * Test the {@link GroovyProcessFactory#registerProcess(IProcess)} method.
      */
     @Test
-    void testRegister(){
+    void testRegister() {
         IProcess process = new Process(null, null, null, null, null, null, null);
 
         GroovyProcessFactory pf1 = new DummyFactory();
@@ -77,7 +77,7 @@ public class GroovyProcessFactoryTest {
      * Test the {@link GroovyProcessFactory#create()} and {@link GroovyProcessFactory#create(Closure)} methods.
      */
     @Test
-    void testCreate(){
+    void testCreate() {
         GroovyProcessFactory pf1 = new DummyFactory();
         assertNotNull(pf1.create());
 
@@ -90,7 +90,7 @@ public class GroovyProcessFactoryTest {
                 "            version \"version\"\n" +
                 "            run { inputA, inputB -> [outputA: inputA + inputB] }\n" +
                 "        })";
-        Closure cl = (Closure)new GroovyShell().evaluate(string);
+        Closure cl = (Closure) new GroovyShell().evaluate(string);
         IProcess process = pf1.create(cl);
 
         assertNotNull(process);
@@ -102,7 +102,7 @@ public class GroovyProcessFactoryTest {
         assertEquals(1, process.getOutputs().size());
     }
 
-    private class DummyFactory extends GroovyProcessFactory{
+    private class DummyFactory extends GroovyProcessFactory {
 
         @Override
         public Object run() {

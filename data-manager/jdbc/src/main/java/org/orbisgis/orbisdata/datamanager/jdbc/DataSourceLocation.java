@@ -56,25 +56,26 @@ public class DataSourceLocation implements IDataSourceLocation {
      *
      * @param location Path of the {@link org.orbisgis.orbisdata.datamanager.api.datasource.IDataSource}.
      */
-    public DataSourceLocation(String location){
+    public DataSourceLocation(String location) {
         this.location = location;
     }
 
     @Override
-    public String toString(){
+    public String toString() {
         return asType(String.class);
     }
 
     @Override
     public <T> T asType(Class<T> type) {
 
-        switch(type.getCanonicalName()){
+        switch (type.getCanonicalName()) {
             case "java.io.File":
                 return (T) new File(location);
             case "java.net.URL":
                 try {
                     return (T) new File(location).toURI().toURL();
-                } catch (MalformedURLException ignored) {}
+                } catch (MalformedURLException ignored) {
+                }
                 return null;
             case "java.lang.String":
                 return (T) location;

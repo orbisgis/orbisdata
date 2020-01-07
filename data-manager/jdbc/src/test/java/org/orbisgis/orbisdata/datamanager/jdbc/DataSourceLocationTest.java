@@ -57,7 +57,7 @@ public class DataSourceLocationTest {
      * Test the {@link DataSourceLocation#asType(Class)} method.
      */
     @Test
-    public void testAsType(){
+    public void testAsType() {
         DataSourceLocation dsl = new DataSourceLocation("toto/tata");
         assertNotNull(dsl.asType(File.class));
         assertNotNull(dsl.asType(URI.class));

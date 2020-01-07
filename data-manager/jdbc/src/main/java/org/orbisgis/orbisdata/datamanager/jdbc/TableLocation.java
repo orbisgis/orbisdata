@@ -47,13 +47,14 @@ import java.sql.SQLException;
  */
 public class TableLocation extends org.h2gis.utilities.TableLocation implements ITableLocation {
 
-    /** The dataSource name. */
+    /**
+     * The dataSource name.
+     */
     private String dataSource;
 
     /**
-     *
      * @param dataSource DataSource name
-     * @param rs Result set obtained through {@link java.sql.DatabaseMetaData#getTables(String, String, String, String[])}
+     * @param rs         Result set obtained through {@link java.sql.DatabaseMetaData#getTables(String, String, String, String[])}
      * @throws SQLException
      */
     public TableLocation(String dataSource, ResultSet rs) throws SQLException {
@@ -62,11 +63,10 @@ public class TableLocation extends org.h2gis.utilities.TableLocation implements 
     }
 
     /**
-     *
      * @param dataSource DataSource name
-     * @param catalog Catalog name without quotes
-     * @param schema Schema name without quotes
-     * @param table Table name without quotes
+     * @param catalog    Catalog name without quotes
+     * @param schema     Schema name without quotes
+     * @param table      Table name without quotes
      */
     public TableLocation(String dataSource, String catalog, String schema, String table) {
         super(catalog, schema, table);
@@ -74,10 +74,9 @@ public class TableLocation extends org.h2gis.utilities.TableLocation implements 
     }
 
     /**
-     *
      * @param dataSource DataSource name
-     * @param schema Schema name without quotes
-     * @param table Table name without quotes
+     * @param schema     Schema name without quotes
+     * @param table      Table name without quotes
      */
     public TableLocation(String dataSource, String schema, String table) {
         super(schema, table);
@@ -85,9 +84,8 @@ public class TableLocation extends org.h2gis.utilities.TableLocation implements 
     }
 
     /**
-     *
      * @param dataSource DataSource name
-     * @param table Table name without quotes
+     * @param table      Table name without quotes
      */
     public TableLocation(String dataSource, String table) {
         super(table);

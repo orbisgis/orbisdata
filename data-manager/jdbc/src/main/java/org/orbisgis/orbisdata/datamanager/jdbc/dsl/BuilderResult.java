@@ -82,12 +82,12 @@ public abstract class BuilderResult implements IBuilderResult {
 
     @Override
     public void eachRow(Closure closure) {
-        ((ISpatialTable)asType(ISpatialTable.class)).eachRow(closure);
+        ((ISpatialTable) asType(ISpatialTable.class)).eachRow(closure);
     }
 
     @Override
     public Object asType(Class clazz) {
-        if(ICustomPrinter.class.isAssignableFrom(clazz)){
+        if (ICustomPrinter.class.isAssignableFrom(clazz)) {
             return this.getTable().asType(clazz);
         }
         Statement statement;
@@ -99,51 +99,49 @@ public abstract class BuilderResult implements IBuilderResult {
             return null;
         }
         String name = "";
-        switch(getDataSource().getDataBaseType()) {
+        switch (getDataSource().getDataBaseType()) {
             default:
             case H2GIS:
-                if(!(statement instanceof StatementWrapper)){
+                if (!(statement instanceof StatementWrapper)) {
                     LOGGER.warn("The statement class not compatible with the database.");
                     statement = new StatementWrapper(statement, new ConnectionWrapper(getDataSource().getConnection()));
                 }
-                if(ISpatialTable.class.isAssignableFrom(clazz)) {
+                if (ISpatialTable.class.isAssignableFrom(clazz)) {
                     return new H2gisSpatialTable(new TableLocation(getDataSource().getLocation().toString(), name),
                             getQuery(), (StatementWrapper) statement,
                             getDataSource());
-                }
-                else if(ITable.class.isAssignableFrom(clazz)) {
+                } else if (ITable.class.isAssignableFrom(clazz)) {
                     return new H2gisTable(new TableLocation(getDataSource().getLocation().toString(), name),
                             getQuery(), (StatementWrapper) statement, getDataSource());
                 }
             case POSTGIS:
-                if(!(statement instanceof org.h2gis.postgis_jts.StatementWrapper)){
+                if (!(statement instanceof org.h2gis.postgis_jts.StatementWrapper)) {
                     LOGGER.error("The statement class not compatible with the database.");
                     break;
                 }
-                if(ISpatialTable.class.isAssignableFrom(clazz)) {
+                if (ISpatialTable.class.isAssignableFrom(clazz)) {
                     return new PostgisSpatialTable(new TableLocation(getDataSource().getLocation().toString(), name),
-                            getQuery(), (org.h2gis.postgis_jts.StatementWrapper)statement, getDataSource());
-                }
-                else if(ITable.class.isAssignableFrom(clazz)) {
+                            getQuery(), (org.h2gis.postgis_jts.StatementWrapper) statement, getDataSource());
+                } else if (ITable.class.isAssignableFrom(clazz)) {
                     return new PostgisTable(new TableLocation(getDataSource().getLocation().toString(), name),
-                            getQuery(), (org.h2gis.postgis_jts.StatementWrapper)statement, getDataSource());
+                            getQuery(), (org.h2gis.postgis_jts.StatementWrapper) statement, getDataSource());
                 }
         }
         return null;
     }
 
     @Override
-    public String toString(){
+    public String toString() {
         return getQuery();
     }
 
     @Override
     public ITable getTable() {
-        return (ITable)this.asType(ITable.class);
+        return (ITable) this.asType(ITable.class);
     }
 
     @Override
     public ISpatialTable getSpatialTable() {
-        return (ISpatialTable)this.asType(ISpatialTable.class);
+        return (ISpatialTable) this.asType(ISpatialTable.class);
     }
 }

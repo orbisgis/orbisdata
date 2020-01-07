@@ -51,7 +51,9 @@ import java.util.List;
  */
 public interface IJdbcTable extends ITable<Object>, ResultSet, IWhereBuilderOrOptionBuilder {
 
-    /** {@link String} name of the metadata property */
+    /**
+     * {@link String} name of the metadata property
+     */
     String META_PROPERTY = "meta";
 
     /**
@@ -106,7 +108,7 @@ public interface IJdbcTable extends ITable<Object>, ResultSet, IWhereBuilderOrOp
     }
 
     @Override
-    default void eachRow(Closure closure){
+    default void eachRow(Closure closure) {
         this.forEach(closure::call);
     }
 

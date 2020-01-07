@@ -246,7 +246,7 @@ class JdbcDataSourceTest {
      *
      * @param list List containing the rows to test.
      */
-    private void testRows(List<GroovyRowResult> list){
+    private void testRows(List<GroovyRowResult> list) {
         assertFalse(list.isEmpty());
         assertEquals(3, list.size());
         assertEquals("{ID=1, THE_GEOM=POINT (0 0), TEXT=toto}", list.get(0).toString());
@@ -326,10 +326,8 @@ class JdbcDataSourceTest {
      * Return the string query from a {@link IFromBuilder}.
      *
      * @param builder {@link IFromBuilder}.
-     *
      * @return The string query.
-     *
-     * @throws NoSuchFieldException Exception thrown if the field doesn't exists.
+     * @throws NoSuchFieldException   Exception thrown if the field doesn't exists.
      * @throws IllegalAccessException Exception thrown if the access is illegal.
      */
     private String getQuery(IFromBuilder builder) throws NoSuchFieldException, IllegalAccessException {
@@ -549,7 +547,6 @@ class JdbcDataSourceTest {
         assertNull(ds3.link("$toto", true));
 
 
-
         ds1.execute("DROP TABLE IF EXISTS LINKTABLE");
         table = ds1.link(url);
         assertNotNull(table);
@@ -594,7 +591,7 @@ class JdbcDataSourceTest {
         assertNull(ds3.link(uri));
 
         ds1.execute("DROP TABLE IF EXISTS LINKTABLE");
-        table = ds1.link(uri , true);
+        table = ds1.link(uri, true);
         assertNotNull(table);
         assertEquals("LINKTABLE", table.getName());
         ds2.execute("DROP TABLE IF EXISTS LINKTABLE");
@@ -662,40 +659,40 @@ class JdbcDataSourceTest {
         String tableName = "LINKEDTABLE";
         String tableName2 = "LINKEDTABLE2";
 
-        ds1.execute("DROP TABLE IF EXISTS "+tableName);
+        ds1.execute("DROP TABLE IF EXISTS " + tableName);
         ITable table = ds1.load(map, tableName);
         assertNotNull(table);
         assertEquals(tableName, table.getName());
-        ds2.execute("DROP TABLE IF EXISTS "+tableName);
+        ds2.execute("DROP TABLE IF EXISTS " + tableName);
         assertNull(ds2.load(map, tableName));
-        ds3.execute("DROP TABLE IF EXISTS "+tableName);
+        ds3.execute("DROP TABLE IF EXISTS " + tableName);
         assertNull(ds3.load(map, tableName));
 
-        ds1.execute("DROP TABLE IF EXISTS "+tableName);
+        ds1.execute("DROP TABLE IF EXISTS " + tableName);
         table = ds1.load(map, tableName, true);
         assertNotNull(table);
         assertEquals(tableName, table.getName());
-        ds2.execute("DROP TABLE IF EXISTS "+tableName);
+        ds2.execute("DROP TABLE IF EXISTS " + tableName);
         assertNull(ds2.load(map, tableName, true));
-        ds3.execute("DROP TABLE IF EXISTS "+tableName);
+        ds3.execute("DROP TABLE IF EXISTS " + tableName);
         assertNull(ds3.load(map, tableName, true));
 
-        ds1.execute("DROP TABLE IF EXISTS "+tableName2);
+        ds1.execute("DROP TABLE IF EXISTS " + tableName2);
         table = ds1.load(map, tableName, tableName2);
         assertNotNull(table);
         assertEquals(tableName2, table.getName());
-        ds2.execute("DROP TABLE IF EXISTS "+tableName2);
+        ds2.execute("DROP TABLE IF EXISTS " + tableName2);
         assertNull(ds2.load(map, tableName, tableName2));
-        ds3.execute("DROP TABLE IF EXISTS "+tableName2);
+        ds3.execute("DROP TABLE IF EXISTS " + tableName2);
         assertNull(ds3.load(map, tableName, tableName2));
 
-        ds1.execute("DROP TABLE IF EXISTS "+tableName2);
+        ds1.execute("DROP TABLE IF EXISTS " + tableName2);
         table = ds1.load(map, tableName, tableName2, true);
         assertNotNull(table);
         assertEquals(tableName2, table.getName());
-        ds2.execute("DROP TABLE IF EXISTS "+tableName2);
+        ds2.execute("DROP TABLE IF EXISTS " + tableName2);
         assertNull(ds2.load(map, tableName, tableName2, true));
-        ds3.execute("DROP TABLE IF EXISTS "+tableName2);
+        ds3.execute("DROP TABLE IF EXISTS " + tableName2);
         assertNull(ds3.load(map, tableName, tableName2, true));
     }
 
@@ -976,7 +973,7 @@ class JdbcDataSourceTest {
         assertTrue(names.contains("JDBCDATASOURCETEST.PUBLIC.TEST"));
         assertTrue(names.contains("JDBCDATASOURCETEST.PUBLIC.SPATIAL_REF_SYS"));
     }
-    
+
     /**
      * Test the {@link JdbcDataSource#hasTable(String)} method.
      */
@@ -989,8 +986,7 @@ class JdbcDataSourceTest {
         assertTrue(ds1.hasTable("TEST"));
         assertTrue(ds1.hasTable("JDBCDATASOURCETEST.PUBLIC.SPATIAL_REF_SYS"));
     }
-    
-    
+
 
     /**
      * Test the {@link JdbcDataSource#getDataSet(String)} method.
@@ -1034,7 +1030,7 @@ class JdbcDataSourceTest {
         public IJdbcTable getTable(String s) {
             ConnectionWrapper connectionWrapper = new ConnectionWrapper(this.getConnection());
             try {
-                if(!JDBCUtilities.tableExists(connectionWrapper,s)){
+                if (!JDBCUtilities.tableExists(connectionWrapper, s)) {
                     return null;
                 }
             } catch (SQLException e) {
@@ -1044,7 +1040,7 @@ class JdbcDataSourceTest {
             try {
                 return new H2gisTable(
                         new TableLocation(null, s),
-                        "SELECT * FROM "+s,
+                        "SELECT * FROM " + s,
                         new StatementWrapper(this.getConnection().createStatement(), connectionWrapper),
                         this);
             } catch (SQLException e) {
@@ -1057,7 +1053,7 @@ class JdbcDataSourceTest {
         public IJdbcSpatialTable getSpatialTable(String s) {
             ConnectionWrapper connectionWrapper = new ConnectionWrapper(this.getConnection());
             try {
-                if(!JDBCUtilities.tableExists(connectionWrapper,s)){
+                if (!JDBCUtilities.tableExists(connectionWrapper, s)) {
                     return null;
                 }
             } catch (SQLException e) {
@@ -1067,7 +1063,7 @@ class JdbcDataSourceTest {
             try {
                 return new H2gisSpatialTable(
                         new TableLocation(null, s),
-                        "SELECT * FROM "+s,
+                        "SELECT * FROM " + s,
                         new StatementWrapper(this.getConnection().createStatement(), connectionWrapper),
                         this);
             } catch (SQLException e) {
@@ -1075,7 +1071,7 @@ class JdbcDataSourceTest {
             }
             return null;
         }
-        
+
         @Override
         public boolean hasTable(String tableName) {
             try {

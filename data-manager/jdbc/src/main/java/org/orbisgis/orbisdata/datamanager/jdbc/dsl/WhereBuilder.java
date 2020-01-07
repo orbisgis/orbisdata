@@ -56,10 +56,10 @@ public class WhereBuilder extends OptionBuilder implements IWhereBuilderOrOption
     /**
      * Main constructor.
      *
-     * @param request String request coming from the ISelectBuilder.
+     * @param request    String request coming from the ISelectBuilder.
      * @param dataSource {@link IJdbcDataSource} where the request will be executed.
      */
-    public WhereBuilder(String request, JdbcDataSource dataSource){
+    public WhereBuilder(String request, JdbcDataSource dataSource) {
         super(request, dataSource);
         query = new StringBuilder();
         query.append(request).append(" ");

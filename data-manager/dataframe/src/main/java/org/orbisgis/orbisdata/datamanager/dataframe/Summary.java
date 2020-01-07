@@ -9,7 +9,7 @@ import org.orbisgis.orbisdata.datamanager.api.dataset.ISummary;
  */
 public class Summary extends DataFrame implements ISummary {
 
-    public Summary(smile.data.DataFrame dataFrame){
+    public Summary(smile.data.DataFrame dataFrame) {
         setInternalDataFrame(dataFrame);
     }
 }

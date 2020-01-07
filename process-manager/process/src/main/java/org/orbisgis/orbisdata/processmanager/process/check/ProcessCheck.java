@@ -56,19 +56,33 @@ public class ProcessCheck implements IProcessCheck {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ProcessCheck.class);
 
-    /** {@link IProcess} concerned by the check. */
+    /**
+     * {@link IProcess} concerned by the check.
+     */
     private IProcess process;
-    /** Inputs/outputs to use for the check. */
+    /**
+     * Inputs/outputs to use for the check.
+     */
     private LinkedList<IInOutPut> inOutPuts = new LinkedList<>();
-    /** {@link Closure} to perform for the check. */
+    /**
+     * {@link Closure} to perform for the check.
+     */
     private Closure cl;
-    /** Action to do on fail. */
+    /**
+     * Action to do on fail.
+     */
     private String failAction = STOP;
-    /** Message to log on fail. */
+    /**
+     * Message to log on fail.
+     */
     private String failMessage = "Check failed";
-    /** Action to do on success. */
+    /**
+     * Action to do on success.
+     */
     private String successAction = CONTINUE;
-    /** Message to log on success. */
+    /**
+     * Message to log on success.
+     */
     private String successMessage = "Check successful";
 
     /**
@@ -76,35 +90,32 @@ public class ProcessCheck implements IProcessCheck {
      *
      * @param process {@link IProcess} concerned by the check.
      */
-    public ProcessCheck(IProcess process){
+    public ProcessCheck(IProcess process) {
         this.process = process;
     }
 
     @Override
     public void run(LinkedHashMap<String, Object> processInData) {
-        if(cl == null){
+        if (cl == null) {
             LOGGER.error("A closure for the process check should be defined.");
             fail();
         }
         LinkedList<Object> dataList = new LinkedList<>();
-        for(IInOutPut inOutPut : inOutPuts){
-            if(inOutPut.getProcess().getOutputs().stream().anyMatch(output -> output.getName().equals(inOutPut.getName()))){
+        for (IInOutPut inOutPut : inOutPuts) {
+            if (inOutPut.getProcess().getOutputs().stream().anyMatch(output -> output.getName().equals(inOutPut.getName()))) {
                 dataList.push(inOutPut.getProcess().getResults().get(inOutPut.getName()));
-            }
-            else{
+            } else {
                 dataList.push(processInData.get(inOutPut.getName()));
             }
         }
         Object result = cl.call(dataList.toArray());
-        if(!(result instanceof Boolean)){
+        if (!(result instanceof Boolean)) {
             LOGGER.error("The result of the check closure should be a boolean.");
             fail();
-        }
-        else{
-            if((Boolean)result){
+        } else {
+            if ((Boolean) result) {
                 success();
-            }
-            else{
+            } else {
                 fail();
             }
         }
@@ -124,11 +135,10 @@ public class ProcessCheck implements IProcessCheck {
 
     @Override
     public void setInOutputs(Object... data) {
-        for(Object obj : data){
-            if(obj instanceof IInOutPut){
+        for (Object obj : data) {
+            if (obj instanceof IInOutPut) {
                 this.inOutPuts.add((IInOutPut) obj);
-            }
-            else{
+            } else {
                 LOGGER.error("The inOutPuts for the process check should be process input or output.");
             }
         }
@@ -142,7 +152,7 @@ public class ProcessCheck implements IProcessCheck {
     @Override
     public void fail() {
         LOGGER.error(failMessage);
-        switch(failAction){
+        switch (failAction) {
             case STOP:
                 throw new IllegalStateException(failMessage);
             case CONTINUE:
@@ -154,7 +164,7 @@ public class ProcessCheck implements IProcessCheck {
     @Override
     public void success() {
         LOGGER.info(successMessage);
-        switch(successAction){
+        switch (successAction) {
             case STOP:
                 throw new IllegalStateException(successMessage);
             case CONTINUE:

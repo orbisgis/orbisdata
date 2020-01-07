@@ -57,19 +57,19 @@ public class Html extends CustomPrinter {
 
     @Override
     public void appendTableLineSeparator() {
-        if(isDrawingTable){
+        if (isDrawingTable) {
             builder.append("<tr></tr>\n");
         }
     }
 
     @Override
-    public void startTable(int columnWidth, int columnCount){
+    public void startTable(int columnWidth, int columnCount) {
         builder.append("<table>\n");
         super.startTable(columnWidth, columnCount);
     }
 
     @Override
-    public void endTable(){
+    public void endTable() {
         super.endTable();
         builder.append("</table>\n");
     }
@@ -77,7 +77,7 @@ public class Html extends CustomPrinter {
     @Override
     public void appendTableValue(@NotNull Object value, @NotNull CellPosition position) {
         if (isDrawingTable) {
-            if(columnIndex == 0){
+            if (columnIndex == 0) {
                 builder.append("<tr>\n");
             }
             builder.append("<td align=\"");
@@ -86,8 +86,8 @@ public class Html extends CustomPrinter {
             builder.append(value);
             builder.append("</td>");
             builder.append("\n");
-            columnIndex ++;
-            if(columnIndex == columnCount){
+            columnIndex++;
+            if (columnIndex == columnCount) {
                 builder.append("</tr>\n");
                 columnIndex = 0;
             }
@@ -97,7 +97,7 @@ public class Html extends CustomPrinter {
     @Override
     public void appendTableHeaderValue(@NotNull Object value, @NotNull CellPosition position) {
         if (isDrawingTable) {
-            if(columnIndex == 0){
+            if (columnIndex == 0) {
                 builder.append("<tr>\n");
             }
             builder.append("<th align=\"");
@@ -106,8 +106,8 @@ public class Html extends CustomPrinter {
             builder.append(value);
             builder.append("</th>");
             builder.append("\n");
-            columnIndex ++;
-            if(columnIndex == columnCount){
+            columnIndex++;
+            if (columnIndex == columnCount) {
                 builder.append("</tr>\n");
                 columnIndex = 0;
             }
@@ -116,7 +116,7 @@ public class Html extends CustomPrinter {
 
     @Override
     public void appendTableTitle(@NotNull Object title) {
-        if(isDrawingTable) {
+        if (isDrawingTable) {
             builder.append("<caption>");
             builder.append(title);
             builder.append("</caption>\n");

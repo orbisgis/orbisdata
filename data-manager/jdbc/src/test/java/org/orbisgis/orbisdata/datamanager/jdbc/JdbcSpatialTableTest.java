@@ -71,11 +71,17 @@ public class JdbcSpatialTableTest {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(JdbcSpatialTableTest.class);
 
-    /** Database connection */
+    /**
+     * Database connection
+     */
     private static Connection connection;
-    /** Connection statement */
+    /**
+     * Connection statement
+     */
     private static Statement statement;
-    /** Dummy data source */
+    /**
+     * Dummy data source
+     */
     private static DummyJdbcDataSource dataSource;
 
 
@@ -89,10 +95,10 @@ public class JdbcSpatialTableTest {
     private static final String COL_MEANING = "MEANING";
 
     @BeforeAll
-    public static void beforeAll(){
+    public static void beforeAll() {
         try {
-            connection =  SFSUtilities.wrapConnection(H2GISDBFactory.createSpatialDataBase(BASE_DATABASE));
-        } catch (SQLException|ClassNotFoundException e) {
+            connection = SFSUtilities.wrapConnection(H2GISDBFactory.createSpatialDataBase(BASE_DATABASE));
+        } catch (SQLException | ClassNotFoundException e) {
             fail(e);
         }
         Sql sql = new Sql(connection);
@@ -103,14 +109,14 @@ public class JdbcSpatialTableTest {
      * Set the database with some data.
      */
     @BeforeEach
-    public void prepareDB(){
+    public void prepareDB() {
         try {
             statement = connection.createStatement();
-            statement.execute("DROP TABLE IF EXISTS "+TABLE_NAME);
-            statement.execute("CREATE TABLE "+TABLE_NAME+" ("+COL_THE_GEOM+" GEOMETRY(GEOMETRY, 2020), "+COL_THE_GEOM2+" GEOMETRY(POINT Z)," +
-                    COL_ID+" INTEGER, "+COL_VALUE+" FLOAT, "+COL_MEANING+" VARCHAR)");
-            statement.execute("INSERT INTO "+TABLE_NAME+" VALUES (ST_SetSRID('POINT(0 0)', 2020), 'POINT(1 1 0)', 1, 2.3, 'Simple points')");
-            statement.execute("INSERT INTO "+TABLE_NAME+" VALUES (ST_SetSRID('POINT(0 1 2)', 2020), 'POINT(10 11 12)', 2, 0.568, '3D point')");
+            statement.execute("DROP TABLE IF EXISTS " + TABLE_NAME);
+            statement.execute("CREATE TABLE " + TABLE_NAME + " (" + COL_THE_GEOM + " GEOMETRY(GEOMETRY, 2020), " + COL_THE_GEOM2 + " GEOMETRY(POINT Z)," +
+                    COL_ID + " INTEGER, " + COL_VALUE + " FLOAT, " + COL_MEANING + " VARCHAR)");
+            statement.execute("INSERT INTO " + TABLE_NAME + " VALUES (ST_SetSRID('POINT(0 0)', 2020), 'POINT(1 1 0)', 1, 2.3, 'Simple points')");
+            statement.execute("INSERT INTO " + TABLE_NAME + " VALUES (ST_SetSRID('POINT(0 1 2)', 2020), 'POINT(10 11 12)', 2, 0.568, '3D point')");
         } catch (Exception e) {
             fail(e);
         }
@@ -120,7 +126,7 @@ public class JdbcSpatialTableTest {
      * Test the {@link JdbcSpatialTable#isSpatial()} method.
      */
     @Test
-    public void testIsSpatial(){
+    public void testIsSpatial() {
         assertTrue(dataSource.getSpatialTable(TABLE_NAME).isSpatial());
     }
 
@@ -129,7 +135,7 @@ public class JdbcSpatialTableTest {
      * {@link JdbcSpatialTable#getGeometry(String)} methods.
      */
     @Test
-    public void testGetGeometry(){
+    public void testGetGeometry() {
         ISpatialTable table = dataSource.getSpatialTable(TABLE_NAME);
         assertNull(table.getGeometry());
         assertNull(table.getGeometry(2));
@@ -139,11 +145,11 @@ public class JdbcSpatialTableTest {
 
         final String[] str = {"", "", "", "", ""};
         table.forEach(o -> {
-            str[0] += ((DummyJdbcSpatialTable)o).getGeometry();
-            str[1] += ((DummyJdbcSpatialTable)o).getGeometry(1);
-            str[2] += ((DummyJdbcSpatialTable)o).getGeometry(2);
-            str[3] += ((DummyJdbcSpatialTable)o).getGeometry(COL_THE_GEOM);
-            str[4] += ((DummyJdbcSpatialTable)o).getGeometry(COL_THE_GEOM2);
+            str[0] += ((DummyJdbcSpatialTable) o).getGeometry();
+            str[1] += ((DummyJdbcSpatialTable) o).getGeometry(1);
+            str[2] += ((DummyJdbcSpatialTable) o).getGeometry(2);
+            str[3] += ((DummyJdbcSpatialTable) o).getGeometry(COL_THE_GEOM);
+            str[4] += ((DummyJdbcSpatialTable) o).getGeometry(COL_THE_GEOM2);
         });
         assertEquals("POINT (0 0)POINT (0 1)", str[0]);
         assertEquals("POINT (0 0)POINT (0 1)", str[1]);
@@ -160,7 +166,7 @@ public class JdbcSpatialTableTest {
      * {@link JdbcSpatialTable#getRaster(String)} methods.
      */
     @Test
-    public void testGetRaster(){
+    public void testGetRaster() {
         ISpatialTable table = dataSource.getSpatialTable(TABLE_NAME);
         assertThrows(UnsupportedOperationException.class, table::getRaster);
         assertThrows(UnsupportedOperationException.class, () -> table.getRaster(0));
@@ -172,7 +178,7 @@ public class JdbcSpatialTableTest {
      * {@link JdbcSpatialTable#getRasterColumns()} and {@link JdbcSpatialTable#getSpatialColumns()} methods.
      */
     @Test
-    public void testGetColumns(){
+    public void testGetColumns() {
         assertEquals(2, dataSource.getSpatialTable(TABLE_NAME).getGeometricColumns().size());
         assertTrue(dataSource.getSpatialTable(TABLE_NAME).getGeometricColumns().contains(COL_THE_GEOM));
         assertTrue(dataSource.getSpatialTable(TABLE_NAME).getGeometricColumns().contains(COL_THE_GEOM2));
@@ -188,7 +194,7 @@ public class JdbcSpatialTableTest {
      * Test the {@link JdbcSpatialTable#getExtend()} method.
      */
     @Test
-    public void testGetExtend(){
+    public void testGetExtend() {
         assertEquals("Env[0.0 : 0.0, 0.0 : 1.0]", dataSource.getSpatialTable(TABLE_NAME).getExtend().toString());
     }
 
@@ -196,7 +202,7 @@ public class JdbcSpatialTableTest {
      * Test the {@link JdbcSpatialTable#getEstimatedExtend()} method.
      */
     @Test
-    public void testGetEstimatedExtend(){
+    public void testGetEstimatedExtend() {
         assertEquals("LINESTRING (0 0, 0 1)", dataSource.getSpatialTable(TABLE_NAME).getEstimatedExtend().toString());
     }
 
@@ -204,7 +210,7 @@ public class JdbcSpatialTableTest {
      * Test the {@link JdbcSpatialTable#getSrid()} method.
      */
     @Test
-    public void testGetSrid(){
+    public void testGetSrid() {
         assertEquals(2020, dataSource.getSpatialTable(TABLE_NAME).getSrid());
     }
 
@@ -212,7 +218,7 @@ public class JdbcSpatialTableTest {
      * Test the {@link JdbcSpatialTable#getMetaData()} method.
      */
     @Test
-    public void testGetMetadata(){
+    public void testGetMetadata() {
         assertNotNull(dataSource.getSpatialTable(TABLE_NAME).getMetaData());
     }
 
@@ -220,7 +226,7 @@ public class JdbcSpatialTableTest {
      * Test the {@link JdbcSpatialTable#getGeometryTypes()} method.
      */
     @Test
-    public void testGetGeometryTypes(){
+    public void testGetGeometryTypes() {
         Map<String, String> map = dataSource.getSpatialTable(TABLE_NAME).getGeometryTypes();
         assertEquals(2, map.size());
         assertTrue(map.containsKey(COL_THE_GEOM));
@@ -229,8 +235,10 @@ public class JdbcSpatialTableTest {
         assertEquals("POINTZ", map.get(COL_THE_GEOM2));
     }
 
-    /** Simple instantiation of a {@link JdbcSpatialTable}. **/
-    private static class DummyJdbcSpatialTable extends JdbcSpatialTable{
+    /**
+     * Simple instantiation of a {@link JdbcSpatialTable}.
+     **/
+    private static class DummyJdbcSpatialTable extends JdbcSpatialTable {
 
         /**
          * Main constructor.
@@ -241,18 +249,18 @@ public class JdbcSpatialTableTest {
          * @param baseQuery      Query for the creation of the ResultSet
          */
         public DummyJdbcSpatialTable(TableLocation tableLocation, String baseQuery, Statement statement,
-                                 JdbcDataSource jdbcDataSource) {
+                                     JdbcDataSource jdbcDataSource) {
             super(DataBaseType.H2GIS, jdbcDataSource, tableLocation, statement, baseQuery);
         }
 
 
         @Override
-        protected ResultSet getResultSet(){
-            if(resultSet == null) {
+        protected ResultSet getResultSet() {
+            if (resultSet == null) {
                 try {
                     resultSet = getStatement().executeQuery(getBaseQuery());
                 } catch (SQLException e) {
-                    LOGGER.error("Unable to execute the query '"+getBaseQuery()+"'.\n"+e.getLocalizedMessage());
+                    LOGGER.error("Unable to execute the query '" + getBaseQuery() + "'.\n" + e.getLocalizedMessage());
                     return null;
                 }
                 try {
@@ -275,11 +283,16 @@ public class JdbcSpatialTableTest {
             super(parent, databaseType);
         }
 
-        @Override public IJdbcTable getTable(String tableName) {return null;}
-        @Override public IJdbcSpatialTable getSpatialTable(String tableName) {
-            String name = TableLocation.parse(tableName, getDataBaseType().equals(DataBaseType.H2GIS)).toString( getDataBaseType().equals(DataBaseType.H2GIS));
+        @Override
+        public IJdbcTable getTable(String tableName) {
+            return null;
+        }
+
+        @Override
+        public IJdbcSpatialTable getSpatialTable(String tableName) {
+            String name = TableLocation.parse(tableName, getDataBaseType().equals(DataBaseType.H2GIS)).toString(getDataBaseType().equals(DataBaseType.H2GIS));
             try {
-                if(!JDBCUtilities.tableExists(connection,name)){
+                if (!JDBCUtilities.tableExists(connection, name)) {
                     return null;
                 }
             } catch (SQLException e) {
@@ -287,21 +300,28 @@ public class JdbcSpatialTableTest {
             }
             StatementWrapper statement;
             try {
-                statement = (StatementWrapper)connection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);
+                statement = (StatementWrapper) connection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);
             } catch (SQLException e) {
                 return null;
             }
             String query = String.format("SELECT * FROM %s", name);
             return new DummyJdbcSpatialTable(new TableLocation(null, name), query, statement, this);
         }
-        @Override public Collection<String> getTableNames() {
+
+        @Override
+        public Collection<String> getTableNames() {
             try {
                 return JDBCUtilities.getTableNames(connection.getMetaData(), null, null, null, null);
-            } catch (SQLException ignored) {}
+            } catch (SQLException ignored) {
+            }
             return null;
         }
-        @Override public IJdbcTable getDataSet(String name) {return null;}
-        
+
+        @Override
+        public IJdbcTable getDataSet(String name) {
+            return null;
+        }
+
         @Override
         public boolean hasTable(String tableName) {
             try {

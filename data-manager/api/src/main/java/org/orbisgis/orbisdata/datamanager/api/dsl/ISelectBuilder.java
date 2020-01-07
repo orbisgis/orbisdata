@@ -51,7 +51,6 @@ public interface ISelectBuilder {
      * Start point of the SQL request.
      *
      * @param fields Array of the fields to select.
-     *
      * @return {@link IFromBuilder} instance to continue building.
      */
     IFromBuilder select(String... fields);

@@ -61,7 +61,6 @@ public interface IBuilderResult {
      * Convert the result of the SQL request into a {@link ITable} or {@link ISpatialTable}.
      *
      * @param clazz New class of the result.
-     *
      * @return The result wrapped into the given class.
      */
     Object asType(Class clazz);

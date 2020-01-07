@@ -55,10 +55,10 @@ public class FromBuilder implements IFromBuilder {
     /**
      * Main constructor.
      *
-     * @param request String request coming from the ISelectBuilder.
+     * @param request    String request coming from the ISelectBuilder.
      * @param dataSource {@link IJdbcDataSource} where the request will be executed.
      */
-    public FromBuilder(String request, JdbcDataSource dataSource){
+    public FromBuilder(String request, JdbcDataSource dataSource) {
         query = new StringBuilder();
         query.append(request).append(" ");
         this.dataSource = dataSource;
@@ -66,7 +66,7 @@ public class FromBuilder implements IFromBuilder {
 
     @Override
     public IWhereBuilderOrOptionBuilder from(String... tables) {
-        query.append("FROM ").append(String.join(",", tables));        
+        query.append("FROM ").append(String.join(",", tables));
         return new WhereBuilder(query.toString(), dataSource);
     }
 }

@@ -48,7 +48,6 @@ public interface IInput extends IInOutPut {
      * Make the {@link IInput} optional.
      *
      * @param dfltValue Default value to use if no value is provided.
-     *
      * @return The {@link IInput} to continue its configuration.
      */
     IInOutPut optional(Object dfltValue);

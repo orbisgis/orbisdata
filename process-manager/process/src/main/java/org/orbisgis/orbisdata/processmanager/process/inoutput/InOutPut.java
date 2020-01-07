@@ -49,31 +49,43 @@ import java.util.Arrays;
  * @author Sylvain PALOMINOS (UBS 2019)
  */
 public abstract class InOutPut implements IInOutPut {
-    /** {@link IProcess} of the input/output. */
+    /**
+     * {@link IProcess} of the input/output.
+     */
     private IProcess process;
-    /** Name of the input/output. */
+    /**
+     * Name of the input/output.
+     */
     private String name;
-    /** Type of the input/output. */
+    /**
+     * Type of the input/output.
+     */
     private Class type;
-    /** Title of the input/output. */
+    /**
+     * Title of the input/output.
+     */
     private String title;
-    /** Description of the input/output. */
+    /**
+     * Description of the input/output.
+     */
     private String description;
-    /** Keywords of the input/output. */
+    /**
+     * Keywords of the input/output.
+     */
     private String[] keywords;
 
     /**
      * Main constructor.
      *
      * @param process {@link IProcess} of the input/output.
-     * @param name Name of the input/output.
+     * @param name    Name of the input/output.
      */
-    public InOutPut(IProcess process, String name){
+    public InOutPut(IProcess process, String name) {
         this.process = process;
         this.name = name;
     }
 
-    public String getName(){
+    public String getName() {
         return name;
     }
 
@@ -135,15 +147,18 @@ public abstract class InOutPut implements IInOutPut {
         return type;
     }
 
-    @Override public String toString(){return name+":"+process.getIdentifier();}
+    @Override
+    public String toString() {
+        return name + ":" + process.getIdentifier();
+    }
 
     @Override
     public Object methodMissing(String name, Object args) {
-        if(args == null){
-            throw new MissingMethodException(name, this.getClass(), (Object[])args);
+        if (args == null) {
+            throw new MissingMethodException(name, this.getClass(), (Object[]) args);
         }
-        Object[] objs = (Object[])args;
-        if(objs.length > 0) {
+        Object[] objs = (Object[]) args;
+        if (objs.length > 0) {
             switch (name) {
                 case "type":
                     if (objs[0] instanceof Class) {
@@ -163,9 +178,9 @@ public abstract class InOutPut implements IInOutPut {
                         return setTitle((String) objs[0]);
                     }
                 default:
-                    throw new MissingMethodException(name, this.getClass(), (Object[])args);
+                    throw new MissingMethodException(name, this.getClass(), (Object[]) args);
             }
         }
-        throw new MissingMethodException(name, this.getClass(), (Object[])args);
+        throw new MissingMethodException(name, this.getClass(), (Object[]) args);
     }
 }

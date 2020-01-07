@@ -49,8 +49,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class IOptionBuilderTest {
 
     @Test
-    public void simpleTest(){
+    public void simpleTest() {
         assertEquals("ASC", IOptionBuilder.Order.ASC.name());
-        assertEquals("DESC",IOptionBuilder.Order.DESC.name());
+        assertEquals("DESC", IOptionBuilder.Order.DESC.name());
     }
 }

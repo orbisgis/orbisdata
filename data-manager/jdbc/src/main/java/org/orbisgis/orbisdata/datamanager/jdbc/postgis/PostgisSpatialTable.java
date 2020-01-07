@@ -62,9 +62,9 @@ public class PostgisSpatialTable extends JdbcSpatialTable {
     /**
      * Main constructor.
      *
-     * @param tableLocation {@link TableLocation} that identify the represented table.
-     * @param baseQuery Query for the creation of the ResultSet
-     * @param statement Statement used to request the database.
+     * @param tableLocation  {@link TableLocation} that identify the represented table.
+     * @param baseQuery      Query for the creation of the ResultSet
+     * @param statement      Statement used to request the database.
      * @param jdbcDataSource DataSource to use for the creation of the resultSet.
      */
     public PostgisSpatialTable(TableLocation tableLocation, String baseQuery, StatementWrapper statement,
@@ -73,12 +73,12 @@ public class PostgisSpatialTable extends JdbcSpatialTable {
     }
 
     @Override
-    protected ResultSet getResultSet(){
-        if(resultSet == null) {
+    protected ResultSet getResultSet() {
+        if (resultSet == null) {
             try {
                 resultSet = getStatement().executeQuery(getBaseQuery());
             } catch (SQLException e) {
-                LOGGER.error("Unable to execute the query '"+getBaseQuery()+"'.\n"+e.getLocalizedMessage());
+                LOGGER.error("Unable to execute the query '" + getBaseQuery() + "'.\n" + e.getLocalizedMessage());
                 return null;
             }
             try {
@@ -94,10 +94,10 @@ public class PostgisSpatialTable extends JdbcSpatialTable {
     @Override
     public Object asType(Class clazz) {
         if (ISpatialTable.class.isAssignableFrom(clazz)) {
-            return new PostgisSpatialTable(getTableLocation(), getBaseQuery(), (StatementWrapper)getStatement(),
+            return new PostgisSpatialTable(getTableLocation(), getBaseQuery(), (StatementWrapper) getStatement(),
                     getJdbcDataSource());
         } else if (ITable.class.isAssignableFrom(clazz)) {
-            return new PostgisTable(getTableLocation(), getBaseQuery(), (StatementWrapper)getStatement(),
+            return new PostgisTable(getTableLocation(), getBaseQuery(), (StatementWrapper) getStatement(),
                     getJdbcDataSource());
         } else {
             return super.asType(clazz);

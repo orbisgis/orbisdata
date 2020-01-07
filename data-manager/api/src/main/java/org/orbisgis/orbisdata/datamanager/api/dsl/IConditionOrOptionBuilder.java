@@ -55,7 +55,6 @@ public interface IConditionOrOptionBuilder extends IOptionBuilder {
      * Add a 'AND' condition for the selection.
      *
      * @param condition Condition to add for for the selection.
-     *
      * @return {@link IConditionOrOptionBuilder} instance to continue building.
      */
     IConditionOrOptionBuilder and(String condition);
@@ -64,7 +63,6 @@ public interface IConditionOrOptionBuilder extends IOptionBuilder {
      * Add a 'OR' condition for the selection.
      *
      * @param condition Condition to add for for the selection.
-     *
      * @return {@link IConditionOrOptionBuilder} instance to continue building.
      */
     IConditionOrOptionBuilder or(String condition);

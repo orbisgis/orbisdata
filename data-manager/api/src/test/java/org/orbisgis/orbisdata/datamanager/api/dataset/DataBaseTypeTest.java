@@ -49,7 +49,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class DataBaseTypeTest {
 
     @Test
-    public void simpleTest(){
+    public void simpleTest() {
         assertEquals("H2GIS", DataBaseType.H2GIS.name());
         assertEquals("POSTGIS", DataBaseType.POSTGIS.name());
     }

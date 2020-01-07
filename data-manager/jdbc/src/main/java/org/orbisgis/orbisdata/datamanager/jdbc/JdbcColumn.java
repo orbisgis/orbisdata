@@ -58,81 +58,92 @@ import java.util.Map;
  * @author Erwan Bocher (CNRS)
  * @author Sylvain PALOMINOS (UBS 2019)
  */
-public class JdbcColumn implements IJdbcColumn, GroovyObject {;
+public class JdbcColumn implements IJdbcColumn, GroovyObject {
+    ;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(JdbcColumn.class);
 
-    /** MetaClass use for groovy methods/properties binding */
+    /**
+     * MetaClass use for groovy methods/properties binding
+     */
     private MetaClass metaClass;
-    /** Name of the column. */
+    /**
+     * Name of the column.
+     */
     private String name;
-    /** Name of the table of the column. */
+    /**
+     * Name of the table of the column.
+     */
     private TableLocation tableName;
-    /** {@link IJdbcDataSource} of the column. */
+    /**
+     * {@link IJdbcDataSource} of the column.
+     */
     private JdbcDataSource dataSource;
-    /** Indicates if the database is an H2 one. */
+    /**
+     * Indicates if the database is an H2 one.
+     */
     private boolean isH2;
 
     /**
      * Default constructor.
      *
-     * @param name Name of the column.
-     * @param tableName Name of the table of the column.
+     * @param name       Name of the column.
+     * @param tableName  Name of the table of the column.
      * @param dataSource {@link IJdbcDataSource} of the column.
      */
-    public JdbcColumn(String name, String tableName, IJdbcDataSource dataSource){
+    public JdbcColumn(String name, String tableName, IJdbcDataSource dataSource) {
         this.isH2 = dataSource.getDataBaseType() == DataBaseType.H2GIS;
         this.name = TableLocation.capsIdentifier(name, isH2);
         this.tableName = TableLocation.parse(tableName, isH2);
-        this.dataSource = (JdbcDataSource)dataSource;
+        this.dataSource = (JdbcDataSource) dataSource;
         this.metaClass = InvokerHelper.getMetaClass(JdbcColumn.class);
     }
 
     @Override
-    public String getName(){
+    public String getName() {
         return name;
     }
 
     @Override
-    public String getType(){
+    public String getType() {
         try {
             Map map = dataSource.firstRow("SELECT TYPE_NAME FROM INFORMATION_SCHEMA.COLUMNS " +
-                    "WHERE INFORMATION_SCHEMA.COLUMNS.TABLE_NAME=? " +
-                    "AND INFORMATION_SCHEMA.COLUMNS.TABLE_SCHEMA=? " +
-                    "AND INFORMATION_SCHEMA.COLUMNS.COLUMN_NAME=?;",
+                            "WHERE INFORMATION_SCHEMA.COLUMNS.TABLE_NAME=? " +
+                            "AND INFORMATION_SCHEMA.COLUMNS.TABLE_SCHEMA=? " +
+                            "AND INFORMATION_SCHEMA.COLUMNS.COLUMN_NAME=?;",
                     new Object[]{tableName.getTable(), tableName.getSchema("PUBLIC"), name});
-            if(map != null && map.containsKey("TYPE_NAME")){
+            if (map != null && map.containsKey("TYPE_NAME")) {
                 return map.get("TYPE_NAME").toString();
             }
         } catch (SQLException e) {
-            LOGGER.error("Unable to get the type of the column '"+name+"' in the table '"+tableName+"'.\n"+
+            LOGGER.error("Unable to get the type of the column '" + name + "' in the table '" + tableName + "'.\n" +
                     e.getLocalizedMessage());
         }
         return null;
     }
 
     @Override
-    public long getSize(){
+    public long getSize() {
         try {
-            Map map = dataSource.firstRow("SELECT count("+TableLocation.quoteIdentifier(name, isH2)+
-                    ") FROM "+tableName.getTable());
-            if(map != null && !map.isEmpty() && map.values().toArray()[0] instanceof Long){
+            Map map = dataSource.firstRow("SELECT count(" + TableLocation.quoteIdentifier(name, isH2) +
+                    ") FROM " + tableName.getTable());
+            if (map != null && !map.isEmpty() && map.values().toArray()[0] instanceof Long) {
                 return (Long) map.values().toArray()[0];
             }
         } catch (SQLException e) {
-            LOGGER.error("Unable to get the size of the column '"+name+"' in the table '"+tableName+"'.\n"+
+            LOGGER.error("Unable to get the size of the column '" + name + "' in the table '" + tableName + "'.\n" +
                     e.getLocalizedMessage());
         }
         return -1;
     }
 
     @Override
-    public boolean isSpatial(){
+    public boolean isSpatial() {
         return "GEOMETRY".equals(getType());
     }
 
     @Override
-    public boolean isIndexed(){
+    public boolean isIndexed() {
         try {
             Map map = dataSource.firstRow("SELECT * FROM INFORMATION_SCHEMA.INDEXES " +
                             "WHERE INFORMATION_SCHEMA.INDEXES.TABLE_NAME=? " +
@@ -141,14 +152,14 @@ public class JdbcColumn implements IJdbcColumn, GroovyObject {;
                     new Object[]{tableName.getTable(), tableName.getSchema("PUBLIC"), name});
             return map != null;
         } catch (SQLException e) {
-            LOGGER.error("Unable to get the type of the column '"+name+"' in the table '"+tableName+"'.\n"+
+            LOGGER.error("Unable to get the type of the column '" + name + "' in the table '" + tableName + "'.\n" +
                     e.getLocalizedMessage());
         }
         return false;
     }
 
     @Override
-    public boolean isSpatialIndexed(){
+    public boolean isSpatialIndexed() {
         try {
             Map map = dataSource.firstRow("SELECT * FROM INFORMATION_SCHEMA.INDEXES " +
                             "WHERE INFORMATION_SCHEMA.INDEXES.TABLE_NAME=? " +
@@ -157,18 +168,18 @@ public class JdbcColumn implements IJdbcColumn, GroovyObject {;
                     new Object[]{tableName.getTable(), tableName.getSchema("PUBLIC"), name});
             return map != null && map.get("INDEX_TYPE_NAME").toString().contains("SPATIAL");
         } catch (SQLException e) {
-            LOGGER.error("Unable to get the type of the column '"+name+"' in the table '"+tableName+"'.\n"+
+            LOGGER.error("Unable to get the type of the column '" + name + "' in the table '" + tableName + "'.\n" +
                     e.getLocalizedMessage());
         }
         return false;
     }
 
     @Override
-    public boolean createIndex(){
-        if(!isIndexed()) {
+    public boolean createIndex() {
+        if (!isIndexed()) {
             try {
-                dataSource.execute("CREATE INDEX ON "+tableName.toString(isH2)+" USING BTREE ("+
-                        TableLocation.quoteIdentifier(name, isH2)+")");
+                dataSource.execute("CREATE INDEX ON " + tableName.toString(isH2) + " USING BTREE (" +
+                        TableLocation.quoteIdentifier(name, isH2) + ")");
                 return true;
             } catch (SQLException e) {
                 LOGGER.error("Unable to create an index on the column '" + name + "' in the table '" + tableName + "'.\n" +
@@ -179,14 +190,13 @@ public class JdbcColumn implements IJdbcColumn, GroovyObject {;
     }
 
     @Override
-    public boolean createSpatialIndex(){
-        if(!isIndexed() && isSpatial()) {
+    public boolean createSpatialIndex() {
+        if (!isIndexed() && isSpatial()) {
             try {
-                if(isH2){
-                    dataSource.execute("CREATE INDEX ON "+tableName.toString(isH2)+" USING RTREE ("+name+")");
-                }
-                else {
-                    dataSource.execute("CREATE INDEX ON "+tableName.toString(isH2)+" USING GIST ("+name+")");
+                if (isH2) {
+                    dataSource.execute("CREATE INDEX ON " + tableName.toString(isH2) + " USING RTREE (" + name + ")");
+                } else {
+                    dataSource.execute("CREATE INDEX ON " + tableName.toString(isH2) + " USING GIST (" + name + ")");
                 }
                 return true;
             } catch (SQLException e) {
@@ -198,7 +208,7 @@ public class JdbcColumn implements IJdbcColumn, GroovyObject {;
     }
 
     @Override
-    public void dropIndex(){
+    public void dropIndex() {
         List<String> indexes = new ArrayList<>();
         try {
             List<? extends Map> list = dataSource.rows("SELECT INDEX_NAME FROM INFORMATION_SCHEMA.INDEXES " +
@@ -206,18 +216,18 @@ public class JdbcColumn implements IJdbcColumn, GroovyObject {;
                             "AND INFORMATION_SCHEMA.INDEXES.TABLE_SCHEMA=? " +
                             "AND INFORMATION_SCHEMA.INDEXES.COLUMN_NAME=?;",
                     new Object[]{tableName.getTable(), tableName.getSchema("PUBLIC"), name});
-            for(Map map : list){
+            for (Map map : list) {
                 indexes.add(map.get("INDEX_NAME").toString());
             }
         } catch (SQLException e) {
-            LOGGER.error("Unable to get the indexes of the column '"+name+"' in the table '"+tableName+"'.\n"+
+            LOGGER.error("Unable to get the indexes of the column '" + name + "' in the table '" + tableName + "'.\n" +
                     e.getLocalizedMessage());
         }
-        for(String index : indexes) {
+        for (String index : indexes) {
             try {
                 dataSource.execute("DROP INDEX IF EXISTS " + index);
             } catch (SQLException e) {
-                LOGGER.error("Unable to drop the index '"+index+"' on the column '" + name + "' in the table '" +
+                LOGGER.error("Unable to drop the index '" + index + "' on the column '" + name + "' in the table '" +
                         tableName + "'.\n" + e.getLocalizedMessage());
             }
         }
@@ -228,16 +238,16 @@ public class JdbcColumn implements IJdbcColumn, GroovyObject {;
         try {
             return getMetaClass().invokeMethod(this, name, args);
         } catch (MissingMethodException e) {
-            LOGGER.debug("Unable to find the '"+name+"' methods, trying with the getter.\n"+e.getLocalizedMessage());
+            LOGGER.debug("Unable to find the '" + name + "' methods, trying with the getter.\n" + e.getLocalizedMessage());
             try {
                 return getMetaClass()
-                    .invokeMethod(this, "get" + name.substring(0, 1).toUpperCase() + name.substring(1), args);
+                        .invokeMethod(this, "get" + name.substring(0, 1).toUpperCase() + name.substring(1), args);
             } catch (MissingMethodException e2) {
                 LOGGER.debug("Unable to find the '" + name + "' methods, trying with the is getter.\n" +
                         e.getLocalizedMessage());
             }
             return getMetaClass()
-                            .invokeMethod(this, "is" + name.substring(0, 1).toUpperCase() + name.substring(1), args);
+                    .invokeMethod(this, "is" + name.substring(0, 1).toUpperCase() + name.substring(1), args);
         }
     }
 

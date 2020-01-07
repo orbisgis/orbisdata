@@ -5,5 +5,5 @@ package org.orbisgis.orbisdata.datamanager.api.dataset;
  *
  * @author Sylvain PALOMINOS (Lab-STICC UBS 2019)
  */
-public interface IJdbcSpatialTable extends IJdbcTable, ISpatialTable{
+public interface IJdbcSpatialTable extends IJdbcTable, ISpatialTable {
 }

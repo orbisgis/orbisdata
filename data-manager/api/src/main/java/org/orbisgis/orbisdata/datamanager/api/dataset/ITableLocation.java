@@ -43,6 +43,7 @@ public interface ITableLocation {
 
     /**
      * Return the name of the table of the {@link ITable}.
+     *
      * @return The name of the table
      */
 
@@ -50,24 +51,28 @@ public interface ITableLocation {
 
     /**
      * Returns the schema of the {@link ITable} if exists, otherwise, return null.
+     *
      * @return The schema or null.
      */
     String getSchema();
 
     /**
      * Returns the catalog of the {@link ITable} if exists, otherwise, return null.
+     *
      * @return The catalog or null.
      */
     String getCatalog();
 
     /**
      * Return the name of the dataSource of the {@link ITable}.
+     *
      * @return The name of the dataSource
      */
     String getDataSource();
 
     /**
      * Return the String representation of the table location for the given database type.
+     *
      * @param type Type of teh database.
      * @return The String representation of the table location.
      */

@@ -54,8 +54,7 @@ public interface IWhereBuilderOrOptionBuilder extends IOptionBuilder {
      * Indicates the condition for the selection.
      *
      * @param condition Condition to use for for the selection.
-     *
      * @return {@link IConditionOrOptionBuilder} instance to continue building.
      */
-    IConditionOrOptionBuilder where(String condition);    
+    IConditionOrOptionBuilder where(String condition);
 }

@@ -15,7 +15,7 @@
  *
  * Commons is distributed under LGPL 3 license.
  *
- * Copyright (C) 2018 CNRS (Lab-STICC UMR CNRS 6285)
+ * Copyright (C) 2018-2019 CNRS (Lab-STICC UMR CNRS 6285)
  *
  *
  * Commons is free software: you can redistribute it and/or modify it under the
@@ -34,7 +34,9 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.commons.printer;
+package org.orbisgis.orbisdata.commons.printer;
+
+import org.orbisgis.orbisdata.commons.annotations.NotNull;
 
 /**
  * Interface used for the customisation of the printing of Java Objects.
@@ -70,26 +72,34 @@ public interface ICustomPrinter {
      *
      * @param value Value to add to the table.
      */
-    void appendTableValue(Object value);
+    void appendTableValue(@NotNull Object value);
 
     /**
      * Add a single value to the table. Linebreak are automatically generated once the column count is reached.
      *
      * @param value Value to add to the table.
      */
-    void appendTableValue(Object value, CellPosition position);
+    void appendTableValue(@NotNull Object value, @NotNull CellPosition position);
 
     /**
      * Add a header value to the table. Linebreak are automatically generated once the column count is reached.
      *
      * @param value Header value to add to the table.
      */
-    void appendTableHeaderValue(Object value, CellPosition position);
+    void appendTableHeaderValue(@NotNull Object value, @NotNull CellPosition position);
 
     /**
      * Add a title to the table.
      *
-     * @param title Title to add to the table.
+     * @param title Not null title to add to the table.
      */
-    void appendTableTitle(Object title);
+    void appendTableTitle(@NotNull Object title);
+
+    /**
+     * Return the not null string representation of the data contained by the {@link ICustomPrinter} in its specific format.
+     *
+     * @return The not null string representation of the data contained by the {@link ICustomPrinter}
+     */
+    @NotNull
+    String toString();
 }

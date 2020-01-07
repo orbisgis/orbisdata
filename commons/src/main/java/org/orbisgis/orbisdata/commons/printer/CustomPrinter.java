@@ -15,7 +15,7 @@
  *
  * Commons is distributed under LGPL 3 license.
  *
- * Copyright (C) 2018 CNRS (Lab-STICC UMR CNRS 6285)
+ * Copyright (C) 2018-2019 CNRS (Lab-STICC UMR CNRS 6285)
  *
  *
  * Commons is free software: you can redistribute it and/or modify it under the
@@ -34,25 +34,28 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.commons.printer;
+package org.orbisgis.orbisdata.commons.printer;
+
+import org.orbisgis.orbisdata.commons.annotations.NotNull;
 
 /**
- * Root class for the custom printers.
+ * Root implementation of {@link ICustomPrinter} for the custom printers.
  *
  * @author Erwan Bocher (CNRS)
  * @author Sylvain PALOMINOS (UBS 2019)
  */
 public abstract class CustomPrinter implements ICustomPrinter {
 
-    /** {@link StringBuilder} used for the string building. */
+    /** Not null {@link StringBuilder} used for the string building */
+    @NotNull
     protected StringBuilder builder;
-    /** Width in character number of a single column. */
+    /** Width in character number of a single column */
     protected int columnWidth;
-    /** Count of column. */
+    /** Count of column */
     protected int columnCount;
-    /** True of a table is currently drawn, false otherwise. */
+    /** True of a table is currently drawn, false otherwise */
     protected boolean isDrawingTable;
-    /** Current column index. */
+    /** Current column index */
     protected int columnIndex;
 
     /**
@@ -60,10 +63,11 @@ public abstract class CustomPrinter implements ICustomPrinter {
      *
      * @param builder {@link StringBuilder} used for the string building.
      */
-    public CustomPrinter(StringBuilder builder){
+    protected CustomPrinter(@NotNull StringBuilder builder){
         this.builder = builder;
     }
 
+    @NotNull
     @Override
     public String toString(){
         return builder.toString();
@@ -86,7 +90,7 @@ public abstract class CustomPrinter implements ICustomPrinter {
     }
 
     @Override
-    public void appendTableValue(Object value){
+    public void appendTableValue(@NotNull Object value){
         appendTableValue(value, ICustomPrinter.CellPosition.LEFT);
     }
 }

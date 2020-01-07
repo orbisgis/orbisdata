@@ -52,10 +52,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.Point;
-import org.orbisgis.commons.printer.Ascii;
-import org.orbisgis.commons.printer.Html;
+import org.orbisgis.orbisdata.commons.printer.Ascii;
+import org.orbisgis.orbisdata.commons.printer.Html;
 import org.orbisgis.orbisdata.datamanager.api.dataset.*;
-import org.orbisgis.orbisdata.datamanager.api.datasource.IJdbcDataSource;
 import org.orbisgis.orbisdata.datamanager.api.dsl.IOptionBuilder;
 import org.orbisgis.orbisdata.datamanager.jdbc.h2gis.H2gisSpatialTable;
 import org.orbisgis.orbisdata.datamanager.jdbc.h2gis.H2gisTable;
@@ -715,23 +714,23 @@ class JdbcTableTest {
         assertNotNull(getTable().asType(ITable.class));
         assertTrue(getTable().asType(ITable.class) instanceof ITable);
         assertNotNull(getTable().asType(ISpatialTable.class));
-        assertEquals("+-------------------+\n" +
-                "|     ORBISGIS      |\n" +
-                "+-------------------+-------------------+-------------------+-------------------+-------------------+\n" +
-                "|     THE_GEOM      |     THE_GEOM2     |        ID         |       VALUE       |      MEANING      |\n" +
-                "+-------------------+-------------------+-------------------+-------------------+-------------------+\n" +
-                "|POINT (0 0)        |POINT (1 1)        |                  1|                2.3|Simple points      |\n" +
-                "|POINT (0 1)        |POINT (10 11)      |                  2|              0.568|3D point           |\n" +
-                "+-------------------+-------------------+-------------------+-------------------+-------------------+\n",
+        assertEquals("+--------------------+\n" +
+                "|      ORBISGIS      |\n" +
+                "+--------------------+--------------------+--------------------+--------------------+--------------------+\n" +
+                "|      THE_GEOM      |     THE_GEOM2      |         ID         |       VALUE        |      MEANING       |\n" +
+                "+--------------------+--------------------+--------------------+--------------------+--------------------+\n" +
+                "|POINT (0 0)         |POINT (1 1)         |                   1|                 2.3|Simple points       |\n" +
+                "|POINT (0 1)         |POINT (10 11)       |                   2|               0.568|3D point            |\n" +
+                "+--------------------+--------------------+--------------------+--------------------+--------------------+\n",
                 getTable().asType(Ascii.class).toString());
-        assertEquals("+-------------------+\n" +
-                "|                   |\n" +
-                "+-------------------+-------------------+-------------------+-------------------+-------------------+\n" +
-                "|     THE_GEOM      |     THE_GEOM2     |        ID         |       VALUE       |      MEANING      |\n" +
-                "+-------------------+-------------------+-------------------+-------------------+-------------------+\n" +
-                "|POINT (0 0)        |POINT (1 1)        |                  1|                2.3|Simple points      |\n" +
-                "|POINT (0 1)        |POINT (10 11)      |                  2|              0.568|3D point           |\n" +
-                "+-------------------+-------------------+-------------------+-------------------+-------------------+\n",
+        assertEquals("+--------------------+\n" +
+                "|                    |\n" +
+                "+--------------------+--------------------+--------------------+--------------------+--------------------+\n" +
+                "|      THE_GEOM      |     THE_GEOM2      |         ID         |       VALUE        |      MEANING       |\n" +
+                "+--------------------+--------------------+--------------------+--------------------+--------------------+\n" +
+                "|POINT (0 0)         |POINT (1 1)         |                   1|                 2.3|Simple points       |\n" +
+                "|POINT (0 1)         |POINT (10 11)       |                   2|               0.568|3D point            |\n" +
+                "+--------------------+--------------------+--------------------+--------------------+--------------------+\n",
                 getBuiltTable().asType(Ascii.class).toString());
         assertEquals("<table>\n" +
                 "<caption>ORBISGIS</caption>\n" +

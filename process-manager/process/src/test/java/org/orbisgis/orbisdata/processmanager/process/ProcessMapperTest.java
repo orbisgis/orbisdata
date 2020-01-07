@@ -40,11 +40,11 @@ import groovy.lang.Closure;
 import groovy.lang.GroovyShell;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.orbisgis.orbisdata.processmanager.process.inoutput.InOutPut;
 import org.orbisgis.orbisdata.processmanager.api.IProcess;
 import org.orbisgis.orbisdata.processmanager.api.IProcessManager;
 import org.orbisgis.orbisdata.processmanager.api.IProcessMapper;
 import org.orbisgis.orbisdata.processmanager.api.inoutput.IInOutPut;
+import org.orbisgis.orbisdata.processmanager.process.inoutput.InOutPut;
 
 import java.util.HashMap;
 import java.util.LinkedHashMap;

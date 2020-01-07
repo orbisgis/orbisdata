@@ -15,7 +15,7 @@
  *
  * Commons is distributed under LGPL 3 license.
  *
- * Copyright (C) 2018 CNRS (Lab-STICC UMR CNRS 6285)
+ * Copyright (C) 2018-2019 CNRS (Lab-STICC UMR CNRS 6285)
  *
  *
  * Commons is free software: you can redistribute it and/or modify it under the
@@ -34,10 +34,12 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.commons.printer;
+package org.orbisgis.orbisdata.commons.printer;
+
+import org.orbisgis.orbisdata.commons.annotations.NotNull;
 
 /**
- * Class for the printing of data in an Ascii style.
+ * Extension of {@link CustomPrinter} for the printing of data in an Ascii style.
  *
  * @author Erwan Bocher (CNRS)
  * @author Sylvain PALOMINOS (UBS 2019)
@@ -47,10 +49,13 @@ public class Ascii extends CustomPrinter {
     /**
      * Main constructor.
      *
-     * @param builder StringBuilder used for building the string
+     * @param builder Not null {@link StringBuilder} used for building the string.
      */
-    public Ascii(StringBuilder builder) {
+    public Ascii(@NotNull StringBuilder builder) {
         super(builder);
+        if(this.builder.length() != 0){
+            builder.append("\n");
+        }
     }
 
     @Override
@@ -58,7 +63,7 @@ public class Ascii extends CustomPrinter {
         if(isDrawingTable) {
             builder.append("+");
             for (int i = 0; i < columnCount; i++) {
-                for (int j = 0; j < columnWidth - 1; j++) {
+                for (int j = 0; j < columnWidth; j++) {
                     builder.append("-");
                 }
                 builder.append("+");
@@ -68,33 +73,33 @@ public class Ascii extends CustomPrinter {
     }
 
     @Override
-    public void appendTableValue(Object value, ICustomPrinter.CellPosition position){
+    public void appendTableValue(@NotNull Object value, @NotNull ICustomPrinter.CellPosition position){
         if(isDrawingTable){
             builder.append("|");
-            String cut = value == null ? "" : value.toString();
-            if (cut.length() > columnWidth - 1) {
-                cut = cut.substring(0, columnWidth - 4) + "...";
+            String cut = value.toString();
+            if (cut.length() > columnWidth) {
+                cut = cut.substring(0, columnWidth - 3) + "...";
             }
             switch(position){
                 case LEFT:
                     builder.append(cut);
-                    for (int i = 0; i < (columnWidth - 1 - cut.length()); i++) {
+                    for (int i = 0; i < (columnWidth - cut.length()); i++) {
                         builder.append(" ");
                     }
                     break;
                 case RIGHT:
-                    for (int i = 0; i < (columnWidth - 1 - cut.length()); i++) {
+                    for (int i = 0; i < (columnWidth - cut.length()); i++) {
                         builder.append(" ");
                     }
                     builder.append(cut);
                     break;
                 default:
                 case CENTER:
-                    for (int i = 0; i < (columnWidth - 1 - cut.length())/2; i++) {
+                    for (int i = 0; i < (columnWidth - cut.length())/2; i++) {
                         builder.append(" ");
                     }
                     builder.append(cut);
-                    for (int i = 0; i < (columnWidth - 1 - cut.length()) - (columnWidth - 1 - cut.length())/2; i++) {
+                    for (int i = 0; i < (columnWidth - cut.length()) - (columnWidth - cut.length())/2; i++) {
                         builder.append(" ");
                     }
                     break;
@@ -109,30 +114,30 @@ public class Ascii extends CustomPrinter {
     }
 
     @Override
-    public void appendTableHeaderValue(Object value, ICustomPrinter.CellPosition position){
+    public void appendTableHeaderValue(@NotNull Object value, @NotNull ICustomPrinter.CellPosition position){
         this.appendTableValue(value, position);
     }
 
     @Override
-    public void appendTableTitle(Object value){
+    public void appendTableTitle(@NotNull Object value){
         if(isDrawingTable){
             builder.append("+");
-            for (int j = 0; j < columnWidth - 1; j++) {
+            for (int j = 0; j < columnWidth; j++) {
                 builder.append("-");
             }
             builder.append("+");
             builder.append("\n");
 
             builder.append("|");
-            String cut = value == null ? "" : value.toString();
-            if (cut.length() > columnWidth - 1) {
-                cut = cut.substring(0, columnWidth - 4) + "...";
+            String cut = value.toString();
+            if (cut.length() > columnWidth) {
+                cut = cut.substring(0, columnWidth - 3) + "...";
             }
-            for (int i = 0; i < (columnWidth - 1 - cut.length())/2; i++) {
+            for (int i = 0; i < (columnWidth - cut.length())/2; i++) {
                 builder.append(" ");
             }
             builder.append(cut);
-            for (int i = 0; i < (columnWidth - 1 - cut.length()) - (columnWidth - 1 - cut.length())/2; i++) {
+            for (int i = 0; i < (columnWidth - cut.length()) - (columnWidth - cut.length())/2; i++) {
                 builder.append(" ");
             }
             builder.append("|");

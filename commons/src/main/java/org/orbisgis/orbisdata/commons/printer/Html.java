@@ -15,7 +15,7 @@
  *
  * Commons is distributed under LGPL 3 license.
  *
- * Copyright (C) 2018 CNRS (Lab-STICC UMR CNRS 6285)
+ * Copyright (C) 2018-2019 CNRS (Lab-STICC UMR CNRS 6285)
  *
  *
  * Commons is free software: you can redistribute it and/or modify it under the
@@ -34,10 +34,12 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.commons.printer;
+package org.orbisgis.orbisdata.commons.printer;
+
+import org.orbisgis.orbisdata.commons.annotations.NotNull;
 
 /**
- * Class for the printing of data in an Html style.
+ * Extension of {@link CustomPrinter} for the printing of data in an Html style.
  *
  * @author Erwan Bocher (CNRS)
  * @author Sylvain PALOMINOS (UBS 2019)
@@ -47,9 +49,9 @@ public class Html extends CustomPrinter {
     /**
      * Main constructor.
      *
-     * @param builder {@link StringBuilder} used for building the string
+     * @param builder Not null {@link StringBuilder} used for building the string.
      */
-    public Html(StringBuilder builder) {
+    public Html(@NotNull StringBuilder builder) {
         super(builder);
     }
 
@@ -73,7 +75,7 @@ public class Html extends CustomPrinter {
     }
 
     @Override
-    public void appendTableValue(Object value, CellPosition position) {
+    public void appendTableValue(@NotNull Object value, @NotNull CellPosition position) {
         if (isDrawingTable) {
             if(columnIndex == 0){
                 builder.append("<tr>\n");
@@ -93,7 +95,7 @@ public class Html extends CustomPrinter {
     }
 
     @Override
-    public void appendTableHeaderValue(Object value, CellPosition position) {
+    public void appendTableHeaderValue(@NotNull Object value, @NotNull CellPosition position) {
         if (isDrawingTable) {
             if(columnIndex == 0){
                 builder.append("<tr>\n");
@@ -113,7 +115,7 @@ public class Html extends CustomPrinter {
     }
 
     @Override
-    public void appendTableTitle(Object title) {
+    public void appendTableTitle(@NotNull Object title) {
         if(isDrawingTable) {
             builder.append("<caption>");
             builder.append(title);

@@ -44,7 +44,6 @@ import org.locationtech.jts.geom.Geometry;
 import org.orbisgis.orbisdata.datamanager.api.dataset.DataBaseType;
 import org.orbisgis.orbisdata.datamanager.api.dataset.IJdbcSpatialTable;
 import org.orbisgis.orbisdata.datamanager.api.dataset.IRaster;
-import org.orbisgis.orbisdata.datamanager.api.datasource.IJdbcDataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

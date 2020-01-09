@@ -51,12 +51,16 @@ public class ResultSetIterator implements Iterator<Object> {
     /** Class {@link Logger} */
     //private static final Logger LOGGER = LoggerFactory.getLogger(ResultSetIterator.class);
 
-    /** Iterated {@link ResultSet} */
+    /**
+     * Iterated {@link ResultSet}
+     */
     private ResultSet resultSet;
-    /** Count of {@link ResultSet} row */
+    /**
+     * Count of {@link ResultSet} row
+     */
     private int rowCount = 0;
 
-    public ResultSetIterator(){
+    public ResultSetIterator() {
         this.resultSet = null;
         //LOGGER.warn("There is no ResultSet so there will no data.");
     }
@@ -80,7 +84,7 @@ public class ResultSetIterator implements Iterator<Object> {
 
     @Override
     public boolean hasNext() {
-        if(resultSet == null) {
+        if (resultSet == null) {
             return false;
         }
         int row;
@@ -95,7 +99,7 @@ public class ResultSetIterator implements Iterator<Object> {
 
     @Override
     public ResultSet next() {
-        if(resultSet == null) {
+        if (resultSet == null) {
             return null;
         }
         try {
@@ -107,6 +111,6 @@ public class ResultSetIterator implements Iterator<Object> {
         }
         return resultSet;
     }
-    
-    
+
+
 }

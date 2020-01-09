@@ -53,17 +53,23 @@ import java.util.List;
  */
 public class ProcessFactory implements IProcessFactory {
 
-    /** Indicated if the process creation is allowed. */
+    /**
+     * Indicated if the process creation is allowed.
+     */
     protected boolean isLock;
-    /** Indicates if the factory should be used as the default one. */
+    /**
+     * Indicates if the factory should be used as the default one.
+     */
     protected boolean isDefault;
-    /** List of the processes created with this factory. */
+    /**
+     * List of the processes created with this factory.
+     */
     private List<IProcess> processList;
 
     /**
      * Default empty constructor.
      */
-    ProcessFactory(){
+    ProcessFactory() {
         this(false, false);
     }
 
@@ -73,15 +79,15 @@ public class ProcessFactory implements IProcessFactory {
      * @param lock If true, not process creation allowed.
      * @param dflt If true, it will be selected as the default factory.
      */
-    ProcessFactory(boolean lock, boolean dflt){
+    ProcessFactory(boolean lock, boolean dflt) {
         isLock = lock;
         isDefault = dflt;
         processList = new ArrayList<>();
     }
 
     @Override
-    public void registerProcess(IProcess process){
-        if(!isLock){
+    public void registerProcess(IProcess process) {
+        if (!isLock) {
             processList.add(process);
         }
     }
@@ -117,6 +123,6 @@ public class ProcessFactory implements IProcessFactory {
         IProcessBuilder builder = new ProcessBuilder(this, this);
         Closure code = cl.rehydrate(builder, this, this);
         code.setResolveStrategy(Closure.DELEGATE_FIRST);
-        return ((IProcessBuilder)code.call()).getProcess();
+        return ((IProcessBuilder) code.call()).getProcess();
     }
 }

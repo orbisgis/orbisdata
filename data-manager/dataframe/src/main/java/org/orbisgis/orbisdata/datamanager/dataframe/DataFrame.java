@@ -65,10 +65,14 @@ import java.util.stream.Stream;
  */
 public class DataFrame implements smile.data.DataFrame, ITable<BaseVector> {
 
-    /** Logger */
+    /**
+     * Logger
+     */
     private static final Logger LOGGER = LoggerFactory.getLogger(DataFrame.class);
 
-    /** Wrapped {@link smile.data.DataFrame} */
+    /**
+     * Wrapped {@link smile.data.DataFrame}
+     */
     private smile.data.DataFrame internalDataFrame;
 
     /**
@@ -76,7 +80,7 @@ public class DataFrame implements smile.data.DataFrame, ITable<BaseVector> {
      *
      * @return The internal {@link DataFrame}.
      */
-    private smile.data.DataFrame getInternalDataFrame(){
+    private smile.data.DataFrame getInternalDataFrame() {
         return internalDataFrame;
     }
 
@@ -85,7 +89,7 @@ public class DataFrame implements smile.data.DataFrame, ITable<BaseVector> {
      *
      * @param dataFrame The internal {@link DataFrame}.
      */
-    void setInternalDataFrame(smile.data.DataFrame dataFrame){
+    void setInternalDataFrame(smile.data.DataFrame dataFrame) {
         internalDataFrame = dataFrame;
     }
 
@@ -220,7 +224,7 @@ public class DataFrame implements smile.data.DataFrame, ITable<BaseVector> {
     }
 
     @Override
-    public Summary summary(){
+    public Summary summary() {
         return new Summary(getInternalDataFrame().summary());
     }
 
@@ -244,7 +248,7 @@ public class DataFrame implements smile.data.DataFrame, ITable<BaseVector> {
         DataType[] dataTypes = types();
         String[] names = names();
         Map<String, String> map = new HashMap<>();
-        for(int i=0; i<dataTypes.length; i++){
+        for (int i = 0; i < dataTypes.length; i++) {
             map.put(names[i], dataTypes[i].name());
         }
         return map;
@@ -253,9 +257,9 @@ public class DataFrame implements smile.data.DataFrame, ITable<BaseVector> {
     @Override
     public String getColumnType(String columnName) {
         int index = -1;
-        for(String name : names()){
+        for (String name : names()) {
             index++;
-            if(name.equalsIgnoreCase(columnName))
+            if (name.equalsIgnoreCase(columnName))
                 break;
         }
         return types()[index].name();
@@ -281,7 +285,7 @@ public class DataFrame implements smile.data.DataFrame, ITable<BaseVector> {
         int colIndex = columnIndex(column);
         List<String> values = new ArrayList<>();
 
-        for(int i=0; i< nrows(); i++){
+        for (int i = 0; i < nrows(); i++) {
             values.add(get(i, colIndex).toString());
         }
         return values.stream().distinct().collect(Collectors.toList());
@@ -290,9 +294,9 @@ public class DataFrame implements smile.data.DataFrame, ITable<BaseVector> {
     @Override
     public boolean save(String filePath, String encoding) {
         File f = new File(filePath);
-        if(!f.exists()){
+        if (!f.exists()) {
             try {
-                if(!f.createNewFile()){
+                if (!f.createNewFile()) {
                     LOGGER.error("Unable to create the file '" + f.getAbsolutePath() + "'.");
                     return false;
                 }
@@ -309,19 +313,19 @@ public class DataFrame implements smile.data.DataFrame, ITable<BaseVector> {
             return false;
         }
         try {
-            writer.write(String.join(",", names())+"\n");
+            writer.write(String.join(",", names()) + "\n");
             writer.flush();
         } catch (IOException e) {
             LOGGER.error("Unable to write in the FileWriter.", e);
             return false;
         }
-        for(int i=0; i<nrows(); i++){
+        for (int i = 0; i < nrows(); i++) {
             List<String> row = new ArrayList<>();
-            for(int j=0; j<ncols(); j++){
+            for (int j = 0; j < ncols(); j++) {
                 row.add(get(i, j).toString());
             }
             try {
-                writer.write(String.join(",", row)+"\n");
+                writer.write(String.join(",", row) + "\n");
                 writer.flush();
             } catch (IOException e) {
                 LOGGER.error("Unable to write in the FileWriter.", e);
@@ -334,7 +338,7 @@ public class DataFrame implements smile.data.DataFrame, ITable<BaseVector> {
     @Override
     public List<Object> getFirstRow() {
         List<Object> firstRow = new ArrayList<>();
-        for(int i=0; i<ncols(); i++){
+        for (int i = 0; i < ncols(); i++) {
             firstRow.add(get(0, i));
         }
         return firstRow;
@@ -376,13 +380,11 @@ public class DataFrame implements smile.data.DataFrame, ITable<BaseVector> {
 
     @Override
     public Object asType(Class clazz) {
-        if(String.class.isAssignableFrom(clazz)){
+        if (String.class.isAssignableFrom(clazz)) {
             return toString();
-        }
-        else if(Matrix.class.isAssignableFrom(clazz)){
+        } else if (Matrix.class.isAssignableFrom(clazz)) {
             return toString();
-        }
-        else if(DataFrame.class.isAssignableFrom(clazz)){
+        } else if (DataFrame.class.isAssignableFrom(clazz)) {
             return this;
         }
         return null;
@@ -392,10 +394,9 @@ public class DataFrame implements smile.data.DataFrame, ITable<BaseVector> {
      * Convert a smile {@link smile.data.DataFrame} into an OrbisData {@link DataFrame}.
      *
      * @param dataFrame Smile {@link smile.data.DataFrame}.
-     *
      * @return OrbisData {@link DataFrame}.
      */
-    public static DataFrame of(smile.data.DataFrame dataFrame){
+    public static DataFrame of(smile.data.DataFrame dataFrame) {
         DataFrame df = new DataFrame();
         df.internalDataFrame = dataFrame;
         return df;
@@ -405,32 +406,29 @@ public class DataFrame implements smile.data.DataFrame, ITable<BaseVector> {
      * Convert a {@link ResultSet} into an OrbisData {@link DataFrame}.
      *
      * @param rs {@link ResultSet}.
-     *
      * @return OrbisData {@link DataFrame}.
-     *
      * @throws SQLException Exception thrown in case or error while manipulation SQL base {@link ResultSet}.
      */
     public static DataFrame of(ResultSet rs) throws SQLException {
-        if(rs instanceof IJdbcTable){
-            IJdbcTable jdbcTable = (IJdbcTable)rs;
+        if (rs instanceof IJdbcTable) {
+            IJdbcTable jdbcTable = (IJdbcTable) rs;
             StructType schema = getStructure(jdbcTable);
             ArrayList<Tuple> rows = new ArrayList<>();
-            while(jdbcTable.next()) {
+            while (jdbcTable.next()) {
                 rows.add(toTuple(jdbcTable, schema));
             }
             return of(smile.data.DataFrame.of(rows));
-        }
-        else{
+        } else {
             return of(smile.data.DataFrame.of(rs));
         }
     }
 
-    private static StructType getStructure(IJdbcTable table){
+    private static StructType getStructure(IJdbcTable table) {
         StructField[] fields = new StructField[table.getColumnCount()];
-        int i=-1;
-        for(Map.Entry<String, String> entry : table.getColumnsTypes().entrySet()){
+        int i = -1;
+        for (Map.Entry<String, String> entry : table.getColumnsTypes().entrySet()) {
             i++;
-            String type  = entry.getValue();
+            String type = entry.getValue();
             switch (entry.getValue().toUpperCase()) {
                 case "GEOMETRY":
                 case "GEOMETRYCOLLECTION":
@@ -450,14 +448,13 @@ public class DataFrame implements smile.data.DataFrame, ITable<BaseVector> {
             fields[i] = new StructField(entry.getKey(), dataType);
         }
 
-        return  new StructType(fields);
+        return new StructType(fields);
     }
 
     /**
      * Create a {@link DataFrame} from a file.
      *
      * @param path Path to the file to load into the {@link DataFrame}.
-     *
      * @return OrbisData {@link DataFrame}.
      */
     public static DataFrame of(String path) throws IOException {
@@ -468,16 +465,15 @@ public class DataFrame implements smile.data.DataFrame, ITable<BaseVector> {
      * Create a {@link DataFrame} from a file.
      *
      * @param file {@link File} to load into the {@link DataFrame}.
-     *
      * @return OrbisData {@link DataFrame}.
      */
     public static DataFrame of(File file) throws IOException {
-        if(!file.exists()){
+        if (!file.exists()) {
             LOGGER.error("The file '" + file.getAbsolutePath() + "' does not exists.");
             return null;
         }
         int dotIndex = file.getName().lastIndexOf(".");
-        if(!file.getName().substring(dotIndex+1).equalsIgnoreCase("csv")){
+        if (!file.getName().substring(dotIndex + 1).equalsIgnoreCase("csv")) {
             LOGGER.error("Only CSV file are supported.");
             return null;
         }
@@ -502,24 +498,22 @@ public class DataFrame implements smile.data.DataFrame, ITable<BaseVector> {
     /**
      * Creates a {@link Tuple} from a {@link ResultSet} which can contains spatial daa like {@link Geometry}.
      *
-     * @param rs {@link ResultSet} to read.
+     * @param rs     {@link ResultSet} to read.
      * @param schema Smile {@link smile.data.DataFrame} schema.
-     *
      * @return {@link Tuple} containing the data from the {@link ResultSet}.
-     *
      * @throws SQLException
      */
     private static Tuple toTuple(ResultSet rs, StructType schema) throws SQLException {
         Object[] row = new Object[rs.getMetaData().getColumnCount()];
 
-        for(int i = 0; i < row.length; ++i) {
+        for (int i = 0; i < row.length; ++i) {
             row[i] = rs.getObject(i + 1);
             if (row[i] instanceof Date) {
-                row[i] = ((Date)row[i]).toLocalDate();
+                row[i] = ((Date) row[i]).toLocalDate();
             } else if (row[i] instanceof Time) {
-                row[i] = ((Time)row[i]).toLocalTime();
+                row[i] = ((Time) row[i]).toLocalTime();
             } else if (row[i] instanceof Timestamp) {
-                row[i] = ((Timestamp)row[i]).toLocalDateTime();
+                row[i] = ((Timestamp) row[i]).toLocalDateTime();
             } else if (row[i] instanceof Geometry) {
                 row[i] = row[i].toString();
             }
@@ -529,7 +523,7 @@ public class DataFrame implements smile.data.DataFrame, ITable<BaseVector> {
     }
 
     @Override
-    public String toString(){
+    public String toString() {
         return getInternalDataFrame().toString();
     }
 

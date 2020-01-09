@@ -54,13 +54,15 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 public class ResultSetIteratorTest {
 
-    /** Connection used to get a {@link ResultSet}. */
+    /**
+     * Connection used to get a {@link ResultSet}.
+     */
     private static Connection connection;
 
     /**
      * Initialize the database through the connection with some data.
      *
-     * @throws SQLException Exception thrown by SQL requests.
+     * @throws SQLException           Exception thrown by SQL requests.
      * @throws ClassNotFoundException Exception get if the H2/H2GIS classes are not found.
      */
     @BeforeAll
@@ -77,7 +79,6 @@ public class ResultSetIteratorTest {
      * Return a {@link ResultSet} containing data.
      *
      * @return A {@link ResultSet} containing data.
-     *
      * @throws SQLException Exception thrown by SQL requests.
      */
     private static ResultSet getResultSet() throws SQLException {
@@ -127,7 +128,7 @@ public class ResultSetIteratorTest {
     }
 
     @Test
-    public void emptyResultSetIteratorTest(){
+    public void emptyResultSetIteratorTest() {
         ResultSetIterator resultSetIterator = new ResultSetIterator();
         assertFalse(resultSetIterator.hasNext());
         assertNull(resultSetIterator.next());

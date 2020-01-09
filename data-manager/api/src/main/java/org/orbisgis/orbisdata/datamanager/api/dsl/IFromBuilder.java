@@ -52,7 +52,6 @@ public interface IFromBuilder {
      * Indicates the table use for the selection.
      *
      * @param tables Array of the table use for the selection.
-     *
      * @return {@link IWhereBuilderOrOptionBuilder} instance to continue building.
      */
     IWhereBuilderOrOptionBuilder from(String... tables);

@@ -69,30 +69,42 @@ public class ProcessMapper implements IProcessMapper {
     private LinkedList<IOutput> outputs = new LinkedList<>();
     private List<List<IProcess>> executionTree;
     private Map<String, Object> results;
-    /** Map with the input as key and the output as value. */
+    /**
+     * Map with the input as key and the output as value.
+     */
     private Map<IInOutPut, IInOutPut> inputOutputMap;
-    /** List of all the processes used in this mapper. */
+    /**
+     * List of all the processes used in this mapper.
+     */
     private List<IProcess> processList;
-    /** Map of the aliases as key and the list of input/output as value. */
+    /**
+     * Map of the aliases as key and the list of input/output as value.
+     */
     private Map<String, List<IInOutPut>> aliases;
-    /** List of check to do before process execution */
+    /**
+     * List of check to do before process execution
+     */
     private List<IProcessCheck> beforeList = new ArrayList<>();
-    /** List of check to do after process execution */
+    /**
+     * List of check to do after process execution
+     */
     private List<IProcessCheck> afterList = new ArrayList<>();
-    /** Title of the mapper. */
+    /**
+     * Title of the mapper.
+     */
     private String title;
 
     /**
      * Main empty constructor.
      */
-    public ProcessMapper(){
+    public ProcessMapper() {
         this(null);
     }
 
     /**
      * Main constructor.
      */
-    public ProcessMapper(String title){
+    public ProcessMapper(String title) {
         this.title = title;
         inputOutputMap = new HashMap<>();
         aliases = new HashMap<>();
@@ -101,14 +113,13 @@ public class ProcessMapper implements IProcessMapper {
     /**
      * Return the alias of the given input or output.
      *
-     * @param name Name of the alias.
+     * @param name    Name of the alias.
      * @param process {@link IProcess} containing the input/output with the alias.
-     *
      * @return The alias name if there is one, null otherwise.
      */
-    private String getAlias(String name, IProcess process){
-        for(Map.Entry<String, List<IInOutPut>> list : aliases.entrySet()){
-            for(IInOutPut inOutPut : list.getValue()) {
+    private String getAlias(String name, IProcess process) {
+        for (Map.Entry<String, List<IInOutPut>> list : aliases.entrySet()) {
+            for (IInOutPut inOutPut : list.getValue()) {
                 if (inOutPut.getName().equals(name) && inOutPut.getProcess().getIdentifier().equals(process.getIdentifier())) {
                     return list.getKey();
                 }
@@ -120,7 +131,7 @@ public class ProcessMapper implements IProcessMapper {
     /**
      * Fill the process list.
      */
-    private void fillProcessList(){
+    private void fillProcessList() {
         inputOutputMap.forEach((input, output) -> {
             if (!processList.contains(input.getProcess())) {
                 processList.add(input.getProcess());
@@ -138,7 +149,7 @@ public class ProcessMapper implements IProcessMapper {
         });
     }
 
-    private void collectInput(IInput input, IProcess process, List<IInOutPut> collection){
+    private void collectInput(IInput input, IProcess process, List<IInOutPut> collection) {
         boolean isBetween = false;
         for (Map.Entry<IInOutPut, IInOutPut> entry : inputOutputMap.entrySet()) {
             if (entry.getKey().getName().equals(input.getName()) &&
@@ -147,7 +158,7 @@ public class ProcessMapper implements IProcessMapper {
             }
         }
         if (!isBetween) {
-            if(inputs.stream().noneMatch(iInput -> iInput.getName().equals(input.getName()) &&
+            if (inputs.stream().noneMatch(iInput -> iInput.getName().equals(input.getName()) &&
                     iInput.getProcess().getIdentifier().equals(input.getProcess().getIdentifier()))) {
                 inputs.add(input);
             }
@@ -155,9 +166,9 @@ public class ProcessMapper implements IProcessMapper {
         }
     }
 
-    private void collectOutput(IOutput output, IProcess process){
+    private void collectOutput(IOutput output, IProcess process) {
         boolean isBetween = false;
-        for(Map.Entry<IInOutPut, IInOutPut> entry : inputOutputMap.entrySet()) {
+        for (Map.Entry<IInOutPut, IInOutPut> entry : inputOutputMap.entrySet()) {
             if (entry.getValue().getName().equals(output.getName()) &&
                     entry.getValue().getProcess().getIdentifier().equals(process.getIdentifier())) {
                 isBetween = true;
@@ -176,10 +187,10 @@ public class ProcessMapper implements IProcessMapper {
      *
      * @return The list of available inputs.
      */
-    private List<IInOutPut> collectInputOutput(){
+    private List<IInOutPut> collectInputOutput() {
         List<IInOutPut> availableIn = new ArrayList<>();
         for (IProcess process : processList) {
-            if(process.getInputs() != null) {
+            if (process.getInputs() != null) {
                 process.getInputs().forEach(input -> collectInput(input, process, availableIn));
             }
             process.getOutputs().forEach(output -> collectOutput(output, process));
@@ -188,7 +199,7 @@ public class ProcessMapper implements IProcessMapper {
     }
 
     private void buildExecutionTreeLevel(List<IProcess> iterableProcessList, List<IInOutPut> availableIn,
-                                         int i, List<IInOutPut> newIn){
+                                         int i, List<IInOutPut> newIn) {
         for (Iterator<IProcess> iterator = iterableProcessList.iterator(); iterator.hasNext(); ) {
             IProcess process = iterator.next();
             boolean isAllInput = true;
@@ -226,7 +237,7 @@ public class ProcessMapper implements IProcessMapper {
     /**
      * Link the inputs, the outputs and the aliases to prepare the execution.
      */
-    private boolean link(){
+    private boolean link() {
         executionTree = new ArrayList<>();
         results = new HashMap<>();
         processList = new ArrayList<>();
@@ -245,11 +256,11 @@ public class ProcessMapper implements IProcessMapper {
             executionTree.add(new ArrayList<>());
             buildExecutionTreeLevel(iterableProcessList, availableIn, i, newIn);
             i++;
-        } while(!iterableProcessList.isEmpty() && !executionTree.get(i-1).isEmpty());
+        } while (!iterableProcessList.isEmpty() && !executionTree.get(i - 1).isEmpty());
 
-        if(!iterableProcessList.isEmpty()){
-            LOGGER.error("Unable to link the processes '"+
-                    iterableProcessList.stream().map(IProcess::getTitle).collect(Collectors.joining(","))+"'");
+        if (!iterableProcessList.isEmpty()) {
+            LOGGER.error("Unable to link the processes '" +
+                    iterableProcessList.stream().map(IProcess::getTitle).collect(Collectors.joining(",")) + "'");
             return false;
         }
         return true;
@@ -282,39 +293,36 @@ public class ProcessMapper implements IProcessMapper {
      *
      * @param process {@link IProcess} which will executed.
      * @param dataMap {@link Map} with the {@link ProcessMapper} input data.
-     *
      * @return A {@link LinkedHashMap} with the input data for the given {@link IProcess}.
      */
-    private LinkedHashMap<String, Object> getInputDataMap(IProcess process, Map<String, Object> dataMap){
+    private LinkedHashMap<String, Object> getInputDataMap(IProcess process, Map<String, Object> dataMap) {
         LinkedHashMap<String, Object> processInData = new LinkedHashMap<>();
-        if(process.getInputs() != null) {
+        if (process.getInputs() != null) {
             for (IInput in : process.getInputs()) {
                 //Try to get the data directly from the out of a process
                 String alias = getAlias(in.getName(), process);
                 final Object[] data = new Object[1];
-                if(alias != null){
+                if (alias != null) {
                     data[0] = dataMap.get(alias);
-                }
-                else {
+                } else {
                     data[0] = dataMap.get(in.getName());
                 }
                 //Get the link between the input 'in' and a process output if exists
                 inputOutputMap.forEach((input, output) -> {
-                    if(process.getIdentifier().equals(input.getProcess().getIdentifier()) &&
-                            input.getName().equals(in.getName())){
+                    if (process.getIdentifier().equals(input.getProcess().getIdentifier()) &&
+                            input.getName().equals(in.getName())) {
                         //get the process with the output linked to 'in'
-                        for(IProcess p : processList){
-                            if(p.getIdentifier().equals(output.getProcess().getIdentifier())){
+                        for (IProcess p : processList) {
+                            if (p.getIdentifier().equals(output.getProcess().getIdentifier())) {
                                 data[0] = p.getResults().get(output.getName());
                             }
                         }
                     }
                 });
                 //Do not add null value for optional input
-                if(in.isOptional() && data[0] == null) {
+                if (in.isOptional() && data[0] == null) {
                     processInData.put(in.getName(), in.getDefaultValue());
-                }
-                else {
+                } else {
                     processInData.put(in.getName(), data[0]);
                 }
             }
@@ -324,17 +332,17 @@ public class ProcessMapper implements IProcessMapper {
 
     @Override
     public boolean execute(LinkedHashMap<String, Object> inputDataMap) {
-        if(!link()){
+        if (!link()) {
             return false;
         }
-        Map<String, Object> dataMap = inputDataMap == null ?  new HashMap<>() : new HashMap<>(inputDataMap);
+        Map<String, Object> dataMap = inputDataMap == null ? new HashMap<>() : new HashMap<>(inputDataMap);
         //Iterate over the execution tree
-        for(List<IProcess> processes : executionTree){
-            for(IProcess process : processes){
+        for (List<IProcess> processes : executionTree) {
+            for (IProcess process : processes) {
                 LinkedHashMap<String, Object> processInData = getInputDataMap(process, dataMap);
                 //Do the before check
-                for(IProcessCheck check : beforeList){
-                    if(check.getProcess().getIdentifier().equals(process.getIdentifier())){
+                for (IProcessCheck check : beforeList) {
+                    if (check.getProcess().getIdentifier().equals(process.getIdentifier())) {
                         check.run(processInData);
                     }
                 }
@@ -342,8 +350,8 @@ public class ProcessMapper implements IProcessMapper {
                 process.execute(processInData);
                 storeResults(process);
                 //Do the after check
-                for(IProcessCheck check : afterList){
-                    if(check.getProcess().getIdentifier().equals(process.getIdentifier())){
+                for (IProcessCheck check : afterList) {
+                    if (check.getProcess().getIdentifier().equals(process.getIdentifier())) {
                         check.run(processInData);
                     }
                 }
@@ -357,21 +365,20 @@ public class ProcessMapper implements IProcessMapper {
      *
      * @param process {@link IProcess} which results should be stored.
      */
-    private void storeResults(IProcess process){
-        for(String key : process.getResults().keySet()){
+    private void storeResults(IProcess process) {
+        for (String key : process.getResults().keySet()) {
             boolean isBetween = false;
-            for(Map.Entry<IInOutPut, IInOutPut> entry : inputOutputMap.entrySet()){
-                if(entry.getValue().getName().equals(key) &&
-                        entry.getValue().getProcess().getIdentifier().equals(process.getIdentifier())){
+            for (Map.Entry<IInOutPut, IInOutPut> entry : inputOutputMap.entrySet()) {
+                if (entry.getValue().getName().equals(key) &&
+                        entry.getValue().getProcess().getIdentifier().equals(process.getIdentifier())) {
                     isBetween = true;
                 }
             }
             String alias = getAlias(key, process);
-            if(alias != null){
+            if (alias != null) {
                 results.put(alias, process.getResults().get(key));
-            }
-            else {
-                if(!isBetween){
+            } else {
+                if (!isBetween) {
                     results.put(key, process.getResults().get(key));
                 }
             }
@@ -411,9 +418,13 @@ public class ProcessMapper implements IProcessMapper {
      * This class manage the link between inputs, outputs and aliases.
      */
     private class Linker implements ILinker {
-        /** Array of inputs */
+        /**
+         * Array of inputs
+         */
         private List<IInOutPut> inputList = new ArrayList<>();
-        /** Array of outputs */
+        /**
+         * Array of outputs
+         */
         private List<IInOutPut> outputList = new ArrayList<>();
 
         /**
@@ -421,58 +432,55 @@ public class ProcessMapper implements IProcessMapper {
          *
          * @param inOutPuts Inputs or outputs to link.
          */
-        private Linker(IInOutPut... inOutPuts){
-            if(inOutPuts.length == 0){
+        private Linker(IInOutPut... inOutPuts) {
+            if (inOutPuts.length == 0) {
                 LOGGER.error("The input/output list should not be empty.");
             }
             boolean allInputs = true;
             boolean allOutputs = true;
-            for(IInOutPut inOutPut : inOutPuts){
-                if(inOutPut.getProcess().getInputs().stream().noneMatch(input -> input.getName().equals(inOutPut.getName()))) {
+            for (IInOutPut inOutPut : inOutPuts) {
+                if (inOutPut.getProcess().getInputs().stream().noneMatch(input -> input.getName().equals(inOutPut.getName()))) {
                     allInputs = false;
                 }
-                if(inOutPut.getProcess().getOutputs().stream().noneMatch(output -> output.getName().equals(inOutPut.getName()))) {
+                if (inOutPut.getProcess().getOutputs().stream().noneMatch(output -> output.getName().equals(inOutPut.getName()))) {
                     allOutputs = false;
                 }
             }
-            if(!allInputs && !allOutputs){
+            if (!allInputs && !allOutputs) {
                 LOGGER.error("Input and outputs should not be mixed.");
-            }
-            else if(allInputs){
+            } else if (allInputs) {
                 inputList.addAll(Arrays.asList(inOutPuts));
-            }
-            else{
+            } else {
                 outputList.addAll(Arrays.asList(inOutPuts));
             }
         }
 
         @Override
         public void to(IInOutPut... inOutPuts) {
-            if(inOutPuts.length == 0){
+            if (inOutPuts.length == 0) {
                 LOGGER.error("The input/output list should not be empty.");
                 return;
             }
-            if(Arrays.stream(inOutPuts).anyMatch(iInOutPut -> iInOutPut instanceof IInput) &&
-                    Arrays.stream(inOutPuts).anyMatch(iInOutPut -> iInOutPut instanceof IOutput)){
+            if (Arrays.stream(inOutPuts).anyMatch(iInOutPut -> iInOutPut instanceof IInput) &&
+                    Arrays.stream(inOutPuts).anyMatch(iInOutPut -> iInOutPut instanceof IOutput)) {
                 LOGGER.error("Input and outputs should not be mixed.");
                 return;
             }
-            if(!inputList.isEmpty()) {
-                if(Arrays.stream(inOutPuts).noneMatch(iInOutPut -> iInOutPut instanceof IOutput)){
+            if (!inputList.isEmpty()) {
+                if (Arrays.stream(inOutPuts).noneMatch(iInOutPut -> iInOutPut instanceof IOutput)) {
                     LOGGER.error("Inputs should be link to outputs.");
                     return;
                 }
                 outputList.addAll(Arrays.asList(inOutPuts));
-            }
-            else if(!outputList.isEmpty()) {
-                if(Arrays.stream(inOutPuts).noneMatch(iInOutPut -> iInOutPut instanceof IInput)){
+            } else if (!outputList.isEmpty()) {
+                if (Arrays.stream(inOutPuts).noneMatch(iInOutPut -> iInOutPut instanceof IInput)) {
                     LOGGER.error("Outputs should be link to inputs.");
                     return;
                 }
                 inputList.addAll(Arrays.asList(inOutPuts));
             }
             for (IInOutPut input : inputList) {
-                for(IInOutPut output : outputList) {
+                for (IInOutPut output : outputList) {
                     inputOutputMap.put(input, output);
                 }
             }
@@ -484,24 +492,23 @@ public class ProcessMapper implements IProcessMapper {
             inOutPuts.addAll(inputList);
             inOutPuts.addAll(outputList);
             for (IInOutPut inOutPut : inOutPuts) {
-                if(aliases.get(alias) != null ) {
+                if (aliases.get(alias) != null) {
                     aliases.get(alias).add(inOutPut);
-                }
-                else {
+                } else {
                     aliases.put(alias, new ArrayList<>(inOutPuts));
                 }
             }
-            if(!inputList.isEmpty() && inputList.stream().noneMatch(iInOutPut -> iInOutPut.getName().equals(alias))){
+            if (!inputList.isEmpty() && inputList.stream().noneMatch(iInOutPut -> iInOutPut.getName().equals(alias))) {
                 inputs.add(new Input(null, alias));
             }
-            if(!outputList.isEmpty() && outputList.stream().noneMatch(iInOutPut -> iInOutPut.getName().equals(alias))){
+            if (!outputList.isEmpty() && outputList.stream().noneMatch(iInOutPut -> iInOutPut.getName().equals(alias))) {
                 outputs.add(new Output(null, alias));
             }
         }
     }
 
     @Override
-    public boolean call(LinkedHashMap<String, Object> inputDataMap){
+    public boolean call(LinkedHashMap<String, Object> inputDataMap) {
         return execute(inputDataMap);
     }
 }

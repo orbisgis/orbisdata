@@ -77,33 +77,49 @@ import static org.junit.jupiter.api.Assertions.*;
 //TODO test with a postgis database
 class JdbcTableTest {
 
-    /** Database connection */
+    /**
+     * Database connection
+     */
     private static Connection connection;
-    /** Linked database connection */
+    /**
+     * Linked database connection
+     */
     private static Connection connectionLinked;
-    /** Connection statement */
+    /**
+     * Connection statement
+     */
     private static Statement statement;
-    /** Dummy data source */
+    /**
+     * Dummy data source
+     */
     private static DummyJdbcDataSource dataSource;
-    /** Table location */
+    /**
+     * Table location
+     */
     private static TableLocation tableLocation;
-    /** Linked table location */
+    /**
+     * Linked table location
+     */
     private static TableLocation linkedLocation;
-    /** Temporary table location */
+    /**
+     * Temporary table location
+     */
     private static TableLocation tempLocation;
-    /** Empty table location */
+    /**
+     * Empty table location
+     */
     private static TableLocation emptyLocation;
 
     private static final String BASE_DATABASE = JdbcTableTest.class.getSimpleName();
     private static final String TABLE_NAME = "ORBISGIS";
-    private static final String BASE_QUERY = "SELECT * FROM "+TABLE_NAME;
+    private static final String BASE_QUERY = "SELECT * FROM " + TABLE_NAME;
     private static final String TEMP_NAME = "TEMPTABLE";
-    private static final String TEMP_QUERY = "SELECT * FROM "+TEMP_NAME;
+    private static final String TEMP_QUERY = "SELECT * FROM " + TEMP_NAME;
     private static final String EMPTY_NAME = "ORBISGIS_EMPTY";
-    private static final String EMPTY_QUERY = "SELECT * FROM "+EMPTY_NAME;
-    private static final String LINKED_DATABASE = JdbcTableTest.class.getSimpleName()+"linked";
+    private static final String EMPTY_QUERY = "SELECT * FROM " + EMPTY_NAME;
+    private static final String LINKED_DATABASE = JdbcTableTest.class.getSimpleName() + "linked";
     private static final String LINKED_NAME = "LINKEDTABLE";
-    private static final String LINKED_QUERY = "SELECT * FROM "+LINKED_NAME;
+    private static final String LINKED_QUERY = "SELECT * FROM " + LINKED_NAME;
 
     private static final String COL_THE_GEOM = "THE_GEOM";
     private static final String COL_THE_GEOM2 = "the_geom2";
@@ -115,11 +131,11 @@ class JdbcTableTest {
      * Initialization of the database.
      */
     @BeforeAll
-    static void init(){
+    static void init() {
         try {
             connection = H2GISDBFactory.createSpatialDataBase(BASE_DATABASE);
             connectionLinked = H2GISDBFactory.createSpatialDataBase(LINKED_DATABASE);
-        } catch (SQLException|ClassNotFoundException e) {
+        } catch (SQLException | ClassNotFoundException e) {
             fail(e);
         }
         Sql sql = new Sql(connection);
@@ -130,29 +146,29 @@ class JdbcTableTest {
      * Set the database with some data.
      */
     @BeforeEach
-    void prepareDB(){
+    void prepareDB() {
         try {
             Statement statementLinked = connectionLinked.createStatement();
-            statementLinked.execute("DROP TABLE IF EXISTS "+TABLE_NAME+","+TEMP_NAME);
-            statementLinked.execute("CREATE TABLE "+TABLE_NAME+" ("+COL_THE_GEOM+" GEOMETRY, "+COL_THE_GEOM2+" GEOMETRY(POINT Z)," +
-                    COL_ID+" INTEGER, "+COL_VALUE+" FLOAT, "+COL_MEANING+" VARCHAR)");
-            statementLinked.execute("INSERT INTO "+TABLE_NAME+" VALUES ('POINT(0 0)', 'POINT(1 1 0)', 1, 2.3, 'Simple points')");
-            statementLinked.execute("INSERT INTO "+TABLE_NAME+" VALUES ('POINT(0 1 2)', 'POINT(10 11 12)', 2, 0.568, '3D point')");
-            statementLinked.execute("CREATE TEMPORARY TABLE "+TEMP_NAME+" ("+COL_THE_GEOM+" GEOMETRY, "+COL_THE_GEOM2+" GEOMETRY(POINT Z)," +
-                    COL_ID+" INTEGER, "+COL_VALUE+" FLOAT, "+COL_MEANING+" VARCHAR)");
+            statementLinked.execute("DROP TABLE IF EXISTS " + TABLE_NAME + "," + TEMP_NAME);
+            statementLinked.execute("CREATE TABLE " + TABLE_NAME + " (" + COL_THE_GEOM + " GEOMETRY, " + COL_THE_GEOM2 + " GEOMETRY(POINT Z)," +
+                    COL_ID + " INTEGER, " + COL_VALUE + " FLOAT, " + COL_MEANING + " VARCHAR)");
+            statementLinked.execute("INSERT INTO " + TABLE_NAME + " VALUES ('POINT(0 0)', 'POINT(1 1 0)', 1, 2.3, 'Simple points')");
+            statementLinked.execute("INSERT INTO " + TABLE_NAME + " VALUES ('POINT(0 1 2)', 'POINT(10 11 12)', 2, 0.568, '3D point')");
+            statementLinked.execute("CREATE TEMPORARY TABLE " + TEMP_NAME + " (" + COL_THE_GEOM + " GEOMETRY, " + COL_THE_GEOM2 + " GEOMETRY(POINT Z)," +
+                    COL_ID + " INTEGER, " + COL_VALUE + " FLOAT, " + COL_MEANING + " VARCHAR)");
 
             statement = connection.createStatement();
-            statement.execute("DROP TABLE IF EXISTS "+TABLE_NAME+","+LINKED_NAME+","+TEMP_NAME+","+EMPTY_NAME);
-            statement.execute("CREATE TABLE "+TABLE_NAME+" ("+COL_THE_GEOM+" GEOMETRY, "+COL_THE_GEOM2+" GEOMETRY(POINT Z)," +
-                    COL_ID+" INTEGER, "+COL_VALUE+" FLOAT, "+COL_MEANING+" VARCHAR)");
-            statement.execute("INSERT INTO "+TABLE_NAME+" VALUES ('POINT(0 0)', 'POINT(1 1 0)', 1, 2.3, 'Simple points')");
-            statement.execute("INSERT INTO "+TABLE_NAME+" VALUES ('POINT(0 1 2)', 'POINT(10 11 12)', 2, 0.568, '3D point')");
-            statement.execute("CREATE LINKED TABLE "+LINKED_NAME+"('org.h2.Driver','jdbc:h2:./target/test-resources/dbH2"+LINKED_DATABASE+
-                    "','sa','sa','"+TABLE_NAME+"')");
-            statement.execute("CREATE TEMPORARY TABLE "+TEMP_NAME+" ("+COL_THE_GEOM+" GEOMETRY, "+COL_THE_GEOM2+" GEOMETRY(POINT Z)," +
-                    COL_ID+" INTEGER, "+COL_VALUE+" FLOAT, "+COL_MEANING+" VARCHAR)");
-            statement.execute("CREATE TABLE "+EMPTY_NAME+" ("+COL_THE_GEOM+" GEOMETRY, "+COL_THE_GEOM2+" GEOMETRY(POINT Z)," +
-                    COL_ID+" INTEGER, "+COL_VALUE+" FLOAT, "+COL_MEANING+" VARCHAR)");
+            statement.execute("DROP TABLE IF EXISTS " + TABLE_NAME + "," + LINKED_NAME + "," + TEMP_NAME + "," + EMPTY_NAME);
+            statement.execute("CREATE TABLE " + TABLE_NAME + " (" + COL_THE_GEOM + " GEOMETRY, " + COL_THE_GEOM2 + " GEOMETRY(POINT Z)," +
+                    COL_ID + " INTEGER, " + COL_VALUE + " FLOAT, " + COL_MEANING + " VARCHAR)");
+            statement.execute("INSERT INTO " + TABLE_NAME + " VALUES ('POINT(0 0)', 'POINT(1 1 0)', 1, 2.3, 'Simple points')");
+            statement.execute("INSERT INTO " + TABLE_NAME + " VALUES ('POINT(0 1 2)', 'POINT(10 11 12)', 2, 0.568, '3D point')");
+            statement.execute("CREATE LINKED TABLE " + LINKED_NAME + "('org.h2.Driver','jdbc:h2:./target/test-resources/dbH2" + LINKED_DATABASE +
+                    "','sa','sa','" + TABLE_NAME + "')");
+            statement.execute("CREATE TEMPORARY TABLE " + TEMP_NAME + " (" + COL_THE_GEOM + " GEOMETRY, " + COL_THE_GEOM2 + " GEOMETRY(POINT Z)," +
+                    COL_ID + " INTEGER, " + COL_VALUE + " FLOAT, " + COL_MEANING + " VARCHAR)");
+            statement.execute("CREATE TABLE " + EMPTY_NAME + " (" + COL_THE_GEOM + " GEOMETRY, " + COL_THE_GEOM2 + " GEOMETRY(POINT Z)," +
+                    COL_ID + " INTEGER, " + COL_VALUE + " FLOAT, " + COL_MEANING + " VARCHAR)");
 
             tableLocation = new TableLocation(BASE_DATABASE, TABLE_NAME);
             linkedLocation = new TableLocation(BASE_DATABASE, LINKED_NAME);
@@ -165,41 +181,46 @@ class JdbcTableTest {
 
     /**
      * Returns a {@link DummyJdbcTable} for test purpose.
+     *
      * @return A {@link DummyJdbcTable} for test purpose.
      */
-    private DummyJdbcTable getTable(){
+    private DummyJdbcTable getTable() {
         return new DummyJdbcTable(DataBaseType.H2GIS, dataSource, tableLocation, statement, BASE_QUERY);
     }
 
     /**
      * Returns a linked {@link DummyJdbcTable} for test purpose.
+     *
      * @return A linked {@link DummyJdbcTable} for test purpose.
      */
-    private DummyJdbcTable getLinkedTable(){
+    private DummyJdbcTable getLinkedTable() {
         return new DummyJdbcTable(DataBaseType.H2GIS, dataSource, linkedLocation, statement, LINKED_QUERY);
     }
 
     /**
      * Returns a temporary {@link DummyJdbcTable} for test purpose.
+     *
      * @return A temporary {@link DummyJdbcTable} for test purpose.
      */
-    private DummyJdbcTable getTempTable(){
+    private DummyJdbcTable getTempTable() {
         return new DummyJdbcTable(DataBaseType.H2GIS, dataSource, tempLocation, statement, TEMP_QUERY);
     }
 
     /**
      * Returns an empty {@link DummyJdbcTable} for test purpose.
+     *
      * @return An empty {@link DummyJdbcTable} for test purpose.
      */
-    private DummyJdbcTable getEmptyTable(){
+    private DummyJdbcTable getEmptyTable() {
         return new DummyJdbcTable(DataBaseType.H2GIS, dataSource, emptyLocation, statement, EMPTY_QUERY);
     }
 
     /**
      * Returns a {@link JdbcTable} for test purpose.
+     *
      * @return A {@link JdbcTable} for test purpose.
      */
-    private JdbcTable getBuiltTable(){
+    private JdbcTable getBuiltTable() {
         return getTable().columns(COL_THE_GEOM, COL_THE_GEOM2, COL_ID, COL_VALUE, COL_MEANING);
     }
 
@@ -207,7 +228,7 @@ class JdbcTableTest {
      * Test the {@link JdbcTable#JdbcTable(DataBaseType, JdbcDataSource, TableLocation, Statement, String)} constructor.
      */
     @Test
-    void testConstructor(){
+    void testConstructor() {
         assertNotNull(getTable());
         assertNotNull(getLinkedTable());
         assertNotNull(getTempTable());
@@ -270,7 +291,7 @@ class JdbcTableTest {
      * Test the {@link JdbcTable#getBaseQuery()} method.
      */
     @Test
-    void testGetBaseQuery(){
+    void testGetBaseQuery() {
         assertEquals(BASE_QUERY, getTable().getBaseQuery());
         assertEquals(LINKED_QUERY, getLinkedTable().getBaseQuery());
         assertEquals(TEMP_QUERY, getTempTable().getBaseQuery());
@@ -282,7 +303,7 @@ class JdbcTableTest {
      * Test the {@link JdbcTable#getJdbcDataSource()} method.
      */
     @Test
-    void testGetJdbcDataSource(){
+    void testGetJdbcDataSource() {
         assertEquals(dataSource, getTable().getJdbcDataSource());
         assertEquals(dataSource, getLinkedTable().getJdbcDataSource());
         assertEquals(dataSource, getTempTable().getJdbcDataSource());
@@ -294,7 +315,7 @@ class JdbcTableTest {
      * Test the {@link JdbcTable#getTableLocation()} method.
      */
     @Test
-    void testGetTableLocation(){
+    void testGetTableLocation() {
         assertEquals(tableLocation, getTable().getTableLocation());
         assertEquals(linkedLocation, getLinkedTable().getTableLocation());
         assertEquals(tempLocation, getTempTable().getTableLocation());
@@ -306,7 +327,7 @@ class JdbcTableTest {
      * Test the {@link JdbcTable#getDbType()} method.
      */
     @Test
-    void testGetDbType(){
+    void testGetDbType() {
         assertEquals(DataBaseType.H2GIS, getTable().getDbType());
         assertEquals(DataBaseType.H2GIS, getLinkedTable().getDbType());
         assertEquals(DataBaseType.H2GIS, getTempTable().getDbType());
@@ -318,7 +339,7 @@ class JdbcTableTest {
      * Test the {@link JdbcTable#getMetaClass()} method.
      */
     @Test
-    void testGetMetaClass(){
+    void testGetMetaClass() {
         assertEquals(InvokerHelper.getMetaClass(DummyJdbcTable.class), getTable().getMetaClass());
         assertEquals(InvokerHelper.getMetaClass(DummyJdbcTable.class), getLinkedTable().getMetaClass());
         assertEquals(InvokerHelper.getMetaClass(DummyJdbcTable.class), getTempTable().getMetaClass());
@@ -330,7 +351,7 @@ class JdbcTableTest {
      * Test the {@link JdbcTable#setMetaClass(MetaClass)} method.
      */
     @Test
-    void testSetMetaClass(){
+    void testSetMetaClass() {
         List<JdbcTable> tables = Arrays.asList(getTable(), getLinkedTable(), getTempTable(), getEmptyTable(), getBuiltTable());
         tables.forEach(table -> {
             MetaClass metaClass = InvokerHelper.getMetaClass(JdbcTableTest.class);
@@ -343,7 +364,7 @@ class JdbcTableTest {
      * Test the {@link JdbcTable#isSpatial()} method.
      */
     @Test
-    void testIsSpatial(){
+    void testIsSpatial() {
         assertFalse(getTable().isSpatial());
         assertFalse(getLinkedTable().isSpatial());
         assertFalse(getTempTable().isSpatial());
@@ -355,7 +376,7 @@ class JdbcTableTest {
      * Test the {@link JdbcTable#isLinked()} method.
      */
     @Test
-    void testIsLinked(){
+    void testIsLinked() {
         assertFalse(getTable().isLinked());
         assertTrue(getLinkedTable().isLinked());
         assertFalse(getTempTable().isLinked());
@@ -367,7 +388,7 @@ class JdbcTableTest {
      * Test the {@link JdbcTable#isTemporary()} ()} method.
      */
     @Test
-    void testIsTemporary(){
+    void testIsTemporary() {
         assertFalse(getTable().isTemporary());
         assertFalse(getLinkedTable().isTemporary());
         assertTrue(getTempTable().isTemporary());
@@ -379,7 +400,7 @@ class JdbcTableTest {
      * Test the {@link JdbcTable#getColumns()} method.
      */
     @Test
-    void testGetColumnNames(){
+    void testGetColumnNames() {
         List<String> colList = new ArrayList<>();
         colList.add(TableLocation.capsIdentifier(COL_THE_GEOM, true));
         colList.add(TableLocation.capsIdentifier(COL_THE_GEOM2, true));
@@ -397,7 +418,7 @@ class JdbcTableTest {
      * Test the {@link JdbcTable#hasColumn(String)} method.
      */
     @Test
-    void testHasColumn(){
+    void testHasColumn() {
         List<JdbcTable> tables = Arrays.asList(getTable(), getLinkedTable(), getTempTable(), getEmptyTable(), getBuiltTable());
         tables.forEach(t -> {
             assertTrue(t.hasColumn(COL_THE_GEOM.toUpperCase()));
@@ -414,7 +435,7 @@ class JdbcTableTest {
      * Test the {@link JdbcTable#hasColumn(String, Class)} method.
      */
     @Test
-    void testHasColumnWithClass(){
+    void testHasColumnWithClass() {
         List<JdbcTable> tables = Arrays.asList(getTable(), getTempTable(), getEmptyTable());
         tables.forEach(t -> {
             assertTrue(t.hasColumn(COL_THE_GEOM.toUpperCase(), Geometry.class));
@@ -529,24 +550,24 @@ class JdbcTableTest {
             assertEquals(1, table.getFirstRow().get(2));
             assertEquals(2.3, table.getFirstRow().get(3));
             assertEquals("Simple points", table.getFirstRow().get(4));
-        } );
+        });
     }
 
     /**
      * Test the {@link JdbcTable#invokeMethod(String, Object)} method.
      */
     @Test
-    void testInvokeMethod(){
+    void testInvokeMethod() {
         List<JdbcTable> tables = Arrays.asList(getTable(), getLinkedTable(), getEmptyTable(), getTempTable());
         tables.forEach(table -> {
             assertEquals(table.getLocation(), table.invokeMethod("getLocation", null));
             assertEquals(table.getLocation(), table.invokeMethod("location", null));
-            assertArrayEquals(new Object[]{"string", 0.2}, (Object[])table.invokeMethod("getArrayMethod", new Object[]{"string", 0.2}));
-            assertArrayEquals(new Object[]{"string", 0.2}, (Object[])table.invokeMethod("arrayMethod", new Object[]{"string", 0.2}));
-            assertArrayEquals(new Object[]{"string", 0.2}, (Object[])table.invokeMethod("getParametersMethod", new Object[]{"string", 0.2}));
-            assertArrayEquals(new Object[]{"string", 0.2}, (Object[])table.invokeMethod("parametersMethod", new Object[]{"string", 0.2}));
-            assertArrayEquals(new Object[]{"string", "0.2"}, (Object[])table.invokeMethod("getParametersMethod", new Object[]{"string", "0.2"}));
-            assertArrayEquals(new Object[]{"string", "0.2"}, (Object[])table.invokeMethod("parametersMethod", new Object[]{"string", "0.2"}));
+            assertArrayEquals(new Object[]{"string", 0.2}, (Object[]) table.invokeMethod("getArrayMethod", new Object[]{"string", 0.2}));
+            assertArrayEquals(new Object[]{"string", 0.2}, (Object[]) table.invokeMethod("arrayMethod", new Object[]{"string", 0.2}));
+            assertArrayEquals(new Object[]{"string", 0.2}, (Object[]) table.invokeMethod("getParametersMethod", new Object[]{"string", 0.2}));
+            assertArrayEquals(new Object[]{"string", 0.2}, (Object[]) table.invokeMethod("parametersMethod", new Object[]{"string", 0.2}));
+            assertArrayEquals(new Object[]{"string", "0.2"}, (Object[]) table.invokeMethod("getParametersMethod", new Object[]{"string", "0.2"}));
+            assertArrayEquals(new Object[]{"string", "0.2"}, (Object[]) table.invokeMethod("parametersMethod", new Object[]{"string", "0.2"}));
             assertEquals("string", table.invokeMethod("getParameterMethod", new Object[]{"string"}));
             assertEquals("string", table.invokeMethod("getParameterMethod", "string"));
             assertEquals("string", table.invokeMethod("parameterMethod", new Object[]{"string"}));
@@ -557,40 +578,40 @@ class JdbcTableTest {
             assertThrows(MissingMethodException.class, () -> table.invokeMethod("location", new String[]{"tata", "toto"}));
             assertNull(table.invokeMethod("getPrivateMethod", null));
             assertNull(table.invokeMethod("privateMethod", null));
-        } );
+        });
     }
 
     /**
      * Test the {@link JdbcTable#getProperty(String)} method.
      */
     @Test
-    void testGetProperty(){
+    void testGetProperty() {
         List<JdbcTable> tables = Arrays.asList(getTable(), getEmptyTable(), getTempTable(), getLinkedTable());
         tables.forEach(table -> {
-                    assertThrows(MissingPropertyException.class, () -> table.getProperty("getLocation"));
-                    assertEquals(table.getLocation(), table.getProperty("location"));
-                    assertEquals(JdbcResultSetMetaData.class, table.getProperty("meta").getClass());
-                    assertArrayEquals(new Object[]{"string", 0.2}, (Object[]) table.getProperty("data"));
-                    assertEquals("tutu", table.getProperty("privateData"));
-                    assertNull(table.getProperty(null));
-                    assertTrue(table.getProperty("meaning") instanceof JdbcColumn);
-                    assertEquals("MEANING", ((JdbcColumn) table.getProperty("meaning")).getName());
-                    assertTrue(table.getProperty(COL_THE_GEOM.toUpperCase()) instanceof JdbcColumn);
-                    assertTrue(table.getProperty(COL_THE_GEOM.toLowerCase()) instanceof JdbcColumn);
-        } );
+            assertThrows(MissingPropertyException.class, () -> table.getProperty("getLocation"));
+            assertEquals(table.getLocation(), table.getProperty("location"));
+            assertEquals(JdbcResultSetMetaData.class, table.getProperty("meta").getClass());
+            assertArrayEquals(new Object[]{"string", 0.2}, (Object[]) table.getProperty("data"));
+            assertEquals("tutu", table.getProperty("privateData"));
+            assertNull(table.getProperty(null));
+            assertTrue(table.getProperty("meaning") instanceof JdbcColumn);
+            assertEquals("MEANING", ((JdbcColumn) table.getProperty("meaning")).getName());
+            assertTrue(table.getProperty(COL_THE_GEOM.toUpperCase()) instanceof JdbcColumn);
+            assertTrue(table.getProperty(COL_THE_GEOM.toLowerCase()) instanceof JdbcColumn);
+        });
     }
 
     /**
      * Test the {@link JdbcTable#setProperty(String, Object)} method.
      */
     @Test
-    void testSetProperty(){
+    void testSetProperty() {
         List<JdbcTable> tables = Arrays.asList(getTable(), getEmptyTable(), getTempTable(), getLinkedTable());
         tables.forEach(table -> {
             assertThrows(MissingPropertyException.class, () -> table.setProperty("getLocation", "tata"));
             table.setProperty("privateData", "toto");
             assertEquals("toto", table.getProperty("privateData"));
-        } );
+        });
     }
 
     /**
@@ -602,7 +623,7 @@ class JdbcTableTest {
         tables.forEach(table -> {
             assertNotNull(table.getProperty("data"));
             assertThrows(InvokerInvocationException.class, () -> table.invokeMethod("dupMethod", null));
-        } );
+        });
     }
 
     /**
@@ -616,7 +637,7 @@ class JdbcTableTest {
             assertEquals("INTEGER", getTable().getColumnType(COL_ID));
             assertEquals("VARCHAR", getTable().getColumnType(COL_MEANING));
             assertNull(getTable().getColumnType("NOT_A_COLUMN"));
-        } );
+        });
     }
 
     /**
@@ -681,7 +702,7 @@ class JdbcTableTest {
     @Test
     void testColumns() {
         JdbcTable table = getTable();
-        JdbcSpatialTable spatialTable = (JdbcSpatialTable)dataSource.getSpatialTable(TABLE_NAME);
+        JdbcSpatialTable spatialTable = (JdbcSpatialTable) dataSource.getSpatialTable(TABLE_NAME);
 
         List<String> columns = new ArrayList<>();
         columns.add("TOTO");
@@ -715,22 +736,22 @@ class JdbcTableTest {
         assertTrue(getTable().asType(ITable.class) instanceof ITable);
         assertNotNull(getTable().asType(ISpatialTable.class));
         assertEquals("+--------------------+\n" +
-                "|      ORBISGIS      |\n" +
-                "+--------------------+--------------------+--------------------+--------------------+--------------------+\n" +
-                "|      THE_GEOM      |     THE_GEOM2      |         ID         |       VALUE        |      MEANING       |\n" +
-                "+--------------------+--------------------+--------------------+--------------------+--------------------+\n" +
-                "|POINT (0 0)         |POINT (1 1)         |                   1|                 2.3|Simple points       |\n" +
-                "|POINT (0 1)         |POINT (10 11)       |                   2|               0.568|3D point            |\n" +
-                "+--------------------+--------------------+--------------------+--------------------+--------------------+\n",
+                        "|      ORBISGIS      |\n" +
+                        "+--------------------+--------------------+--------------------+--------------------+--------------------+\n" +
+                        "|      THE_GEOM      |     THE_GEOM2      |         ID         |       VALUE        |      MEANING       |\n" +
+                        "+--------------------+--------------------+--------------------+--------------------+--------------------+\n" +
+                        "|POINT (0 0)         |POINT (1 1)         |                   1|                 2.3|Simple points       |\n" +
+                        "|POINT (0 1)         |POINT (10 11)       |                   2|               0.568|3D point            |\n" +
+                        "+--------------------+--------------------+--------------------+--------------------+--------------------+\n",
                 getTable().asType(Ascii.class).toString());
         assertEquals("+--------------------+\n" +
-                "|                    |\n" +
-                "+--------------------+--------------------+--------------------+--------------------+--------------------+\n" +
-                "|      THE_GEOM      |     THE_GEOM2      |         ID         |       VALUE        |      MEANING       |\n" +
-                "+--------------------+--------------------+--------------------+--------------------+--------------------+\n" +
-                "|POINT (0 0)         |POINT (1 1)         |                   1|                 2.3|Simple points       |\n" +
-                "|POINT (0 1)         |POINT (10 11)       |                   2|               0.568|3D point            |\n" +
-                "+--------------------+--------------------+--------------------+--------------------+--------------------+\n",
+                        "|                    |\n" +
+                        "+--------------------+--------------------+--------------------+--------------------+--------------------+\n" +
+                        "|      THE_GEOM      |     THE_GEOM2      |         ID         |       VALUE        |      MEANING       |\n" +
+                        "+--------------------+--------------------+--------------------+--------------------+--------------------+\n" +
+                        "|POINT (0 0)         |POINT (1 1)         |                   1|                 2.3|Simple points       |\n" +
+                        "|POINT (0 1)         |POINT (10 11)       |                   2|               0.568|3D point            |\n" +
+                        "+--------------------+--------------------+--------------------+--------------------+--------------------+\n",
                 getBuiltTable().asType(Ascii.class).toString());
         assertEquals("<table>\n" +
                 "<caption>ORBISGIS</caption>\n" +
@@ -828,11 +849,16 @@ class JdbcTableTest {
             super(parent, databaseType);
         }
 
-        @Override public IJdbcTable getTable(String tableName) {return null;}
-        @Override public IJdbcSpatialTable getSpatialTable(String tableName) {
+        @Override
+        public IJdbcTable getTable(String tableName) {
+            return null;
+        }
+
+        @Override
+        public IJdbcSpatialTable getSpatialTable(String tableName) {
             try {
-                if(!JDBCUtilities.tableExists(connection,
-                        TableLocation.parse(tableName, getDataBaseType().equals(DataBaseType.H2GIS)).getTable())){
+                if (!JDBCUtilities.tableExists(connection,
+                        TableLocation.parse(tableName, getDataBaseType().equals(DataBaseType.H2GIS)).getTable())) {
                     return null;
                 }
             } catch (SQLException e) {
@@ -846,16 +872,24 @@ class JdbcTableTest {
             }
             String query = String.format("SELECT * FROM %s", tableName);
             return new H2gisSpatialTable(new TableLocation(BASE_DATABASE, tableName), query,
-                    new StatementWrapper(statement, new ConnectionWrapper(connection)), this);}
-        @Override public Collection<String> getTableNames() {
+                    new StatementWrapper(statement, new ConnectionWrapper(connection)), this);
+        }
+
+        @Override
+        public Collection<String> getTableNames() {
             try {
                 return JDBCUtilities.getTableNames(connection.getMetaData(), null, null, null, null);
             } catch (SQLException e) {
 
-                }
-        return null;}
-        @Override public IJdbcTable getDataSet(String name) {return null;}
-        
+            }
+            return null;
+        }
+
+        @Override
+        public IJdbcTable getDataSet(String name) {
+            return null;
+        }
+
         @Override
         public boolean hasTable(String tableName) {
             try {
@@ -870,15 +904,23 @@ class JdbcTableTest {
     /**
      * Simple implementation of the {@link IJdbcTable} interface.
      */
-    private static class DummyJdbcTable extends JdbcTable{
+    private static class DummyJdbcTable extends JdbcTable {
 
-        /** Fake row index. */
+        /**
+         * Fake row index.
+         */
         private int rowIndex = 0;
-        /** Fake data. */
+        /**
+         * Fake data.
+         */
         private Object[] data = new Object[]{"string", 0.2};
-        /** True if throws exception, false otherwise. */
+        /**
+         * True if throws exception, false otherwise.
+         */
         private boolean sqlException = false;
-        /** Private data. */
+        /**
+         * Private data.
+         */
         private Object privateData;
 
         private DummyJdbcTable(DataBaseType dataBaseType, JdbcDataSource jdbcDataSource, TableLocation tableLocation,
@@ -886,27 +928,46 @@ class JdbcTableTest {
             super(dataBaseType, jdbcDataSource, tableLocation, statement, baseQuery);
             privateData = "tutu";
         }
-        private void getPrivateMethod(){/*Does nothing*/}
-        public Object[] getArrayMethod(Object[] array){return array;}
-        public Object[] getParametersMethod(String param1, Double param2){return new Object[]{param1, param2};}
-        public Object[] getParametersMethod(Object param1, Object param2){return new Object[]{param1, param2};}
-        public String getParameterMethod(String param1){return param1;}
-        public void dupMethod() throws IllegalAccessException {throw new IllegalAccessException();}
 
-        @Override public boolean next() throws SQLException {
-            if(!sqlException) {
+        private void getPrivateMethod() {/*Does nothing*/}
+
+        public Object[] getArrayMethod(Object[] array) {
+            return array;
+        }
+
+        public Object[] getParametersMethod(String param1, Double param2) {
+            return new Object[]{param1, param2};
+        }
+
+        public Object[] getParametersMethod(Object param1, Object param2) {
+            return new Object[]{param1, param2};
+        }
+
+        public String getParameterMethod(String param1) {
+            return param1;
+        }
+
+        public void dupMethod() throws IllegalAccessException {
+            throw new IllegalAccessException();
+        }
+
+        @Override
+        public boolean next() throws SQLException {
+            if (!sqlException) {
                 return rowIndex++ < data.length;
-            }
-            else{
+            } else {
                 throw new SQLException();
             }
         }
 
-        @Override public JdbcTable columns(String... cols){
-            return (JdbcTable)super.columns(cols);
+        @Override
+        public JdbcTable columns(String... cols) {
+            return (JdbcTable) super.columns(cols);
         }
-        @Override public JdbcTable columns(List<String> cols){
-            return (JdbcTable)super.columns(cols);
+
+        @Override
+        public JdbcTable columns(List<String> cols) {
+            return (JdbcTable) super.columns(cols);
         }
     }
 }

@@ -49,9 +49,13 @@ import java.util.LinkedHashMap;
  */
 public interface IProcessCheck {
 
-    /** Continue action. */
+    /**
+     * Continue action.
+     */
     String CONTINUE = "CONTINUE";
-    /** Stop action. */
+    /**
+     * Stop action.
+     */
     String STOP = "STOP";
 
     /**
@@ -66,7 +70,7 @@ public interface IProcessCheck {
     /**
      * Set the action to do on check fail.
      *
-     * @param action Action to do on fail.
+     * @param action  Action to do on fail.
      * @param message Message to log.
      */
     void onFail(String action, String message);
@@ -74,7 +78,7 @@ public interface IProcessCheck {
     /**
      * Set the action to do on check success.
      *
-     * @param action Action to do on success.
+     * @param action  Action to do on success.
      * @param message Message to log.
      */
     void onSuccess(String action, String message);

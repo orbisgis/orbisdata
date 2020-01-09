@@ -86,18 +86,27 @@ import java.util.regex.Pattern;
  * @author Sylvain PALOMINOS (UBS 2019)
  */
 public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, ISelectBuilder {
-    /** Logger */
+    /**
+     * Logger
+     */
     private static final Logger LOGGER = LoggerFactory.getLogger(JdbcDataSource.class);
-    /** MetaClass used for the implementation of the {@link GroovyObject} methods */
+    /**
+     * MetaClass used for the implementation of the {@link GroovyObject} methods
+     */
     private MetaClass metaClass;
-    /** Type of the database */
+    /**
+     * Type of the database
+     */
     private DataBaseType databaseType;
-    /** Wrapped {@link DataSource} */
+    /**
+     * Wrapped {@link DataSource}
+     */
     private DataSource dataSource;
 
     /**
      * Constructor to create a {@link JdbcDataSource} from a {@link Sql} object.
-     * @param parent Parent {@link Sql} object.
+     *
+     * @param parent       Parent {@link Sql} object.
      * @param databaseType Type of the database
      */
     public JdbcDataSource(Sql parent, DataBaseType databaseType) {
@@ -110,7 +119,8 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, ISe
 
     /**
      * Constructor to create a {@link JdbcDataSource} from a {@link DataSource} object.
-     * @param dataSource Parent {@link DataSource} object.
+     *
+     * @param dataSource   Parent {@link DataSource} object.
      * @param databaseType Type of the database
      */
     public JdbcDataSource(DataSource dataSource, DataBaseType databaseType) {
@@ -123,7 +133,8 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, ISe
 
     /**
      * Constructor to create a {@link JdbcDataSource} from a {@link Connection} object.
-     * @param connection Parent {@link Sql} object.
+     *
+     * @param connection   Parent {@link Sql} object.
      * @param databaseType Type of the database
      */
     public JdbcDataSource(Connection connection, DataBaseType databaseType) {
@@ -136,7 +147,7 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, ISe
 
     @Override
     public Connection getConnection(String var1, String var2) throws SQLException {
-        if(this.dataSource != null) {
+        if (this.dataSource != null) {
             return this.dataSource.getConnection(var1, var2);
         }
         LOGGER.error("Unable to get the DataSource.\n");
@@ -144,7 +155,7 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, ISe
     }
 
     public PrintWriter getLogWriter() throws SQLException {
-        if(this.dataSource != null) {
+        if (this.dataSource != null) {
             return this.dataSource.getLogWriter();
         }
         LOGGER.error("Unable to get the DataSource.\n");
@@ -152,21 +163,21 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, ISe
     }
 
     public void setLogWriter(PrintWriter writer) throws SQLException {
-        if(this.dataSource != null) {
+        if (this.dataSource != null) {
             this.dataSource.setLogWriter(writer);
         }
         LOGGER.error("Unable to get the DataSource.\n");
     }
 
     public void setLoginTimeout(int time) throws SQLException {
-        if(this.dataSource != null) {
+        if (this.dataSource != null) {
             this.dataSource.setLoginTimeout(time);
         }
         LOGGER.error("Unable to get the DataSource.\n");
     }
 
     public int getLoginTimeout() throws SQLException {
-        if(this.dataSource != null) {
+        if (this.dataSource != null) {
             return this.dataSource.getLoginTimeout();
         }
         LOGGER.error("Unable to get the DataSource.\n");
@@ -175,7 +186,7 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, ISe
 
     @Override
     public <T> T unwrap(Class<T> aClass) throws SQLException {
-        if(this.dataSource != null) {
+        if (this.dataSource != null) {
             return this.dataSource.unwrap(aClass);
         }
         LOGGER.error("Unable to get the DataSource.\n");
@@ -184,7 +195,7 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, ISe
 
     @Override
     public boolean isWrapperFor(Class<?> aClass) throws SQLException {
-        if(this.dataSource != null) {
+        if (this.dataSource != null) {
             return this.dataSource.isWrapperFor(aClass);
         }
         LOGGER.error("Unable to get the DataSource.\n");
@@ -193,7 +204,7 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, ISe
 
     @Override
     public java.util.logging.Logger getParentLogger() throws SQLFeatureNotSupportedException {
-        if(this.dataSource != null) {
+        if (this.dataSource != null) {
             return this.dataSource.getParentLogger();
         }
         LOGGER.error("Unable to get the DataSource.\n");
@@ -206,9 +217,9 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, ISe
     }
 
     @Override
-    public Connection getConnection(){
+    public Connection getConnection() {
         Connection con = super.getConnection();
-        if(con == null){
+        if (con == null) {
             try {
                 con = getDataSource().getConnection();
             } catch (SQLException e) {
@@ -219,7 +230,7 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, ISe
     }
 
     @Override
-    public DataBaseType getDataBaseType(){
+    public DataBaseType getDataBaseType() {
         return databaseType;
     }
 
@@ -255,7 +266,7 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, ISe
 
     @Override
     public void eachRow(GString gstring,
-                      @ClosureParams(value= SimpleType.class, options="java.sql.ResultSet") Closure closure)
+                        @ClosureParams(value = SimpleType.class, options = "java.sql.ResultSet") Closure closure)
             throws SQLException {
         try {
             super.eachRow(gstring, closure);
@@ -269,10 +280,9 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, ISe
     public IFromBuilder select(String... fields) {
         StringBuilder query = new StringBuilder();
         query.append("SELECT ");
-        if(fields != null && fields.length > 0){
-           query.append(String.join(",", fields));
-        }
-        else{
+        if (fields != null && fields.length > 0) {
+            query.append(String.join(",", fields));
+        } else {
             query.append("* ");
         }
         return new FromBuilder(query.toString(), this);
@@ -380,10 +390,10 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, ISe
         return save(tableName, file.getAbsolutePath(), encoding);
     }
 
-    private String getTableNameFromPath(String filePath){
-        int start = filePath.lastIndexOf("/")+1;
+    private String getTableNameFromPath(String filePath) {
+        int start = filePath.lastIndexOf("/") + 1;
         int end = filePath.lastIndexOf(".");
-        if(end == -1){
+        if (end == -1) {
             end = filePath.length();
         }
         return filePath.substring(start, end).toUpperCase();
@@ -542,7 +552,7 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, ISe
     public IJdbcTable load(String filePath, boolean delete) {
         String tableName = getTableNameFromPath(filePath);
         if (Pattern.compile("^[a-zA-Z][a-zA-Z0-9_]*$").matcher(tableName).find()) {
-            return load(filePath,tableName, null, delete);
+            return load(filePath, tableName, null, delete);
         } else {
             LOGGER.error("Unsupported file characters");
         }
@@ -650,7 +660,7 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, ISe
     }
 
     @Override
-    public IDataSourceLocation getLocation(){
+    public IDataSourceLocation getLocation() {
         try {
             String url = this.getConnection().getMetaData().getURL();
             return url == null ? null : new DataSourceLocation(url.substring(url.lastIndexOf(":") + 1));

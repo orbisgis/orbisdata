@@ -57,17 +57,23 @@ import static java.util.stream.Collectors.toList;
  */
 public class ProcessManager implements IProcessManager {
 
-    /** Map of the process factory and their identifier. */
+    /**
+     * Map of the process factory and their identifier.
+     */
     private Map<String, IProcessFactory> processFactoryMap;
-    /** Unique ProcessManager instance. */
+    /**
+     * Unique ProcessManager instance.
+     */
     private static ProcessManager instance = null;
-    /** Default factory name */
+    /**
+     * Default factory name
+     */
     private static final String DEFAULT_FACTORY_NAME = "orbisgis";
 
     /**
      * Private constructor in order to make it unique.
      */
-    private ProcessManager(){
+    private ProcessManager() {
         processFactoryMap = new HashMap<>();
         processFactoryMap.put(DEFAULT_FACTORY_NAME, new ProcessFactory(false, true));
     }
@@ -77,8 +83,8 @@ public class ProcessManager implements IProcessManager {
      *
      * @return The unique instance of the ProcessManager.
      */
-    public static ProcessManager getProcessManager(){
-        if(instance == null){
+    public static ProcessManager getProcessManager() {
+        if (instance == null) {
             instance = new ProcessManager();
         }
         return instance;
@@ -104,19 +110,19 @@ public class ProcessManager implements IProcessManager {
     }
 
     @Override
-    public IProcessFactory factory(String identifier){
-        if(!processFactoryMap.containsKey(identifier)){
+    public IProcessFactory factory(String identifier) {
+        if (!processFactoryMap.containsKey(identifier)) {
             processFactoryMap.put(identifier, new ProcessFactory());
         }
         return processFactoryMap.get(identifier);
     }
 
-    public static IProcessFactory createFactory(String identifier){
+    public static IProcessFactory createFactory(String identifier) {
         return getProcessManager().factory(identifier);
     }
 
     @Override
-    public IProcessFactory factory(){
+    public IProcessFactory factory() {
         return processFactoryMap
                 .values()
                 .stream()
@@ -125,18 +131,18 @@ public class ProcessManager implements IProcessManager {
                 .orElse(null);
     }
 
-    public static IProcessFactory createFactory(){
+    public static IProcessFactory createFactory() {
         return getProcessManager().factory();
     }
 
     @Override
-    public IProcess process(String processId){
+    public IProcess process(String processId) {
         IProcessFactory processFactory = factory();
         return processFactory == null ? null : processFactory.getProcess(processId);
     }
 
     @Override
-    public IProcess process(String processId, String factoryId){
+    public IProcess process(String processId, String factoryId) {
         IProcessFactory processFactory = factory(factoryId);
         return processFactory == null ? null : processFactory.getProcess(processId);
     }

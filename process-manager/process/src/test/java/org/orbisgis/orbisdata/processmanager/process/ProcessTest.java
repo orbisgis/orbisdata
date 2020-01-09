@@ -66,7 +66,7 @@ public class ProcessTest {
     private static ProcessMapper mapper;
 
     @BeforeAll
-    static void beforeAll(){
+    static void beforeAll() {
 
         Closure cl1 = new Closure(null) {
             @Override
@@ -80,7 +80,7 @@ public class ProcessTest {
         String str = "{in1, in2, in3, in4 -> Object o1 = \"$in1$in2$in3$in4\"\n" +
                 "                Object o2 = 4\n" +
                 "                return [out1:o1, out2:o2, out3:\"toto\"]}";
-        Closure cl2 = (Closure)new GroovyShell().evaluate(new GroovyCodeSource(str, "script", ""));
+        Closure cl2 = (Closure) new GroovyShell().evaluate(new GroovyCodeSource(str, "script", ""));
 
         Input in3 = Input.call().setTitle("in title").setDescription("in description")
                 .setKeywords(new String[]{"key1", "key2"}).setType(String[].class).mandatory();
@@ -108,7 +108,7 @@ public class ProcessTest {
     }
 
     @Test
-    void testNullResult(){
+    void testNullResult() {
         Closure cl = new Closure(null) {
             @Override
             public Object call() {
@@ -124,7 +124,7 @@ public class ProcessTest {
     }
 
     @Test
-    void testProcessProperties(){
+    void testProcessProperties() {
         assertNull(miniProcess.getTitle());
         assertNull(miniProcess.getDescription());
         assertNull(miniProcess.getKeywords());
@@ -191,7 +191,6 @@ public class ProcessTest {
         assertEquals("toto", fullProcess.getResults().get("out3"));
 
 
-
         assertTrue(mapper.execute(data));
 
         assertNotNull(mapper.getInputs());
@@ -232,7 +231,7 @@ public class ProcessTest {
     }
 
     @Test
-    void testBadProcess(){
+    void testBadProcess() {
         //Test wrong constructor
         assertFalse(new Process(null, null, null, new LinkedHashMap<>(), null, null, new Closure(null) {
             @Override
@@ -253,8 +252,9 @@ public class ProcessTest {
             public int getMaximumNumberOfParameters() {
                 return 1;
             }
+
             @Override
-            public Object call(Object... args){
+            public Object call(Object... args) {
                 Arrays.asList(args).forEach(Object::toString);
                 return new LinkedHashMap<>();
             }
@@ -273,8 +273,9 @@ public class ProcessTest {
             public int getMaximumNumberOfParameters() {
                 return 1;
             }
+
             @Override
-            public Object call(Object... args){
+            public Object call(Object... args) {
                 return new LinkedHashMap<>();
             }
         });
@@ -305,7 +306,7 @@ public class ProcessTest {
      * Test the methods {@link Process#newInstance()} method.
      */
     @Test
-    void testNewInstance(){
+    void testNewInstance() {
         IProcess p = fullProcess.newInstance();
         assertEquals(fullProcess.getTitle(), p.getTitle());
         assertEquals(fullProcess.getDescription(), p.getDescription());
@@ -320,7 +321,7 @@ public class ProcessTest {
      * Test the methods {@link Process#invokeMethod(String, Object)} method.
      */
     @Test
-    void testInvokeMethod(){
+    void testInvokeMethod() {
         assertEquals("title", fullProcess.invokeMethod("getTitle", null));
         assertEquals("1.0.0", fullProcess.invokeMethod("getVersion", null));
     }
@@ -329,7 +330,7 @@ public class ProcessTest {
      * Test the methods {@link Process#getProperty(String)} method.
      */
     @Test
-    void testGetProperty(){
+    void testGetProperty() {
         assertTrue(fullProcess.getProperty("in1") instanceof IInput);
         assertTrue(fullProcess.getProperty("in2") instanceof IInput);
         assertTrue(fullProcess.getProperty("in3") instanceof IInput);
@@ -344,7 +345,7 @@ public class ProcessTest {
      * Test the methods {@link Process#getProperty(String)} and {@link Process#setProperty(String, Object)} methods.
      */
     @Test
-    void testSetProperty(){
+    void testSetProperty() {
         assertEquals("title", fullProcess.getProperty("title"));
         fullProcess.setProperty("title", "toto");
         assertEquals("toto", fullProcess.getProperty("title"));
@@ -356,7 +357,7 @@ public class ProcessTest {
      * Test the methods {@link Process#getMetaClass()} method.
      */
     @Test
-    void testMetaClass(){
+    void testMetaClass() {
         assertEquals(InvokerHelper.getMetaClass(Process.class), fullProcess.getMetaClass());
         fullProcess.setMetaClass(InvokerHelper.getMetaClass(ProcessTest.class));
         assertEquals(InvokerHelper.getMetaClass(ProcessTest.class), fullProcess.getMetaClass());

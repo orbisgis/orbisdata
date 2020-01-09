@@ -57,7 +57,7 @@ public class H2gisSpatialTableTest {
      * Test the {@link H2gisSpatialTable#asType(java.lang.Class)} method.
      */
     @Test
-    public void testAsType(){
+    public void testAsType() {
         H2GIS h2gis = H2GIS.open("./target/test");
         try {
             h2gis.execute("DROP TABLE IF EXISTS NAME; CREATE TABLE name (the_geom GEOMETRY)");

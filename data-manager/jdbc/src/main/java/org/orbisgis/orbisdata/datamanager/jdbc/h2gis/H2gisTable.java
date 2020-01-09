@@ -57,9 +57,9 @@ public class H2gisTable extends JdbcTable {
     /**
      * Main constructor.
      *
-     * @param tableLocation {@link TableLocation} that identify the represented table.
-     * @param baseQuery Query for the creation of the ResultSet
-     * @param statement Statement used to request the database.
+     * @param tableLocation  {@link TableLocation} that identify the represented table.
+     * @param baseQuery      Query for the creation of the ResultSet
+     * @param statement      Statement used to request the database.
      * @param jdbcDataSource DataSource to use for the creation of the resultSet.
      */
     public H2gisTable(TableLocation tableLocation, String baseQuery, StatementWrapper statement,
@@ -70,10 +70,10 @@ public class H2gisTable extends JdbcTable {
     @Override
     public Object asType(Class clazz) {
         if (ISpatialTable.class.isAssignableFrom(clazz)) {
-            return new H2gisSpatialTable(getTableLocation(), getBaseQuery(), (StatementWrapper)getStatement(),
+            return new H2gisSpatialTable(getTableLocation(), getBaseQuery(), (StatementWrapper) getStatement(),
                     getJdbcDataSource());
         } else if (ITable.class.isAssignableFrom(clazz)) {
-            return new H2gisTable(getTableLocation(), getBaseQuery(), (StatementWrapper)getStatement(),
+            return new H2gisTable(getTableLocation(), getBaseQuery(), (StatementWrapper) getStatement(),
                     getJdbcDataSource());
         } else {
             return super.asType(clazz);

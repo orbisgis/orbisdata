@@ -72,12 +72,12 @@ public class BuilderResultTest {
     private static Connection connection;
 
     @Test
-    public void testToString(){
+    public void testToString() {
         assertEquals("A simple string", new DummyBuilderResult("A simple string", DataBaseType.H2GIS, false).toString());
     }
 
     @Test
-    public void testAsType(){
+    public void testAsType() {
         assertTrue(new DummyBuilderResult("Select *", DataBaseType.H2GIS, false).asType(Ascii.class) instanceof Ascii);
         assertTrue(new DummyBuilderResult("Select *", DataBaseType.H2GIS, false).asType(ITable.class) instanceof ITable);
         assertTrue(new DummyBuilderResult("Select *", DataBaseType.H2GIS, false).asType(ISpatialTable.class) instanceof ISpatialTable);
@@ -89,21 +89,23 @@ public class BuilderResultTest {
     }
 
 
-    /** Simple implementation of the {@link BuilderResult} class. */
-    private static class DummyBuilderResult extends BuilderResult{
+    /**
+     * Simple implementation of the {@link BuilderResult} class.
+     */
+    private static class DummyBuilderResult extends BuilderResult {
 
         private String query;
         private DummyJdbcDataSource dummyJdbcDataSource;
 
-        public DummyBuilderResult(String query, DataBaseType dbtype, boolean close){
+        public DummyBuilderResult(String query, DataBaseType dbtype, boolean close) {
             super();
             this.query = query;
             try {
-                connection =  SFSUtilities.wrapConnection(H2GISDBFactory.createSpatialDataBase(BuilderResultTest.class.getSimpleName()));
-            } catch (SQLException|ClassNotFoundException e) {
+                connection = SFSUtilities.wrapConnection(H2GISDBFactory.createSpatialDataBase(BuilderResultTest.class.getSimpleName()));
+            } catch (SQLException | ClassNotFoundException e) {
                 fail(e);
             }
-            if(close) {
+            if (close) {
                 try {
                     connection.close();
                 } catch (SQLException e) {
@@ -126,8 +128,10 @@ public class BuilderResultTest {
     }
 
 
-    /** Simple instantiation of a {@link JdbcSpatialTable}. **/
-    private static class DummyJdbcSpatialTable extends JdbcSpatialTable{
+    /**
+     * Simple instantiation of a {@link JdbcSpatialTable}.
+     **/
+    private static class DummyJdbcSpatialTable extends JdbcSpatialTable {
 
         /**
          * Main constructor.
@@ -144,12 +148,12 @@ public class BuilderResultTest {
 
 
         @Override
-        protected ResultSet getResultSet(){
-            if(resultSet == null) {
+        protected ResultSet getResultSet() {
+            if (resultSet == null) {
                 try {
                     resultSet = getStatement().executeQuery(getBaseQuery());
                 } catch (SQLException e) {
-                    LOGGER.error("Unable to execute the query '"+getBaseQuery()+"'.\n"+e.getLocalizedMessage());
+                    LOGGER.error("Unable to execute the query '" + getBaseQuery() + "'.\n" + e.getLocalizedMessage());
                     return null;
                 }
                 try {
@@ -172,11 +176,16 @@ public class BuilderResultTest {
             super(parent, databaseType);
         }
 
-        @Override public IJdbcTable getTable(String tableName) {return null;}
-        @Override public IJdbcSpatialTable getSpatialTable(String tableName) {
-            String name = TableLocation.parse(tableName, getDataBaseType().equals(DataBaseType.H2GIS)).toString( getDataBaseType().equals(DataBaseType.H2GIS));
+        @Override
+        public IJdbcTable getTable(String tableName) {
+            return null;
+        }
+
+        @Override
+        public IJdbcSpatialTable getSpatialTable(String tableName) {
+            String name = TableLocation.parse(tableName, getDataBaseType().equals(DataBaseType.H2GIS)).toString(getDataBaseType().equals(DataBaseType.H2GIS));
             try {
-                if(!JDBCUtilities.tableExists(connection,name)){
+                if (!JDBCUtilities.tableExists(connection, name)) {
                     return null;
                 }
             } catch (SQLException e) {
@@ -184,21 +193,28 @@ public class BuilderResultTest {
             }
             StatementWrapper statement;
             try {
-                statement = (StatementWrapper)connection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);
+                statement = (StatementWrapper) connection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);
             } catch (SQLException e) {
                 return null;
             }
             String query = String.format("SELECT * FROM %s", name);
             return new DummyJdbcSpatialTable(new TableLocation(null, name), query, statement, this);
         }
-        @Override public Collection<String> getTableNames() {
+
+        @Override
+        public Collection<String> getTableNames() {
             try {
                 return JDBCUtilities.getTableNames(connection.getMetaData(), null, null, null, null);
-            } catch (SQLException ignored) {}
+            } catch (SQLException ignored) {
+            }
             return null;
         }
-        @Override public IJdbcTable getDataSet(String name) {return null;}
-        
+
+        @Override
+        public IJdbcTable getDataSet(String name) {
+            return null;
+        }
+
         @Override
         public boolean hasTable(String tableName) {
             try {

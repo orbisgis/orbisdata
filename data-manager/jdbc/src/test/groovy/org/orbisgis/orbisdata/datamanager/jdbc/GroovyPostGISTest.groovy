@@ -46,20 +46,20 @@ import static org.junit.jupiter.api.Assertions.assertNotNull
 
 class GroovyPostGISTest {
 
-    def static dbProperties=  [databaseName: 'gisdb',
-    user: '',
-    password: '',
-    url :'jdbc:postgresql://ns380291.ip-94-23-250.eu/'
+    def static dbProperties = [databaseName: 'gisdb',
+                               user        : '',
+                               password    : '',
+                               url         : 'jdbc:postgresql://ns380291.ip-94-23-250.eu/'
     ]
 
     @BeforeAll
-    static void init(){
+    static void init() {
         System.setProperty("test.postgis",
                 Boolean.toString(!dbProperties.user.isEmpty() && !dbProperties.password.isEmpty()));
     }
 
     @Test
-    void ensureNoPasswordNorLogin(){
+    void ensureNoPasswordNorLogin() {
         assertEquals("", dbProperties.user)
         assertEquals("", dbProperties.password)
     }
@@ -101,7 +101,6 @@ class GroovyPostGISTest {
     }
 
 
-
     @Test
     @EnabledIfSystemProperty(named = "test.postgis", matches = "true")
     void queryPostGISMetaData() {
@@ -112,7 +111,7 @@ class GroovyPostGISTest {
                 INSERT INTO postgis VALUES (1, 'POINT(10 10)'::GEOMETRY), (2, 'POINT(1 1)'::GEOMETRY);
         """)
         def concat = ""
-        postGIS.rows "SELECT * FROM postgis", {  meta ->
+        postGIS.rows "SELECT * FROM postgis", { meta ->
             concat += "${meta.getTableName(1)} $meta.columnCount\n"
         }
         assertEquals("postgis 2\n", concat)
@@ -129,19 +128,19 @@ class GroovyPostGISTest {
         """)
 
         def concat = ""
-        postGIS.getSpatialTable("postgis").meta.each {row ->
+        postGIS.getSpatialTable("postgis").meta.each { row ->
             concat += "$row.columnLabel $row.columnType\n"
         }
         assertEquals("id 4\nthe_geom 1111\n", concat)
 
         concat = ""
-        postGIS.getSpatialTable("postgis").metadata.each {row ->
+        postGIS.getSpatialTable("postgis").metadata.each { row ->
             concat += "$row.columnLabel $row.columnType\n"
         }
         assertEquals("id 4\nthe_geom 1111\n", concat)
     }
-    
-    
+
+
     @Test
     @EnabledIfSystemProperty(named = "test.postgis", matches = "true")
     void exportImportShpFile() {
@@ -151,7 +150,7 @@ class GroovyPostGISTest {
                 CREATE TABLE postgis (id int, the_geom geometry(point, 0));
                 INSERT INTO postgis VALUES (1, 'POINT(10 10)'::GEOMETRY), (2, 'POINT(1 1)'::GEOMETRY);
         """)
-        postGIS.save("postgis","target/postgis_imported.shp")
+        postGIS.save("postgis", "target/postgis_imported.shp")
         postGIS.load("target/postgis_imported.shp", "postgis_imported", null, false)
         def concat = ""
         postGIS.getSpatialTable "postgis_imported" eachRow { row -> concat += "$row.id $row.the_geom $row.geometry\n" }
@@ -168,7 +167,7 @@ class GroovyPostGISTest {
                 CREATE TABLE postgis (id int, the_geom geometry(point, 0));
                 INSERT INTO postgis VALUES (1, 'POINT(10 10)'::GEOMETRY), (2, 'POINT(1 1)'::GEOMETRY);
         """)
-        postGIS.save("postgis","target/postgis_imported.shp")
+        postGIS.save("postgis", "target/postgis_imported.shp")
         postGIS.load("target/postgis_imported.shp", "postgis_imported", null, false)
         postGIS.load("target/postgis_imported.shp", "postgis_imported", null, true)
         def concat = ""
@@ -186,7 +185,7 @@ class GroovyPostGISTest {
                 CREATE TABLE postgis (id int, the_geom geometry(point, 0));
                 INSERT INTO postgis VALUES (1, 'POINT(10 10)'::GEOMETRY), (2, 'POINT(1 1)'::GEOMETRY);
         """)
-        postGIS.save("postgis","target/postgis_imported.shp")
+        postGIS.save("postgis", "target/postgis_imported.shp")
         postGIS.load("target/postgis_imported.shp", "postgis_imported")
         def concat = ""
         postGIS.getSpatialTable "postgis_imported" eachRow { row -> concat += "$row.id $row.the_geom $row.geometry\n" }
@@ -203,13 +202,14 @@ class GroovyPostGISTest {
                 CREATE TABLE postgis (id int, the_geom geometry(point, 0));
                 INSERT INTO postgis VALUES (1, 'POINT(10 10)'::GEOMETRY), (2, 'POINT(1 1)'::GEOMETRY);
         """)
-        postGIS.save("postgis","target/postgis_imported.shp")
+        postGIS.save("postgis", "target/postgis_imported.shp")
         postGIS.load("target/postgis_imported.shp")
         def concat = ""
         postGIS.getSpatialTable "postgis_imported" eachRow { row -> concat += "$row.id $row.the_geom $row.geometry\n" }
         assertEquals("1 POINT (10 10) POINT (10 10)\n2 POINT (1 1) POINT (1 1)\n", concat)
         println(concat)
     }
+
     @Test
     @EnabledIfSystemProperty(named = "test.postgis", matches = "true")
     void exportImportGeoJsonShapeFile() {
@@ -219,9 +219,9 @@ class GroovyPostGISTest {
                 CREATE TABLE postgis (id int, the_geom geometry(point, 0));
                 INSERT INTO postgis VALUES (1, 'POINT(10 10)'::GEOMETRY), (2, 'POINT(1 1)'::GEOMETRY);
         """)
-        postGIS.save("postgis","target/postgis_imported.geojson")
+        postGIS.save("postgis", "target/postgis_imported.geojson")
         postGIS.load("target/postgis_imported.geojson")
-        postGIS.save("postgis_imported","target/postgis_imported.shp")
+        postGIS.save("postgis_imported", "target/postgis_imported.shp")
         postGIS.load("target/postgis_imported.shp", true)
         def concat = ""
         postGIS.getSpatialTable "postgis_imported" eachRow { row -> concat += "$row.id $row.the_geom $row.geometry\n" }
@@ -238,14 +238,14 @@ class GroovyPostGISTest {
                 CREATE TABLE postgis (id int, the_geom geometry(point, 0));
                 INSERT INTO postgis VALUES (1, 'POINT(10 10)'::GEOMETRY), (2, 'POINT(1 1)'::GEOMETRY);
         """)
-        postGIS.save("postgis","target/postgis_imported.csv")
+        postGIS.save("postgis", "target/postgis_imported.csv")
         postGIS.load("target/postgis_imported.csv")
         def concat = ""
         postGIS.getSpatialTable "postgis_imported" eachRow { row -> concat += "$row.id $row.the_geom $row.geometry\n" }
         assertEquals("1 POINT (10 10) POINT (10 10)\n2 POINT (1 1) POINT (1 1)\n", concat)
         println(concat)
     }
-    
+
     @Test
     @EnabledIfSystemProperty(named = "test.postgis", matches = "true")
     void queryTableColumnNames() {

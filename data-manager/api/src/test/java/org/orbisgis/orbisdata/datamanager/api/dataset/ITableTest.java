@@ -53,9 +53,13 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 public class ITableTest {
 
-    /** {@link ITable} to test. */
+    /**
+     * {@link ITable} to test.
+     */
     private static ITable table;
-    /** Data written in the {@link ITable}. */
+    /**
+     * Data written in the {@link ITable}.
+     */
     private static final String COL1_NAME = "Buildings";
     private static final List<Object> COL1_VALUES = Arrays.asList("build1", "build2", "build3");
     private static final String COL2_NAME = "Names";
@@ -73,7 +77,7 @@ public class ITableTest {
      * Initialize the {@link ITable} to test.
      */
     @BeforeAll
-    public static void createTable(){
+    public static void createTable() {
         DummyTable dummyTable = new DummyTable();
         dummyTable.addColumn(COL1_NAME, COL1_VALUES);
         dummyTable.addColumn(COL2_NAME, COL2_VALUES);
@@ -87,7 +91,7 @@ public class ITableTest {
      * Test the {@link ITable#hasColumn(String)} method.
      */
     @Test
-    public void testHasColumn(){
+    public void testHasColumn() {
         assertTrue(table.hasColumn(COL1_NAME));
         assertTrue(table.hasColumn(COL2_NAME));
         assertTrue(table.hasColumn(COL3_NAME));
@@ -105,7 +109,7 @@ public class ITableTest {
      * Test the {@link ITable#hasColumns(List)} method.
      */
     @Test
-    public void testHasColumns(){
+    public void testHasColumns() {
         List<String> list = new ArrayList<>();
         list.add(COL1_NAME);
         list.add(COL2_NAME);
@@ -136,7 +140,7 @@ public class ITableTest {
      * Test the {@link ITable#hasColumn(String, Class)} method.
      */
     @Test
-    public void testHasColumnWithClass(){
+    public void testHasColumnWithClass() {
         assertTrue(table.hasColumn(COL1_NAME, String.class));
         assertFalse(table.hasColumn(COL1_NAME, Object.class));
         assertFalse(table.hasColumn(COL1_NAME, Integer.class));
@@ -162,7 +166,7 @@ public class ITableTest {
      * Test the {@link ITable#hasColumns(Map)} method.
      */
     @Test
-    public void testHasColumnsWithClass(){
+    public void testHasColumnsWithClass() {
         Map<String, Class> map = new HashMap<>();
 
         map.put(COL1_NAME, String.class);
@@ -212,7 +216,7 @@ public class ITableTest {
      * Test the {@link ITable#getColumnCount()} method.
      */
     @Test
-    public void testGetColumnCount(){
+    public void testGetColumnCount() {
         assertEquals(COLUMN_COUNT, table.getColumnCount());
         assertEquals(0, new DummyTable().getColumnCount());
     }
@@ -221,7 +225,7 @@ public class ITableTest {
      * Test the {@link ITable#isEmpty()} method.
      */
     @Test
-    public void testIsEmpty(){
+    public void testIsEmpty() {
         assertFalse(table.isEmpty());
         assertTrue(new DummyTable().isEmpty());
     }
@@ -230,7 +234,7 @@ public class ITableTest {
      * Test the {@link ITable#save(String)} ()} method.
      */
     @Test
-    public void testSave(){
+    public void testSave() {
         assertTrue(table.save("path"));
     }
 
@@ -238,7 +242,7 @@ public class ITableTest {
      * Test the {@link ITable#getNDim()} method.
      */
     @Test
-    public void testNDim(){
+    public void testNDim() {
         assertEquals(2, table.getNDim());
     }
 
@@ -246,7 +250,7 @@ public class ITableTest {
      * Test the {@link ITable#getShape()} method.
      */
     @Test
-    public void testGetShape(){
+    public void testGetShape() {
         int[] shape = table.getShape();
         assertEquals(2, shape.length);
         assertEquals(5, shape[0]);
@@ -258,13 +262,15 @@ public class ITableTest {
      */
     private static class DummyTable implements ITable<Object> {
 
-        /** {@link List} of columns. A column is a list with the column name as first value. */
+        /**
+         * {@link List} of columns. A column is a list with the column name as first value.
+         */
         private List<List<Object>> columns;
 
         /**
          * Main constructor with an empty column list.
          */
-        private DummyTable(){
+        private DummyTable() {
             columns = new ArrayList<>();
         }
 
@@ -272,9 +278,9 @@ public class ITableTest {
          * Add a single column.
          *
          * @param columnName Name of the column.
-         * @param values Values of the column.
+         * @param values     Values of the column.
          */
-        private void addColumn(String columnName, List<Object> values){
+        private void addColumn(String columnName, List<Object> values) {
             List<Object> list = new ArrayList<>();
             list.add(columnName);
             list.addAll(values);
@@ -302,24 +308,85 @@ public class ITableTest {
                     .stream()
                     .mapToInt(List::size)
                     .max()
-                    .orElse(1)-1;
+                    .orElse(1) - 1;
         }
 
-        @Override public int getRow() { return 0; }
-        @Override public void eachRow(Closure closure) {/*Does nothing*/}
-        @Override public Collection<String> getUniqueValues(String column) {return null;}
-        @Override public boolean save(String filePath, String encoding) {return true;}
-        @Override public List<Object> getFirstRow() {return null;}
-        @Override public ITable columns(String... columns) { return null; }
-        @Override public ITable columns(List<String> columns) { return null; }
-        @Override public boolean isSpatial() { return false; }
-        @Override public String getLocation() {return null;}
-        @Override public String getName() {return null;}
-        @Override public Object getMetaData() {return null;}
-        @Override public Object asType(Class clazz) {return null;}
-        @Override public ISummary getSummary() { return null; }
-        @Override public Iterator<Object> iterator() {return new ResultSetIterator();}
-        @Override public Map<String, String> getColumnsTypes() {return null;}
-        @Override public String getColumnType(String columnName) {return null;}
+        @Override
+        public int getRow() {
+            return 0;
+        }
+
+        @Override
+        public void eachRow(Closure closure) {/*Does nothing*/}
+
+        @Override
+        public Collection<String> getUniqueValues(String column) {
+            return null;
+        }
+
+        @Override
+        public boolean save(String filePath, String encoding) {
+            return true;
+        }
+
+        @Override
+        public List<Object> getFirstRow() {
+            return null;
+        }
+
+        @Override
+        public ITable columns(String... columns) {
+            return null;
+        }
+
+        @Override
+        public ITable columns(List<String> columns) {
+            return null;
+        }
+
+        @Override
+        public boolean isSpatial() {
+            return false;
+        }
+
+        @Override
+        public String getLocation() {
+            return null;
+        }
+
+        @Override
+        public String getName() {
+            return null;
+        }
+
+        @Override
+        public Object getMetaData() {
+            return null;
+        }
+
+        @Override
+        public Object asType(Class clazz) {
+            return null;
+        }
+
+        @Override
+        public ISummary getSummary() {
+            return null;
+        }
+
+        @Override
+        public Iterator<Object> iterator() {
+            return new ResultSetIterator();
+        }
+
+        @Override
+        public Map<String, String> getColumnsTypes() {
+            return null;
+        }
+
+        @Override
+        public String getColumnType(String columnName) {
+            return null;
+        }
     }
 }

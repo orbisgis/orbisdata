@@ -53,7 +53,7 @@ class TestInputOutput {
     def Input = new Input(null, null)
 
     @Test
-    void testInput(){
+    void testInput() {
         Input input1 = Input()
         Input input2 = Input().optional("dflt")
                 .description("desc")
@@ -76,7 +76,7 @@ class TestInputOutput {
         assertTrue(input2.optional)
         assertEquals("dflt", input2.defaultValue)
         assertEquals("desc", input2.description)
-        assertArrayEquals((String[])['key1', 'key2'], input2.keywords)
+        assertArrayEquals((String[]) ['key1', 'key2'], input2.keywords)
         assertNull(input2.name)
         assertNull(input2.process)
         assertEquals("title", input2.title)
@@ -94,7 +94,7 @@ class TestInputOutput {
     }
 
     @Test
-    void testOutput(){
+    void testOutput() {
         def output1 = Output()
         def output2 = Output()
                 .keywords('key1', 'key2')
@@ -110,7 +110,7 @@ class TestInputOutput {
         assertNull(output1.type)
 
         assertEquals("desc", output2.description)
-        assertArrayEquals((String[])['key1', 'key2'], output2.keywords)
+        assertArrayEquals((String[]) ['key1', 'key2'], output2.keywords)
         assertNull(output2.name)
         assertNull(output2.process)
         assertEquals("title", output2.title)
@@ -118,8 +118,8 @@ class TestInputOutput {
     }
 
     @Test
-    void testToString(){
+    void testToString() {
         def process = ProcessManager.processManager.create().process
-        assertEquals("name:"+process.identifier, new Output(process, "name").toString())
+        assertEquals("name:" + process.identifier, new Output(process, "name").toString())
     }
 }

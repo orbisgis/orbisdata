@@ -50,13 +50,12 @@ import java.util.Map;
  */
 public interface IOptionBuilder extends IBuilderResult {
 
-    enum Order{ASC, DESC}
+    enum Order {ASC, DESC}
 
     /**
      * Set the group by fields.
      *
      * @param fields Array of fields to use for the group by.
-     *
      * @return {@link IOptionBuilder} instance to continue building.
      */
     IOptionBuilder groupBy(String... fields);
@@ -65,7 +64,6 @@ public interface IOptionBuilder extends IBuilderResult {
      * Set the order by fields.
      *
      * @param orderByMap {@link Map} with the field as key and the Order as value.
-     *
      * @return {@link IOptionBuilder} instance to continue building.
      */
     IOptionBuilder orderBy(Map<String, Order> orderByMap);
@@ -75,7 +73,6 @@ public interface IOptionBuilder extends IBuilderResult {
      *
      * @param field Field to use.
      * @param order Order of the field.
-     *
      * @return {@link IOptionBuilder} instance to continue building.
      */
     IOptionBuilder orderBy(String field, Order order);
@@ -84,7 +81,6 @@ public interface IOptionBuilder extends IBuilderResult {
      * Set the ASC order by unique field.
      *
      * @param field Field to use.
-     *
      * @return {@link IOptionBuilder} instance to continue building.
      */
     IOptionBuilder orderBy(String field);
@@ -93,7 +89,6 @@ public interface IOptionBuilder extends IBuilderResult {
      * Set the limit of the request.
      *
      * @param limitCount Count of row.
-     *
      * @return {@link IOptionBuilder} instance to continue building.
      */
     IOptionBuilder limit(int limitCount);

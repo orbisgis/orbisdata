@@ -70,7 +70,6 @@ public interface IDataSet<T> extends Iterable<T> {
      * Convert the current object into another with the given class.
      *
      * @param clazz New class of the result.
-     *
      * @return The current object into an other class.
      */
     Object asType(Class clazz);

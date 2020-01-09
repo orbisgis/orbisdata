@@ -48,7 +48,6 @@ public interface ICheckOptionBuilder {
      * Make the check log the given message and stop the program on fail .
      *
      * @param message Message to log.
-     *
      * @return A {@link ICheckOptionBuilder} to continue the check building.
      */
     ICheckOptionBuilder stopOnFail(String message);
@@ -57,7 +56,6 @@ public interface ICheckOptionBuilder {
      * Make the check log the given message and stop the program on success .
      *
      * @param message Message to log.
-     *
      * @return A {@link ICheckOptionBuilder} to continue the check building.
      */
     ICheckOptionBuilder stopOnSuccess(String message);
@@ -66,7 +64,6 @@ public interface ICheckOptionBuilder {
      * Make the check log the given message and continue the program on fail .
      *
      * @param message Message to log.
-     *
      * @return A {@link ICheckOptionBuilder} to continue the check building.
      */
     ICheckOptionBuilder continueOnFail(String message);
@@ -75,7 +72,6 @@ public interface ICheckOptionBuilder {
      * Make the check log the given message and continue the program on success .
      *
      * @param message Message to log.
-     *
      * @return A {@link ICheckOptionBuilder} to continue the check building.
      */
     ICheckOptionBuilder continueOnSuccess(String message);

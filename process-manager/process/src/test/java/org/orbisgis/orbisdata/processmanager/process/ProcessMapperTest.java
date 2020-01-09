@@ -138,15 +138,15 @@ public class ProcessMapperTest {
     }
 
     /**
-     *   --> ----
-     *      | pB | -----> ---- -->
-     *  |--> ----        | pC |
-     *  |            |--> ---- -->
-     *  |------------|
-     *               |
-     *  --> ----     |
-     *     | pA | ---|
-     *      ----
+     * --> ----
+     * | pB | -----> ---- -->
+     * |--> ----        | pC |
+     * |            |--> ---- -->
+     * |------------|
+     * |
+     * --> ----     |
+     * | pA | ---|
+     * ----
      */
     @Test
     public void testMapping1() {
@@ -190,32 +190,32 @@ public class ProcessMapperTest {
 
 
     /**
-     *  --> -----  |--> ----
-     *     |  pA |-|   | pB |--->
-     *  --> -----  |\ /> ----
-     *               X
-     *  --> -----  |/ \> ----
-     *     |  pA |-|   | pB |--->
-     *  --> -----  |--> ----
+     * --> -----  |--> ----
+     * |  pA |-|   | pB |--->
+     * --> -----  |\ /> ----
+     * X
+     * --> -----  |/ \> ----
+     * |  pA |-|   | pB |--->
+     * --> -----  |--> ----
      */
     @Test
     public void testMapping2() {
 
         IProcessMapper mapper = new ProcessMapper();
 
-        mapper.link((IInOutPut)pA2.getProperty("outA1")).to((IInOutPut)pB1.getProperty("inB1"));
-        mapper.link((IInOutPut)pB2.getProperty("inB2")).to((IInOutPut)pA2.getProperty("outA1"));
-        mapper.link((IInOutPut)pA1.getProperty("outA1")).to((IInOutPut)pB2.getProperty("inB1"), (IInOutPut)pB1.getProperty("inB2"));
+        mapper.link((IInOutPut) pA2.getProperty("outA1")).to((IInOutPut) pB1.getProperty("inB1"));
+        mapper.link((IInOutPut) pB2.getProperty("inB2")).to((IInOutPut) pA2.getProperty("outA1"));
+        mapper.link((IInOutPut) pA1.getProperty("outA1")).to((IInOutPut) pB2.getProperty("inB1"), (IInOutPut) pB1.getProperty("inB2"));
 
-        mapper.link((IInOutPut)pA1.getProperty("outA1")).to("interPA1OutA1");
-        mapper.link((IInOutPut)pA2.getProperty("outA1")).to("interPA2OutA1");
+        mapper.link((IInOutPut) pA1.getProperty("outA1")).to("interPA1OutA1");
+        mapper.link((IInOutPut) pA2.getProperty("outA1")).to("interPA2OutA1");
 
-        mapper.link((IInOutPut)pA1.getProperty("inA1"), (IInOutPut)pA2.getProperty("inA1")).to("commonInput");
-        mapper.link((IInOutPut)pA1.getProperty("inA2")).to("inputD");
-        mapper.link((IInOutPut)pA2.getProperty("inA2")).to("inputK");
+        mapper.link((IInOutPut) pA1.getProperty("inA1"), (IInOutPut) pA2.getProperty("inA1")).to("commonInput");
+        mapper.link((IInOutPut) pA1.getProperty("inA2")).to("inputD");
+        mapper.link((IInOutPut) pA2.getProperty("inA2")).to("inputK");
 
-        mapper.link((IInOutPut)pB1.getProperty("outB1")).to("outD");
-        mapper.link((IInOutPut)pB2.getProperty("outB1")).to("outK");
+        mapper.link((IInOutPut) pB1.getProperty("outB1")).to("outD");
+        mapper.link((IInOutPut) pB2.getProperty("outB1")).to("outK");
 
         LinkedHashMap<String, Object> dataMap = new LinkedHashMap<>();
         dataMap.put("inputD", "D");
@@ -245,22 +245,22 @@ public class ProcessMapperTest {
 
 
     /**
-     *  --> -----
-     *     |  pA |-->
-     *  --> -----
-     *
-     *  --> -----
-     *     |  pA |-->
-     *  --> -----
+     * --> -----
+     * |  pA |-->
+     * --> -----
+     * <p>
+     * --> -----
+     * |  pA |-->
+     * --> -----
      */
     @Test
     public void testMapping4() {
 
         IProcessMapper mapper = new ProcessMapper();
 
-        mapper.link((IInOutPut)pA1.getProperty("inA1"), (IInOutPut)pA2.getProperty("inA1")).to("commonInput");
-        mapper.link((IInOutPut)pA1.getProperty("inA2")).to("inputD");
-        mapper.link((IInOutPut)pA2.getProperty("inA2")).to("inputK");
+        mapper.link((IInOutPut) pA1.getProperty("inA1"), (IInOutPut) pA2.getProperty("inA1")).to("commonInput");
+        mapper.link((IInOutPut) pA1.getProperty("inA2")).to("inputD");
+        mapper.link((IInOutPut) pA2.getProperty("inA2")).to("inputK");
 
         LinkedHashMap<String, Object> dataMap = new LinkedHashMap<>();
         dataMap.put("inputD", "D");
@@ -271,13 +271,14 @@ public class ProcessMapperTest {
 
 
     /**
+     *
      */
     @Test
     public void testMapping3() {
 
         IProcessMapper mapper = new ProcessMapper();
 
-        mapper.link((IInOutPut)pC.getProperty("outC1")).to("out");
+        mapper.link((IInOutPut) pC.getProperty("outC1")).to("out");
 
         LinkedHashMap<String, Object> dataMap = new LinkedHashMap<>();
         dataMap.put("inC1", "D");
@@ -300,13 +301,14 @@ public class ProcessMapperTest {
 
 
     /**
+     *
      */
     @Test
     public void testNoLinkeable() {
 
         IProcessMapper mapper = new ProcessMapper();
 
-        mapper.link((IInOutPut)pC.getProperty("outC1")).to((IInOutPut)pC.getProperty("inC1"));
+        mapper.link((IInOutPut) pC.getProperty("outC1")).to((IInOutPut) pC.getProperty("inC1"));
 
         LinkedHashMap<String, Object> dataMap = new LinkedHashMap<>();
         dataMap.put("inC1", "D");
@@ -320,29 +322,29 @@ public class ProcessMapperTest {
      * {@link org.orbisgis.orbisdata.processmanager.api.ILinker#to(IInOutPut...)} methods in case of bad linking.
      */
     @Test
-    public void testBadMapping(){
+    public void testBadMapping() {
         IProcessMapper mapper = new ProcessMapper();
-        mapper.link((IInOutPut)pA1.getProperty("outA1")).to((IInOutPut)pB2.getProperty("outB1"));
+        mapper.link((IInOutPut) pA1.getProperty("outA1")).to((IInOutPut) pB2.getProperty("outB1"));
         assertTrue(mapper.getInputs().isEmpty());
         assertTrue(mapper.getOutputs().isEmpty());
 
         mapper = new ProcessMapper();
-        mapper.link((IInOutPut)pA1.getProperty("inA1")).to((IInOutPut)pB2.getProperty("inB1"));
+        mapper.link((IInOutPut) pA1.getProperty("inA1")).to((IInOutPut) pB2.getProperty("inB1"));
         assertTrue(mapper.getInputs().isEmpty());
         assertTrue(mapper.getOutputs().isEmpty());
 
         mapper = new ProcessMapper();
-        mapper.link((IInOutPut)pA1.getProperty("outA1"), (IInOutPut)pB2.getProperty("inB1"));
+        mapper.link((IInOutPut) pA1.getProperty("outA1"), (IInOutPut) pB2.getProperty("inB1"));
         assertTrue(mapper.getInputs().isEmpty());
         assertTrue(mapper.getOutputs().isEmpty());
 
         mapper = new ProcessMapper();
-        mapper.link((IInOutPut)pA1.getProperty("inA1")).to((IInOutPut)pA1.getProperty("outA1"), (IInOutPut)pB2.getProperty("inB1"));
+        mapper.link((IInOutPut) pA1.getProperty("inA1")).to((IInOutPut) pA1.getProperty("outA1"), (IInOutPut) pB2.getProperty("inB1"));
         assertTrue(mapper.getInputs().isEmpty());
         assertTrue(mapper.getOutputs().isEmpty());
 
         mapper = new ProcessMapper();
-        mapper.link((IInOutPut)pA1.getProperty("inA1")).to();
+        mapper.link((IInOutPut) pA1.getProperty("inA1")).to();
         assertTrue(mapper.getInputs().isEmpty());
         assertTrue(mapper.getOutputs().isEmpty());
 
@@ -357,7 +359,7 @@ public class ProcessMapperTest {
      * {@link ProcessMapper#getKeywords()}, {@link ProcessMapper#getVersion()} methods.
      */
     @Test
-    public void getAttributes(){
+    public void getAttributes() {
         IProcessMapper mapper = new ProcessMapper();
         assertNull(mapper.getTitle());
         assertNull(mapper.getDescription());
@@ -375,7 +377,7 @@ public class ProcessMapperTest {
      * Test the methods {@link ProcessMapper#after(IProcess)}, {@link ProcessMapper#before(IProcess)}  methods.
      */
     @Test
-    public void getChecker(){
+    public void getChecker() {
         IProcessMapper mapper = new ProcessMapper();
         assertNotNull(mapper.after(null));
         assertNotNull(mapper.before(null));
@@ -385,10 +387,10 @@ public class ProcessMapperTest {
      * Test the methods {@link ProcessMapper#newInstance()} method.
      */
     @Test
-    void testNewInstance(){
+    void testNewInstance() {
         IProcessMapper mapper = new ProcessMapper();
-        mapper.link((InOutPut)pA1.getProperty("inA1")).to("in");
-        mapper.link((InOutPut)pA1.getProperty("outA1")).to("out");
+        mapper.link((InOutPut) pA1.getProperty("inA1")).to("in");
+        mapper.link((InOutPut) pA1.getProperty("outA1")).to("out");
         mapper.execute(null);
         IProcessMapper mapper2 = mapper.newInstance();
         assertEquals(mapper.getTitle(), mapper2.getTitle());

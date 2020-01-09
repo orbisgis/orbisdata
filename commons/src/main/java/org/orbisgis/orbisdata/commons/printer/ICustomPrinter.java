@@ -46,7 +46,9 @@ import org.orbisgis.orbisdata.commons.annotations.NotNull;
  */
 public interface ICustomPrinter {
 
-    /** Cell positions.*/
+    /**
+     * Cell positions.
+     */
     enum CellPosition {CENTER, RIGHT, LEFT}
 
     /**

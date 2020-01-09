@@ -62,7 +62,6 @@ public interface IProcessManager {
      * in the default {@link IProcessFactory} if set.
      *
      * @param cl {@link Closure} delegated to {@link IProcessBuilder}.
-     *
      * @return A {@link IProcess}.
      */
     IProcess create(@DelegatesTo(IProcessBuilder.class) Closure cl);
@@ -78,7 +77,6 @@ public interface IProcessManager {
      * Returns the process factory with the given identifier.
      *
      * @param identifier Identifier of the factory.
-     *
      * @return The process factory with the given identifier.
      */
     IProcessFactory factory(String identifier);
@@ -94,7 +92,6 @@ public interface IProcessManager {
      * Returns the process with the given identifier from the default factory.
      *
      * @param processId Identifier of the process to get.
-     *
      * @return The process with the given identifier from the default factory.
      */
     IProcess process(String processId);
@@ -104,7 +101,6 @@ public interface IProcessManager {
      *
      * @param processId Identifier of the process to get.
      * @param factoryId Identifier of the factory.
-     *
      * @return The process with the given identifier from the factory with the given identifier.
      */
     IProcess process(String processId, String factoryId);

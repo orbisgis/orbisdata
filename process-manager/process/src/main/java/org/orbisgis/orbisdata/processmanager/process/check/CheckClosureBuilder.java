@@ -49,14 +49,17 @@ import org.orbisgis.orbisdata.processmanager.api.check.IProcessCheck;
  */
 public class CheckClosureBuilder implements ICheckClosureBuilder {
 
-    /** {@link IProcessCheck} being built */
+    /**
+     * {@link IProcessCheck} being built
+     */
     private IProcessCheck processCheck;
 
     /**
      * Default constructor.
+     *
      * @param processCheck {@link IProcessCheck} to build.
      */
-    public CheckClosureBuilder(IProcessCheck processCheck){
+    public CheckClosureBuilder(IProcessCheck processCheck) {
         this.processCheck = processCheck;
     }
 

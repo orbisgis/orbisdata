@@ -54,7 +54,7 @@ class AsciiTest {
      * Test the building of a {@link Ascii} printer.
      */
     @Test
-    void asciiTest(){
+    void asciiTest() {
         StringBuilder sb = new StringBuilder();
         sb.append("##HEADER##");
         assertEquals("##HEADER##", sb.toString());

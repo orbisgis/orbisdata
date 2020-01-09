@@ -54,9 +54,13 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 public class JdbcColumnTest {
 
-    /** Default database name */
+    /**
+     * Default database name
+     */
     private static final String BASE_DATABASE = "./target/" + JdbcColumnTest.class.getSimpleName();
-    /** Database connection */
+    /**
+     * Database connection
+     */
     private static JdbcDataSource dataSource;
 
     private static final String TABLE_NAME = "orbisgis";
@@ -76,15 +80,15 @@ public class JdbcColumnTest {
      * Initialization of the database.
      */
     @BeforeAll
-    public static void init(){
+    public static void init() {
         dataSource = H2GIS.open(BASE_DATABASE);
         try {
-            dataSource.execute("DROP TABLE IF EXISTS "+TABLE_NAME+","+LINKED_NAME+","+TEMP_NAME);
-        dataSource.execute("CREATE TABLE "+TABLE_NAME+" ("+COL_THE_GEOM+" GEOMETRY, "+COL_THE_GEOM2+" GEOMETRY(POINT Z)," +
-                COL_ID+" INTEGER, "+COL_VALUE+" FLOAT, "+COL_MEANING+" VARCHAR)");
-        dataSource.execute("INSERT INTO "+TABLE_NAME+" VALUES ('POINT(0 0)', 'POINT(1 1 0)', 1, 2.3, 'Simple points')");
-        dataSource.execute("INSERT INTO "+TABLE_NAME+" VALUES ('POINT(0 1 2)', 'POINT(10 11 12)', 2, 0.568, '3D point')");
-        dataSource.execute("INSERT INTO "+TABLE_NAME+" VALUES (null, 'POINT(110 111 112)', 2, null, '3D point')");
+            dataSource.execute("DROP TABLE IF EXISTS " + TABLE_NAME + "," + LINKED_NAME + "," + TEMP_NAME);
+            dataSource.execute("CREATE TABLE " + TABLE_NAME + " (" + COL_THE_GEOM + " GEOMETRY, " + COL_THE_GEOM2 + " GEOMETRY(POINT Z)," +
+                    COL_ID + " INTEGER, " + COL_VALUE + " FLOAT, " + COL_MEANING + " VARCHAR)");
+            dataSource.execute("INSERT INTO " + TABLE_NAME + " VALUES ('POINT(0 0)', 'POINT(1 1 0)', 1, 2.3, 'Simple points')");
+            dataSource.execute("INSERT INTO " + TABLE_NAME + " VALUES ('POINT(0 1 2)', 'POINT(10 11 12)', 2, 0.568, '3D point')");
+            dataSource.execute("INSERT INTO " + TABLE_NAME + " VALUES (null, 'POINT(110 111 112)', 2, null, '3D point')");
         } catch (SQLException e) {
             fail(e);
         }
@@ -94,11 +98,10 @@ public class JdbcColumnTest {
      * Return a simple instantiation of a {@link JdbcColumn}.
      *
      * @param name Name of the column
-     *
      * @return A simple instantiation of a {@link JdbcColumn}.
      */
-    private JdbcColumn getColumn(String name){
-        if(COL_NO_TAB.equals(name)){
+    private JdbcColumn getColumn(String name) {
+        if (COL_NO_TAB.equals(name)) {
             return new DummyJdbcColumn(name, name, dataSource);
         }
         return new DummyJdbcColumn(name, TABLE_NAME, dataSource);
@@ -108,7 +111,7 @@ public class JdbcColumnTest {
      * Test the {@link JdbcColumn#getName()} method.
      */
     @Test
-    public void testGetName(){
+    public void testGetName() {
         assertEquals(COL_THE_GEOM.toUpperCase(), getColumn(COL_THE_GEOM).getName());
         assertEquals(COL_THE_GEOM2.toUpperCase(), getColumn(COL_THE_GEOM2).getName());
         assertEquals(COL_ID.toUpperCase(), getColumn(COL_ID).getName());
@@ -122,7 +125,7 @@ public class JdbcColumnTest {
      * Test the {@link JdbcColumn#getType()} method.
      */
     @Test
-    public void testGetType(){
+    public void testGetType() {
         assertEquals("GEOMETRY", getColumn(COL_THE_GEOM).getType());
         assertEquals("GEOMETRY", getColumn(COL_THE_GEOM2).getType());
         assertEquals("INTEGER", getColumn(COL_ID).getType());
@@ -136,7 +139,7 @@ public class JdbcColumnTest {
      * Test the {@link JdbcColumn#getSize()} method.
      */
     @Test
-    public void testGetSize(){
+    public void testGetSize() {
         assertEquals(2, getColumn(COL_THE_GEOM).getSize());
         assertEquals(3, getColumn(COL_THE_GEOM2).getSize());
         assertEquals(3, getColumn(COL_ID).getSize());
@@ -150,7 +153,7 @@ public class JdbcColumnTest {
      * Test the {@link JdbcColumn#isSpatial()} method.
      */
     @Test
-    public void testIsSpatial(){
+    public void testIsSpatial() {
         assertTrue(getColumn(COL_THE_GEOM).isSpatial());
         assertTrue(getColumn(COL_THE_GEOM2).isSpatial());
         assertFalse(getColumn(COL_ID).isSpatial());
@@ -163,7 +166,7 @@ public class JdbcColumnTest {
     /**
      * Test that there is no spatial index
      */
-    private void testNoSpatialIndexes(){
+    private void testNoSpatialIndexes() {
         //Test no spatial index
         assertFalse(getColumn(COL_THE_GEOM).isSpatialIndexed());
         assertFalse(getColumn(COL_THE_GEOM2).isSpatialIndexed());
@@ -177,7 +180,7 @@ public class JdbcColumnTest {
     /**
      * Test that there is no index
      */
-    private void testNoIndexes(){
+    private void testNoIndexes() {
         //Test no index
         assertFalse(getColumn(COL_THE_GEOM).isIndexed());
         assertFalse(getColumn(COL_THE_GEOM2).isIndexed());
@@ -191,7 +194,7 @@ public class JdbcColumnTest {
     /**
      * Drop indexes on all columns
      */
-    private void dropIndexes(){
+    private void dropIndexes() {
         //Test drop index
         getColumn(COL_THE_GEOM).dropIndex();
         getColumn(COL_THE_GEOM2).dropIndex();
@@ -208,7 +211,7 @@ public class JdbcColumnTest {
      * methods.
      */
     @Test
-    public void testIndexes(){
+    public void testIndexes() {
         dropIndexes();
         testNoSpatialIndexes();
         testNoIndexes();
@@ -287,7 +290,7 @@ public class JdbcColumnTest {
      * Test the {@link JdbcColumn#getMetaClass()} and {@link JdbcColumn#setMetaClass(MetaClass)} methods.
      */
     @Test
-    public void testMetaClass(){
+    public void testMetaClass() {
         JdbcColumn column = getColumn(COL_THE_GEOM);
         assertEquals(InvokerHelper.getMetaClass(JdbcColumn.class), column.getMetaClass());
         column.setMetaClass(InvokerHelper.getMetaClass(this.getClass()));
@@ -298,12 +301,12 @@ public class JdbcColumnTest {
      * Test the {@link JdbcColumn#invokeMethod(String, Object)} method.
      */
     @Test
-    public void testInvokeMethod(){
+    public void testInvokeMethod() {
         JdbcColumn column = getColumn(COL_THE_GEOM);
         column.invokeMethod("dropIndex", null);
-        assertTrue((Boolean)column.invokeMethod("createIndex", null));
-        assertTrue((Boolean)column.invokeMethod("indexed", null));
-        assertTrue((Boolean)column.invokeMethod("isIndexed", null));
+        assertTrue((Boolean) column.invokeMethod("createIndex", null));
+        assertTrue((Boolean) column.invokeMethod("indexed", null));
+        assertTrue((Boolean) column.invokeMethod("isIndexed", null));
         assertEquals(COL_THE_GEOM.toUpperCase(), column.invokeMethod("getName", null));
         assertEquals(COL_THE_GEOM.toUpperCase(), column.invokeMethod("name", null));
     }
@@ -312,10 +315,10 @@ public class JdbcColumnTest {
      * Test the {@link JdbcColumn#getProperty(String)}, {@link JdbcColumn#setProperty(String, Object)} method.
      */
     @Test
-    public void testProperties(){
+    public void testProperties() {
         JdbcColumn column = getColumn(COL_THE_GEOM);
         column.createIndex();
-        assertTrue((Boolean)column.getProperty("indexed"));
+        assertTrue((Boolean) column.getProperty("indexed"));
         assertEquals(COL_THE_GEOM.toUpperCase(), column.getProperty("name"));
         column.setProperty("name", "toto");
         assertEquals("toto", column.getProperty("name"));
@@ -324,8 +327,8 @@ public class JdbcColumnTest {
     /**
      * Simple extension of the {@link JdbcColumn} class.
      */
-    private class DummyJdbcColumn extends JdbcColumn{
-        private DummyJdbcColumn(String name, String tableName, JdbcDataSource dataSource){
+    private class DummyJdbcColumn extends JdbcColumn {
+        private DummyJdbcColumn(String name, String tableName, JdbcDataSource dataSource) {
             super(name, tableName, dataSource);
         }
     }

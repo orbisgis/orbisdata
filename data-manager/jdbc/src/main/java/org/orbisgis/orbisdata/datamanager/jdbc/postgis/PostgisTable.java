@@ -55,23 +55,23 @@ public class PostgisTable extends JdbcTable {
     /**
      * Main constructor.
      *
-     * @param tableLocation {@link TableLocation} that identify the represented table.
-     * @param baseQuery Query for the creation of the ResultSet
-     * @param statement Statement used to request the database.
+     * @param tableLocation  {@link TableLocation} that identify the represented table.
+     * @param baseQuery      Query for the creation of the ResultSet
+     * @param statement      Statement used to request the database.
      * @param jdbcDataSource DataSource to use for the creation of the resultSet.
      */
     public PostgisTable(TableLocation tableLocation, String baseQuery, StatementWrapper statement,
-                               JdbcDataSource jdbcDataSource) {
+                        JdbcDataSource jdbcDataSource) {
         super(DataBaseType.H2GIS, jdbcDataSource, tableLocation, statement, baseQuery);
     }
 
     @Override
     public Object asType(Class clazz) {
         if (ISpatialTable.class.isAssignableFrom(clazz)) {
-            return new PostgisSpatialTable(getTableLocation(), getBaseQuery(), (StatementWrapper)getStatement(),
+            return new PostgisSpatialTable(getTableLocation(), getBaseQuery(), (StatementWrapper) getStatement(),
                     getJdbcDataSource());
         } else if (ITable.class.isAssignableFrom(clazz)) {
-            return new PostgisTable(getTableLocation(), getBaseQuery(), (StatementWrapper)getStatement(),
+            return new PostgisTable(getTableLocation(), getBaseQuery(), (StatementWrapper) getStatement(),
                     getJdbcDataSource());
         } else {
             return super.asType(clazz);

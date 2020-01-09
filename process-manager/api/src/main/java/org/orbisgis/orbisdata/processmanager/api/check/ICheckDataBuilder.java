@@ -48,7 +48,6 @@ public interface ICheckDataBuilder {
      * Sets the inputs or outputs to use for the check.
      *
      * @param data Input or output list to use to do the check.
-     *
      * @return A {@link ICheckClosureBuilder} to continue the check building.
      */
     ICheckClosureBuilder with(Object... data);

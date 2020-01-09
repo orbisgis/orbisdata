@@ -44,7 +44,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull
 
 class GroovyDataFrameTest {
 
-    private static def RANDOM_DS = { H2GIS.open("./target/"+ UUID.randomUUID().toString().replaceAll("-", "_"))}
+    private static def RANDOM_DS = { H2GIS.open("./target/" + UUID.randomUUID().toString().replaceAll("-", "_")) }
 
     @Test
     void testDataFrameFromSpatialTable() {

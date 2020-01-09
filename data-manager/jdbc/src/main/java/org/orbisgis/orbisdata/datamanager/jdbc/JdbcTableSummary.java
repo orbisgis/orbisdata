@@ -46,14 +46,20 @@ import org.orbisgis.orbisdata.datamanager.api.dataset.ISummary;
  */
 public class JdbcTableSummary implements IJdbcTableSummary {
 
-    /** Count of column of the summarized {@link JdbcTable} */
+    /**
+     * Count of column of the summarized {@link JdbcTable}
+     */
     private int columnCount;
-    /** Count of row of the summarized {@link JdbcTable} */
+    /**
+     * Count of row of the summarized {@link JdbcTable}
+     */
     private int rowCount;
-    /** {@link TableLocation} of the summarized {@link JdbcTable} */
+    /**
+     * {@link TableLocation} of the summarized {@link JdbcTable}
+     */
     private TableLocation tableLocation;
 
-    public JdbcTableSummary(TableLocation tableLocation, int columnCount, int rowCount){
+    public JdbcTableSummary(TableLocation tableLocation, int columnCount, int rowCount) {
         this.tableLocation = tableLocation;
         this.columnCount = columnCount;
         this.rowCount = rowCount;
@@ -64,7 +70,7 @@ public class JdbcTableSummary implements IJdbcTableSummary {
      *
      * @return The {@link TableLocation} of the summarized {@link JdbcTable}.
      */
-    public TableLocation getLocation(){
+    public TableLocation getLocation() {
         return tableLocation;
     }
 
@@ -73,7 +79,7 @@ public class JdbcTableSummary implements IJdbcTableSummary {
      *
      * @return The row count of the summarized {@link JdbcTable}.
      */
-    public int getRowCount(){
+    public int getRowCount() {
         return rowCount;
     }
 
@@ -82,12 +88,12 @@ public class JdbcTableSummary implements IJdbcTableSummary {
      *
      * @return The column count of the summarized {@link JdbcTable}.
      */
-    public int getColumnCount(){
+    public int getColumnCount() {
         return columnCount;
     }
 
     @Override
-    public String toString(){
+    public String toString() {
         return tableLocation.toString() + "; row count : " + rowCount + "; column count : " + columnCount;
     }
 }

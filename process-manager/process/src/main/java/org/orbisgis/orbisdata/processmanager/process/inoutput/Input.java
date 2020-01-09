@@ -82,7 +82,7 @@ public class Input extends InOutPut implements IInput {
     }
 
     @Override
-    public Object getDefaultValue(){
+    public Object getDefaultValue() {
         return dfltValue;
     }
 

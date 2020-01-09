@@ -52,10 +52,10 @@ class TestProcess {
     private static final IProcessManager processManager = ProcessManager.processManager
 
     @Test
-    void testProcessCreation(){
+    void testProcessCreation() {
 
         assertFalse processManager.create({}).execute()
-        assertTrue  processManager.create({run {1+1}}).execute()
+        assertTrue processManager.create({ run { 1 + 1 } }).execute()
 
         String[] arr = ["key1", "key2"]
 
@@ -63,12 +63,12 @@ class TestProcess {
                 .title("simple process")
                 .description("description")
                 .keywords("key1", "key2")
-                .inputs([inputA : String, inputB : String])
-                .outputs([outputA : String])
+                .inputs([inputA: String, inputB: String])
+                .outputs([outputA: String])
                 .version("version")
-                .run({ inputA, inputB -> [outputA: inputA+inputB] })
+                .run({ inputA, inputB -> [outputA: inputA + inputB] })
                 .process
-        process([inputA : "tata", inputB : "toto"])
+        process([inputA: "tata", inputB: "toto"])
         assertEquals "tatatoto", process.results.outputA
         assertEquals "simple process", process.title
         assertEquals "description", process.description
@@ -86,7 +86,7 @@ class TestProcess {
             version "version"
             run { inputA, inputB -> [outputA: inputA + inputB] }
         })
-        process([inputA : "tata", inputB : "toto"])
+        process([inputA: "tata", inputB: "toto"])
         assertEquals "tatatoto", process.results.outputA
         assertEquals "simple process", process.title
         assertEquals "description", process.description
@@ -105,7 +105,7 @@ class TestProcess {
             run { inputA, inputB -> [outputA: inputA + inputB] }
         })
 
-        process([inputA : "tata", inputB : "toto"])
+        process([inputA: "tata", inputB: "toto"])
         assertEquals "tatatoto", process.results.outputA
         assertEquals "simple process", process.title
         assertEquals "description", process.description
@@ -116,7 +116,7 @@ class TestProcess {
     }
 
     @Test
-    void testNullResult(){
+    void testNullResult() {
         def process = processManager.create()
                 .title("simple process")
                 .run({ return })
@@ -126,14 +126,14 @@ class TestProcess {
     }
 
     @Test
-    void testSimpleProcess(){
+    void testSimpleProcess() {
         def process = processManager.create()
                 .title("simple process")
-                .inputs([inputA : String, inputB : String])
-                .outputs([outputA : String])
-                .run({ inputA, inputB -> [outputA: inputA+inputB] })
+                .inputs([inputA: String, inputB: String])
+                .outputs([outputA: String])
+                .run({ inputA, inputB -> [outputA: inputA + inputB] })
                 .process
-        process([inputA : "tata", inputB : "toto"])
+        process([inputA: "tata", inputB: "toto"])
         assertEquals "tatatoto", process.getResults().outputA
     }
 
@@ -151,7 +151,7 @@ class TestProcess {
     }
 
     @Test
-    void testSimpleProcess3(){
+    void testSimpleProcess3() {
         def h2GIS = H2GIS.open([databaseName: './target/loadH2GIS'])
         h2GIS("""
                 DROP TABLE IF EXISTS h2gis, super;
@@ -167,12 +167,12 @@ class TestProcess {
         })
 
 
-        p([inputA : h2GIS.getSpatialTable("h2gis")])
+        p([inputA: h2GIS.getSpatialTable("h2gis")])
         assertTrue(p.results.outputA.equals(["ID", "THE_GEOM"]))
     }
 
     @Test
-    void testSimpleProcess4(){
+    void testSimpleProcess4() {
 
         def p = processManager.create({
             title "Create a buffer around a geometry"
@@ -181,7 +181,7 @@ class TestProcess {
             run { inputA, distance -> [outputA: inputA.buffer(distance)] }
         })
 
-        p([inputA : new WKTReader().read("POINT(1 1)"), distance : 10] )
+        p([inputA: new WKTReader().read("POINT(1 1)"), distance: 10])
         assertTrue new WKTReader().read("POLYGON ((11 1, 10.807852804032304 " +
                 "-0.9509032201612824, 10.238795325112868 -2.826834323650898, 9.314696123025453 -4.555702330196022, " +
                 "8.071067811865476 -6.071067811865475, 6.555702330196023 -7.314696123025453, 4.826834323650898 " +
@@ -194,11 +194,11 @@ class TestProcess {
                 "10.238795325112875, -0.9509032201612606 10.807852804032308, 1.0000000000000249 11, 2.950903220161309 " +
                 "10.807852804032299, 4.826834323650925 10.238795325112857, 6.555702330196048 9.314696123025435, " +
                 "8.071067811865499 8.07106781186545, 9.314696123025472 6.555702330195993, 10.238795325112882 " +
-                "4.826834323650862, 10.807852804032311 2.9509032201612437, 11 1))").equalsExact((Geometry)p.results.outputA, 1e-6)
+                "4.826834323650862, 10.807852804032311 2.9509032201612437, 11 1))").equalsExact((Geometry) p.results.outputA, 1e-6)
     }
 
     @Test
-    void testSimpleProcess5(){
+    void testSimpleProcess5() {
 
         def p = processManager.create({
             title "Array"
@@ -208,12 +208,12 @@ class TestProcess {
         })
 
 
-        p([inputA :["A", "B", "C"]])
+        p([inputA: ["A", "B", "C"]])
         assertEquals "B", p.getResults().outputA
     }
 
     @Test
-    void testProcessWithDefaultValue1(){
+    void testProcessWithDefaultValue1() {
 
         def p = processManager.create({
             title "simple process"
@@ -222,40 +222,40 @@ class TestProcess {
             run { inputA, inputB -> [outputA: inputA + inputB] }
         })
 
-        assertTrue p([inputA : "tata"])
+        assertTrue p([inputA: "tata"])
         assertEquals "tatatoto", p.getResults().outputA
     }
 
     @Test
-    void testProcessWithDefaultValue2(){
+    void testProcessWithDefaultValue2() {
         def process = processManager.factory("test").create({
             title "simple process"
             inputs inputA: "tata", inputB: String
             outputs outputA: String
             run { inputA, inputB -> [outputA: inputA + inputB] }
         })
-        assertTrue process([inputB : "toti"])
+        assertTrue process([inputB: "toti"])
         assertEquals "tatatoti", process.getResults().outputA
     }
 
     @Test
-    void testProcessWithDefaultValue3(){
+    void testProcessWithDefaultValue3() {
         def process = processManager.factory("test").create({
             title "simple process"
             inputs inputA: String, inputB: "tyty", inputC: 5.23d, inputD: Double
             outputs outputA: String
             run { inputA, inputB, inputC, inputD -> [outputA: inputA + inputB + inputC + inputD] }
         })
-        assertTrue process([inputA : "tata", inputB : "toto", inputC : 1.0d, inputD : 2.1d])
+        assertTrue process([inputA: "tata", inputB: "toto", inputC: 1.0d, inputD: 2.1d])
         assertEquals "tatatoto1.02.1", process.getResults().outputA
-        assertTrue process([inputA : "tata", inputC : 1.0d, inputD : 2.1d])
+        assertTrue process([inputA: "tata", inputC: 1.0d, inputD: 2.1d])
         assertEquals "tatatyty1.02.1", process.getResults().outputA
-        assertTrue process([inputA : "tata", inputB : "toto", inputD : 2.1d])
+        assertTrue process([inputA: "tata", inputB: "toto", inputD: 2.1d])
         assertEquals "tatatoto5.232.1", process.getResults().outputA
-        assertTrue process([inputA : "tata", inputD : 2.1d])
+        assertTrue process([inputA: "tata", inputD: 2.1d])
         assertEquals "tatatyty5.232.1", process.getResults().outputA
-        assertFalse process([inputD : 2.1d])
-        assertFalse process([inputA : "tata", inputB : "toto"])
+        assertFalse process([inputD: 2.1d])
+        assertFalse process([inputA: "tata", inputB: "toto"])
     }
 
     /**
@@ -264,7 +264,7 @@ class TestProcess {
      *  --> -----      ----
      */
     @Test
-    void testMapping(){
+    void testMapping() {
         def pA = processManager.factory("map1").create({
             title "pA"
             inputs inA1: String, inA2: String
@@ -296,12 +296,12 @@ class TestProcess {
      *      ----
      */
     @Test
-    void testMapping2(){
+    void testMapping2() {
         def pA = processManager.factory("map2").create({
-                title "pA"
-                inputs inA1:String
-                outputs outA1:String
-                run { inA1 ->[outA1:inA1.toUpperCase()]}
+            title "pA"
+            inputs inA1: String
+            outputs outA1: String
+            run { inA1 -> [outA1: inA1.toUpperCase()] }
         })
         def pB = processManager.factory("map2").create({
             title "pB"
@@ -336,7 +336,7 @@ class TestProcess {
      *          --> ----
      */
     @Test
-    void testMapping3(){
+    void testMapping3() {
         def pA = processManager.factory("map3").create({
             title "process"
             inputs in1: String
@@ -377,7 +377,7 @@ class TestProcess {
      *  --> -----  |--> ----  |--> ----
      */
     @Test
-    void testMapping4(){
+    void testMapping4() {
         def pA1 = processManager.factory("map4").create({
             title "pA"
             inputs inA1: String, inA2: String
@@ -406,7 +406,7 @@ class TestProcess {
      *  --> -----  |--> ----
      */
     @Test
-    void testMapping5(){
+    void testMapping5() {
         def pA1 = processManager.factory("map5").create({
             title "pA"
             inputs inA1: String, inA2: String
@@ -454,7 +454,7 @@ class TestProcess {
      *  with test after and before pB and pA
      */
     @Test
-    void testMapping6(){
+    void testMapping6() {
         def pA = processManager.factory("map1").create({
             title "pA"
             inputs inA1: new Input().type(String).optional("t"), inA2: String
@@ -471,11 +471,11 @@ class TestProcess {
         def mapper = new ProcessMapper()
         mapper.link(pA.outA1).to(pB.inB1)
 
-        mapper.before(pA).with(pA.inA1).check({inA1 -> inA1 == "t"}).stopOnFail("Fail")
-        mapper.after(pA).with(pA.outA1).check({outA1 ->outA1 == "ta"}).stopOnFail("Fail")
+        mapper.before(pA).with(pA.inA1).check({ inA1 -> inA1 == "t" }).stopOnFail("Fail")
+        mapper.after(pA).with(pA.outA1).check({ outA1 -> outA1 == "ta" }).stopOnFail("Fail")
 
-        mapper.before(pB).with(pB.inB1, pA.outA1).check({inB1, outA1 ->inB1 == "ta" && outA1 == inB1}).stopOnFail("Fail")
-        mapper.after(pB).with(pB.outB1).check({outB1 ->outB1 == "tata"}).stopOnFail("Fail")
+        mapper.before(pB).with(pB.inB1, pA.outA1).check({ inB1, outA1 -> inB1 == "ta" && outA1 == inB1 }).stopOnFail("Fail")
+        mapper.after(pB).with(pB.outB1).check({ outB1 -> outB1 == "tata" }).stopOnFail("Fail")
 
         assertTrue mapper([inA2: "a"])
         assertEquals "tata", mapper.getResults().outB1

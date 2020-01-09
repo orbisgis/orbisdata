@@ -57,7 +57,9 @@ import static org.orbisgis.orbisdata.datamanager.jdbc.h2gis.H2GIS.open;
  */
 public class DataFrameTest {
 
-    private static H2GIS RANDOM_DS(){return open("./target/"+ UUID.randomUUID().toString().replaceAll("-", "_"));}
+    private static H2GIS RANDOM_DS() {
+        return open("./target/" + UUID.randomUUID().toString().replaceAll("-", "_"));
+    }
 
     @Test
     void testDataFrameFromTable() throws SQLException, IOException {
@@ -126,7 +128,7 @@ public class DataFrameTest {
         assertEquals(4, df02.toArray()[4].length);
         assertNotNull(df02.toMatrix());
 
-        int i=0;
+        int i = 0;
         for (BaseVector baseVector : df) {
             i++;
             assertEquals(5, baseVector.size());
@@ -191,7 +193,7 @@ public class DataFrameTest {
         assertNotNull(df.asType(DataFrame.class));
         assertNull(df.asType(Float.class));
 
-        String path = "./target/"+ UUID.randomUUID().toString().replaceAll("-", "_")+".csv";
+        String path = "./target/" + UUID.randomUUID().toString().replaceAll("-", "_") + ".csv";
         assertTrue(df.save(path, null));
         DataFrame df2 = DataFrame.of(new File(path));
         assertNotNull(df2);

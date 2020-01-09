@@ -72,18 +72,18 @@ public class IJdbcDataSourceTest {
      * Test the {@link IJdbcDataSource#invokeMethod(String, Object)} method.
      */
     @Test
-    public void testInvokeMethod(){
+    public void testInvokeMethod() {
         IJdbcDataSource ds = new IJdbcDataSourceTest.DummyDataSource();
         ds.setProperty("prop1", "value1");
         assertEquals("value1", ds.invokeMethod("getProperty", "prop1"));
         assertTrue((Boolean) ds.invokeMethod("noArg", null));
         assertTrue((Boolean) ds.invokeMethod("getNoArg", null));
-        assertArrayEquals(new Object[]{"string", 0.2}, (Object[])ds.invokeMethod("arrayMethod", new Object[]{"string", 0.2}));
-        assertArrayEquals(new Object[]{"string", 0.2}, (Object[])ds.invokeMethod("getArrayMethod", new Object[]{"string", 0.2}));
-        assertArrayEquals(new Object[]{"string", 0.2}, (Object[])ds.invokeMethod("getParametersMethod", new Object[]{"string", 0.2}));
-        assertArrayEquals(new Object[]{"string", 0.2}, (Object[])ds.invokeMethod("parametersMethod", new Object[]{"string", 0.2}));
-        assertArrayEquals(new Object[]{"string", "0.2"}, (Object[])ds.invokeMethod("getParametersMethod", new Object[]{"string", "0.2"}));
-        assertArrayEquals(new Object[]{"string", "0.2"}, (Object[])ds.invokeMethod("parametersMethod", new Object[]{"string", "0.2"}));
+        assertArrayEquals(new Object[]{"string", 0.2}, (Object[]) ds.invokeMethod("arrayMethod", new Object[]{"string", 0.2}));
+        assertArrayEquals(new Object[]{"string", 0.2}, (Object[]) ds.invokeMethod("getArrayMethod", new Object[]{"string", 0.2}));
+        assertArrayEquals(new Object[]{"string", 0.2}, (Object[]) ds.invokeMethod("getParametersMethod", new Object[]{"string", 0.2}));
+        assertArrayEquals(new Object[]{"string", 0.2}, (Object[]) ds.invokeMethod("parametersMethod", new Object[]{"string", 0.2}));
+        assertArrayEquals(new Object[]{"string", "0.2"}, (Object[]) ds.invokeMethod("getParametersMethod", new Object[]{"string", "0.2"}));
+        assertArrayEquals(new Object[]{"string", "0.2"}, (Object[]) ds.invokeMethod("parametersMethod", new Object[]{"string", "0.2"}));
         assertEquals("string", ds.invokeMethod("getParameterMethod", new Object[]{"string"}));
         assertEquals("string", ds.invokeMethod("getParameterMethod", "string"));
         assertEquals("string", ds.invokeMethod("parameterMethod", new Object[]{"string"}));
@@ -99,7 +99,7 @@ public class IJdbcDataSourceTest {
      * methods.
      */
     @Test
-    public void testExecuteScript(){
+    public void testExecuteScript() {
         DummyDataSource ds = new IJdbcDataSourceTest.DummyDataSource();
 
         assertFalse(ds.isFileScript());
@@ -116,7 +116,7 @@ public class IJdbcDataSourceTest {
      * methods.
      */
     @Test
-    public void testGetProperty(){
+    public void testGetProperty() {
         IJdbcDataSource ds = new IJdbcDataSourceTest.DummyDataSource();
 
         ds.setProperty("prop1", "value1");
@@ -140,7 +140,8 @@ public class IJdbcDataSourceTest {
     /**
      * Simple implementation of Exception
      */
-    private class DummyException extends Exception{}
+    private class DummyException extends Exception {
+    }
 
 
     /**
@@ -151,84 +152,383 @@ public class IJdbcDataSourceTest {
         private Object prop2;
         private boolean streamScript = false;
         private boolean fileScript = false;
-        private boolean isStreamScript(){return streamScript;}
-        private boolean isFileScript(){return fileScript;}
-        private DummyDataSource(){prop1 = null; prop2 = null;}
-        public boolean getNoArg(){return prop1 == null || prop2 == null || prop2.equals(prop1);}
-        public Object[] getArrayMethod(Object[] array){return array;}
-        public Object[] getParametersMethod(String param1, Double param2){return new Object[]{param1, param2};}
-        public Object[] getParametersMethod(Object param1, Object param2){return new Object[]{param1, param2};}
-        public String getParameterMethod(String param1){return param1;}
-        public void dupMethod() throws DummyException {throw new DummyException();}
 
-        @Override public void close() {/*Does nothing*/}
-        @Override public IJdbcTable getTable(String tableName) { return null;}
-        @Override public IJdbcSpatialTable getSpatialTable(String tableName) {return null;}
-        @Override public Collection<String> getTableNames() {return null;}
-        @Override public IJdbcTable load(String filePath) {return null;}
-        @Override public IJdbcTable load(String filePath, boolean delete) {return null;}
-        @Override public IJdbcTable load(String filePath, String tableName) {return null;}
-        @Override public IJdbcTable load(String filePath, String tableName, boolean delete) {return null;}
-        @Override public IJdbcTable load(String filePath, String tableName, String encoding, boolean delete) {return null;}
-        @Override public IJdbcTable load(URL url) {return null;}
-        @Override public IJdbcTable load(URL url, boolean delete) {return null;}
-        @Override public IJdbcTable load(URL url, String tableName) {return null;}
-        @Override public IJdbcTable load(URL url, String tableName, boolean delete) {return null;}
-        @Override public IJdbcTable load(URL url, String tableName, String encoding, boolean delete) {return null;}
-        @Override public IJdbcTable load(URI uri) {return null;}
-        @Override public IJdbcTable load(URI uri, boolean delete) {return null;}
-        @Override public IJdbcTable load(URI uri, String tableName) {return null;}
-        @Override public IJdbcTable load(URI uri, String tableName, boolean delete) {return null;}
-        @Override public IJdbcTable load(URI uri, String tableName, String encoding, boolean delete) {return null;}
-        @Override public IJdbcTable load(File file) {return null;}
-        @Override public IJdbcTable load(File file, boolean delete) {return null;}
-        @Override public IJdbcTable load(File file, String tableName) {return null;}
-        @Override public IJdbcTable load(File file, String tableName, boolean delete) {return null;}
-        @Override public IJdbcTable load(File file, String tableName, String encoding, boolean delete) {return null;}
-        @Override public IJdbcTable load(Map<String, String> properties, String inputTableName) {return null;}
-        @Override public IJdbcTable load(Map<String, String> properties, String inputTableName, String outputTableName) {return null;}
-        @Override public IJdbcTable load(Map<String, String> properties, String inputTableName, boolean delete) {return null;}
-        @Override public IJdbcTable load(Map<String, String> properties, String inputTableName, String outputTableName, boolean delete) {return null;}
-        @Override public boolean save(String tableName, String filePath) {return false;}
-        @Override public boolean save(String tableName, String filePath, String encoding) {return false;}
-        @Override public boolean save(String tableName, URI uri) {return false;}
-        @Override public boolean save(String tableName, URI uri, String encoding) {return false;}
-        @Override public boolean save(String tableName, URL url) {return false;}
-        @Override public boolean save(String tableName, URL url, String encoding) {return false;}
-        @Override public boolean save(String tableName, File file) {return false;}
-        @Override public boolean save(String tableName, File file, String encoding) {return false;}
-        @Override public IJdbcTable link(String filePath, String tableName, boolean delete) {return null;}
-        @Override public IJdbcTable link(String filePath, String tableName) {return null;}
-        @Override public IJdbcTable link(String filePath, boolean delete) {return null;}
-        @Override public IJdbcTable link(String filePath) {return null;}
-        @Override public IJdbcTable link(URI uri, String tableName, boolean delete) {return null;}
-        @Override public IJdbcTable link(URI uri, String tableName) {return null;}
-        @Override public IJdbcTable link(URI uri, boolean delete) {return null;}
-        @Override public IJdbcTable link(URI uri) {return null;}
-        @Override public IJdbcTable link(URL url, String tableName, boolean delete) {return null;}
-        @Override public IJdbcTable link(URL url, String tableName) {return null;}
-        @Override public IJdbcTable link(URL url, boolean delete) {return null;}
-        @Override public IJdbcTable link(URL url) {return null;}
-        @Override public IJdbcTable link(File file, String tableName, boolean delete) {return null;}
-        @Override public IJdbcTable link(File file, String tableName) {return null;}
-        @Override public IJdbcTable link(File file, boolean delete) {return null;}
-        @Override public IJdbcTable link(File file) {return null;}
-        @Override public boolean executeScript(String fileName, Map<String, String> bindings) {fileScript = true;return true;}
-        @Override public boolean executeScript(InputStream stream, Map<String, String> bindings) {streamScript = true;return true;}
-        @Override public DataBaseType getDataBaseType() {return null;}
-        @Override public MetaClass getMetaClass() {return InvokerHelper.getMetaClass(DummyDataSource.class);}
-        @Override public void setMetaClass(MetaClass metaClass) {/*Does nothing*/}
-        @Override public IJdbcTable getDataSet(String name) {return null;}
-        @Override public IDataSourceLocation getLocation() {return null;}
-        @Override public boolean hasTable(String tableName) {return false;}
-        @Override public Connection getConnection() throws SQLException { return null; }
-        @Override public Connection getConnection(String s, String s1) throws SQLException { return null; }
-        @Override public PrintWriter getLogWriter() throws SQLException { return null; }
-        @Override public void setLogWriter(PrintWriter printWriter) throws SQLException { }
-        @Override public void setLoginTimeout(int i) throws SQLException { }
-        @Override public int getLoginTimeout() throws SQLException { return 0; }
-        @Override public Logger getParentLogger() throws SQLFeatureNotSupportedException { return null; }
-        @Override public <T> T unwrap(Class<T> aClass) throws SQLException { return null; }
-        @Override public boolean isWrapperFor(Class<?> aClass) throws SQLException { return false; }
+        private boolean isStreamScript() {
+            return streamScript;
+        }
+
+        private boolean isFileScript() {
+            return fileScript;
+        }
+
+        private DummyDataSource() {
+            prop1 = null;
+            prop2 = null;
+        }
+
+        public boolean getNoArg() {
+            return prop1 == null || prop2 == null || prop2.equals(prop1);
+        }
+
+        public Object[] getArrayMethod(Object[] array) {
+            return array;
+        }
+
+        public Object[] getParametersMethod(String param1, Double param2) {
+            return new Object[]{param1, param2};
+        }
+
+        public Object[] getParametersMethod(Object param1, Object param2) {
+            return new Object[]{param1, param2};
+        }
+
+        public String getParameterMethod(String param1) {
+            return param1;
+        }
+
+        public void dupMethod() throws DummyException {
+            throw new DummyException();
+        }
+
+        @Override
+        public void close() {/*Does nothing*/}
+
+        @Override
+        public IJdbcTable getTable(String tableName) {
+            return null;
+        }
+
+        @Override
+        public IJdbcSpatialTable getSpatialTable(String tableName) {
+            return null;
+        }
+
+        @Override
+        public Collection<String> getTableNames() {
+            return null;
+        }
+
+        @Override
+        public IJdbcTable load(String filePath) {
+            return null;
+        }
+
+        @Override
+        public IJdbcTable load(String filePath, boolean delete) {
+            return null;
+        }
+
+        @Override
+        public IJdbcTable load(String filePath, String tableName) {
+            return null;
+        }
+
+        @Override
+        public IJdbcTable load(String filePath, String tableName, boolean delete) {
+            return null;
+        }
+
+        @Override
+        public IJdbcTable load(String filePath, String tableName, String encoding, boolean delete) {
+            return null;
+        }
+
+        @Override
+        public IJdbcTable load(URL url) {
+            return null;
+        }
+
+        @Override
+        public IJdbcTable load(URL url, boolean delete) {
+            return null;
+        }
+
+        @Override
+        public IJdbcTable load(URL url, String tableName) {
+            return null;
+        }
+
+        @Override
+        public IJdbcTable load(URL url, String tableName, boolean delete) {
+            return null;
+        }
+
+        @Override
+        public IJdbcTable load(URL url, String tableName, String encoding, boolean delete) {
+            return null;
+        }
+
+        @Override
+        public IJdbcTable load(URI uri) {
+            return null;
+        }
+
+        @Override
+        public IJdbcTable load(URI uri, boolean delete) {
+            return null;
+        }
+
+        @Override
+        public IJdbcTable load(URI uri, String tableName) {
+            return null;
+        }
+
+        @Override
+        public IJdbcTable load(URI uri, String tableName, boolean delete) {
+            return null;
+        }
+
+        @Override
+        public IJdbcTable load(URI uri, String tableName, String encoding, boolean delete) {
+            return null;
+        }
+
+        @Override
+        public IJdbcTable load(File file) {
+            return null;
+        }
+
+        @Override
+        public IJdbcTable load(File file, boolean delete) {
+            return null;
+        }
+
+        @Override
+        public IJdbcTable load(File file, String tableName) {
+            return null;
+        }
+
+        @Override
+        public IJdbcTable load(File file, String tableName, boolean delete) {
+            return null;
+        }
+
+        @Override
+        public IJdbcTable load(File file, String tableName, String encoding, boolean delete) {
+            return null;
+        }
+
+        @Override
+        public IJdbcTable load(Map<String, String> properties, String inputTableName) {
+            return null;
+        }
+
+        @Override
+        public IJdbcTable load(Map<String, String> properties, String inputTableName, String outputTableName) {
+            return null;
+        }
+
+        @Override
+        public IJdbcTable load(Map<String, String> properties, String inputTableName, boolean delete) {
+            return null;
+        }
+
+        @Override
+        public IJdbcTable load(Map<String, String> properties, String inputTableName, String outputTableName, boolean delete) {
+            return null;
+        }
+
+        @Override
+        public boolean save(String tableName, String filePath) {
+            return false;
+        }
+
+        @Override
+        public boolean save(String tableName, String filePath, String encoding) {
+            return false;
+        }
+
+        @Override
+        public boolean save(String tableName, URI uri) {
+            return false;
+        }
+
+        @Override
+        public boolean save(String tableName, URI uri, String encoding) {
+            return false;
+        }
+
+        @Override
+        public boolean save(String tableName, URL url) {
+            return false;
+        }
+
+        @Override
+        public boolean save(String tableName, URL url, String encoding) {
+            return false;
+        }
+
+        @Override
+        public boolean save(String tableName, File file) {
+            return false;
+        }
+
+        @Override
+        public boolean save(String tableName, File file, String encoding) {
+            return false;
+        }
+
+        @Override
+        public IJdbcTable link(String filePath, String tableName, boolean delete) {
+            return null;
+        }
+
+        @Override
+        public IJdbcTable link(String filePath, String tableName) {
+            return null;
+        }
+
+        @Override
+        public IJdbcTable link(String filePath, boolean delete) {
+            return null;
+        }
+
+        @Override
+        public IJdbcTable link(String filePath) {
+            return null;
+        }
+
+        @Override
+        public IJdbcTable link(URI uri, String tableName, boolean delete) {
+            return null;
+        }
+
+        @Override
+        public IJdbcTable link(URI uri, String tableName) {
+            return null;
+        }
+
+        @Override
+        public IJdbcTable link(URI uri, boolean delete) {
+            return null;
+        }
+
+        @Override
+        public IJdbcTable link(URI uri) {
+            return null;
+        }
+
+        @Override
+        public IJdbcTable link(URL url, String tableName, boolean delete) {
+            return null;
+        }
+
+        @Override
+        public IJdbcTable link(URL url, String tableName) {
+            return null;
+        }
+
+        @Override
+        public IJdbcTable link(URL url, boolean delete) {
+            return null;
+        }
+
+        @Override
+        public IJdbcTable link(URL url) {
+            return null;
+        }
+
+        @Override
+        public IJdbcTable link(File file, String tableName, boolean delete) {
+            return null;
+        }
+
+        @Override
+        public IJdbcTable link(File file, String tableName) {
+            return null;
+        }
+
+        @Override
+        public IJdbcTable link(File file, boolean delete) {
+            return null;
+        }
+
+        @Override
+        public IJdbcTable link(File file) {
+            return null;
+        }
+
+        @Override
+        public boolean executeScript(String fileName, Map<String, String> bindings) {
+            fileScript = true;
+            return true;
+        }
+
+        @Override
+        public boolean executeScript(InputStream stream, Map<String, String> bindings) {
+            streamScript = true;
+            return true;
+        }
+
+        @Override
+        public DataBaseType getDataBaseType() {
+            return null;
+        }
+
+        @Override
+        public MetaClass getMetaClass() {
+            return InvokerHelper.getMetaClass(DummyDataSource.class);
+        }
+
+        @Override
+        public void setMetaClass(MetaClass metaClass) {/*Does nothing*/}
+
+        @Override
+        public IJdbcTable getDataSet(String name) {
+            return null;
+        }
+
+        @Override
+        public IDataSourceLocation getLocation() {
+            return null;
+        }
+
+        @Override
+        public boolean hasTable(String tableName) {
+            return false;
+        }
+
+        @Override
+        public Connection getConnection() throws SQLException {
+            return null;
+        }
+
+        @Override
+        public Connection getConnection(String s, String s1) throws SQLException {
+            return null;
+        }
+
+        @Override
+        public PrintWriter getLogWriter() throws SQLException {
+            return null;
+        }
+
+        @Override
+        public void setLogWriter(PrintWriter printWriter) throws SQLException {
+        }
+
+        @Override
+        public void setLoginTimeout(int i) throws SQLException {
+        }
+
+        @Override
+        public int getLoginTimeout() throws SQLException {
+            return 0;
+        }
+
+        @Override
+        public Logger getParentLogger() throws SQLFeatureNotSupportedException {
+            return null;
+        }
+
+        @Override
+        public <T> T unwrap(Class<T> aClass) throws SQLException {
+            return null;
+        }
+
+        @Override
+        public boolean isWrapperFor(Class<?> aClass) throws SQLException {
+            return false;
+        }
     }
 }

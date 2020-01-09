@@ -55,7 +55,7 @@ public class ProcessManagerTest {
     public static Closure cl;
 
     @BeforeAll
-    public static void beforeAll(){
+    public static void beforeAll() {
         String string = "({\n" +
                 "            title \"simple process\"\n" +
                 "            description \"description\"\n" +
@@ -65,14 +65,14 @@ public class ProcessManagerTest {
                 "            version \"version\"\n" +
                 "            run { inputA, inputB -> [outputA: inputA + inputB] }\n" +
                 "        })";
-        cl = (Closure)new GroovyShell().evaluate(string);
+        cl = (Closure) new GroovyShell().evaluate(string);
     }
 
     /**
      * Test the {@link ProcessManager#create()} and {@link ProcessManager#create(Closure)} methods.
      */
     @Test
-    void testCreate(){
+    void testCreate() {
         ProcessManager pm = ProcessManager.getProcessManager();
         assertNotNull(pm.create());
 
@@ -85,7 +85,7 @@ public class ProcessManagerTest {
                 "            version \"version\"\n" +
                 "            run { inputA, inputB -> [outputA: inputA + inputB] }\n" +
                 "        })";
-        Closure cl = (Closure)new GroovyShell().evaluate(string);
+        Closure cl = (Closure) new GroovyShell().evaluate(string);
         IProcess process = pm.create(cl);
 
         assertNotNull(process);
@@ -103,7 +103,7 @@ public class ProcessManagerTest {
      * {@link ProcessManager#createFactory(String)}, {@link ProcessManager#createFactory()} methods.
      */
     @Test
-    void testFactories(){
+    void testFactories() {
         ProcessManager pm = ProcessManager.getProcessManager();
         assertNotNull(ProcessManager.createFactory());
         assertNotNull(ProcessManager.createFactory("Mayor_DeFacto_Ry"));
@@ -121,7 +121,7 @@ public class ProcessManagerTest {
      * Test the {@link ProcessManager#process(String)} and {@link ProcessManager#process(String, String)} methods.
      */
     @Test
-    void testProcess(){
+    void testProcess() {
         ProcessManager pm = ProcessManager.getProcessManager();
         assertNotNull(ProcessManager.createFactory("Mayor_DeFacto_Ry"));
         String id1 = pm.factory().create(cl).getIdentifier();

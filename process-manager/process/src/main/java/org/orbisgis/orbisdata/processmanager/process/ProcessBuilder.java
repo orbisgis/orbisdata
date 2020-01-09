@@ -51,32 +51,50 @@ import java.util.LinkedHashMap;
  */
 public class ProcessBuilder implements IProcessBuilder {
 
-    /** {@link IProcessFactory} used to register the process.*/
+    /**
+     * {@link IProcessFactory} used to register the process.
+     */
     private IProcessFactory factory;
-    /** Delegate for the closure */
+    /**
+     * Delegate for the closure
+     */
     private Object delegate;
-    /** Title of the process.*/
+    /**
+     * Title of the process.
+     */
     private String title;
-    /** Human readable description of the process.*/
+    /**
+     * Human readable description of the process.
+     */
     private String description;
-    /** List of simple keyword (one word) of the process.*/
+    /**
+     * List of simple keyword (one word) of the process.
+     */
     private String[] keywords;
-    /** @link LinkedHashMap} of inputs with the name as key and the input Object as value.*/
+    /**
+     * @link LinkedHashMap} of inputs with the name as key and the input Object as value.
+     */
     private LinkedHashMap<String, Object> inputs;
-    /** {@link LinkedHashMap} of outputs with the name as key and the output Object as value.*/
+    /**
+     * {@link LinkedHashMap} of outputs with the name as key and the output Object as value.
+     */
     private LinkedHashMap<String, Object> outputs;
-    /** Process version.*/
+    /**
+     * Process version.
+     */
     private String version;
-    /** {@link Closure} containing the code to execute on the process execution.*/
+    /**
+     * {@link Closure} containing the code to execute on the process execution.
+     */
     private Closure closure;
 
     /**
      * Main constructor.
      *
-     * @param factory {@link IProcessFactory} used to register the process.
+     * @param factory  {@link IProcessFactory} used to register the process.
      * @param delegate Delegate for the closure.
      */
-    public ProcessBuilder(IProcessFactory factory, Object delegate){
+    public ProcessBuilder(IProcessFactory factory, Object delegate) {
         this.factory = factory;
         this.delegate = delegate;
     }
@@ -120,7 +138,7 @@ public class ProcessBuilder implements IProcessBuilder {
     @Override
     public IProcessBuilder run(Closure closure) {
         this.closure = closure;
-        if(closure != null) {
+        if (closure != null) {
             this.closure.setDelegate(delegate);
             this.closure.setResolveStrategy(Closure.DELEGATE_FIRST);
         }

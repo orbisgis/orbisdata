@@ -55,7 +55,7 @@ public class InputOutputTest {
      * Test the {@link Input} class.
      */
     @Test
-    public void testInput(){
+    public void testInput() {
         Input input1 = Input.call();
         Input input2 = Input.call().optional("dflt")
                 .setDescription("desc")
@@ -99,7 +99,7 @@ public class InputOutputTest {
      * Test the {@link Output} class.
      */
     @Test
-    public void testOutput(){
+    public void testOutput() {
         Output output1 = Output.call();
         Output output2 = Output.call()
                 .setDescription("desc")
@@ -126,16 +126,16 @@ public class InputOutputTest {
      * Test the {@link InOutPut#toString()} method.
      */
     @Test
-    public void testToString(){
+    public void testToString() {
         IProcess process = ProcessManager.getProcessManager().create().getProcess();
-        assertEquals("name:"+process.getIdentifier(), new Output(process, "name").toString());
+        assertEquals("name:" + process.getIdentifier(), new Output(process, "name").toString());
     }
 
     /**
      * Test the {@link Output#methodMissing(String, Object)} and {@link Input#methodMissing(String, Object)} methods.
      */
     @Test
-    public void testMissingMethodException(){
+    public void testMissingMethodException() {
         Output output = new Output(null, null);
 
         assertThrows(MissingMethodException.class, () -> output.methodMissing("title", null));

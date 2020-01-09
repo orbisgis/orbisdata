@@ -63,14 +63,14 @@ public class CheckOptionBuilderTest {
      * Test the building of the check options.
      */
     @Test
-    public void buildingTest(){
+    public void buildingTest() {
         ICheckDataBuilder dataBuilder = new ProcessMapper().after(null);
         assertNotNull(dataBuilder);
 
         ICheckClosureBuilder closureBuilder = dataBuilder.with("toto", "tata");
         assertNotNull(closureBuilder);
 
-        ICheckOptionBuilder optionBuilder = closureBuilder.check((Closure)new GroovyShell().evaluate("({true})"));
+        ICheckOptionBuilder optionBuilder = closureBuilder.check((Closure) new GroovyShell().evaluate("({true})"));
         assertNotNull(optionBuilder);
 
         optionBuilder = optionBuilder.continueOnFail("continue");
@@ -90,7 +90,7 @@ public class CheckOptionBuilderTest {
      * Test the {@link ProcessCheck} class.
      */
     @Test
-    public void processCheckTest(){
+    public void processCheckTest() {
         ProcessCheck processCheck = new ProcessCheck(null);
         assertNull(processCheck.getProcess());
 
@@ -98,7 +98,7 @@ public class CheckOptionBuilderTest {
         ProcessCheck finalProcessCheck = processCheck;
         assertThrows(IllegalStateException.class, () -> finalProcessCheck.run(null));
 
-        processCheck.setClosure((Closure)new GroovyShell().evaluate("({1+1})"));
+        processCheck.setClosure((Closure) new GroovyShell().evaluate("({1+1})"));
         ProcessCheck finalProcessCheck2 = processCheck;
         assertThrows(IllegalStateException.class, () -> finalProcessCheck2.run(null));
 
@@ -109,7 +109,7 @@ public class CheckOptionBuilderTest {
         LinkedHashMap<String, Object> data = new LinkedHashMap<>();
         data.put("toto", "tata");
         data.put("tata", "toto");
-        Process process = (Process)ProcessManager.createFactory().create().inputs(inputs).outputs(outputs).getProcess();
+        Process process = (Process) ProcessManager.createFactory().create().inputs(inputs).outputs(outputs).getProcess();
         processCheck = new ProcessCheck(process);
         assertEquals(process.getIdentifier(), processCheck.getProcess().getIdentifier());
 
@@ -124,14 +124,14 @@ public class CheckOptionBuilderTest {
         processCheck.success();
 
         processCheck.setInOutputs(process.getProperty("toto"), process.getProperty("tata"));
-        processCheck.setClosure((Closure)new GroovyShell().evaluate("({a, b ->b == 'tata'})"));
+        processCheck.setClosure((Closure) new GroovyShell().evaluate("({a, b ->b == 'tata'})"));
         processCheck.run(data);
 
         processCheck = new ProcessCheck(process);
         processCheck.onFail(IProcessCheck.STOP, "stop fail");
         processCheck.onSuccess(IProcessCheck.CONTINUE, "continue success");
         processCheck.setInOutputs(process.getProperty("toto"), process.getProperty("tata"));
-        processCheck.setClosure((Closure)new GroovyShell().evaluate("({a, b -> b != 'tata'})"));
+        processCheck.setClosure((Closure) new GroovyShell().evaluate("({a, b -> b != 'tata'})"));
         ProcessCheck finalProcessCheck3 = processCheck;
         assertThrows(IllegalStateException.class, () -> finalProcessCheck3.run(data));
     }
@@ -140,7 +140,7 @@ public class CheckOptionBuilderTest {
      * Test fail {@link ProcessCheck} class.
      */
     @Test
-    public void failProcessCheckTest(){
+    public void failProcessCheckTest() {
         LinkedHashMap<String, Object> inputs = new LinkedHashMap<>();
         inputs.put("toto", String.class);
         LinkedHashMap<String, Object> outputs = new LinkedHashMap<>();
@@ -148,7 +148,7 @@ public class CheckOptionBuilderTest {
         LinkedHashMap<String, Object> data = new LinkedHashMap<>();
         data.put("toto", "tata");
         data.put("tata", "toto");
-        Process process = (Process)ProcessManager.createFactory().create().inputs(inputs).outputs(outputs).getProcess();
+        Process process = (Process) ProcessManager.createFactory().create().inputs(inputs).outputs(outputs).getProcess();
         ProcessCheck processCheck = new ProcessCheck(process);
         assertEquals(process.getIdentifier(), processCheck.getProcess().getIdentifier());
 
@@ -160,10 +160,10 @@ public class CheckOptionBuilderTest {
         processCheck.setClosure(null);
         assertThrows(IllegalStateException.class, () -> processCheck.run(data));
 
-        processCheck.setClosure((Closure)new GroovyShell().evaluate("({a, b -> 'tata'})"));
+        processCheck.setClosure((Closure) new GroovyShell().evaluate("({a, b -> 'tata'})"));
         assertThrows(IllegalStateException.class, () -> processCheck.run(data));
 
-        processCheck.setClosure((Closure)new GroovyShell().evaluate("({a, b -> false})"));
+        processCheck.setClosure((Closure) new GroovyShell().evaluate("({a, b -> false})"));
         assertThrows(IllegalStateException.class, () -> processCheck.run(data));
     }
 }

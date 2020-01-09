@@ -66,10 +66,10 @@ public abstract class JdbcSpatialTable extends JdbcTable implements IJdbcSpatial
     /**
      * Main constructor.
      *
-     * @param dataBaseType Type of the DataBase where this table comes from.
-     * @param tableLocation TableLocation that identify the represented table.
-     * @param baseQuery Query for the creation of the ResultSet
-     * @param statement Statement used to request the database.
+     * @param dataBaseType   Type of the DataBase where this table comes from.
+     * @param tableLocation  TableLocation that identify the represented table.
+     * @param baseQuery      Query for the creation of the ResultSet
+     * @param statement      Statement used to request the database.
      * @param jdbcDataSource DataSource to use for the creation of the resultSet.
      */
     public JdbcSpatialTable(DataBaseType dataBaseType, JdbcDataSource jdbcDataSource, TableLocation tableLocation,
@@ -78,14 +78,14 @@ public abstract class JdbcSpatialTable extends JdbcTable implements IJdbcSpatial
     }
 
     @Override
-    public boolean isSpatial(){
+    public boolean isSpatial() {
         return true;
     }
 
     @Override
-    public Geometry getGeometry(int columnIndex){
+    public Geometry getGeometry(int columnIndex) {
         try {
-            return ((SpatialResultSet)getResultSet()).getGeometry(columnIndex);
+            return ((SpatialResultSet) getResultSet()).getGeometry(columnIndex);
         } catch (SQLException e) {
             LOGGER.error("Unable to get the geometry at '" + columnIndex + "'.\n" + e.getLocalizedMessage());
         }
@@ -93,9 +93,9 @@ public abstract class JdbcSpatialTable extends JdbcTable implements IJdbcSpatial
     }
 
     @Override
-    public Geometry getGeometry(String columnLabel){
+    public Geometry getGeometry(String columnLabel) {
         try {
-            return ((SpatialResultSet)getResultSet()).getGeometry(columnLabel);
+            return ((SpatialResultSet) getResultSet()).getGeometry(columnLabel);
         } catch (SQLException e) {
             LOGGER.error("Unable to get the geometry of '" + columnLabel + "'.\n" + e.getLocalizedMessage());
         }
@@ -103,9 +103,9 @@ public abstract class JdbcSpatialTable extends JdbcTable implements IJdbcSpatial
     }
 
     @Override
-    public Geometry getGeometry(){
+    public Geometry getGeometry() {
         try {
-            return ((SpatialResultSet)getResultSet()).getGeometry();
+            return ((SpatialResultSet) getResultSet()).getGeometry();
         } catch (SQLException e) {
             LOGGER.error("Unable to get the geometry.\n" + e.getLocalizedMessage());
         }
@@ -113,22 +113,22 @@ public abstract class JdbcSpatialTable extends JdbcTable implements IJdbcSpatial
     }
 
     @Override
-    public IRaster getRaster(int columnIndex){
+    public IRaster getRaster(int columnIndex) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public IRaster getRaster(String columnLabel){
+    public IRaster getRaster(String columnLabel) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public IRaster getRaster(){
+    public IRaster getRaster() {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public List<String> getSpatialColumns(){
+    public List<String> getSpatialColumns() {
         List<String> list = new ArrayList<>();
         list.addAll(getRasterColumns());
         list.addAll(getGeometricColumns());
@@ -136,12 +136,12 @@ public abstract class JdbcSpatialTable extends JdbcTable implements IJdbcSpatial
     }
 
     @Override
-    public List<String> getRasterColumns(){
+    public List<String> getRasterColumns() {
         return new ArrayList<>();
     }
 
     @Override
-    public List<String> getGeometricColumns(){
+    public List<String> getGeometricColumns() {
         try {
             return SFSUtilities.getGeometryFields(getJdbcDataSource().getConnection(), (TableLocation) getTableLocation());
         } catch (SQLException e) {
@@ -155,7 +155,7 @@ public abstract class JdbcSpatialTable extends JdbcTable implements IJdbcSpatial
         try {
             Connection conn = getJdbcDataSource().getConnection();
             List<String> names = SFSUtilities.getGeometryFields(conn, (TableLocation) getTableLocation());
-            if(names.isEmpty()){
+            if (names.isEmpty()) {
                 LOGGER.error("There is no geometric field.");
                 return null;
             }
@@ -171,7 +171,7 @@ public abstract class JdbcSpatialTable extends JdbcTable implements IJdbcSpatial
         try {
             Connection conn = getJdbcDataSource().getConnection();
             List<String> names = SFSUtilities.getGeometryFields(conn, (TableLocation) getTableLocation());
-            if(names.isEmpty()){
+            if (names.isEmpty()) {
                 LOGGER.error("There is no geometric field.");
                 return null;
             }
@@ -196,14 +196,14 @@ public abstract class JdbcSpatialTable extends JdbcTable implements IJdbcSpatial
     public Map<String, String> getGeometryTypes() {
         try {
             Map<String, String> map = new HashMap<>();
-            PreparedStatement geomStatement = SFSUtilities.prepareInformationSchemaStatement(getJdbcDataSource().getConnection(),getTableLocation().getCatalog(),getTableLocation().getSchema(),
+            PreparedStatement geomStatement = SFSUtilities.prepareInformationSchemaStatement(getJdbcDataSource().getConnection(), getTableLocation().getCatalog(), getTableLocation().getSchema(),
                     getTableLocation().getTable(), "geometry_columns", "");
             ResultSet geomResultSet = geomStatement.executeQuery();
             boolean isH2 = getDbType() == DataBaseType.H2GIS;
-            while(geomResultSet.next()) {
+            while (geomResultSet.next()) {
                 String fieldName = geomResultSet.getString("F_GEOMETRY_COLUMN");
                 String type;
-                if(isH2) {
+                if (isH2) {
                     type = SFSUtilities.getGeometryTypeNameFromCode(geomResultSet.getInt("GEOMETRY_TYPE"));
                 } else {
                     type = geomResultSet.getString("type").toLowerCase();
@@ -218,7 +218,7 @@ public abstract class JdbcSpatialTable extends JdbcTable implements IJdbcSpatial
     }
 
     @Override
-    public SpatialResultSetMetaData getMetaData(){
+    public SpatialResultSetMetaData getMetaData() {
         try {
             return getResultSet().getMetaData().unwrap(SpatialResultSetMetaData.class);
         } catch (SQLException e) {

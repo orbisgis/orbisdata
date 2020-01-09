@@ -68,9 +68,9 @@ public class SpatialResultSetWrapper extends ResultSetWrapper implements Spatial
     public Geometry getGeometry(int columnIndex) throws SQLException {
         Object field = this.getObject(columnIndex);
         if (field == null) {
-            return (Geometry)field;
+            return (Geometry) field;
         } else if (field instanceof Geometry) {
-            return (Geometry)field;
+            return (Geometry) field;
         } else {
             throw new SQLException("The column " + this.getMetaData().getColumnName(columnIndex) + " is not a Geometry");
         }
@@ -79,9 +79,9 @@ public class SpatialResultSetWrapper extends ResultSetWrapper implements Spatial
     public Geometry getGeometry(String columnLabel) throws SQLException {
         Object field = this.getObject(columnLabel);
         if (field == null) {
-            return (Geometry)field;
+            return (Geometry) field;
         } else if (field instanceof Geometry) {
-            return (Geometry)field;
+            return (Geometry) field;
         } else {
             throw new SQLException("The column " + columnLabel + " is not a Geometry");
         }
@@ -131,7 +131,7 @@ public class SpatialResultSetWrapper extends ResultSetWrapper implements Spatial
 
         public int getFirstGeometryFieldIndex() throws SQLException {
             if (this.firstGeometryFieldIndex == -1) {
-                for(int idColumn = 1; idColumn <= this.getColumnCount(); ++idColumn) {
+                for (int idColumn = 1; idColumn <= this.getColumnCount(); ++idColumn) {
                     if (this.getColumnTypeName(idColumn).equalsIgnoreCase("geometry")) {
                         this.firstGeometryFieldIndex = idColumn;
                         break;

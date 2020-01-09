@@ -50,7 +50,6 @@ public interface IDataSource {
      * Return the {@link IDataSet} implementation corresponding to the given name.
      *
      * @param name Name of the {@link IDataSet}.
-     *
      * @return The implementation of {@link IDataSet} corresponding to the given name.
      */
     IDataSet getDataSet(String name);

@@ -82,6 +82,6 @@ public abstract class GroovyProcessFactory extends Script implements IProcessFac
         IProcessBuilder builder = new ProcessBuilder(factory, this);
         Closure code = cl.rehydrate(builder, this, this);
         code.setResolveStrategy(Closure.DELEGATE_FIRST);
-        return ((IProcessBuilder)code.call()).getProcess();
+        return ((IProcessBuilder) code.call()).getProcess();
     }
 }

@@ -65,7 +65,7 @@ import static org.orbisgis.orbisdata.datamanager.api.dsl.IOptionBuilder.Order.DE
 public class H2GISTests {
 
     @Test
-    public void openH2GIS(){
+    public void openH2GIS() {
         assertNotNull(H2GIS.open("./target/openH2GIS1"));
         assertNotNull(H2GIS.open("./target/openH2GIS2", "sa", "sa"));
         assertNull(H2GIS.open(new File("file")));
@@ -94,8 +94,8 @@ public class H2GISTests {
         columns.put("colgeom", Geometry.class);
         assertTrue(h2GIS.getTable("TYPES").hasColumns(columns));
     }
-    
-    
+
+
     @Test
     public void loadH2GIS() {
         Map<String, String> map = new HashMap<>();
@@ -113,7 +113,7 @@ public class H2GISTests {
         h2GIS.execute("DROP TABLE IF EXISTS h2gis; CREATE TABLE h2gis (id int, the_geom geometry(point));" +
                 "insert into h2gis values (1, 'POINT(10 10)'::GEOMETRY), (2, 'POINT(1 1)'::GEOMETRY);");
         ArrayList<String> values = new ArrayList<>();
-        h2GIS.eachRow("SELECT THE_GEOM FROM h2gis", new Closure(null){
+        h2GIS.eachRow("SELECT THE_GEOM FROM h2gis", new Closure(null) {
             @Override
             public Object call(Object argument) {
                 values.add(argument.toString());
@@ -135,14 +135,14 @@ public class H2GISTests {
                 "CREATE TABLE noGeom (id int);");
 
         ArrayList<String> values = new ArrayList<>();
-        h2GIS.getSpatialTable("h2gis").eachRow(new Closure(null){
+        h2GIS.getSpatialTable("h2gis").eachRow(new Closure(null) {
             @Override
             public Object call(Object argument) {
-                values.add(((ISpatialTable)argument).getGeometry().toString());
+                values.add(((ISpatialTable) argument).getGeometry().toString());
                 return argument;
             }
         });
-        assertEquals(2,values.size());
+        assertEquals(2, values.size());
         assertEquals("POINT (10 10)", values.get(0));
         assertEquals("POINT (1 1)", values.get(1));
 
@@ -158,14 +158,14 @@ public class H2GISTests {
                 "insert into h2gis values (1, 'POINT(10 10)'::GEOMETRY), (2, 'POINT(1 1)'::GEOMETRY);");
 
         ArrayList<String> values = new ArrayList<>();
-        ((IJdbcTable)h2GIS.getSpatialTable("h2gis")).where("id=2").eachRow(new Closure(null){
+        ((IJdbcTable) h2GIS.getSpatialTable("h2gis")).where("id=2").eachRow(new Closure(null) {
             @Override
             public Object call(Object argument) {
-                values.add(((ISpatialTable)argument).getGeometry().toString());
+                values.add(((ISpatialTable) argument).getGeometry().toString());
                 return argument;
             }
         });
-        assertEquals(1,values.size());
+        assertEquals(1, values.size());
         assertEquals("POINT (1 1)", values.get(0));
     }
 
@@ -192,7 +192,7 @@ public class H2GISTests {
                 " CREATE TABLE h2gis (id int PRIMARY KEY, code int, the_geom geometry(point));" +
                 "insert into h2gis values (1,22, 'POINT(10 10)'::GEOMETRY), (2,56, 'POINT(1 1)'::GEOMETRY);");
 
-        h2GIS.getSpatialTable("h2gis").eachRow(new Closure(null){
+        h2GIS.getSpatialTable("h2gis").eachRow(new Closure(null) {
             @Override
             public Object call(Object argument) {
                 IJdbcTable sp = ((IJdbcTable) argument);
@@ -208,18 +208,18 @@ public class H2GISTests {
         });
 
         ArrayList<Integer> values = new ArrayList<>();
-        h2GIS.getSpatialTable("h2gis").eachRow(new Closure(null){
+        h2GIS.getSpatialTable("h2gis").eachRow(new Closure(null) {
             @Override
             public Object call(Object argument) {
                 try {
-                    values.add(((IJdbcTable)argument).getInt(2));
+                    values.add(((IJdbcTable) argument).getInt(2));
                 } catch (SQLException e) {
                     e.printStackTrace();
                 }
                 return argument;
             }
         });
-        assertEquals(2,values.size());
+        assertEquals(2, values.size());
         assertEquals(3, (int) values.get(0));
         assertEquals(3, (int) values.get(1));
     }
@@ -237,7 +237,7 @@ public class H2GISTests {
                 "insert into h2gis values (4,22, 'POINT(10 10)'::GEOMETRY);" +
                 "insert into h2gis values (5,22, 'POINT(20 10)'::GEOMETRY);");
 
-        ITable table = ((ITable)h2GIS
+        ITable table = ((ITable) h2GIS
                 .select("COUNT(id)", "code", "the_geom")
                 .from("h2gis")
                 .where("code=22")
@@ -246,23 +246,23 @@ public class H2GISTests {
                 .asType(ITable.class));
 
         ArrayList<Integer> values = new ArrayList<>();
-        table.eachRow(new Closure(null){
+        table.eachRow(new Closure(null) {
             @Override
             public Object call(Object argument) {
                 try {
-                    values.add(((IJdbcTable)argument).getInt(1));
-                    values.add(((IJdbcTable)argument).getInt(2));
+                    values.add(((IJdbcTable) argument).getInt(1));
+                    values.add(((IJdbcTable) argument).getInt(2));
                 } catch (SQLException e) {
                     e.printStackTrace();
                 }
                 return argument;
             }
         });
-        assertEquals(2,values.size());
+        assertEquals(2, values.size());
         assertEquals(3, (int) values.get(0));
         assertEquals(22, (int) values.get(1));
 
-        table = ((ITable)h2GIS
+        table = ((ITable) h2GIS
                 .select("*")
                 .from("h2gis")
                 .where("code=22")
@@ -271,50 +271,50 @@ public class H2GISTests {
                 .asType(ITable.class));
 
         ArrayList<Integer> values2 = new ArrayList<>();
-        table.eachRow(new Closure(null){
+        table.eachRow(new Closure(null) {
             @Override
             public Object call(Object argument) {
                 try {
-                    values2.add(((IJdbcTable)argument).getInt(1));
+                    values2.add(((IJdbcTable) argument).getInt(1));
                 } catch (SQLException e) {
                     e.printStackTrace();
                 }
                 return argument;
             }
         });
-        assertEquals(5,values2.size());
+        assertEquals(5, values2.size());
         assertEquals(5, (int) values2.get(0));
         assertEquals(4, (int) values2.get(1));
         assertEquals(3, (int) values2.get(2));
         assertEquals(2, (int) values2.get(3));
         assertEquals(1, (int) values2.get(4));
 
-        table = ((ITable)h2GIS
+        table = ((ITable) h2GIS
                 .select("*")
                 .from("h2gis")
                 .orderBy("id", DESC)
                 .asType(ITable.class));
 
         ArrayList<Integer> values3 = new ArrayList<>();
-        table.eachRow(new Closure(null){
+        table.eachRow(new Closure(null) {
             @Override
             public Object call(Object argument) {
                 try {
-                    values3.add(((IJdbcTable)argument).getInt(1));
+                    values3.add(((IJdbcTable) argument).getInt(1));
                 } catch (SQLException e) {
                     e.printStackTrace();
                 }
                 return argument;
             }
         });
-        assertEquals(5,values3.size());
+        assertEquals(5, values3.size());
         assertEquals(5, (int) values3.get(0));
         assertEquals(4, (int) values3.get(1));
         assertEquals(3, (int) values3.get(2));
         assertEquals(2, (int) values3.get(3));
         assertEquals(1, (int) values3.get(4));
     }
-    
+
     @Test
     public void hasTable() throws SQLException {
         Map<String, String> map = new HashMap<>();

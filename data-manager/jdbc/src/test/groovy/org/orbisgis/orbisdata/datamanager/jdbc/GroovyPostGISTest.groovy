@@ -278,6 +278,7 @@ class GroovyPostGISTest {
     }
 
     @Test
+    @EnabledIfSystemProperty(named = "test.postgis", matches = "true")
     void testReproject() {
         def postGIS = POSTGIS.open(dbProperties)
         new File("target/reprojected_table.shp").delete()
@@ -292,6 +293,7 @@ class GroovyPostGISTest {
     }
 
     @Test
+    @EnabledIfSystemProperty(named = "test.postgis", matches = "true")
     void testSaveQueryInFile() {
         def postGIS = POSTGIS.open(dbProperties)
         new File("target/reprojected_table.shp").delete()

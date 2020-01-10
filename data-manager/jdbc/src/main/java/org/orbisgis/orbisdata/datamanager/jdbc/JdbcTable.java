@@ -246,10 +246,12 @@ public abstract class JdbcTable extends DefaultResultSet implements IJdbcTable, 
 
     @Override
     public boolean isTemporary() {
-        try {
-            return JDBCUtilities.isTemporaryTable(jdbcDataSource.getConnection(), getTableLocation().toString());
-        } catch (SQLException e) {
-            LOGGER.error("Unable to get the type of the table '" + getTableLocation().getTable() + ".\n" + e.getLocalizedMessage());
+        if(getTableLocation()!=null){
+            try {
+                return JDBCUtilities.isTemporaryTable(jdbcDataSource.getConnection(), getTableLocation().toString());
+            } catch (SQLException e) {
+                LOGGER.error("Unable to get the type of the table '" + getTableLocation().getTable() + ".\n" + e.getLocalizedMessage());
+            }
         }
         return false;
     }

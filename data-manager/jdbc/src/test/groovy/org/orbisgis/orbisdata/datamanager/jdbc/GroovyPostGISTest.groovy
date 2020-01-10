@@ -39,7 +39,9 @@ package org.orbisgis.orbisdata.datamanager.jdbc
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.condition.EnabledIfSystemProperty
+import org.orbisgis.orbisdata.datamanager.api.dataset.ISpatialTable
 import org.orbisgis.orbisdata.datamanager.jdbc.postgis.POSTGIS
+import org.locationtech.jts.geom.MultiPolygon
 
 import static org.junit.jupiter.api.Assertions.assertEquals
 import static org.junit.jupiter.api.Assertions.assertNotNull
@@ -273,5 +275,36 @@ class GroovyPostGISTest {
         postGIS.getSpatialTable "postgis_saved" eachRow { row -> concat += "$row.id $row.the_geom $row.geometry\n" }
         assertEquals("1 POINT (10 10) POINT (10 10)\n2 POINT (1 1) POINT (1 1)\n", concat)
         println(concat)
+    }
+
+    @Test
+    void testReproject() {
+        def postGIS = POSTGIS.open(dbProperties)
+        new File("target/reprojected_table.shp").delete()
+        postGIS.execute("""
+                DROP TABLE IF EXISTS orbisgis;
+                CREATE TABLE orbisgis (id int, the_geom geometry(point, 4326));
+                INSERT INTO orbisgis VALUES (1, 'SRID=4326;POINT(10 10)'::GEOMETRY), (2, 'SRID=4326;POINT(1 1)'::GEOMETRY);
+        """)
+        postGIS.getSpatialTable("orbisgis").reproject(2154).save("target/reprojected_table.shp")
+        ISpatialTable reprojectedTable = postGIS.load("target/reprojected_table.shp")
+        assertEquals 2154 , reprojectedTable.srid
+    }
+
+    @Test
+    void testSaveQueryInFile() {
+        def postGIS = POSTGIS.open(dbProperties)
+        new File("target/reprojected_table.shp").delete()
+        postGIS.execute("""
+                DROP TABLE IF EXISTS orbisgis;
+                CREATE TABLE orbisgis (id int, the_geom geometry(point, 4326));
+                INSERT INTO orbisgis VALUES (1, 'SRID=4326;POINT(10 10)'::GEOMETRY), (2, 'SRID=4326;POINT(1 1)'::GEOMETRY);
+        """)
+        ISpatialTable sp = postGIS.select("ST_BUFFER(THE_GEOM, 10) AS THE_GEOM").from("ORBISGIS").getSpatialTable()
+        sp.save("target/query_table.shp")
+        ISpatialTable queryTable = postGIS.load("target/query_table.shp")
+        assertEquals 2,queryTable.rowCount
+        assertEquals 4326 , queryTable.srid
+        assertTrue queryTable.getFirstRow()[1] instanceof MultiPolygon
     }
 }

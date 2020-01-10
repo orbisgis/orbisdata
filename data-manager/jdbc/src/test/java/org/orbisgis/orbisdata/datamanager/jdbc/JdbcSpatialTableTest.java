@@ -51,6 +51,8 @@ import org.orbisgis.orbisdata.datamanager.api.dataset.IJdbcTable;
 import org.orbisgis.orbisdata.datamanager.api.dataset.ISpatialTable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.locationtech.jts.geom.MultiPolygon;
+
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -58,6 +60,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collection;
 import java.util.Map;
+import java.io.File;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -272,6 +275,11 @@ public class JdbcSpatialTableTest {
             }
             return new SpatialResultSetImpl(resultSet, (StatementWrapper) getStatement());
         }
+
+        @Override
+        public ISpatialTable reproject(int srid) {
+            throw new IllegalArgumentException("Unsupported operation");
+        }
     }
 
     /**
@@ -331,4 +339,6 @@ public class JdbcSpatialTableTest {
             }
         }
     }
+
+
 }

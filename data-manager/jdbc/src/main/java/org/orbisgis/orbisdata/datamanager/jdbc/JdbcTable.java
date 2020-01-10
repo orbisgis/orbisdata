@@ -159,7 +159,7 @@ public abstract class JdbcTable extends DefaultResultSet implements IJdbcTable, 
      * @param limit Limit of the result set.
      * @return The {@link ResultSet} with a limit.
      */
-    private ResultSet getResultSetLimit(int limit) {
+    public ResultSet getResultSetLimit(int limit) {
         int _limit = limit;
         if (_limit < 0) {
             LOGGER.warn("The ResultSet limit should not be under 0. Set it to 0.");
@@ -440,8 +440,10 @@ public abstract class JdbcTable extends DefaultResultSet implements IJdbcTable, 
     @Override
     public boolean save(String filePath, String encoding) {
         try {
-            return IOMethods.saveAsFile(getStatement().getConnection(), getTableLocation().toString(getDbType()),
-                    filePath, encoding);
+            String toSave = getTableLocation() == null ? "("+getBaseQuery()+")" : getTableLocation().toString(getDbType());
+                return IOMethods.saveAsFile(getStatement().getConnection(), toSave,
+                        filePath, encoding);
+
         } catch (SQLException e) {
             LOGGER.error("Cannot save the table.\n" + e.getLocalizedMessage());
             return false;

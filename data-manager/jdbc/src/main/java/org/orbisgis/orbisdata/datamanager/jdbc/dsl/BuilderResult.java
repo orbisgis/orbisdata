@@ -98,7 +98,6 @@ public abstract class BuilderResult implements IBuilderResult {
             LOGGER.error("Unable to create the StatementWrapper.\n", e);
             return null;
         }
-        String name = "";
         switch (getDataSource().getDataBaseType()) {
             default:
             case H2GIS:
@@ -107,12 +106,9 @@ public abstract class BuilderResult implements IBuilderResult {
                     statement = new StatementWrapper(statement, new ConnectionWrapper(getDataSource().getConnection()));
                 }
                 if (ISpatialTable.class.isAssignableFrom(clazz)) {
-                    return new H2gisSpatialTable(new TableLocation(getDataSource().getLocation().toString(), name),
-                            getQuery(), (StatementWrapper) statement,
-                            getDataSource());
+                    return new H2gisSpatialTable(null, getQuery(), (StatementWrapper) statement, getDataSource());
                 } else if (ITable.class.isAssignableFrom(clazz)) {
-                    return new H2gisTable(new TableLocation(getDataSource().getLocation().toString(), name),
-                            getQuery(), (StatementWrapper) statement, getDataSource());
+                    return new H2gisTable(null, getQuery(), (StatementWrapper) statement, getDataSource());
                 }
             case POSTGIS:
                 if (!(statement instanceof org.h2gis.postgis_jts.StatementWrapper)) {
@@ -120,11 +116,9 @@ public abstract class BuilderResult implements IBuilderResult {
                     break;
                 }
                 if (ISpatialTable.class.isAssignableFrom(clazz)) {
-                    return new PostgisSpatialTable(new TableLocation(getDataSource().getLocation().toString(), name),
-                            getQuery(), (org.h2gis.postgis_jts.StatementWrapper) statement, getDataSource());
+                    return new PostgisSpatialTable(null, getQuery(), (org.h2gis.postgis_jts.StatementWrapper) statement, getDataSource());
                 } else if (ITable.class.isAssignableFrom(clazz)) {
-                    return new PostgisTable(new TableLocation(getDataSource().getLocation().toString(), name),
-                            getQuery(), (org.h2gis.postgis_jts.StatementWrapper) statement, getDataSource());
+                    return new PostgisTable(null,getQuery(), (org.h2gis.postgis_jts.StatementWrapper) statement, getDataSource());
                 }
         }
         return null;

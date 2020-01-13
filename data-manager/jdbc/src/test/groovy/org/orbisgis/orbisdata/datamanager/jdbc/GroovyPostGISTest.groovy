@@ -39,10 +39,14 @@ package org.orbisgis.orbisdata.datamanager.jdbc
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.condition.EnabledIfSystemProperty
+import org.locationtech.jts.geom.MultiPolygon
+import org.orbisgis.orbisdata.datamanager.api.dataset.ISpatialTable
 import org.orbisgis.orbisdata.datamanager.jdbc.postgis.POSTGIS
 
 import static org.junit.jupiter.api.Assertions.assertEquals
 import static org.junit.jupiter.api.Assertions.assertNotNull
+import static org.junit.jupiter.api.Assertions.assertThrows
+import static org.junit.jupiter.api.Assertions.assertTrue
 
 class GroovyPostGISTest {
 
@@ -273,5 +277,45 @@ class GroovyPostGISTest {
         postGIS.getSpatialTable "postgis_saved" eachRow { row -> concat += "$row.id $row.the_geom $row.geometry\n" }
         assertEquals("1 POINT (10 10) POINT (10 10)\n2 POINT (1 1) POINT (1 1)\n", concat)
         println(concat)
+    }
+
+    @Test
+    @EnabledIfSystemProperty(named = "test.postgis", matches = "true")
+    void testReproject() {
+        def postGIS = POSTGIS.open(dbProperties)
+        new File("target/reprojected_table.shp").delete()
+        postGIS.execute("""
+                DROP TABLE IF EXISTS orbisgis;
+                CREATE TABLE orbisgis (id int, the_geom geometry(point, 4326));
+                INSERT INTO orbisgis VALUES (1, 'SRID=4326;POINT(10 10)'::GEOMETRY), (2, 'SRID=4326;POINT(1 1)'::GEOMETRY);
+        """)
+        def sp = postGIS.getSpatialTable("orbisgis")
+        assertNotNull(sp)
+        assertThrows(UnsupportedOperationException.class, sp::getSrid);
+        def spr = sp.reproject(2154)
+        assertNotNull(spr)
+        assertThrows(UnsupportedOperationException.class, spr::getSrid);
+        assertTrue(spr.save("target/reprojected_table.shp"))
+        def reprojectedTable = postGIS.load("target/reprojected_table.shp", true).spatialTable
+        assertNotNull(reprojectedTable)
+        assertEquals(2154, reprojectedTable.srid)
+    }
+
+    @Test
+    @EnabledIfSystemProperty(named = "test.postgis", matches = "true")
+    void testSaveQueryInFile() {
+        def postGIS = POSTGIS.open(dbProperties)
+        new File("target/reprojected_table.shp").delete()
+        postGIS.execute("""
+                DROP TABLE IF EXISTS orbisgis;
+                CREATE TABLE orbisgis (id int, the_geom geometry(point, 4326));
+                INSERT INTO orbisgis VALUES (1, 'SRID=4326;POINT(10 10)'::GEOMETRY), (2, 'SRID=4326;POINT(1 1)'::GEOMETRY);
+        """)
+        def sp = postGIS.select("ST_BUFFER(THE_GEOM, 10) AS THE_GEOM").from("ORBISGIS").spatialTable
+        sp.save("target/query_table.shp")
+        def queryTable = postGIS.load("target/query_table.shp")
+        assertEquals 2, queryTable.rowCount
+        assertEquals 4326, queryTable.srid
+        assertTrue queryTable.getFirstRow()[1] instanceof MultiPolygon
     }
 }

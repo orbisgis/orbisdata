@@ -48,6 +48,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 
 /**
@@ -103,6 +104,28 @@ public class H2gisSpatialTable extends JdbcSpatialTable {
                     getJdbcDataSource());
         } else {
             return super.asType(clazz);
+        }
+    }
+
+    @Override
+    public ISpatialTable reproject(int srid) {
+        try {
+            ResultSetMetaData meta = getMetaData();
+            int columnCount = meta.getColumnCount();
+            String[] fieldNames = new String[columnCount];
+            for (int i = 1; i <= columnCount; i++) {
+                String columnName = meta.getColumnName(i);
+                if (meta.getColumnTypeName(i).equalsIgnoreCase("geometry")) {
+                    fieldNames[i-1] = "ST_TRANSFORM(" + columnName + ", " + srid + ") AS " + columnName;
+                } else {
+                    fieldNames[i-1] = columnName;
+                }
+            }
+            String query = "SELECT " + String.join(",", fieldNames) + " FROM " + getTableLocation().toString(true);
+            return new H2gisSpatialTable(null, query, (StatementWrapper) getStatement(), getJdbcDataSource());
+        } catch (SQLException e) {
+            LOGGER.error("Cannot reproject the table '" + getLocation() + "' in the SRID '" + srid + "'.\n", e);
+            return null;
         }
     }
 }

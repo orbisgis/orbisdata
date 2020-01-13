@@ -144,4 +144,13 @@ public interface ISpatialTable extends ITable<Object> {
      * @return The field names as key and geometry types as value.
      */
     Map<String, String> getGeometryTypes();
+
+    /**
+     * Reproject the current {@link ISpatialTable} to another referenced coordinate system .The reprojection is
+     * applied on the first geometry column.
+     *
+     * @param srid EPSG code as specified by the EPSG spatial reference system database.
+     * @return A reproject {@link ISpatialTable}.
+     */
+    ISpatialTable reproject(int srid);
 }

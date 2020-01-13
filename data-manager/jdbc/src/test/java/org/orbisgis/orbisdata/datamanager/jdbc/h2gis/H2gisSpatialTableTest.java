@@ -38,12 +38,17 @@ package org.orbisgis.orbisdata.datamanager.jdbc.h2gis;
 
 
 import org.junit.jupiter.api.Test;
+import org.locationtech.jts.geom.MultiPolygon;
+import org.orbisgis.orbisdata.datamanager.api.dataset.IJdbcSpatialTable;
+import org.orbisgis.orbisdata.datamanager.api.dataset.IJdbcTable;
 import org.orbisgis.orbisdata.datamanager.api.dataset.ISpatialTable;
 import org.orbisgis.orbisdata.datamanager.api.dataset.ITable;
 
+import java.io.File;
 import java.sql.SQLException;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Test class dedicated to the {@link H2gisSpatialTable} class.
@@ -70,5 +75,68 @@ public class H2gisSpatialTableTest {
         assertTrue(table.asType(H2gisSpatialTable.class) instanceof H2gisSpatialTable);
         assertTrue(table.asType(H2gisTable.class) instanceof H2gisTable);
         assertNull(table.asType(String.class));
+    }
+
+    @Test
+    void testReproject() throws SQLException {
+        new File("target/reprojected_table.shp").delete();
+        H2GIS dataSource = H2GIS.open("./target/test");
+        dataSource.execute(" DROP TABLE IF EXISTS orbisgis;" +
+                "CREATE TABLE orbisgis (id int, the_geom geometry(point, 4326));" +
+                "INSERT INTO orbisgis VALUES (1, 'SRID=4326;POINT(10 10)'::GEOMETRY), " +
+                "(2, 'SRID=4326;POINT(1 1)'::GEOMETRY); ");
+
+        IJdbcSpatialTable sp = dataSource.getSpatialTable("orbisgis");
+        assertNotNull(sp);
+        assertEquals(4326, sp.getSrid());
+        assertEquals(2, sp.getRowCount());
+
+        ISpatialTable spr = sp.reproject(2154);
+        assertNotNull(spr);
+        assertThrows(UnsupportedOperationException.class, spr::getSrid);
+        assertEquals(2, spr.getRowCount());
+        assertTrue(spr.save("target/reprojected_table.shp"));
+
+        IJdbcTable reprojectedTable = dataSource.load("target/reprojected_table.shp", true);
+        assertNotNull(reprojectedTable);
+        assertEquals(2, reprojectedTable.getRowCount());
+        assertTrue(reprojectedTable instanceof IJdbcSpatialTable);
+
+        IJdbcSpatialTable spatialReprojectedTable = (IJdbcSpatialTable)reprojectedTable;
+        assertEquals(2154, spatialReprojectedTable.getSrid());
+
+        IJdbcSpatialTable spLoaded = dataSource.getSpatialTable("REPROJECTED_TABLE");
+        assertNotNull(spLoaded);
+        assertEquals(2154, spLoaded.getSrid());
+        assertEquals(2, spLoaded.getRowCount());
+    }
+
+    @Test
+    void testSaveQueryInFile() throws SQLException {
+        new File("target/query_table.shp").delete();
+        H2GIS dataSource = H2GIS.open("./target/test");
+        dataSource.execute(" DROP TABLE IF EXISTS orbisgis;" +
+                "CREATE TABLE orbisgis (id int, the_geom geometry(point, 4326));" +
+                "INSERT INTO orbisgis VALUES (1, 'SRID=4326;POINT(10 10)'::GEOMETRY), " +
+                "(2, 'SRID=4326;POINT(1 1)'::GEOMETRY); ");
+
+        ISpatialTable sp = dataSource.select("ST_BUFFER(THE_GEOM, 10) AS THE_GEOM").from("ORBISGIS").getSpatialTable();
+        assertNotNull(sp);
+        assertThrows(UnsupportedOperationException.class, sp::getSrid);
+        assertEquals(2, sp.getRowCount());
+        assertTrue(sp.save("target/query_table.shp"));
+
+        IJdbcTable queryTable = dataSource.load("target/query_table.shp");
+        assertNotNull(queryTable);
+        assertEquals(2, queryTable.getRowCount());
+        assertTrue(queryTable instanceof IJdbcSpatialTable);
+
+        IJdbcSpatialTable spatialReprojectedTable = (IJdbcSpatialTable)queryTable;
+        assertEquals(4326, spatialReprojectedTable.getSrid());
+
+        IJdbcSpatialTable spLoaded = dataSource.getSpatialTable("QUERY_TABLE");
+        assertEquals(2, spLoaded.getRowCount());
+        assertEquals(4326, spLoaded.getSrid());
+        assertTrue(spLoaded.getFirstRow().get(1) instanceof MultiPolygon);
     }
 }

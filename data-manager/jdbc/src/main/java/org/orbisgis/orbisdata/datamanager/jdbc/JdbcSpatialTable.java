@@ -87,7 +87,7 @@ public abstract class JdbcSpatialTable extends JdbcTable implements IJdbcSpatial
         try {
             return ((SpatialResultSet) getResultSet()).getGeometry(columnIndex);
         } catch (SQLException e) {
-            LOGGER.error("Unable to get the geometry at '" + columnIndex + "'.\n" + e.getLocalizedMessage());
+            LOGGER.error("Unable to get the geometry at '" + columnIndex + "'.", e);
         }
         return null;
     }
@@ -97,7 +97,7 @@ public abstract class JdbcSpatialTable extends JdbcTable implements IJdbcSpatial
         try {
             return ((SpatialResultSet) getResultSet()).getGeometry(columnLabel);
         } catch (SQLException e) {
-            LOGGER.error("Unable to get the geometry of '" + columnLabel + "'.\n" + e.getLocalizedMessage());
+            LOGGER.error("Unable to get the geometry of '" + columnLabel + "'.", e);
         }
         return null;
     }
@@ -107,7 +107,7 @@ public abstract class JdbcSpatialTable extends JdbcTable implements IJdbcSpatial
         try {
             return ((SpatialResultSet) getResultSet()).getGeometry();
         } catch (SQLException e) {
-            LOGGER.error("Unable to get the geometry.\n" + e.getLocalizedMessage());
+            LOGGER.error("Unable to get the geometry.", e);
         }
         return null;
     }
@@ -142,58 +142,114 @@ public abstract class JdbcSpatialTable extends JdbcTable implements IJdbcSpatial
 
     @Override
     public List<String> getGeometricColumns() {
-        try {
-            return SFSUtilities.getGeometryFields(getJdbcDataSource().getConnection(), (TableLocation) getTableLocation());
-        } catch (SQLException e) {
-            LOGGER.error("Unable to get the geometric columns.\n" + e.getLocalizedMessage());
+        if(getTableLocation() == null){
+            try {
+                return SFSUtilities.getGeometryFields(getResultSetLimit(0));
+            } catch (SQLException e) {
+                LOGGER.error("Unable to get the geometric columns on ResultSet.", e);
+            }
+        }
+        else {
+            try {
+                return SFSUtilities.getGeometryFields(getJdbcDataSource().getConnection(), getTableLocation());
+            } catch (SQLException e) {
+                LOGGER.error("Unable to get the geometric columns.", e);
+            }
         }
         return null;
     }
 
     @Override
     public Envelope getExtend() {
-        try {
-            Connection conn = getJdbcDataSource().getConnection();
-            List<String> names = SFSUtilities.getGeometryFields(conn, (TableLocation) getTableLocation());
-            if (names.isEmpty()) {
-                LOGGER.error("There is no geometric field.");
-                return null;
+        if(getTableLocation() == null){
+            try {
+                Connection conn = getJdbcDataSource().getConnection();
+                List<String> names = SFSUtilities.getGeometryFields(getResultSetLimit(0));
+                if (names.isEmpty()) {
+                    LOGGER.error("There is no geometric field.");
+                    return null;
+                }
+
+                ResultSet rs = conn.createStatement().executeQuery("SELECT ST_Extent(" +
+                        TableLocation.quoteIdentifier(names.get(0)) + ") ext FROM SELECT" + getBaseQuery());
+                if (rs.next()) {
+                    return ((Geometry)rs.getObject(1)).getEnvelopeInternal();
+                } else {
+                    throw new SQLException("Unable to get the table extent it may be empty");
+                }
+            } catch (SQLException e) {
+                LOGGER.error("Unable to get the table estimated extend on ResultSet.", e);
             }
-            return SFSUtilities.getTableEnvelope(conn, (TableLocation) getTableLocation(), names.get(0));
-        } catch (SQLException e) {
-            LOGGER.error("Unable to get the table estimated extend.\n" + e.getLocalizedMessage());
+        }
+        else {
+            try {
+                Connection conn = getJdbcDataSource().getConnection();
+                List<String> names = SFSUtilities.getGeometryFields(conn, getTableLocation());
+                if (names.isEmpty()) {
+                    LOGGER.error("There is no geometric field.");
+                    return null;
+                }
+                return SFSUtilities.getTableEnvelope(conn, getTableLocation(), names.get(0));
+            } catch (SQLException e) {
+                LOGGER.error("Unable to get the table estimated extend.", e);
+            }
         }
         return null;
     }
 
     @Override
     public Geometry getEstimatedExtend() {
+        if(getTableLocation() == null){
+            throw new UnsupportedOperationException();
+        }
         try {
             Connection conn = getJdbcDataSource().getConnection();
-            List<String> names = SFSUtilities.getGeometryFields(conn, (TableLocation) getTableLocation());
+            List<String> names = SFSUtilities.getGeometryFields(conn, getTableLocation());
             if (names.isEmpty()) {
                 LOGGER.error("There is no geometric field.");
                 return null;
             }
-            return SFSUtilities.getEstimatedExtent(conn, (TableLocation) getTableLocation(), names.get(0));
+            return SFSUtilities.getEstimatedExtent(conn, getTableLocation(), names.get(0));
         } catch (SQLException e) {
-            LOGGER.error("Unable to get the table estimated extend.\n" + e.getLocalizedMessage());
+            LOGGER.error("Unable to get the table estimated extend.", e);
         }
         return null;
     }
 
     @Override
     public int getSrid() {
+        if(getTableLocation() == null){
+            throw new UnsupportedOperationException();
+        }
         try {
-            return SFSUtilities.getSRID(getJdbcDataSource().getConnection(), (TableLocation) getTableLocation());
+            return SFSUtilities.getSRID(getJdbcDataSource().getConnection(), getTableLocation());
         } catch (SQLException e) {
-            LOGGER.error("Unable to get the table SRID.\n" + e.getLocalizedMessage());
+            LOGGER.error("Unable to get the table SRID.", e);
         }
         return -1;
     }
 
     @Override
     public Map<String, String> getGeometryTypes() {
+        if(getTableLocation() == null){
+            try {
+                boolean isH2 = getDbType() == DataBaseType.H2GIS;
+                Map<String, String> map = new HashMap<>();
+                ResultSetMetaData metaData = getResultSetLimit(0).getMetaData();
+                for(int i=0; i<metaData.getColumnCount(); i++){
+                    String type;
+                    if (isH2) {
+                        type = SFSUtilities.getGeometryTypeNameFromCode(metaData.getColumnType(i));
+                    } else {
+                        type = metaData.getColumnTypeName(i).toLowerCase();
+                    }
+                    map.put(metaData.getColumnName(i), type);
+                }
+                return map;
+            } catch(SQLException e){
+                LOGGER.error("Unable to get the metadata of the query.", e);
+            }
+        }
         try {
             Map<String, String> map = new HashMap<>();
             PreparedStatement geomStatement = SFSUtilities.prepareInformationSchemaStatement(getJdbcDataSource().getConnection(), getTableLocation().getCatalog(), getTableLocation().getSchema(),
@@ -212,7 +268,7 @@ public abstract class JdbcSpatialTable extends JdbcTable implements IJdbcSpatial
             }
             return map;
         } catch (SQLException e) {
-            LOGGER.error("Unable to get the geometry types.\n" + e.getLocalizedMessage());
+            LOGGER.error("Unable to get the geometry types.", e);
             return null;
         }
     }
@@ -222,7 +278,7 @@ public abstract class JdbcSpatialTable extends JdbcTable implements IJdbcSpatial
         try {
             return getResultSet().getMetaData().unwrap(SpatialResultSetMetaData.class);
         } catch (SQLException e) {
-            LOGGER.error("Unable to get the metadata.\n" + e.getLocalizedMessage());
+            LOGGER.error("Unable to get the metadata.", e);
             return null;
         }
     }

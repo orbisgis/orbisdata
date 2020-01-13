@@ -159,7 +159,7 @@ public abstract class JdbcTable extends DefaultResultSet implements IJdbcTable, 
      * @param limit Limit of the result set.
      * @return The {@link ResultSet} with a limit.
      */
-    private ResultSet getResultSetLimit(int limit) {
+    protected ResultSet getResultSetLimit(int limit) {
         int _limit = limit;
         if (_limit < 0) {
             LOGGER.warn("The ResultSet limit should not be under 0. Set it to 0.");
@@ -236,20 +236,24 @@ public abstract class JdbcTable extends DefaultResultSet implements IJdbcTable, 
 
     @Override
     public boolean isLinked() {
-        try {
-            return JDBCUtilities.isLinkedTable(jdbcDataSource.getConnection(), getTableLocation().toString());
-        } catch (SQLException e) {
-            LOGGER.error("Unable to get the type of the table '" + getTableLocation().getTable() + ".\n" + e.getLocalizedMessage());
+        if (getTableLocation() != null) {
+            try {
+                return JDBCUtilities.isLinkedTable(jdbcDataSource.getConnection(), getTableLocation().toString());
+            } catch (SQLException e) {
+                LOGGER.error("Unable to get the type of the table '" + getTableLocation().getTable() + ".\n" + e.getLocalizedMessage());
+            }
         }
         return false;
     }
 
     @Override
     public boolean isTemporary() {
-        try {
-            return JDBCUtilities.isTemporaryTable(jdbcDataSource.getConnection(), getTableLocation().toString());
-        } catch (SQLException e) {
-            LOGGER.error("Unable to get the type of the table '" + getTableLocation().getTable() + ".\n" + e.getLocalizedMessage());
+        if (getTableLocation() != null) {
+            try {
+                return JDBCUtilities.isTemporaryTable(jdbcDataSource.getConnection(), getTableLocation().toString());
+            } catch (SQLException e) {
+                LOGGER.error("Unable to get the type of the table '" + getTableLocation().getTable() + ".\n" + e.getLocalizedMessage());
+            }
         }
         return false;
     }
@@ -280,7 +284,7 @@ public abstract class JdbcTable extends DefaultResultSet implements IJdbcTable, 
     private DataType getColumnDataType(String columnName) {
         boolean found = false;
         int type = -1;
-        if (!getName().isEmpty()) {
+        if (tableLocation != null && !getName().isEmpty()) {
             try {
                 ResultSet rs = jdbcDataSource.getConnection().getMetaData().getColumns(tableLocation.getCatalog(),
                         tableLocation.getSchema(), TableLocation.capsIdentifier(tableLocation.getTable(),
@@ -324,7 +328,7 @@ public abstract class JdbcTable extends DefaultResultSet implements IJdbcTable, 
     }
 
     private String getGeometricType(String columnName) {
-        if (!getName().isEmpty()) {
+        if (tableLocation != null && !getName().isEmpty()) {
             try {
                 return SFSUtilities.getGeometryTypeNameFromCode(
                         SFSUtilities.getGeometryType(jdbcDataSource.getConnection(), tableLocation, columnName));
@@ -391,7 +395,15 @@ public abstract class JdbcTable extends DefaultResultSet implements IJdbcTable, 
 
     @Override
     public int getRowCount() {
-        if (tableLocation.getTable().isEmpty()) {
+        if (tableLocation == null) {
+            try {
+                getResultSet().last();
+                return getResultSet().getRow();
+            } catch (SQLException e) {
+                LOGGER.error("Unable to reach the end of the resultset.", e);
+            }
+            return -1;
+        } else if (tableLocation.getTable().isEmpty()) {
             int count = 0;
             ResultSet rs = getResultSet();
             try {
@@ -422,6 +434,9 @@ public abstract class JdbcTable extends DefaultResultSet implements IJdbcTable, 
 
     @Override
     public Collection<String> getUniqueValues(String column) {
+        if (tableLocation == null) {
+            throw new UnsupportedOperationException();
+        }
         if (tableLocation.getTable().isEmpty()) {
             LOGGER.error("Unable to request unique values fo the column '" + column + "'.\n");
             throw new UnsupportedOperationException();
@@ -440,10 +455,11 @@ public abstract class JdbcTable extends DefaultResultSet implements IJdbcTable, 
     @Override
     public boolean save(String filePath, String encoding) {
         try {
-            return IOMethods.saveAsFile(getStatement().getConnection(), getTableLocation().toString(getDbType()),
-                    filePath, encoding);
+            String toSave = getTableLocation() == null ? "(" + getBaseQuery() + ")" : getTableLocation().toString(getDbType());
+            return IOMethods.saveAsFile(getStatement().getConnection(), toSave, filePath, encoding);
+
         } catch (SQLException e) {
-            LOGGER.error("Cannot save the table.\n" + e.getLocalizedMessage());
+            LOGGER.error("Cannot save the table.\n", e);
             return false;
         }
     }

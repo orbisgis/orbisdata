@@ -8,7 +8,6 @@ import org.h2gis.functions.io.geojson.GeoJsonDriverFunction;
 import org.h2gis.functions.io.geojson.GeoJsonReaderDriver;
 import org.h2gis.functions.io.gpx.GPXDriverFunction;
 import org.h2gis.functions.io.json.JsonDriverFunction;
-import org.h2gis.functions.io.kml.KMLWriterDriver;
 import org.h2gis.functions.io.osm.OSMDriverFunction;
 import org.h2gis.functions.io.shp.SHPDriverFunction;
 import org.h2gis.functions.io.tsv.TSVDriverFunction;
@@ -105,11 +104,6 @@ public class IOMethods {
                 if (enc == null) {
                     enc = ENCODING_OPTION + UTF_ENCODING;
                 }
-            } else if (FileUtil.isExtensionWellFormated(fileToSave, "kml") || FileUtil.isExtensionWellFormated(fileToSave, "kmz")) {
-                unsupportedEncoding(enc);
-                KMLWriterDriver driver = new KMLWriterDriver(connection, isH2 ? tableName.toUpperCase() : tableName, fileToSave);
-                driver.write(new EmptyProgressVisitor());
-                return true;
             }
             if (driverFunction != null) {
                 driverFunction.exportTable(connection, isH2 ? tableName.toUpperCase() : tableName, fileToSave,

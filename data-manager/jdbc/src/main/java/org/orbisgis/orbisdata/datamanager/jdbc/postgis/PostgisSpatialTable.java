@@ -112,18 +112,18 @@ public class PostgisSpatialTable extends JdbcSpatialTable {
             ResultSetMetaData meta = getMetaData();
             int columnCount = meta.getColumnCount();
             String[] fieldNames = new String[columnCount];
-            int k=0;
             for (int i = 1; i <= columnCount; i++) {
                 String columnName = meta.getColumnName(i);
                 if (meta.getColumnTypeName(i).equalsIgnoreCase("geometry")) {
-                    fieldNames[k] = "ST_TRANSFORM("+columnName+", "+srid+") as "+ columnName ;
+                    fieldNames[i-1] = "ST_TRANSFORM(" + columnName + ", " + srid + ") AS " + columnName;
+                } else {
+                    fieldNames[i-1] = columnName;
                 }
-                k++;
             }
-            String query = "SELECT "+String.join(",",fieldNames)+ " FROM "+ getTableLocation().toString(false);
-            return new H2gisSpatialTable(null,query, (org.h2gis.utilities.wrapper.StatementWrapper) getStatement(), getJdbcDataSource());
+            String query = "SELECT " + String.join(",", fieldNames) + " FROM " + getTableLocation().toString(true);
+            return new PostgisSpatialTable(null, query, (StatementWrapper) getStatement(), getJdbcDataSource());
         } catch (SQLException e) {
-            LOGGER.error("Cannot reproject.\n" + e.getLocalizedMessage());
+            LOGGER.error("Cannot reproject the table '" + getLocation() + "' in the SRID '" + srid + "'.\n", e);
             return null;
         }
     }

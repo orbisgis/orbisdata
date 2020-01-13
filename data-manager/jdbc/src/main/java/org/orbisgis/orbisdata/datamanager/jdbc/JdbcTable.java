@@ -159,7 +159,7 @@ public abstract class JdbcTable extends DefaultResultSet implements IJdbcTable, 
      * @param limit Limit of the result set.
      * @return The {@link ResultSet} with a limit.
      */
-    public ResultSet getResultSetLimit(int limit) {
+    protected ResultSet getResultSetLimit(int limit) {
         int _limit = limit;
         if (_limit < 0) {
             LOGGER.warn("The ResultSet limit should not be under 0. Set it to 0.");
@@ -236,7 +236,7 @@ public abstract class JdbcTable extends DefaultResultSet implements IJdbcTable, 
 
     @Override
     public boolean isLinked() {
-        if(getTableLocation()!=null) {
+        if (getTableLocation() != null) {
             try {
                 return JDBCUtilities.isLinkedTable(jdbcDataSource.getConnection(), getTableLocation().toString());
             } catch (SQLException e) {
@@ -248,7 +248,7 @@ public abstract class JdbcTable extends DefaultResultSet implements IJdbcTable, 
 
     @Override
     public boolean isTemporary() {
-        if(getTableLocation()!=null){
+        if (getTableLocation() != null) {
             try {
                 return JDBCUtilities.isTemporaryTable(jdbcDataSource.getConnection(), getTableLocation().toString());
             } catch (SQLException e) {
@@ -395,7 +395,7 @@ public abstract class JdbcTable extends DefaultResultSet implements IJdbcTable, 
 
     @Override
     public int getRowCount() {
-        if(tableLocation == null){
+        if (tableLocation == null) {
             try {
                 getResultSet().last();
                 return getResultSet().getRow();
@@ -403,8 +403,7 @@ public abstract class JdbcTable extends DefaultResultSet implements IJdbcTable, 
                 LOGGER.error("Unable to reach the end of the resultset.", e);
             }
             return -1;
-        }
-        else if (tableLocation.getTable().isEmpty()) {
+        } else if (tableLocation.getTable().isEmpty()) {
             int count = 0;
             ResultSet rs = getResultSet();
             try {
@@ -435,7 +434,7 @@ public abstract class JdbcTable extends DefaultResultSet implements IJdbcTable, 
 
     @Override
     public Collection<String> getUniqueValues(String column) {
-        if(tableLocation == null){
+        if (tableLocation == null) {
             throw new UnsupportedOperationException();
         }
         if (tableLocation.getTable().isEmpty()) {
@@ -456,12 +455,11 @@ public abstract class JdbcTable extends DefaultResultSet implements IJdbcTable, 
     @Override
     public boolean save(String filePath, String encoding) {
         try {
-            String toSave = getTableLocation() == null ? "("+getBaseQuery()+")" : getTableLocation().toString(getDbType());
-                return IOMethods.saveAsFile(getStatement().getConnection(), toSave,
-                        filePath, encoding);
+            String toSave = getTableLocation() == null ? "(" + getBaseQuery() + ")" : getTableLocation().toString(getDbType());
+            return IOMethods.saveAsFile(getStatement().getConnection(), toSave, filePath, encoding);
 
         } catch (SQLException e) {
-            LOGGER.error("Cannot save the table.\n" + e.getLocalizedMessage());
+            LOGGER.error("Cannot save the table.\n", e);
             return false;
         }
     }

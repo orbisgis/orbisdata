@@ -95,10 +95,9 @@ public interface IJdbcTable extends ITable<Object>, ResultSet, IWhereBuilderOrOp
     @Override
     default String getLocation() {
         ITableLocation location = getTableLocation();
-        if(location == null){
+        if (location == null) {
             return QUERY_LOCATION;
-        }
-        else {
+        } else {
             return getTableLocation().toString(getDbType());
         }
     }
@@ -106,10 +105,9 @@ public interface IJdbcTable extends ITable<Object>, ResultSet, IWhereBuilderOrOp
     @Override
     default String getName() {
         ITableLocation location = getTableLocation();
-        if(location == null){
+        if (location == null) {
             return QUERY_LOCATION;
-        }
-        else {
+        } else {
             return getTableLocation().getTable();
         }
     }

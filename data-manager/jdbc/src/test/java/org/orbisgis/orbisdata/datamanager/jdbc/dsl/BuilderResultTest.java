@@ -165,6 +165,7 @@ public class BuilderResultTest {
             }
             return new SpatialResultSetImpl(resultSet, (StatementWrapper) getStatement());
         }
+
         @Override
         public ISpatialTable reproject(int srid) {
             throw new IllegalArgumentException("Unsupported operation");

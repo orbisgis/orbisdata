@@ -36,6 +36,7 @@
  */
 package org.orbisgis.orbisdata.datamanager.jdbc;
 
+import org.orbisgis.orbisdata.datamanager.api.dataset.IJdbcTable;
 import org.orbisgis.orbisdata.datamanager.api.dataset.IJdbcTableSummary;
 import org.orbisgis.orbisdata.datamanager.api.dataset.ISummary;
 
@@ -94,6 +95,7 @@ public class JdbcTableSummary implements IJdbcTableSummary {
 
     @Override
     public String toString() {
-        return tableLocation.toString() + "; row count : " + rowCount + "; column count : " + columnCount;
+        return (tableLocation==null ? IJdbcTable.QUERY_LOCATION : tableLocation.toString()) + "; row count : " +
+                rowCount + "; column count : " + columnCount;
     }
 }

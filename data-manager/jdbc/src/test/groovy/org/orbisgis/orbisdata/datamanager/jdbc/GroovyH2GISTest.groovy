@@ -595,7 +595,7 @@ class GroovyH2GISTest {
                 (h2GIS.getSpatialTable("orbisgis") as Ascii).toString())
         assertEquals(
                 "+--------------------+\n" +
-                        "|                    |\n" +
+                        "|       query        |\n" +
                         "+--------------------+--------------------+--------------------+\n" +
                         "|         ID         |      THE_GEOM      |VERY_LONG_TITLE_T...|\n" +
                         "+--------------------+--------------------+--------------------+\n" +

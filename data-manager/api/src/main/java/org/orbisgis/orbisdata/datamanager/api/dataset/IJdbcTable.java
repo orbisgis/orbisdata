@@ -52,6 +52,11 @@ import java.util.List;
 public interface IJdbcTable extends ITable<Object>, ResultSet, IWhereBuilderOrOptionBuilder {
 
     /**
+     * {@link String} location/name of the query built table
+     */
+    String QUERY_LOCATION = "query";
+
+    /**
      * {@link String} name of the metadata property
      */
     String META_PROPERTY = "meta";
@@ -89,12 +94,24 @@ public interface IJdbcTable extends ITable<Object>, ResultSet, IWhereBuilderOrOp
 
     @Override
     default String getLocation() {
-        return getTableLocation().toString(getDbType());
+        ITableLocation location = getTableLocation();
+        if(location == null){
+            return QUERY_LOCATION;
+        }
+        else {
+            return getTableLocation().toString(getDbType());
+        }
     }
 
     @Override
     default String getName() {
-        return getTableLocation().getTable();
+        ITableLocation location = getTableLocation();
+        if(location == null){
+            return QUERY_LOCATION;
+        }
+        else {
+            return getTableLocation().getTable();
+        }
     }
 
     @Override

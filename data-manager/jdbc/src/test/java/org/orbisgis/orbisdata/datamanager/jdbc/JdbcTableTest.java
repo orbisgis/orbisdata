@@ -254,7 +254,7 @@ class JdbcTableTest {
         assertEquals("\"LINKEDTABLE\"", getLinkedTable().getLocation());
         assertEquals("\"TEMPTABLE\"", getTempTable().getLocation());
         assertEquals("\"ORBISGIS_EMPTY\"", getEmptyTable().getLocation());
-        assertEquals("\"\"", getBuiltTable().getLocation());
+        assertEquals(IJdbcTable.QUERY_LOCATION, getBuiltTable().getLocation());
     }
 
     /**
@@ -320,7 +320,7 @@ class JdbcTableTest {
         assertEquals(linkedLocation, getLinkedTable().getTableLocation());
         assertEquals(tempLocation, getTempTable().getTableLocation());
         assertEquals(emptyLocation, getEmptyTable().getTableLocation());
-        assertEquals(new TableLocation("ds", ""), getBuiltTable().getTableLocation());
+        assertNull(getBuiltTable().getTableLocation());
     }
 
     /**
@@ -745,7 +745,7 @@ class JdbcTableTest {
                         "+--------------------+--------------------+--------------------+--------------------+--------------------+\n",
                 getTable().asType(Ascii.class).toString());
         assertEquals("+--------------------+\n" +
-                        "|                    |\n" +
+                        "|       " + IJdbcTable.QUERY_LOCATION + "        |\n" +
                         "+--------------------+--------------------+--------------------+--------------------+--------------------+\n" +
                         "|      THE_GEOM      |     THE_GEOM2      |         ID         |       VALUE        |      MEANING       |\n" +
                         "+--------------------+--------------------+--------------------+--------------------+--------------------+\n" +
@@ -781,7 +781,7 @@ class JdbcTableTest {
                 "<tr></tr>\n" +
                 "</table>\n", getTable().asType(Html.class).toString());
         assertEquals("<table>\n" +
-                "<caption></caption>\n" +
+                "<caption>" + IJdbcTable.QUERY_LOCATION + "</caption>\n" +
                 "<tr></tr>\n" +
                 "<tr>\n" +
                 "<th align=\"CENTER\">THE_GEOM</th>\n" +
@@ -819,8 +819,8 @@ class JdbcTableTest {
         assertEquals(5, getTable().getSummary().getColumnCount());
         assertEquals(2, getTable().getSummary().getRowCount());
 
-        assertEquals("\"\"; row count : 2; column count : 5", getBuiltTable().getSummary().toString());
-        assertEquals("\"\"", getBuiltTable().getSummary().getLocation().toString());
+        assertEquals(IJdbcTable.QUERY_LOCATION + "; row count : 2; column count : 5", getBuiltTable().getSummary().toString());
+        assertNull(getBuiltTable().getSummary().getLocation());
         assertEquals(5, getBuiltTable().getSummary().getColumnCount());
         assertEquals(2, getBuiltTable().getSummary().getRowCount());
 

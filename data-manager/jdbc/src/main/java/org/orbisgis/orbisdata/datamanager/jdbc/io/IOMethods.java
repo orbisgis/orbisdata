@@ -8,7 +8,6 @@ import org.h2gis.functions.io.geojson.GeoJsonDriverFunction;
 import org.h2gis.functions.io.geojson.GeoJsonReaderDriver;
 import org.h2gis.functions.io.gpx.GPXDriverFunction;
 import org.h2gis.functions.io.json.JsonDriverFunction;
-import org.h2gis.functions.io.kml.KMLWriterDriver;
 import org.h2gis.functions.io.osm.OSMDriverFunction;
 import org.h2gis.functions.io.shp.SHPDriverFunction;
 import org.h2gis.functions.io.tsv.TSVDriverFunction;

@@ -36,7 +36,7 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.orbisgis.orbisdata</groupId>
+            <groupId>org.orbisgis</groupId>
             <artifactId>commons</artifactId>
             <scope>compile</scope>
         </dependency>

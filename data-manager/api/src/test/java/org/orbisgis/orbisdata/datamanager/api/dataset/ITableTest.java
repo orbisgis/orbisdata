@@ -258,6 +258,23 @@ public class ITableTest {
     }
 
     /**
+     * Test the {@link ITable#eachRow(Closure)} method.
+     */
+    @Test
+    public void testEachRow() {
+        final String[] result = {""};
+        Closure cl = new Closure(this) {
+            @Override
+            public Object call(Object argument) {
+                result[0] += argument;
+                return argument;
+            }
+        };
+        table.eachRow(cl);
+        assertEquals("12345678910", result[0]);
+    }
+
+    /**
      * Simple implementation of {@link ITable} for test purpose.
      */
     private static class DummyTable implements ITable<Object> {
@@ -317,9 +334,6 @@ public class ITableTest {
         }
 
         @Override
-        public void eachRow(Closure closure) {/*Does nothing*/}
-
-        @Override
         public Collection<String> getUniqueValues(String column) {
             return null;
         }
@@ -376,7 +390,7 @@ public class ITableTest {
 
         @Override
         public Iterator<Object> iterator() {
-            return new ResultSetIterator();
+            return new DummyIterator();
         }
 
         @Override
@@ -387,6 +401,22 @@ public class ITableTest {
         @Override
         public String getColumnType(String columnName) {
             return null;
+        }
+    }
+
+    private static class DummyIterator implements Iterator {
+
+        private int index = 0;
+        private int count = 10;
+
+        @Override
+        public boolean hasNext() {
+            return index < count;
+        }
+
+        @Override
+        public Object next() {
+            return ++index;
         }
     }
 }

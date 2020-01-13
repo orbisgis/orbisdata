@@ -36,12 +36,11 @@
  */
 package org.orbisgis.orbisdata.datamanager.jdbc
 
-import org.h2gis.functions.spatial.convert.ST_GoogleMapLink
+
 import org.junit.jupiter.api.Test
 import org.locationtech.jts.geom.Geometry
 import org.locationtech.jts.geom.MultiPolygon
 import org.locationtech.jts.geom.Point
-import org.locationtech.jts.geom.Polygon
 import org.orbisgis.commons.printer.Ascii
 import org.orbisgis.commons.printer.Html
 import org.orbisgis.orbisdata.datamanager.api.dataset.ISpatialTable
@@ -595,7 +594,7 @@ class GroovyH2GISTest {
                 (h2GIS.getSpatialTable("orbisgis") as Ascii).toString())
         assertEquals(
                 "+--------------------+\n" +
-                        "|                    |\n" +
+                        "|       query        |\n" +
                         "+--------------------+--------------------+--------------------+\n" +
                         "|         ID         |      THE_GEOM      |VERY_LONG_TITLE_T...|\n" +
                         "+--------------------+--------------------+--------------------+\n" +
@@ -648,14 +647,16 @@ class GroovyH2GISTest {
                 CREATE TABLE orbisgis (id int, the_geom geometry(point, 4326));
                 INSERT INTO orbisgis VALUES (1, 'SRID=4326;POINT(10 10)'::GEOMETRY), (2, 'SRID=4326;POINT(1 1)'::GEOMETRY);
         """)
-        ISpatialTable sp = h2GIS.getSpatialTable("orbisgis")
+        def sp = h2GIS.getSpatialTable("orbisgis")
         assertNotNull(sp)
-        ISpatialTable spr =  sp.reproject(2154)
+        assertEquals(4326, sp.getSrid());
+        def spr = sp.reproject(2154)
         assertNotNull(spr)
+        assertThrows(UnsupportedOperationException.class, spr::getSrid);
         assertTrue(spr.save("target/reprojected_table.shp"))
-        ISpatialTable reprojectedTable = h2GIS.load("target/reprojected_table.shp", true).getSpatialTable()
+        def reprojectedTable = h2GIS.load("target/reprojected_table.shp", true).getSpatialTable()
         assertNotNull(reprojectedTable)
-        assertEquals(2154 , reprojectedTable.srid)
+        assertEquals(2154, reprojectedTable.srid)
     }
 
     @Test
@@ -667,11 +668,11 @@ class GroovyH2GISTest {
                 CREATE TABLE orbisgis (id int, the_geom geometry(point, 4326));
                 INSERT INTO orbisgis VALUES (1, 'SRID=4326;POINT(10 10)'::GEOMETRY), (2, 'SRID=4326;POINT(1 1)'::GEOMETRY);
         """)
-        ISpatialTable sp = h2GIS.select("ST_BUFFER(THE_GEOM, 10) AS THE_GEOM").from("ORBISGIS").getSpatialTable()
+        def sp = h2GIS.select("ST_BUFFER(THE_GEOM, 10) AS THE_GEOM").from("ORBISGIS").getSpatialTable()
         sp.save("target/query_table.shp")
-        ISpatialTable queryTable = h2GIS.load("target/query_table.shp")
-        assertEquals 2,queryTable.rowCount
-        assertEquals 4326 , queryTable.srid
+        def queryTable = h2GIS.load("target/query_table.shp")
+        assertEquals 2, queryTable.rowCount
+        assertEquals 4326, queryTable.srid
         assertTrue queryTable.getFirstRow()[1] instanceof MultiPolygon
     }
 }

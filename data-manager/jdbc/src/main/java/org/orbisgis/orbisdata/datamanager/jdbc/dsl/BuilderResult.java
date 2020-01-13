@@ -44,7 +44,6 @@ import org.orbisgis.orbisdata.datamanager.api.dataset.ISpatialTable;
 import org.orbisgis.orbisdata.datamanager.api.dataset.ITable;
 import org.orbisgis.orbisdata.datamanager.api.dsl.IBuilderResult;
 import org.orbisgis.orbisdata.datamanager.jdbc.JdbcDataSource;
-import org.orbisgis.orbisdata.datamanager.jdbc.TableLocation;
 import org.orbisgis.orbisdata.datamanager.jdbc.h2gis.H2gisSpatialTable;
 import org.orbisgis.orbisdata.datamanager.jdbc.h2gis.H2gisTable;
 import org.orbisgis.orbisdata.datamanager.jdbc.postgis.PostgisSpatialTable;
@@ -116,9 +115,11 @@ public abstract class BuilderResult implements IBuilderResult {
                     break;
                 }
                 if (ISpatialTable.class.isAssignableFrom(clazz)) {
-                    return new PostgisSpatialTable(null, getQuery(), (org.h2gis.postgis_jts.StatementWrapper) statement, getDataSource());
+                    return new PostgisSpatialTable(null, getQuery(),
+                            (org.h2gis.postgis_jts.StatementWrapper) statement, getDataSource());
                 } else if (ITable.class.isAssignableFrom(clazz)) {
-                    return new PostgisTable(null,getQuery(), (org.h2gis.postgis_jts.StatementWrapper) statement, getDataSource());
+                    return new PostgisTable(null, getQuery(),
+                            (org.h2gis.postgis_jts.StatementWrapper) statement, getDataSource());
                 }
         }
         return null;

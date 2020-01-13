@@ -52,5 +52,6 @@ public class DataBaseTypeTest {
     public void simpleTest() {
         assertEquals("H2GIS", DataBaseType.H2GIS.name());
         assertEquals("POSTGIS", DataBaseType.POSTGIS.name());
+        assertEquals("OTHER", DataBaseType.OTHER.name());
     }
 }

@@ -39,8 +39,8 @@ package org.orbisgis.orbisdata.datamanager.jdbc
 import org.junit.jupiter.api.Test
 import org.locationtech.jts.geom.Geometry
 import org.locationtech.jts.geom.Point
-import org.orbisgis.orbisdata.commons.printer.Ascii
-import org.orbisgis.orbisdata.commons.printer.Html
+import org.orbisgis.commons.printer.Ascii
+import org.orbisgis.commons.printer.Html
 import org.orbisgis.orbisdata.datamanager.api.dataset.ISpatialTable
 import org.orbisgis.orbisdata.datamanager.api.dataset.ITable
 import org.orbisgis.orbisdata.datamanager.jdbc.h2gis.H2GIS
@@ -605,13 +605,13 @@ class GroovyH2GISTest {
                 "<tr>\n" +
                 "<th align=\"CENTER\">ID</th>\n" +
                 "<th align=\"CENTER\">THE_GEOM</th>\n" +
-                "<th align=\"CENTER\">VERY_LONG_TITLE_TO_TEST_SIZE_LIMITS</th>\n" +
+                "<th align=\"CENTER\">VERY_LONG_TITLE_T...</th>\n" +
                 "</tr>\n" +
                 "<tr></tr>\n" +
                 "<tr>\n" +
                 "<td align=\"RIGHT\">1</td>\n" +
                 "<td align=\"LEFT\">POINT (10 10)</td>\n" +
-                "<td align=\"LEFT\">just a string a bit too long</td>\n" +
+                "<td align=\"LEFT\">just a string a b...</td>\n" +
                 "</tr>\n" +
                 "<tr>\n" +
                 "<td align=\"RIGHT\">2</td>\n" +

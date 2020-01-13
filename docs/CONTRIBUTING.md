@@ -6,14 +6,16 @@ your changes to start a discussion.
 ## Pull Request
 
 In you pull request indicate the following information : 
- - The modified modules
- - A description of the changes 
- - The dependency update
+ - The modified modules.
+ - A description of the changes.
+ - The dependency update.
 
-Before creating a pull request, ensure that your code is :
- - Documented (source and test).
- - Covered by tests.
- - Respecting our coding style.
+Before creating a pull request, ensure that :
+ - Your code is :
+    - Documented (source and test).
+    - Covered by tests.
+    - Respecting our coding style.
+ - The documentation (markdown file, wiki etc) is updated.
  
 ### Coding style
 
@@ -33,6 +35,11 @@ Each class should start with a header which template can be found
 [here](HEADER.md). The author declaration should be follow the pattern 
 `@author Name Structure`.
 
+The parameters and the methods should be annotated with the `@Nullable` or `@NotNull` annotations. The not null 
+parameters should be checked with the utility method `CheckUtils.checkNotNull(Object)` or 
+`CheckUtils.checkNotNull(Object, String)` (which throws an `InvalidParameterException` in case of null value) on the 
+very beginning of the method.
+
 #### Tests
 
 Tests should written in Groovy and Java (same test for each languages) 
@@ -49,9 +56,13 @@ start with :
 and all the test methods should start with :
 ``` java
 /**
- * Test the {@link methodToTest} method/constructor.
+ * Test the {@link class#methodToTest1} and {@link class#methodToTest2} and ... method(s)/constructor(s).
  */
 ```
+
+The test classes name should have this pattern `nameOfTheTargetClass + Test` and the test methods should have this 
+pattern : `nameOfTheTargetMethod + Test`
+
 The framework used for test is 
 [JUnit 5](https://junit.org/junit5/docs/current/user-guide/). 
 Each class named `SpatialClass` should have its test class named 

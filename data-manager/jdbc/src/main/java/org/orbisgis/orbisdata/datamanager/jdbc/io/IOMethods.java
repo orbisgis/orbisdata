@@ -105,11 +105,6 @@ public class IOMethods {
                 if (enc == null) {
                     enc = ENCODING_OPTION + UTF_ENCODING;
                 }
-            } else if (FileUtil.isExtensionWellFormated(fileToSave, "kml") || FileUtil.isExtensionWellFormated(fileToSave, "kmz")) {
-                unsupportedEncoding(enc);
-                KMLWriterDriver driver = new KMLWriterDriver(connection, isH2 ? tableName.toUpperCase() : tableName, fileToSave);
-                driver.write(new EmptyProgressVisitor());
-                return true;
             }
             if (driverFunction != null) {
                 driverFunction.exportTable(connection, isH2 ? tableName.toUpperCase() : tableName, fileToSave,

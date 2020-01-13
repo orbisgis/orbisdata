@@ -14,7 +14,6 @@
     <version>1.0.1-SNAPSHOT</version>
     <packaging>pom</packaging>
     <modules>
-        <module>commons</module>
         <module>data-manager</module>
         <module>process-manager</module>
     </modules>

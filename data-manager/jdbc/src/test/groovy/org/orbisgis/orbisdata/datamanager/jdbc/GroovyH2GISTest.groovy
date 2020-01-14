@@ -660,6 +660,27 @@ class GroovyH2GISTest {
     }
 
     @Test
+    void testReprojectQuery() {
+        def h2GIS = H2GIS.open('./target/orbisgis')
+        new File("target/reprojected_table.shp").delete()
+        h2GIS.execute("""
+                DROP TABLE IF EXISTS orbisgis;
+                CREATE TABLE orbisgis (id int, the_geom geometry(point, 4326));
+                INSERT INTO orbisgis VALUES (1, 'SRID=4326;POINT(10 10)'::GEOMETRY), (2, 'SRID=4326;POINT(1 1)'::GEOMETRY);
+        """)
+        ISpatialTable sp = h2GIS.select("ST_BUFFER(THE_GEOM, 10) AS THE_GEOM").from("ORBISGIS").getSpatialTable()
+        assertNotNull(sp)
+        ISpatialTable spr =  sp.reproject(2154)
+        assertNotNull(spr)
+        assertTrue(spr.save("target/reprojected_table.shp"))
+        ISpatialTable reprojectedTable = h2GIS.load("target/reprojected_table.shp", true).getSpatialTable()
+        assertNotNull(reprojectedTable)
+        assertEquals(2, reprojectedTable.getRowCount())
+        assertEquals(2154 , reprojectedTable.srid)
+        assertTrue(reprojectedTable.getFirstRow()[1].area>0)
+    }
+
+    @Test
     void testSaveQueryInFile() {
         def h2GIS = H2GIS.open('./target/orbisgis')
         new File("target/query_table.shp").delete()

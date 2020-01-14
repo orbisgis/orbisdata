@@ -818,7 +818,6 @@ class JdbcTableTest {
         assertEquals("\"ORBISGIS\"", getTable().getSummary().getLocation().toString());
         assertEquals(5, getTable().getSummary().getColumnCount());
         assertEquals(2, getTable().getSummary().getRowCount());
-
         assertEquals(IJdbcTable.QUERY_LOCATION + "; row count : 2; column count : 5", getBuiltTable().getSummary().toString());
         assertNull(getBuiltTable().getSummary().getLocation());
         assertEquals(5, getBuiltTable().getSummary().getColumnCount());

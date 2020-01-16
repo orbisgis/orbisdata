@@ -43,7 +43,6 @@ import org.orbisgis.orbisdata.datamanager.api.dataset.ITable;
 import org.orbisgis.orbisdata.datamanager.jdbc.JdbcDataSource;
 import org.orbisgis.orbisdata.datamanager.jdbc.JdbcSpatialTable;
 import org.orbisgis.orbisdata.datamanager.jdbc.TableLocation;
-import org.orbisgis.orbisdata.datamanager.jdbc.h2gis.H2gisSpatialTable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -115,9 +114,9 @@ public class PostgisSpatialTable extends JdbcSpatialTable {
             for (int i = 1; i <= columnCount; i++) {
                 String columnName = meta.getColumnName(i);
                 if (meta.getColumnTypeName(i).equalsIgnoreCase("geometry")) {
-                    fieldNames[i-1] = "ST_TRANSFORM(" + columnName + ", " + srid + ") AS " + columnName;
+                    fieldNames[i - 1] = "ST_TRANSFORM(" + columnName + ", " + srid + ") AS " + columnName;
                 } else {
-                    fieldNames[i-1] = columnName;
+                    fieldNames[i - 1] = columnName;
                 }
             }
             String query = "SELECT " + String.join(",", fieldNames) + " FROM " + getTableLocation().toString(true);

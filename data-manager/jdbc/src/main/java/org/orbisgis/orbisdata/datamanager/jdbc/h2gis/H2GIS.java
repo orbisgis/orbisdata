@@ -57,7 +57,6 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -120,13 +119,24 @@ public class H2GIS extends JdbcDataSource {
             LOGGER.error("Unable to create the DataSource.\n" + e.getLocalizedMessage());
             return null;
         }
-        Statement st;
-        try {
-            st = connection.createStatement();
-        } catch (SQLException e) {
-            LOGGER.error("Unable to create a Statement.\n" + e.getLocalizedMessage());
+        return checkAndOpen(connection);
+    }
+
+    /**
+     * Create an instance of {@link H2GIS} from a {@link Connection}
+     *
+     * @param connection Properties for the opening of the DataBase.
+     * @return {@link H2GIS} object if the DataBase has been successfully open, null otherwise.
+     */
+    public static H2GIS open(Connection connection) {
+        if (connection != null) {
+            return checkAndOpen(connection);
+        } else {
             return null;
         }
+    }
+
+    private static H2GIS checkAndOpen(Connection connection) {
         boolean isH2;
         try {
             isH2 = JDBCUtilities.isH2DataBase(connection.getMetaData());

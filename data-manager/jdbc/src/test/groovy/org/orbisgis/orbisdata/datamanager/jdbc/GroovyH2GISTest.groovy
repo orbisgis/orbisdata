@@ -670,14 +670,14 @@ class GroovyH2GISTest {
         """)
         ISpatialTable sp = h2GIS.select("ST_BUFFER(THE_GEOM, 10) AS THE_GEOM").from("ORBISGIS").getSpatialTable()
         assertNotNull(sp)
-        ISpatialTable spr =  sp.reproject(2154)
+        ISpatialTable spr = sp.reproject(2154)
         assertNotNull(spr)
         assertTrue(spr.save("target/reprojected_table.shp"))
         ISpatialTable reprojectedTable = h2GIS.load("target/reprojected_table.shp", true).getSpatialTable()
         assertNotNull(reprojectedTable)
         assertEquals(2, reprojectedTable.getRowCount())
-        assertEquals(2154 , reprojectedTable.srid)
-        assertTrue(reprojectedTable.getFirstRow()[1].area>0)
+        assertEquals(2154, reprojectedTable.srid)
+        assertTrue(reprojectedTable.getFirstRow()[1].area > 0)
     }
 
     @Test

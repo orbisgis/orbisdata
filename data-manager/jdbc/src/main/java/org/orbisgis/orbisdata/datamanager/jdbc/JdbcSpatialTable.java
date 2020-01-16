@@ -142,14 +142,13 @@ public abstract class JdbcSpatialTable extends JdbcTable implements IJdbcSpatial
 
     @Override
     public List<String> getGeometricColumns() {
-        if(getTableLocation() == null){
+        if (getTableLocation() == null) {
             try {
                 return SFSUtilities.getGeometryFields(getResultSetLimit(0));
             } catch (SQLException e) {
                 LOGGER.error("Unable to get the geometric columns on ResultSet.", e);
             }
-        }
-        else {
+        } else {
             try {
                 return SFSUtilities.getGeometryFields(getJdbcDataSource().getConnection(), getTableLocation());
             } catch (SQLException e) {
@@ -161,7 +160,7 @@ public abstract class JdbcSpatialTable extends JdbcTable implements IJdbcSpatial
 
     @Override
     public Envelope getExtend() {
-        if(getTableLocation() == null){
+        if (getTableLocation() == null) {
             try {
                 Connection conn = getJdbcDataSource().getConnection();
                 List<String> names = SFSUtilities.getGeometryFields(getResultSetLimit(0));
@@ -173,15 +172,14 @@ public abstract class JdbcSpatialTable extends JdbcTable implements IJdbcSpatial
                 ResultSet rs = conn.createStatement().executeQuery("SELECT ST_Extent(" +
                         TableLocation.quoteIdentifier(names.get(0)) + ") ext FROM SELECT" + getBaseQuery());
                 if (rs.next()) {
-                    return ((Geometry)rs.getObject(1)).getEnvelopeInternal();
+                    return ((Geometry) rs.getObject(1)).getEnvelopeInternal();
                 } else {
                     throw new SQLException("Unable to get the table extent it may be empty");
                 }
             } catch (SQLException e) {
                 LOGGER.error("Unable to get the table estimated extend on ResultSet.", e);
             }
-        }
-        else {
+        } else {
             try {
                 Connection conn = getJdbcDataSource().getConnection();
                 List<String> names = SFSUtilities.getGeometryFields(conn, getTableLocation());
@@ -199,7 +197,7 @@ public abstract class JdbcSpatialTable extends JdbcTable implements IJdbcSpatial
 
     @Override
     public Geometry getEstimatedExtend() {
-        if(getTableLocation() == null){
+        if (getTableLocation() == null) {
             throw new UnsupportedOperationException();
         }
         try {
@@ -218,7 +216,7 @@ public abstract class JdbcSpatialTable extends JdbcTable implements IJdbcSpatial
 
     @Override
     public int getSrid() {
-        if(getTableLocation() == null){
+        if (getTableLocation() == null) {
             throw new UnsupportedOperationException();
         }
         try {
@@ -231,12 +229,12 @@ public abstract class JdbcSpatialTable extends JdbcTable implements IJdbcSpatial
 
     @Override
     public Map<String, String> getGeometryTypes() {
-        if(getTableLocation() == null){
+        if (getTableLocation() == null) {
             try {
                 boolean isH2 = getDbType() == DataBaseType.H2GIS;
                 Map<String, String> map = new HashMap<>();
                 ResultSetMetaData metaData = getResultSetLimit(0).getMetaData();
-                for(int i=0; i<metaData.getColumnCount(); i++){
+                for (int i = 0; i < metaData.getColumnCount(); i++) {
                     String type;
                     if (isH2) {
                         type = SFSUtilities.getGeometryTypeNameFromCode(metaData.getColumnType(i));
@@ -246,7 +244,7 @@ public abstract class JdbcSpatialTable extends JdbcTable implements IJdbcSpatial
                     map.put(metaData.getColumnName(i), type);
                 }
                 return map;
-            } catch(SQLException e){
+            } catch (SQLException e) {
                 LOGGER.error("Unable to get the metadata of the query.", e);
             }
         }

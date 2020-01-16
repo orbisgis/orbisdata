@@ -48,7 +48,6 @@ import java.io.File;
 import java.sql.SQLException;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Test class dedicated to the {@link H2gisSpatialTable} class.
@@ -102,7 +101,7 @@ public class H2gisSpatialTableTest {
         assertEquals(2, reprojectedTable.getRowCount());
         assertTrue(reprojectedTable instanceof IJdbcSpatialTable);
 
-        IJdbcSpatialTable spatialReprojectedTable = (IJdbcSpatialTable)reprojectedTable;
+        IJdbcSpatialTable spatialReprojectedTable = (IJdbcSpatialTable) reprojectedTable;
         assertEquals(2154, spatialReprojectedTable.getSrid());
 
         IJdbcSpatialTable spLoaded = dataSource.getSpatialTable("REPROJECTED_TABLE");
@@ -131,7 +130,7 @@ public class H2gisSpatialTableTest {
         assertEquals(2, queryTable.getRowCount());
         assertTrue(queryTable instanceof IJdbcSpatialTable);
 
-        IJdbcSpatialTable spatialReprojectedTable = (IJdbcSpatialTable)queryTable;
+        IJdbcSpatialTable spatialReprojectedTable = (IJdbcSpatialTable) queryTable;
         assertEquals(4326, spatialReprojectedTable.getSrid());
 
         IJdbcSpatialTable spLoaded = dataSource.getSpatialTable("QUERY_TABLE");

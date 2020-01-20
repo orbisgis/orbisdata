@@ -157,7 +157,7 @@ class JdbcTableTest {
             statementLinked.execute("CREATE TEMPORARY TABLE " + TEMP_NAME + " (" + COL_THE_GEOM + " GEOMETRY, " + COL_THE_GEOM2 + " GEOMETRY(POINT Z)," +
                     COL_ID + " INTEGER, " + COL_VALUE + " FLOAT, " + COL_MEANING + " VARCHAR)");
 
-            statement = connection.createStatement();
+            statement = connection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);
             statement.execute("DROP TABLE IF EXISTS " + TABLE_NAME + "," + LINKED_NAME + "," + TEMP_NAME + "," + EMPTY_NAME);
             statement.execute("CREATE TABLE " + TABLE_NAME + " (" + COL_THE_GEOM + " GEOMETRY, " + COL_THE_GEOM2 + " GEOMETRY(POINT Z)," +
                     COL_ID + " INTEGER, " + COL_VALUE + " FLOAT, " + COL_MEANING + " VARCHAR)");
@@ -221,7 +221,9 @@ class JdbcTableTest {
      * @return A {@link JdbcTable} for test purpose.
      */
     private JdbcTable getBuiltTable() {
-        return getTable().columns(COL_THE_GEOM, COL_THE_GEOM2, COL_ID, COL_VALUE, COL_MEANING);
+        return (JdbcTable) getTable().columns(COL_THE_GEOM, COL_THE_GEOM2, COL_ID, COL_VALUE, COL_MEANING)
+                .limit(2)
+                .getSpatialTable();
     }
 
     /**
@@ -296,7 +298,8 @@ class JdbcTableTest {
         assertEquals(LINKED_QUERY, getLinkedTable().getBaseQuery());
         assertEquals(TEMP_QUERY, getTempTable().getBaseQuery());
         assertEquals(EMPTY_QUERY, getEmptyTable().getBaseQuery());
-        assertEquals("SELECT THE_GEOM, the_geom2, ID, VALUE, MEANING FROM ORBISGIS", getBuiltTable().getBaseQuery().trim());
+        assertEquals("SELECT THE_GEOM, the_geom2, ID, VALUE, MEANING FROM ORBISGIS LIMIT 2",
+                getBuiltTable().getBaseQuery().trim());
     }
 
     /**
@@ -344,7 +347,7 @@ class JdbcTableTest {
         assertEquals(InvokerHelper.getMetaClass(DummyJdbcTable.class), getLinkedTable().getMetaClass());
         assertEquals(InvokerHelper.getMetaClass(DummyJdbcTable.class), getTempTable().getMetaClass());
         assertEquals(InvokerHelper.getMetaClass(DummyJdbcTable.class), getEmptyTable().getMetaClass());
-        assertEquals(InvokerHelper.getMetaClass(H2gisTable.class), getBuiltTable().getMetaClass());
+        assertEquals(InvokerHelper.getMetaClass(H2gisSpatialTable.class), getBuiltTable().getMetaClass());
     }
 
     /**
@@ -369,7 +372,7 @@ class JdbcTableTest {
         assertFalse(getLinkedTable().isSpatial());
         assertFalse(getTempTable().isSpatial());
         assertFalse(getEmptyTable().isSpatial());
-        assertFalse(getBuiltTable().isSpatial());
+        assertTrue(getBuiltTable().isSpatial());
     }
 
     /**
@@ -720,11 +723,13 @@ class JdbcTableTest {
      */
     @Test
     void testGetTable() {
-        List<JdbcTable> tables = Arrays.asList(getTable(), getEmptyTable(), getTempTable(), getLinkedTable(), getBuiltTable());
+        List<JdbcTable> tables = Arrays.asList(getTable(), getEmptyTable(), getTempTable(), getLinkedTable());
         tables.forEach(table -> {
             assertNotNull(table.getTable());
             assertNull(table.getSpatialTable());
         });
+        assertNotNull(getBuiltTable().getTable());
+        assertNotNull(getBuiltTable().getSpatialTable());
     }
 
     /**

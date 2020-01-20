@@ -188,7 +188,7 @@ public abstract class JdbcTable extends DefaultResultSet implements IJdbcTable, 
     @Override
     public ResultSetMetaData getMetaData() {
         try {
-            ResultSet rs = getResultSetLimit(0);
+            ResultSet rs = getResultSet();
             if (rs == null) {
                 LOGGER.error("The ResultSet is null.");
             } else {
@@ -262,7 +262,7 @@ public abstract class JdbcTable extends DefaultResultSet implements IJdbcTable, 
     public Collection<String> getColumns() {
         try {
             return JDBCUtilities
-                    .getFieldNames(getResultSetLimit(0).getMetaData())
+                    .getFieldNames(getResultSet().getMetaData())
                     .stream()
                     .map(this::formatColumnName)
                     .collect(Collectors.toCollection(ArrayList::new));
@@ -339,11 +339,12 @@ public abstract class JdbcTable extends DefaultResultSet implements IJdbcTable, 
         } else {
             Object obj;
             try {
-                ResultSet rs = getResultSetLimit(1);
+                ResultSet rs = getResultSet();
                 if (rs == null) {
                     LOGGER.error("Unable to get the resultset.");
                     return null;
                 }
+                rs.beforeFirst();
                 if (!rs.next()) {
                     LOGGER.error("No value in the resultset.");
                     return null;
@@ -539,15 +540,14 @@ public abstract class JdbcTable extends DefaultResultSet implements IJdbcTable, 
     @Override
     public List<Object> getFirstRow() {
         List<Object> list = new ArrayList<>();
-        ResultSet rs = getResultSetLimit(1);
+        ResultSet rs = getResultSet();
         try {
-            if (rs.next()) {
-                for (int i = 1; i <= getColumnCount(); i++) {
-                    list.add(rs.getObject(i));
-                }
+            rs.first();
+            for (int i = 1; i <= getColumnCount(); i++) {
+                list.add(rs.getObject(i));
             }
         } catch (SQLException e) {
-            LOGGER.error("Unable to query the table.\n" + e.getLocalizedMessage());
+            LOGGER.error("Unable to query the first row of the table.\n" + e.getLocalizedMessage());
         }
         return list;
     }

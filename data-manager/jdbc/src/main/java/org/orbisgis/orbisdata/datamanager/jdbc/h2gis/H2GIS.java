@@ -232,7 +232,7 @@ public class H2GIS extends JdbcDataSource {
 
     @Override
     public IJdbcSpatialTable getSpatialTable(String tableName) {
-        ITable table = getTable(tableName);
+        IJdbcTable table = getTable(tableName);
         if (table instanceof ISpatialTable) {
             return (JdbcSpatialTable) table;
         } else {

@@ -65,6 +65,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.*;
@@ -1041,7 +1042,7 @@ class JdbcDataSourceTest {
                 return new H2gisTable(
                         new TableLocation(null, s),
                         "SELECT * FROM " + s,
-                        new StatementWrapper(this.getConnection().createStatement(), connectionWrapper),
+                        new StatementWrapper(this.getConnection().createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE), connectionWrapper),
                         this);
             } catch (SQLException e) {
                 e.printStackTrace();
@@ -1064,7 +1065,7 @@ class JdbcDataSourceTest {
                 return new H2gisSpatialTable(
                         new TableLocation(null, s),
                         "SELECT * FROM " + s,
-                        new StatementWrapper(this.getConnection().createStatement(), connectionWrapper),
+                        new StatementWrapper(this.getConnection().createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE), connectionWrapper),
                         this);
             } catch (SQLException e) {
                 e.printStackTrace();

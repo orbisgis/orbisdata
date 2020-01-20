@@ -144,7 +144,7 @@ public abstract class JdbcSpatialTable extends JdbcTable implements IJdbcSpatial
     public List<String> getGeometricColumns() {
         if (getTableLocation() == null) {
             try {
-                return SFSUtilities.getGeometryFields(getResultSetLimit(0));
+                return SFSUtilities.getGeometryFields(getResultSet());
             } catch (SQLException e) {
                 LOGGER.error("Unable to get the geometric columns on ResultSet.", e);
             }
@@ -163,7 +163,7 @@ public abstract class JdbcSpatialTable extends JdbcTable implements IJdbcSpatial
         if (getTableLocation() == null) {
             try {
                 Connection conn = getJdbcDataSource().getConnection();
-                List<String> names = SFSUtilities.getGeometryFields(getResultSetLimit(0));
+                List<String> names = SFSUtilities.getGeometryFields(getResultSet());
                 if (names.isEmpty()) {
                     LOGGER.error("There is no geometric field.");
                     return null;
@@ -233,7 +233,7 @@ public abstract class JdbcSpatialTable extends JdbcTable implements IJdbcSpatial
             try {
                 boolean isH2 = getDbType() == DataBaseType.H2GIS;
                 Map<String, String> map = new HashMap<>();
-                ResultSetMetaData metaData = getResultSetLimit(0).getMetaData();
+                ResultSetMetaData metaData = getResultSet().getMetaData();
                 for (int i = 0; i < metaData.getColumnCount(); i++) {
                     String type;
                     if (isH2) {

@@ -42,12 +42,11 @@ import org.orbisgis.orbisdata.datamanager.api.dsl.IWhereBuilderOrOptionBuilder;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
-import java.util.Iterator;
 import java.util.List;
 
 /**
  * Extension of the {@link ITable} specially dedicated to the JDBC databases thanks to the extension of the
- * {@link ResultSet} interface. It also extends the {@link IWhereBuilderOrOptionBuilder} for the SQL requesting
+ * {@link ResultSet} interface. It also extends the {@link IWhereBuilderOrOptionBuilder} for the SQL requesting.
  */
 public interface IJdbcTable extends ITable<Object>, ResultSet, IWhereBuilderOrOptionBuilder {
 
@@ -95,35 +94,34 @@ public interface IJdbcTable extends ITable<Object>, ResultSet, IWhereBuilderOrOp
     @Override
     default String getLocation() {
         ITableLocation location = getTableLocation();
-        if (location == null) {
+        if (location == null || location.toString(getDbType()).isEmpty()) {
             return QUERY_LOCATION;
         } else {
-            return getTableLocation().toString(getDbType());
+            return location.toString(getDbType());
         }
     }
 
     @Override
     default String getName() {
         ITableLocation location = getTableLocation();
-        if (location == null) {
+        if (location == null || location.getTable().isEmpty()) {
             return QUERY_LOCATION;
         } else {
-            return getTableLocation().getTable();
+            return location.getTable();
         }
     }
 
     @Override
-    default Iterator<Object> iterator() {
+    default ResultSetIterator iterator() {
         try {
             return new ResultSetIterator(this);
         } catch (SQLException e) {
-            //LOGGER.error(e.getLocalizedMessage());
             return new ResultSetIterator();
         }
     }
 
     @Override
-    default void eachRow(Closure closure) {
+    default void eachRow(Closure<Object> closure) {
         this.forEach(closure::call);
     }
 

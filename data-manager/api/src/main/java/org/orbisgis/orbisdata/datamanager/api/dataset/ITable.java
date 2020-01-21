@@ -55,7 +55,7 @@ public interface ITable<T> extends IMatrix<T> {
      *
      * @param closure {@link Closure} to apply to each row.
      */
-    default void eachRow(Closure closure) {
+    default void eachRow(Closure<Object> closure) {
         this.forEach(closure::call);
     }
 

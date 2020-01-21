@@ -37,6 +37,7 @@
 package org.orbisgis.orbisdata.datamanager.api.dataset;
 
 import groovy.lang.Closure;
+import org.h2gis.utilities.TableLocation;
 import org.junit.jupiter.api.Test;
 import org.orbisgis.orbisdata.datamanager.api.dsl.IConditionOrOptionBuilder;
 import org.orbisgis.orbisdata.datamanager.api.dsl.IOptionBuilder;
@@ -67,8 +68,14 @@ public class IJdbcTableTest {
      */
     @Test
     public void testGetLocation() {
-        assertEquals("catalog.schema.\"table\"", new DummyJdbcTable(DataBaseType.POSTGIS, LOCATION, true).getLocation());
-        assertEquals(LOCATION.toUpperCase(), new DummyJdbcTable(DataBaseType.H2GIS, LOCATION, true).getLocation());
+        assertEquals("catalog.schema.\"table\"",
+                new DummyJdbcTable(DataBaseType.POSTGIS, LOCATION, true).getLocation());
+        assertEquals(LOCATION.toUpperCase(),
+                new DummyJdbcTable(DataBaseType.H2GIS, LOCATION, true).getLocation());
+        assertEquals(IJdbcTable.QUERY_LOCATION,
+                new DummyJdbcTable(DataBaseType.H2GIS, null, true).getLocation());
+        assertEquals(IJdbcTable.QUERY_LOCATION,
+                new DummyJdbcTable(DataBaseType.H2GIS, "", true).getLocation());
     }
 
     /**
@@ -80,6 +87,10 @@ public class IJdbcTableTest {
                 new DummyJdbcTable(DataBaseType.POSTGIS, LOCATION, true).getName());
         assertEquals(LOCATION.toLowerCase().substring(LOCATION.lastIndexOf(".") + 1),
                 new DummyJdbcTable(DataBaseType.H2GIS, LOCATION, true).getName());
+        assertEquals(IJdbcTable.QUERY_LOCATION,
+                new DummyJdbcTable(DataBaseType.H2GIS, null, true).getName());
+        assertEquals(IJdbcTable.QUERY_LOCATION,
+                new DummyJdbcTable(DataBaseType.H2GIS, "", true).getName());
     }
 
     /**
@@ -107,7 +118,7 @@ public class IJdbcTableTest {
     public void testEachRow() {
         IJdbcTable table = new DummyJdbcTable(DataBaseType.H2GIS, LOCATION, true);
         final String[] result = {""};
-        table.eachRow(new Closure(this) {
+        table.eachRow(new Closure<Object>(this) {
             @Override
             public Object call(Object argument) {
                 result[0] += ((DummyJdbcTable) argument).getObject(0);
@@ -133,6 +144,62 @@ public class IJdbcTableTest {
         table.setException(true);
         assertFalse(it.hasNext());
         assertNotNull(it.next());
+    }
+
+    /**
+     * Simple implementation of the {@link ITableLocation} interface.
+     */
+    private static class DummyTableLocation implements ITableLocation {
+
+        /**
+         * Fake data location.
+         */
+        private String location;
+
+
+        /**
+         * Main constructor.
+         *
+         * @param location     Fake data location.
+         */
+        public DummyTableLocation(String location) {
+            this.location = location;
+        }
+
+        @Override
+        public String getTable() {
+            return location.isEmpty()?"":location.split("\\.")[2].toLowerCase();
+        }
+
+        @Override
+        public String getSchema() {
+            return location.isEmpty()?"":location.split("\\.")[1].toLowerCase();
+        }
+
+        @Override
+        public String getCatalog() {
+            return location.isEmpty()?"":location.split("\\.")[0].toLowerCase();
+        }
+
+        @Override
+        public String getDataSource() {
+            return null;
+        }
+
+        @Override
+        public String toString(DataBaseType type) {
+            if(location == null){
+                return null;
+            }
+            switch (type) {
+                case H2GIS:
+                    return location.toUpperCase();
+                case POSTGIS:
+                    return getCatalog() + "." + getSchema() + ".\"" + getTable() + "\"";
+                default:
+                    return location;
+            }
+        }
     }
 
     /**
@@ -173,39 +240,9 @@ public class IJdbcTableTest {
          * @param isIterable   True if iterable, false otherwise.
          */
         private DummyJdbcTable(DataBaseType databaseType, String location, boolean isIterable) {
-            this.location = new ITableLocation() {
-                @Override
-                public String getTable() {
-                    return location.split("\\.")[2].toLowerCase();
-                }
-
-                @Override
-                public String getSchema() {
-                    return location.split("\\.")[1].toLowerCase();
-                }
-
-                @Override
-                public String getCatalog() {
-                    return location.split("\\.")[0].toLowerCase();
-                }
-
-                @Override
-                public String getDataSource() {
-                    return null;
-                }
-
-                @Override
-                public String toString(DataBaseType type) {
-                    switch (type) {
-                        case H2GIS:
-                            return location.toUpperCase();
-                        case POSTGIS:
-                            return getCatalog() + "." + getSchema() + ".\"" + getTable() + "\"";
-                        default:
-                            return location;
-                    }
-                }
-            };
+            if(location != null) {
+                this.location = new DummyTableLocation(location);
+            }
             this.databaseType = databaseType;
             this.isIterable = isIterable;
         }
@@ -217,28 +254,6 @@ public class IJdbcTableTest {
          */
         private void setException(boolean sqlException) {
             this.sqlException = sqlException;
-        }
-
-        private void getPrivateMethod() {/*Does nothing*/}
-
-        public Object[] getArrayMethod(Object[] array) {
-            return array;
-        }
-
-        public Object[] getParametersMethod(String param1, Double param2) {
-            return new Object[]{param1, param2};
-        }
-
-        public Object[] getParametersMethod(Object param1, Object param2) {
-            return new Object[]{param1, param2};
-        }
-
-        public String getParameterMethod(String param1) {
-            return param1;
-        }
-
-        public void dupMethod() throws IllegalAccessException {
-            throw new IllegalAccessException();
         }
 
         @Override

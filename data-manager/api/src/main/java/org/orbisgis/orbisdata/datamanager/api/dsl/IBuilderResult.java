@@ -55,7 +55,7 @@ public interface IBuilderResult {
      *
      * @param closure {@link Closure} to apply to each row.
      */
-    void eachRow(Closure closure);
+    void eachRow(Closure<Object> closure);
 
     /**
      * Convert the result of the SQL request into a {@link ITable} or {@link ISpatialTable}.

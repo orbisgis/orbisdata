@@ -39,7 +39,8 @@ package org.orbisgis.orbisdata.datamanager.api.dataset;
 /**
  * Metadata of a {@link IRaster}.
  *
- * @author Sylvain PALOMINOS (UBS LAB-STICC 2019)
+ * @author Erwan Bocher (CNRS)
+ * @author Sylvain PALOMINOS (Lab-STICC UBS 2019)
  */
 public interface IRasterMetadata {
 }

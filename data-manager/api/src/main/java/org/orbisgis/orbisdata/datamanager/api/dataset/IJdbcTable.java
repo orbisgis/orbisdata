@@ -13,17 +13,17 @@
  * Institut Universitaire de Technologie de Vannes
  * 8, Rue Montaigne - BP 561 56017 Vannes Cedex
  *
- * DataManager API  is distributed under LGPL 3 license.
+ * DataManager API is distributed under LGPL 3 license.
  *
- * Copyright (C) 2019 CNRS (Lab-STICC UMR CNRS 6285)
+ * Copyright (C) 2019-2020 CNRS (Lab-STICC UMR CNRS 6285)
  *
  *
- * DataManager API  is free software: you can redistribute it and/or modify it under the
+ * DataManager API is free software: you can redistribute it and/or modify it under the
  * terms of the GNU General Public License as published by the Free Software
  * Foundation, either version 3 of the License, or (at your option) any later
  * version.
  *
- * DataManager API  is distributed in the hope that it will be useful, but WITHOUT ANY
+ * DataManager API is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
  * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
  *
@@ -42,12 +42,14 @@ import org.orbisgis.orbisdata.datamanager.api.dsl.IWhereBuilderOrOptionBuilder;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
-import java.util.Iterator;
 import java.util.List;
 
 /**
  * Extension of the {@link ITable} specially dedicated to the JDBC databases thanks to the extension of the
- * {@link ResultSet} interface. It also extends the {@link IWhereBuilderOrOptionBuilder} for the SQL requesting
+ * {@link ResultSet} interface. It also extends the {@link IWhereBuilderOrOptionBuilder} for the SQL requesting.
+ *
+ * @author Erwan Bocher (CNRS)
+ * @author Sylvain Palominos (Lab-STICC UBS 2019)
  */
 public interface IJdbcTable extends ITable<Object>, ResultSet, IWhereBuilderOrOptionBuilder {
 
@@ -95,35 +97,34 @@ public interface IJdbcTable extends ITable<Object>, ResultSet, IWhereBuilderOrOp
     @Override
     default String getLocation() {
         ITableLocation location = getTableLocation();
-        if (location == null) {
+        if (location == null || location.toString(getDbType()).isEmpty()) {
             return QUERY_LOCATION;
         } else {
-            return getTableLocation().toString(getDbType());
+            return location.toString(getDbType());
         }
     }
 
     @Override
     default String getName() {
         ITableLocation location = getTableLocation();
-        if (location == null) {
+        if (location == null || location.getTable().isEmpty()) {
             return QUERY_LOCATION;
         } else {
-            return getTableLocation().getTable();
+            return location.getTable();
         }
     }
 
     @Override
-    default Iterator<Object> iterator() {
+    default ResultSetIterator iterator() {
         try {
             return new ResultSetIterator(this);
         } catch (SQLException e) {
-            //LOGGER.error(e.getLocalizedMessage());
             return new ResultSetIterator();
         }
     }
 
     @Override
-    default void eachRow(Closure closure) {
+    default void eachRow(Closure<Object> closure) {
         this.forEach(closure::call);
     }
 

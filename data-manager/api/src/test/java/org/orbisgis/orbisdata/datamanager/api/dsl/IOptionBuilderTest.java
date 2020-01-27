@@ -13,17 +13,17 @@
  * Institut Universitaire de Technologie de Vannes
  * 8, Rue Montaigne - BP 561 56017 Vannes Cedex
  *
- * DataManager API  is distributed under LGPL 3 license.
+ * DataManager API is distributed under LGPL 3 license.
  *
- * Copyright (C) 2019 CNRS (Lab-STICC UMR CNRS 6285)
+ * Copyright (C) 2019-2020 CNRS (Lab-STICC UMR CNRS 6285)
  *
  *
- * DataManager API  is free software: you can redistribute it and/or modify it under the
+ * DataManager API is free software: you can redistribute it and/or modify it under the
  * terms of the GNU General Public License as published by the Free Software
  * Foundation, either version 3 of the License, or (at your option) any later
  * version.
  *
- * DataManager API  is distributed in the hope that it will be useful, but WITHOUT ANY
+ * DataManager API is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
  * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
  *
@@ -44,7 +44,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  * Test class dedicated to the {@link IOptionBuilder} enum.
  *
  * @author Erwan Bocher (CNRS)
- * @author Sylvain PALOMINOS (UBS 2019)
+ * @author Sylvain PALOMINOS (Lab-STICC UBS 2019)
  */
 public class IOptionBuilderTest {
 

@@ -66,6 +66,7 @@ public class JdbcColumnTest {
     private static final String TABLE_NAME = "orbisgis";
     private static final String TEMP_NAME = "tempTable";
     private static final String LINKED_NAME = "linkedTable";
+    private static final String EMPTY_TABLE_NAME = "emptyTable";
 
     private static final String COL_THE_GEOM = "the_geom";
     private static final String COL_THE_GEOM2 = "the_geom2";
@@ -83,12 +84,14 @@ public class JdbcColumnTest {
     public static void init() {
         dataSource = H2GIS.open(BASE_DATABASE);
         try {
-            dataSource.execute("DROP TABLE IF EXISTS " + TABLE_NAME + "," + LINKED_NAME + "," + TEMP_NAME);
+            dataSource.execute("DROP TABLE IF EXISTS " + TABLE_NAME + "," + LINKED_NAME + "," + TEMP_NAME + ","  + EMPTY_TABLE_NAME);
             dataSource.execute("CREATE TABLE " + TABLE_NAME + " (" + COL_THE_GEOM + " GEOMETRY, " + COL_THE_GEOM2 + " GEOMETRY(POINT Z)," +
                     COL_ID + " INTEGER, " + COL_VALUE + " FLOAT, " + COL_MEANING + " VARCHAR)");
             dataSource.execute("INSERT INTO " + TABLE_NAME + " VALUES ('POINT(0 0)', 'POINT(1 1 0)', 1, 2.3, 'Simple points')");
             dataSource.execute("INSERT INTO " + TABLE_NAME + " VALUES ('POINT(0 1 2)', 'POINT(10 11 12)', 2, 0.568, '3D point')");
             dataSource.execute("INSERT INTO " + TABLE_NAME + " VALUES (null, 'POINT(110 111 112)', 2, null, '3D point')");
+            dataSource.execute("CREATE TABLE " + EMPTY_TABLE_NAME + " (" + COL_THE_GEOM + " GEOMETRY, " + COL_THE_GEOM2 + " GEOMETRY(POINT Z)," +
+                    COL_ID + " INTEGER, " + COL_VALUE + " FLOAT, " + COL_MEANING + " VARCHAR)");
         } catch (SQLException e) {
             fail(e);
         }
@@ -327,7 +330,7 @@ public class JdbcColumnTest {
     /**
      * Simple extension of the {@link JdbcColumn} class.
      */
-    private class DummyJdbcColumn extends JdbcColumn {
+    private static class DummyJdbcColumn extends JdbcColumn {
         private DummyJdbcColumn(String name, String tableName, JdbcDataSource dataSource) {
             super(name, tableName, dataSource);
         }

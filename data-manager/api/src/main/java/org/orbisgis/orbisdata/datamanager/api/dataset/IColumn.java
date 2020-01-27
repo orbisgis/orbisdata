@@ -13,17 +13,17 @@
  * Institut Universitaire de Technologie de Vannes
  * 8, Rue Montaigne - BP 561 56017 Vannes Cedex
  *
- * DataManager API  is distributed under LGPL 3 license.
+ * DataManager API is distributed under LGPL 3 license.
  *
- * Copyright (C) 2019 CNRS (Lab-STICC UMR CNRS 6285)
+ * Copyright (C) 2019-2020 CNRS (Lab-STICC UMR CNRS 6285)
  *
  *
- * DataManager API  is free software: you can redistribute it and/or modify it under the
+ * DataManager API is free software: you can redistribute it and/or modify it under the
  * terms of the GNU General Public License as published by the Free Software
  * Foundation, either version 3 of the License, or (at your option) any later
  * version.
  *
- * DataManager API  is distributed in the hope that it will be useful, but WITHOUT ANY
+ * DataManager API is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
  * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
  *
@@ -36,32 +36,42 @@
  */
 package org.orbisgis.orbisdata.datamanager.api.dataset;
 
+import org.orbisgis.commons.annotations.NotNull;
+import org.orbisgis.commons.annotations.Nullable;
+
 /**
  * Column of a {@link IDataSet}.
  *
  * @author Erwan Bocher (CNRS)
- * @author Sylvain PALOMINOS (UBS 2019)
+ * @author Sylvain PALOMINOS (Lab-STICC UBS 2019)
  */
 public interface IColumn {
 
     /**
-     * Return the name of the column.
+     * Returns the name of the column. If there isn't a name, returns an empty string. It the column name can't be
+     * get, return null.
      *
      * @return The name of the column.
      */
+    @Nullable
     String getName();
 
     /**
-     * Return the sql type of the column.
+     * Returns the sql type of the column. If there isn't a type, returns null.
      *
      * @return The sql type of the column.
      */
+    @Nullable
     String getType();
 
     /**
-     * Return the number of the values inside the column.
+     * Returns the number of values inside the column. If the size of the column can't be get, returns -1.
      *
-     * @return The number of the values inside the column.
+     * @return The number of values inside the column.
      */
     long getSize();
+
+    @Override
+    @NotNull
+    String toString();
 }

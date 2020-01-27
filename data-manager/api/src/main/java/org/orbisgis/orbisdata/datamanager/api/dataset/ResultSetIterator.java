@@ -15,7 +15,7 @@
  *
  * DataManager API is distributed under LGPL 3 license.
  *
- * Copyright (C) 2019 CNRS (Lab-STICC UMR CNRS 6285)
+ * Copyright (C) 2019-2020 CNRS (Lab-STICC UMR CNRS 6285)
  *
  *
  * DataManager API is free software: you can redistribute it and/or modify it under the
@@ -39,17 +39,21 @@ package org.orbisgis.orbisdata.datamanager.api.dataset;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Iterator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Iterator dedicated to the iteration on a {@link ResultSet}.
  *
  * @author Erwan Bocher (CNRS)
- * @author Sylvain PALOMINOS (UBS 2018-2019)
+ * @author Sylvain PALOMINOS (Lab-STICC UBS 2018-2019)
  */
 public class ResultSetIterator implements Iterator<Object> {
 
-    /** Class {@link Logger} */
-    //private static final Logger LOGGER = LoggerFactory.getLogger(ResultSetIterator.class);
+    /**
+     * Class {@link Logger}
+     */
+    private static final Logger LOGGER = LoggerFactory.getLogger(ResultSetIterator.class);
 
     /**
      * Iterated {@link ResultSet}
@@ -62,7 +66,7 @@ public class ResultSetIterator implements Iterator<Object> {
 
     public ResultSetIterator() {
         this.resultSet = null;
-        //LOGGER.warn("There is no ResultSet so there will no data.");
+        LOGGER.warn("There is no ResultSet so there will no data.");
     }
 
     /**
@@ -77,7 +81,7 @@ public class ResultSetIterator implements Iterator<Object> {
             rowCount = resultSet.getRow();
             this.resultSet.beforeFirst();
         } catch (SQLException e) {
-            //LOGGER.error("Unable to query the ResultSet.\n" + e.getLocalizedMessage());
+            LOGGER.error("Unable to query the ResultSet.\n" + e.getLocalizedMessage());
             throw e;
         }
     }
@@ -91,7 +95,7 @@ public class ResultSetIterator implements Iterator<Object> {
         try {
             row = resultSet.getRow();
         } catch (SQLException e) {
-            //LOGGER.error("Unable to get ResultSet row.\n" + e.getLocalizedMessage());
+            LOGGER.error("Unable to get ResultSet row.\n" + e.getLocalizedMessage());
             return false;
         }
         return row < rowCount;
@@ -104,10 +108,10 @@ public class ResultSetIterator implements Iterator<Object> {
         }
         try {
             if (!resultSet.next()) {
-                //LOGGER.error("Unable to move to the next row.");
+                LOGGER.error("Unable to move to the next row.");
             }
         } catch (SQLException e) {
-            //LOGGER.error("Unable to get next row.\n" + e.getLocalizedMessage());
+            LOGGER.error("Unable to get next row.\n" + e.getLocalizedMessage());
         }
         return resultSet;
     }

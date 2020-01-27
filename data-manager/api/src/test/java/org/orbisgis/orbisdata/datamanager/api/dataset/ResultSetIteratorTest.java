@@ -15,7 +15,7 @@
  *
  * DataManager API is distributed under LGPL 3 license.
  *
- * Copyright (C) 2019 CNRS (Lab-STICC UMR CNRS 6285)
+ * Copyright (C) 2019-2020 CNRS (Lab-STICC UMR CNRS 6285)
  *
  *
  * DataManager API is free software: you can redistribute it and/or modify it under the
@@ -50,7 +50,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * Test class dedicated to {@link ResultSetIterator}.
  *
  * @author Erwan Bocher (CNRS)
- * @author Sylvain PALOMINOS (UBS 2019)
+ * @author Sylvain PALOMINOS (Lab-STICC UBS 2019)
  */
 public class ResultSetIteratorTest {
 

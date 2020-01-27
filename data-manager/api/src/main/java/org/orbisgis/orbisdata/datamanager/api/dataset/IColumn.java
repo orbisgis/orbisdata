@@ -36,6 +36,9 @@
  */
 package org.orbisgis.orbisdata.datamanager.api.dataset;
 
+import org.orbisgis.commons.annotations.NotNull;
+import org.orbisgis.commons.annotations.Nullable;
+
 /**
  * Column of a {@link IDataSet}.
  *
@@ -45,23 +48,30 @@ package org.orbisgis.orbisdata.datamanager.api.dataset;
 public interface IColumn {
 
     /**
-     * Return the name of the column.
+     * Returns the name of the column. If there isn't a name, returns an empty string. It the column name can't be
+     * get, return null.
      *
      * @return The name of the column.
      */
+    @Nullable
     String getName();
 
     /**
-     * Return the sql type of the column.
+     * Returns the sql type of the column. If there isn't a type, returns null.
      *
      * @return The sql type of the column.
      */
+    @Nullable
     String getType();
 
     /**
-     * Return the number of the values inside the column.
+     * Returns the number of values inside the column. If the size of the column can't be get, returns -1.
      *
-     * @return The number of the values inside the column.
+     * @return The number of values inside the column.
      */
     long getSize();
+
+    @Override
+    @NotNull
+    String toString();
 }

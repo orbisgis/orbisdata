@@ -39,6 +39,7 @@ package org.orbisgis.orbisdata.datamanager.jdbc;
 import groovy.lang.GroovyObject;
 import groovy.lang.MetaClass;
 import groovy.lang.MissingMethodException;
+import groovy.sql.GroovyRowResult;
 import org.codehaus.groovy.runtime.InvokerHelper;
 import org.h2gis.utilities.TableLocation;
 import org.orbisgis.orbisdata.datamanager.api.dataset.DataBaseType;
@@ -59,7 +60,6 @@ import java.util.Map;
  * @author Sylvain PALOMINOS (UBS 2019)
  */
 public class JdbcColumn implements IJdbcColumn, GroovyObject {
-    ;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(JdbcColumn.class);
 
@@ -92,10 +92,25 @@ public class JdbcColumn implements IJdbcColumn, GroovyObject {
      * @param dataSource {@link IJdbcDataSource} of the column.
      */
     public JdbcColumn(String name, String tableName, IJdbcDataSource dataSource) {
-        this.isH2 = dataSource.getDataBaseType() == DataBaseType.H2GIS;
-        this.name = TableLocation.capsIdentifier(name, isH2);
-        this.tableName = TableLocation.parse(tableName, isH2);
-        this.dataSource = (JdbcDataSource) dataSource;
+        if(dataSource != null) {
+            this.isH2 = dataSource.getDataBaseType() == DataBaseType.H2GIS;
+            this.dataSource = (JdbcDataSource) dataSource;
+        }
+        else{
+            LOGGER.warn("Null datasource for the column creation.");
+        }
+        if(name != null) {
+            this.name = TableLocation.capsIdentifier(name, isH2);
+        }
+        else{
+            LOGGER.warn("Null name for the column creation.");
+        }
+        if(tableName != null) {
+            this.tableName = TableLocation.parse(tableName, isH2);
+        }
+        else{
+            LOGGER.warn("Null table name for the column creation.");
+        }
         this.metaClass = InvokerHelper.getMetaClass(JdbcColumn.class);
     }
 
@@ -106,6 +121,9 @@ public class JdbcColumn implements IJdbcColumn, GroovyObject {
 
     @Override
     public String getType() {
+        if(dataSource == null || name == null || tableName == null){
+            return null;
+        }
         try {
             Map map = dataSource.firstRow("SELECT TYPE_NAME FROM INFORMATION_SCHEMA.COLUMNS " +
                             "WHERE INFORMATION_SCHEMA.COLUMNS.TABLE_NAME=? " +
@@ -124,8 +142,11 @@ public class JdbcColumn implements IJdbcColumn, GroovyObject {
 
     @Override
     public long getSize() {
+        if(dataSource == null || name == null || tableName == null){
+            return -1;
+        }
         try {
-            Map map = dataSource.firstRow("SELECT count(" + TableLocation.quoteIdentifier(name, isH2) +
+            Map<?, ?> map = dataSource.firstRow("SELECT count(" + TableLocation.quoteIdentifier(name, isH2) +
                     ") FROM " + tableName.getTable());
             if (map != null && !map.isEmpty() && map.values().toArray()[0] instanceof Long) {
                 return (Long) map.values().toArray()[0];
@@ -145,7 +166,7 @@ public class JdbcColumn implements IJdbcColumn, GroovyObject {
     @Override
     public boolean isIndexed() {
         try {
-            Map map = dataSource.firstRow("SELECT * FROM INFORMATION_SCHEMA.INDEXES " +
+            Map<?, ?> map = dataSource.firstRow("SELECT * FROM INFORMATION_SCHEMA.INDEXES " +
                             "WHERE INFORMATION_SCHEMA.INDEXES.TABLE_NAME=? " +
                             "AND INFORMATION_SCHEMA.INDEXES.TABLE_SCHEMA=? " +
                             "AND INFORMATION_SCHEMA.INDEXES.COLUMN_NAME=?;",
@@ -161,7 +182,7 @@ public class JdbcColumn implements IJdbcColumn, GroovyObject {
     @Override
     public boolean isSpatialIndexed() {
         try {
-            Map map = dataSource.firstRow("SELECT * FROM INFORMATION_SCHEMA.INDEXES " +
+            Map<?, ?> map = dataSource.firstRow("SELECT * FROM INFORMATION_SCHEMA.INDEXES " +
                             "WHERE INFORMATION_SCHEMA.INDEXES.TABLE_NAME=? " +
                             "AND INFORMATION_SCHEMA.INDEXES.TABLE_SCHEMA=? " +
                             "AND INFORMATION_SCHEMA.INDEXES.COLUMN_NAME=?;",
@@ -211,13 +232,13 @@ public class JdbcColumn implements IJdbcColumn, GroovyObject {
     public void dropIndex() {
         List<String> indexes = new ArrayList<>();
         try {
-            List<? extends Map> list = dataSource.rows("SELECT INDEX_NAME FROM INFORMATION_SCHEMA.INDEXES " +
+            List<GroovyRowResult> list = dataSource.rows("SELECT INDEX_NAME FROM INFORMATION_SCHEMA.INDEXES " +
                             "WHERE INFORMATION_SCHEMA.INDEXES.TABLE_NAME=? " +
                             "AND INFORMATION_SCHEMA.INDEXES.TABLE_SCHEMA=? " +
                             "AND INFORMATION_SCHEMA.INDEXES.COLUMN_NAME=?;",
                     new Object[]{tableName.getTable(), tableName.getSchema("PUBLIC"), name});
-            for (Map map : list) {
-                indexes.add(map.get("INDEX_NAME").toString());
+            for (GroovyRowResult rowResult : list) {
+                indexes.add(rowResult.get("INDEX_NAME").toString());
             }
         } catch (SQLException e) {
             LOGGER.error("Unable to get the indexes of the column '" + name + "' in the table '" + tableName + "'.\n" +

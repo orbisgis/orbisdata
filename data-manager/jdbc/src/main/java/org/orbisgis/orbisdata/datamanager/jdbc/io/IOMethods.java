@@ -191,7 +191,7 @@ public class IOMethods {
                 if (url.startsWith("h2")) {
                     driverName = "org.h2.Driver";
                 } else if (url.startsWith("postgresql")) {
-                    driverName = "org.orbisgis.postgis_jts.Driver";
+                    driverName = "org.h2gis.postgis_jts.Driver";
                 }
                 if (!driverName.isEmpty()) {
                     if (delete) {

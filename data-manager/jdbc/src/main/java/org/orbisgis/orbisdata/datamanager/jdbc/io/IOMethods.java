@@ -190,7 +190,7 @@ public class IOMethods {
                 String url = jdbc_url.substring("jdbc:".length());
                 if (url.startsWith("h2")) {
                     driverName = "org.h2.Driver";
-                } else if (url.startsWith("postgres_jts")) {
+                } else if (url.startsWith("postgresql_h2")) {
                     driverName = "org.h2gis.postgis_jts.Driver";
                 }
                 if (!driverName.isEmpty()) {

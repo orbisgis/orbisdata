@@ -60,7 +60,7 @@ public class ProgressMonitor implements IProgressMonitor {
     private IProgressMonitor parent;
 
     public ProgressMonitor(String taskName, int maximum, boolean autoLog){
-        this.name = name;
+        this.name = taskName;
         this.maximum = maximum;
         this.step = 0;
         this.children = new ArrayList<>();

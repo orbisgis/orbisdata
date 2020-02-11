@@ -955,21 +955,21 @@ class JdbcDataSourceTest {
     void testGetTableNames() {
         Collection<String> names = ds1.getTableNames();
         assertNotNull(names);
-        assertEquals(36, names.size());
+        assertEquals(38, names.size());
         assertTrue(names.contains("JDBCDATASOURCETEST.PUBLIC.GEOMETRY_COLUMNS"));
         assertTrue(names.contains("JDBCDATASOURCETEST.PUBLIC.TEST"));
         assertTrue(names.contains("JDBCDATASOURCETEST.PUBLIC.SPATIAL_REF_SYS"));
 
         names = ds2.getTableNames();
         assertNotNull(names);
-        assertEquals(36, names.size());
+        assertEquals(38, names.size());
         assertTrue(names.contains("JDBCDATASOURCETEST.PUBLIC.GEOMETRY_COLUMNS"));
         assertTrue(names.contains("JDBCDATASOURCETEST.PUBLIC.TEST"));
         assertTrue(names.contains("JDBCDATASOURCETEST.PUBLIC.SPATIAL_REF_SYS"));
 
         names = ds3.getTableNames();
         assertNotNull(names);
-        assertEquals(36, names.size());
+        assertEquals(38, names.size());
         assertTrue(names.contains("JDBCDATASOURCETEST.PUBLIC.GEOMETRY_COLUMNS"));
         assertTrue(names.contains("JDBCDATASOURCETEST.PUBLIC.TEST"));
         assertTrue(names.contains("JDBCDATASOURCETEST.PUBLIC.SPATIAL_REF_SYS"));
@@ -982,7 +982,7 @@ class JdbcDataSourceTest {
     void testHasTable() {
         Collection<String> names = ds1.getTableNames();
         assertNotNull(names);
-        assertEquals(36, names.size());
+        assertEquals(38, names.size());
         assertTrue(ds1.hasTable("GEOMETRY_COLUMNS"));
         assertTrue(ds1.hasTable("TEST"));
         assertTrue(ds1.hasTable("JDBCDATASOURCETEST.PUBLIC.SPATIAL_REF_SYS"));

@@ -124,7 +124,7 @@ class JdbcTableTest {
     private static final String COL_THE_GEOM = "THE_GEOM";
     private static final String COL_THE_GEOM2 = "the_geom2";
     private static final String COL_ID = "ID";
-    private static final String COL_VALUE = "VALUE";
+    private static final String COL_VALUE = "VAL";
     private static final String COL_MEANING = "MEANING";
 
     /**
@@ -298,7 +298,7 @@ class JdbcTableTest {
         assertEquals(LINKED_QUERY, getLinkedTable().getBaseQuery());
         assertEquals(TEMP_QUERY, getTempTable().getBaseQuery());
         assertEquals(EMPTY_QUERY, getEmptyTable().getBaseQuery());
-        assertEquals("SELECT THE_GEOM, the_geom2, ID, VALUE, MEANING FROM ORBISGIS LIMIT 2",
+        assertEquals("SELECT THE_GEOM, the_geom2, ID, VAL, MEANING FROM ORBISGIS LIMIT 2",
                 getBuiltTable().getBaseQuery().trim());
     }
 
@@ -743,7 +743,7 @@ class JdbcTableTest {
         assertEquals("+--------------------+\n" +
                         "|      ORBISGIS      |\n" +
                         "+--------------------+--------------------+--------------------+--------------------+--------------------+\n" +
-                        "|      THE_GEOM      |     THE_GEOM2      |         ID         |       VALUE        |      MEANING       |\n" +
+                        "|      THE_GEOM      |     THE_GEOM2      |         ID         |        VAL         |      MEANING       |\n" +
                         "+--------------------+--------------------+--------------------+--------------------+--------------------+\n" +
                         "|POINT (0 0)         |POINT (1 1)         |                   1|                 2.3|Simple points       |\n" +
                         "|POINT (0 1)         |POINT (10 11)       |                   2|               0.568|3D point            |\n" +
@@ -752,7 +752,7 @@ class JdbcTableTest {
         assertEquals("+--------------------+\n" +
                         "|       " + IJdbcTable.QUERY_LOCATION + "        |\n" +
                         "+--------------------+--------------------+--------------------+--------------------+--------------------+\n" +
-                        "|      THE_GEOM      |     THE_GEOM2      |         ID         |       VALUE        |      MEANING       |\n" +
+                        "|      THE_GEOM      |     THE_GEOM2      |         ID         |        VAL         |      MEANING       |\n" +
                         "+--------------------+--------------------+--------------------+--------------------+--------------------+\n" +
                         "|POINT (0 0)         |POINT (1 1)         |                   1|                 2.3|Simple points       |\n" +
                         "|POINT (0 1)         |POINT (10 11)       |                   2|               0.568|3D point            |\n" +
@@ -765,7 +765,7 @@ class JdbcTableTest {
                 "<th align=\"CENTER\">THE_GEOM</th>\n" +
                 "<th align=\"CENTER\">THE_GEOM2</th>\n" +
                 "<th align=\"CENTER\">ID</th>\n" +
-                "<th align=\"CENTER\">VALUE</th>\n" +
+                "<th align=\"CENTER\">VAL</th>\n" +
                 "<th align=\"CENTER\">MEANING</th>\n" +
                 "</tr>\n" +
                 "<tr></tr>\n" +
@@ -792,7 +792,7 @@ class JdbcTableTest {
                 "<th align=\"CENTER\">THE_GEOM</th>\n" +
                 "<th align=\"CENTER\">THE_GEOM2</th>\n" +
                 "<th align=\"CENTER\">ID</th>\n" +
-                "<th align=\"CENTER\">VALUE</th>\n" +
+                "<th align=\"CENTER\">VAL</th>\n" +
                 "<th align=\"CENTER\">MEANING</th>\n" +
                 "</tr>\n" +
                 "<tr></tr>\n" +

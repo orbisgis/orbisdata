@@ -311,7 +311,11 @@ public abstract class JdbcTable extends DefaultResultSet implements IJdbcTable, 
                 return null;
             }
         }
-        return DataType.getDataType(DataType.convertSQLTypeToValueType(type));
+        int valueType = DataType.convertSQLTypeToValueType(type);
+        if(valueType == -1) {
+            return DataType.getDataType(19);
+        }
+        return DataType.getDataType(valueType);
     }
 
     @Override
@@ -321,7 +325,7 @@ public abstract class JdbcTable extends DefaultResultSet implements IJdbcTable, 
         }
         DataType dataType = getColumnDataType(columnName);
         Objects.requireNonNull(dataType);
-        if ("OTHER".equals(dataType.name)) {
+        if ("OTHER".equals(dataType.name) || "JAVA_OBJECT".equals(dataType.name)) {
             return getGeometricType(columnName);
         }
         return dataType.name;

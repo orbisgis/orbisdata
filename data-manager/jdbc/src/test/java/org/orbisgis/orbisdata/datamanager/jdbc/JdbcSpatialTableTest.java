@@ -91,7 +91,7 @@ public class JdbcSpatialTableTest {
     private static final String COL_THE_GEOM = "THE_GEOM";
     private static final String COL_THE_GEOM2 = "THE_GEOM2";
     private static final String COL_ID = "ID";
-    private static final String COL_VALUE = "VALUE";
+    private static final String COL_VALUE = "VAL";
     private static final String COL_MEANING = "MEANING";
 
     @BeforeAll

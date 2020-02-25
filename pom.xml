@@ -8,7 +8,7 @@
     <parent>
         <groupId>org.orbisgis</groupId>
         <artifactId>orbisparent</artifactId>
-        <version>1.0.3-SNAPSHOT</version>
+        <version>1.0.3-RC1</version>
     </parent>
     <artifactId>orbisdata</artifactId>
     <version>1.0.1-SNAPSHOT</version>

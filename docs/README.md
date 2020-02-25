@@ -62,22 +62,22 @@ and add the desired module :
             <plugin>
                 <groupId>org.orbisgis</groupId>
                 <artifactId>data-manager</artifactId>
-                <version>1.0-SNAPSHOT</version>
+                <version>1.0.1-RC1</version>
             </plugin>
             <plugin>
                 <groupId>org.orbisgis</groupId>
                 <artifactId>data-manager-api</artifactId>
-                <version>1.0-SNAPSHOT</version>
+                <version>1.0.1-RC1</version>
             </plugin>
             <plugin>
                 <groupId>org.orbisgis</groupId>
                 <artifactId>process-manager</artifactId>
-                <version>1.0-SNAPSHOT</version>
+                <version>1.0.1-RC1</version>
             </plugin>
             <plugin>
                 <groupId>org.orbisgis</groupId>
                 <artifactId>process-manager-api</artifactId>
-                <version>1.0-SNAPSHOT</version>
+                <version>1.0.1-RC1</version>
             </plugin>
             ...
         </plugins>
@@ -91,10 +91,10 @@ and add the desired module :
 Using Grab annotation :
 ``` groovy
 @GrabResolver(name='orbisgis', root='http://nexus-ng.orbisgis.org/')
-@Grab(group='org.orbisgis', module='data-manager', version='1.0-SNAPSHOT')
-@Grab(group='org.orbisgis', module='data-manager-api', version='1.0-SNAPSHOT')
-@Grab(group='org.orbisgis', module='process-manager', version='1.0-SNAPSHOT')
-@Grab(group='org.orbisgis', module='process-manager-api', version='1.0-SNAPSHOT')
+@Grab(group='org.orbisgis', module='data-manager', version='1.0.1-RC1')
+@Grab(group='org.orbisgis', module='data-manager-api', version='1.0.1-RC1')
+@Grab(group='org.orbisgis', module='process-manager', version='1.0.1-RC1')
+@Grab(group='org.orbisgis', module='process-manager-api', version='1.0.1-RC1')
 ```
 
 ## Contributing

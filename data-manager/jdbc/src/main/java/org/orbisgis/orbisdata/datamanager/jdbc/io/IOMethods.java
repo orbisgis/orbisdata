@@ -46,7 +46,7 @@ public class IOMethods {
         if (i >= 0) {
             extension = path.substring(i + 1);
         }
-        switch (extension) {
+        switch (extension.toLowerCase()) {
             case "shp":
                 return new SHPDriverFunction();
             case "geojson":

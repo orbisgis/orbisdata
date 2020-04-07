@@ -225,13 +225,11 @@ public interface ITable<T> extends IMatrix<T> {
     }
 
     /**
-     * Return the {@link T} object in the current row on the given column.
+     * Return the {@link String} object in the current row on the given column.
      *
      * @param column Index of the column.
-     * @return The {@link T} object in the current row on the given column.
+     * @return The {@link String} object in the current row on the given column.
      */
-    T get(int column) throws Exception;
-
     String getString(int column) throws Exception;
 
     boolean getBoolean(int column) throws Exception;
@@ -259,9 +257,6 @@ public interface ITable<T> extends IMatrix<T> {
     Object getObject(int column) throws Exception;
 
     BigDecimal getBigDecimal(int column) throws Exception;
-
-
-    T get(String column) throws Exception;
 
     String getString(String column) throws Exception;
 

@@ -368,9 +368,6 @@ public class ITableTest {
         }
 
         @Override
-        public Object get(int column) {return null;}
-
-        @Override
         public String getString(int column) {
             return null;
         }
@@ -437,11 +434,6 @@ public class ITableTest {
 
         @Override
         public BigDecimal getBigDecimal(int column) {
-            return null;
-        }
-
-        @Override
-        public Object get(String column) {
             return null;
         }
 

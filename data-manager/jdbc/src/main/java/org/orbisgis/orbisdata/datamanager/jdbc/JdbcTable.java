@@ -235,16 +235,6 @@ public abstract class JdbcTable extends DefaultResultSet implements IJdbcTable, 
     }
 
     @Override
-    public Object get(int column) throws Exception {
-        return getObject(column);
-    }
-
-    @Override
-    public Object get(String column) throws Exception {
-        return getObject(column);
-    }
-
-    @Override
     public boolean isLinked() {
         if (getTableLocation() != null) {
             try {

@@ -51,6 +51,7 @@ import smile.math.matrix.DenseMatrix;
 import smile.math.matrix.Matrix;
 
 import java.io.*;
+import java.math.BigDecimal;
 import java.sql.Date;
 import java.sql.*;
 import java.util.*;
@@ -231,6 +232,146 @@ public class DataFrame implements smile.data.DataFrame, ITable<BaseVector> {
     @Override
     public Tuple get(int i) {
         return getInternalDataFrame().get(i);
+    }
+
+    @Override
+    public String getString(int column) {
+        return getInternalDataFrame().getString(getRow(), column);
+    }
+
+    @Override
+    public boolean getBoolean(int column) {
+        return getInternalDataFrame().getBoolean(getRow(), column);
+    }
+
+    @Override
+    public byte getByte(int column) {
+        return getInternalDataFrame().getByte(getRow(), column);
+    }
+
+    @Override
+    public short getShort(int column) {
+        return getInternalDataFrame().getShort(getRow(), column);
+    }
+
+    @Override
+    public int getInt(int column) {
+        return getInternalDataFrame().getInt(getRow(), column);
+    }
+
+    @Override
+    public long getLong(int column) {
+        return getInternalDataFrame().getLong(getRow(), column);
+    }
+
+    @Override
+    public float getFloat(int column) {
+        return getInternalDataFrame().getFloat(getRow(), column);
+    }
+
+    @Override
+    public double getDouble(int column) {
+        return getInternalDataFrame().getDouble(getRow(), column);
+    }
+
+    @Override
+    public byte[] getBytes(int column) {
+        throw new UnsupportedOperationException("The methods 'getBytes(int)' is not supported.");
+    }
+
+    @Override
+    public Date getDate(int column) {
+        return Date.valueOf(getInternalDataFrame().getDate(getRow(), column));
+    }
+
+    @Override
+    public Time getTime(int column) {
+        return Time.valueOf(getInternalDataFrame().getTime(getRow(), column));
+    }
+
+    @Override
+    public Timestamp getTimestamp(int column) {
+        throw new UnsupportedOperationException("The methods 'getTimestamp(int)' is not supported.");
+    }
+
+    @Override
+    public Object getObject(int column) {
+        return getInternalDataFrame().get(getRow(), column);
+    }
+
+    @Override
+    public BigDecimal getBigDecimal(int column) {
+        throw new UnsupportedOperationException("The methods 'getBigDecimal(int)' is not supported.");
+    }
+
+    @Override
+    public String getString(String column) {
+        return getInternalDataFrame().getString(getRow(), column);
+    }
+
+    @Override
+    public boolean getBoolean(String column) {
+        return getInternalDataFrame().getBoolean(getRow(), column);
+    }
+
+    @Override
+    public byte getByte(String column) {
+        return getInternalDataFrame().getByte(getRow(), column);
+    }
+
+    @Override
+    public short getShort(String column) {
+        return getInternalDataFrame().getShort(getRow(), column);
+    }
+
+    @Override
+    public int getInt(String column) {
+        return getInternalDataFrame().getInt(getRow(), column);
+    }
+
+    @Override
+    public long getLong(String column) {
+        return getInternalDataFrame().getLong(getRow(), column);
+    }
+
+    @Override
+    public float getFloat(String column) {
+        return getInternalDataFrame().getFloat(getRow(), column);
+    }
+
+    @Override
+    public double getDouble(String column) {
+        return getInternalDataFrame().getDouble(getRow(), column);
+    }
+
+    @Override
+    public byte[] getBytes(String column) {
+        throw new UnsupportedOperationException("The methods 'getBytes(String)' is not supported.");
+    }
+
+    @Override
+    public Date getDate(String column) {
+        return Date.valueOf(getInternalDataFrame().getDate(getRow(), column));
+    }
+
+    @Override
+    public Time getTime(String column) {
+        return Time.valueOf(getInternalDataFrame().getTime(getRow(), column));
+    }
+
+    @Override
+    public Timestamp getTimestamp(String column) {
+        throw new UnsupportedOperationException("The methods 'getTimestamp(String)' is not supported.");
+    }
+
+    @Override
+    public Object getObject(String column) {
+        return getInternalDataFrame().getBoolean(getRow(), column);
+    }
+
+    @Override
+    public BigDecimal getBigDecimal(String column) {
+        throw new UnsupportedOperationException("The methods 'getBigDecimal(String)' is not supported.");
     }
 
     @Override

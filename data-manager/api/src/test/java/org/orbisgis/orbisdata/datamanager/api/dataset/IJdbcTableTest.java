@@ -277,9 +277,6 @@ public class IJdbcTableTest {
         }
 
         @Override
-        public Object get(int column) {return null;}
-
-        @Override
         public boolean isLinked() {
             return false;
         }
@@ -517,11 +514,6 @@ public class IJdbcTableTest {
 
         @Override
         public BigDecimal getBigDecimal(int i) {
-            return null;
-        }
-
-        @Override
-        public Object get(String column) throws Exception {
             return null;
         }
 

@@ -52,6 +52,7 @@ import smile.math.matrix.Matrix;
 
 import java.io.*;
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.sql.Date;
 import java.sql.*;
 import java.util.*;
@@ -753,5 +754,79 @@ public class DataFrame implements smile.data.DataFrame, ITable<BaseVector> {
     public static <T> DataFrame of(Collection<Map<String, T>> data, StructType schema) {
         smile.data.DataFrame df = smile.data.DataFrame.of(data, schema);
         return of(df);
+    }
+
+    @Override
+    public Object getObject(int column, Class clazz){
+        if (clazz == BigDecimal.class) {
+            return this.getBigDecimal(column);
+        } else if (clazz == BigInteger.class) {
+            return this.getBigDecimal(column).toBigInteger();
+        } else if (clazz == String.class) {
+            return this.getString(column);
+        } else if (clazz == Boolean.class) {
+            return this.getBoolean(column);
+        } else if (clazz == Byte.class) {
+            return this.getByte(column);
+        } else if (clazz == Short.class) {
+            return this.getShort(column);
+        } else if (clazz == Integer.class) {
+            return this.getInt(column);
+        } else if (clazz == Long.class) {
+            return this.getLong(column);
+        } else if (clazz == Float.class) {
+            return this.getFloat(column);
+        } else if (clazz == Double.class) {
+            return this.getDouble(column);
+        } else if (clazz == Date.class) {
+            return this.getDate(column);
+        } else if (clazz == Time.class) {
+            return this.getTime(column);
+        } else if (clazz == Timestamp.class) {
+            return this.getTimestamp(column);
+        } else if (clazz == UUID.class) {
+            return this.getObject(column);
+        } else if (clazz == byte[].class) {
+            return this.getBytes(column);
+        } else {
+            throw new UnsupportedOperationException();
+        }
+    }
+
+    @Override
+    public Object getObject(String column, Class clazz){
+        if (clazz == BigDecimal.class) {
+            return this.getBigDecimal(column);
+        } else if (clazz == BigInteger.class) {
+            return this.getBigDecimal(column).toBigInteger();
+        } else if (clazz == String.class) {
+            return this.getString(column);
+        } else if (clazz == Boolean.class) {
+            return this.getBoolean(column);
+        } else if (clazz == Byte.class) {
+            return this.getByte(column);
+        } else if (clazz == Short.class) {
+            return this.getShort(column);
+        } else if (clazz == Integer.class) {
+            return this.getInt(column);
+        } else if (clazz == Long.class) {
+            return this.getLong(column);
+        } else if (clazz == Float.class) {
+            return this.getFloat(column);
+        } else if (clazz == Double.class) {
+            return this.getDouble(column);
+        } else if (clazz == Date.class) {
+            return this.getDate(column);
+        } else if (clazz == Time.class) {
+            return this.getTime(column);
+        } else if (clazz == Timestamp.class) {
+            return this.getTimestamp(column);
+        } else if (clazz == UUID.class) {
+            return this.getObject(column);
+        } else if (clazz == byte[].class) {
+            return this.getBytes(column);
+        } else {
+            throw new UnsupportedOperationException();
+        }
     }
 }

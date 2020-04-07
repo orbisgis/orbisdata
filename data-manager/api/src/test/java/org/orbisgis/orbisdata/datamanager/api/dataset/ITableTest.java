@@ -508,6 +508,16 @@ public class ITableTest {
         }
 
         @Override
+        public <U> U getObject(int column, Class<U> clazz) throws Exception {
+            return null;
+        }
+
+        @Override
+        public <U> U getObject(String column, Class<U> clazz) throws Exception {
+            return null;
+        }
+
+        @Override
         public String getLocation() {
             return null;
         }

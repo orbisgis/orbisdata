@@ -39,13 +39,12 @@ package org.orbisgis.orbisdata.datamanager.api.dataset;
 import groovy.lang.Closure;
 
 import java.math.BigDecimal;
-import java.sql.Date;
-import java.sql.SQLException;
-import java.sql.Time;
-import java.sql.Timestamp;
+import java.math.BigInteger;
+import java.sql.*;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 /**
  * Extension of the {@link IDataSet} interface. A {@link ITable} is a 2D (column/line) representation of raw data.
@@ -285,4 +284,8 @@ public interface ITable<T> extends IMatrix<T> {
     Object getObject(String column) throws Exception;
 
     BigDecimal getBigDecimal(String column) throws Exception;
+
+    <U> U getObject(int column, Class<U> clazz) throws Exception;
+
+    <U> U getObject(String column, Class<U> clazz) throws Exception;
 }

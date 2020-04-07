@@ -38,6 +38,11 @@ package org.orbisgis.orbisdata.datamanager.api.dataset;
 
 import groovy.lang.Closure;
 
+import java.math.BigDecimal;
+import java.sql.Date;
+import java.sql.SQLException;
+import java.sql.Time;
+import java.sql.Timestamp;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -138,10 +143,10 @@ public interface ITable<T> extends IMatrix<T> {
     int getRowCount();
 
     /**
-     * Return the row count.
+     * Return the current row index.
      * The thrown exception is for compatibility purpose.
      *
-     * @return The row count.
+     * @return The current row index.
      */
     int getRow() throws Exception;
 
@@ -218,4 +223,71 @@ public interface ITable<T> extends IMatrix<T> {
     default int[] getShape() {
         return new int[]{getColumnCount(), getRowCount()};
     }
+
+    /**
+     * Return the {@link T} object in the current row on the given column.
+     *
+     * @param column Index of the column.
+     * @return The {@link T} object in the current row on the given column.
+     */
+    T get(int column) throws Exception;
+
+    String getString(int column) throws Exception;
+
+    boolean getBoolean(int column) throws Exception;
+
+    byte getByte(int column) throws Exception;
+
+    short getShort(int column) throws Exception;
+
+    int getInt(int column) throws Exception;
+
+    long getLong(int column) throws Exception;
+
+    float getFloat(int column) throws Exception;
+
+    double getDouble(int column) throws Exception;
+
+    byte[] getBytes(int column) throws Exception;
+
+    Date getDate(int column) throws Exception;
+
+    Time getTime(int column) throws Exception;
+
+    Timestamp getTimestamp(int column) throws Exception;
+
+    Object getObject(int column) throws Exception;
+
+    BigDecimal getBigDecimal(int column) throws Exception;
+
+
+    T get(String column) throws Exception;
+
+    String getString(String column) throws Exception;
+
+    boolean getBoolean(String column) throws Exception;
+
+    byte getByte(String column) throws Exception;
+
+    short getShort(String column) throws Exception;
+
+    int getInt(String column) throws Exception;
+
+    long getLong(String column) throws Exception;
+
+    float getFloat(String column) throws Exception;
+
+    double getDouble(String column) throws Exception;
+
+    byte[] getBytes(String column) throws Exception;
+
+    Date getDate(String column) throws Exception;
+
+    Time getTime(String column) throws Exception;
+
+    Timestamp getTimestamp(String column) throws Exception;
+
+    Object getObject(String column) throws Exception;
+
+    BigDecimal getBigDecimal(String column) throws Exception;
 }

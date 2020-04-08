@@ -219,7 +219,7 @@ public interface ITable<T> extends IMatrix<T> {
     }
 
     @Override
-    default int[] getShape() {
+    default int[] getSize() {
         return new int[]{getColumnCount(), getRowCount()};
     }
 

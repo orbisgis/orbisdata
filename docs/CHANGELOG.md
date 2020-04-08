@@ -19,3 +19,4 @@ make it compatible with `smile` API)
 + Add the `ProgressMonitor` mechanism.
 + Add get*Type*() methods on `ITable` interface
 + Merge `createSpatialIndex` in `createIndex()`
++ Rename `getShape()` into `getSize()`

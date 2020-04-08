@@ -52,9 +52,9 @@ public interface IMatrix<T> extends IDataSet<T> {
     int getNDim();
 
     /**
-     * Returns the shape of the {@link IMatrix}. The returned array contains the size of each dimensions.
+     * Returns the size of the {@link IMatrix}. The returned array contains the size of each dimensions.
      *
-     * @return the shape of the {@link IMatrix}.
+     * @return The size of the {@link IMatrix} as an int array.
      */
-    int[] getShape();
+    int[] getSize();
 }

@@ -251,11 +251,11 @@ public class ITableTest {
     }
 
     /**
-     * Test the {@link ITable#getShape()} method.
+     * Test the {@link ITable#getSize()} method.
      */
     @Test
     public void testGetShape() {
-        int[] shape = table.getShape();
+        int[] shape = table.getSize();
         assertEquals(2, shape.length);
         assertEquals(5, shape[0]);
         assertEquals(4, shape[1]);

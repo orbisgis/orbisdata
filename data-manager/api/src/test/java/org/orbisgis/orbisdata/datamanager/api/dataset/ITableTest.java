@@ -40,6 +40,10 @@ import groovy.lang.Closure;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
+import java.math.BigDecimal;
+import java.sql.Date;
+import java.sql.Time;
+import java.sql.Timestamp;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -247,11 +251,11 @@ public class ITableTest {
     }
 
     /**
-     * Test the {@link ITable#getShape()} method.
+     * Test the {@link ITable#getSize()} method.
      */
     @Test
     public void testGetShape() {
-        int[] shape = table.getShape();
+        int[] shape = table.getSize();
         assertEquals(2, shape.length);
         assertEquals(5, shape[0]);
         assertEquals(4, shape[1]);
@@ -361,6 +365,156 @@ public class ITableTest {
         @Override
         public boolean isSpatial() {
             return false;
+        }
+
+        @Override
+        public String getString(int column) {
+            return null;
+        }
+
+        @Override
+        public boolean getBoolean(int column) {
+            return false;
+        }
+
+        @Override
+        public byte getByte(int column) {
+            return 0;
+        }
+
+        @Override
+        public short getShort(int column) {
+            return 0;
+        }
+
+        @Override
+        public int getInt(int column) {
+            return 0;
+        }
+
+        @Override
+        public long getLong(int column) {
+            return 0;
+        }
+
+        @Override
+        public float getFloat(int column) {
+            return 0;
+        }
+
+        @Override
+        public double getDouble(int column) {
+            return 0;
+        }
+
+        @Override
+        public byte[] getBytes(int column) {
+            return new byte[0];
+        }
+
+        @Override
+        public Date getDate(int column) {
+            return null;
+        }
+
+        @Override
+        public Time getTime(int column) {
+            return null;
+        }
+
+        @Override
+        public Timestamp getTimestamp(int column) {
+            return null;
+        }
+
+        @Override
+        public Object getObject(int column) {
+            return null;
+        }
+
+        @Override
+        public BigDecimal getBigDecimal(int column) {
+            return null;
+        }
+
+        @Override
+        public String getString(String column) {
+            return null;
+        }
+
+        @Override
+        public boolean getBoolean(String column) {
+            return false;
+        }
+
+        @Override
+        public byte getByte(String column) {
+            return 0;
+        }
+
+        @Override
+        public short getShort(String column) {
+            return 0;
+        }
+
+        @Override
+        public int getInt(String column) {
+            return 0;
+        }
+
+        @Override
+        public long getLong(String column) {
+            return 0;
+        }
+
+        @Override
+        public float getFloat(String column) {
+            return 0;
+        }
+
+        @Override
+        public double getDouble(String column) {
+            return 0;
+        }
+
+        @Override
+        public byte[] getBytes(String column) {
+            return new byte[0];
+        }
+
+        @Override
+        public Date getDate(String column) {
+            return null;
+        }
+
+        @Override
+        public Time getTime(String column) {
+            return null;
+        }
+
+        @Override
+        public Timestamp getTimestamp(String column) {
+            return null;
+        }
+
+        @Override
+        public Object getObject(String column) {
+            return null;
+        }
+
+        @Override
+        public BigDecimal getBigDecimal(String column) {
+            return null;
+        }
+
+        @Override
+        public <U> U getObject(int column, Class<U> clazz) throws Exception {
+            return null;
+        }
+
+        @Override
+        public <U> U getObject(String column, Class<U> clazz) throws Exception {
+            return null;
         }
 
         @Override

@@ -17,3 +17,6 @@ make it compatible with `smile` API)
 + Fix bug on DSL built tables.
 + Add a method `getSummary()` on the `IDataSet` interface.
 + Add the `ProgressMonitor` mechanism.
++ Add get*Type*() methods on `ITable` interface
++ Merge `createSpatialIndex` in `createIndex()`
++ Rename `getShape()` into `getSize()`

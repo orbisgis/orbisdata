@@ -38,6 +38,10 @@ package org.orbisgis.orbisdata.datamanager.api.dataset;
 
 import groovy.lang.Closure;
 
+import java.math.BigDecimal;
+import java.sql.Date;
+import java.sql.Time;
+import java.sql.Timestamp;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -138,10 +142,10 @@ public interface ITable<T> extends IMatrix<T> {
     int getRowCount();
 
     /**
-     * Return the row count.
+     * Return the current row index.
      * The thrown exception is for compatibility purpose.
      *
-     * @return The row count.
+     * @return The current row index.
      */
     int getRow() throws Exception;
 
@@ -215,7 +219,249 @@ public interface ITable<T> extends IMatrix<T> {
     }
 
     @Override
-    default int[] getShape() {
+    default int[] getSize() {
         return new int[]{getColumnCount(), getRowCount()};
     }
+
+    /**
+     * Return the {@link String} in the current row on the given column.
+     *
+     * @param column Index of the column.
+     * @return The {@link String} in the current row on the given column.
+     */
+    String getString(int column) throws Exception;
+
+    /**
+     * Return the boolean in the current row on the given column.
+     *
+     * @param column Index of the column.
+     * @return The boolean in the current row on the given column.
+     */
+    boolean getBoolean(int column) throws Exception;
+
+    /**
+     * Return the byte in the current row on the given column.
+     *
+     * @param column Index of the column.
+     * @return The byte in the current row on the given column.
+     */
+    byte getByte(int column) throws Exception;
+
+    /**
+     * Return the short in the current row on the given column.
+     *
+     * @param column Index of the column.
+     * @return The short in the current row on the given column.
+     */
+    short getShort(int column) throws Exception;
+
+    /**
+     * Return the int in the current row on the given column.
+     *
+     * @param column Index of the column.
+     * @return The int in the current row on the given column.
+     */
+    int getInt(int column) throws Exception;
+
+    /**
+     * Return the long in the current row on the given column.
+     *
+     * @param column Index of the column.
+     * @return The long in the current row on the given column.
+     */
+    long getLong(int column) throws Exception;
+
+    /**
+     * Return the float in the current row on the given column.
+     *
+     * @param column Index of the column.
+     * @return The float in the current row on the given column.
+     */
+    float getFloat(int column) throws Exception;
+
+    /**
+     * Return the double in the current row on the given column.
+     *
+     * @param column Index of the column.
+     * @return The double in the current row on the given column.
+     */
+    double getDouble(int column) throws Exception;
+
+    /**
+     * Return the byte array in the current row on the given column.
+     *
+     * @param column Index of the column.
+     * @return The byte array in the current row on the given column.
+     */
+    byte[] getBytes(int column) throws Exception;
+
+    /**
+     * Return the {@link Date} in the current row on the given column.
+     *
+     * @param column Index of the column.
+     * @return The {@link Date} in the current row on the given column.
+     */
+    Date getDate(int column) throws Exception;
+
+    /**
+     * Return the {@link Time} in the current row on the given column.
+     *
+     * @param column Index of the column.
+     * @return The {@link Time} in the current row on the given column.
+     */
+    Time getTime(int column) throws Exception;
+
+    /**
+     * Return the {@link Timestamp} in the current row on the given column.
+     *
+     * @param column Index of the column.
+     * @return The {@link Timestamp} in the current row on the given column.
+     */
+    Timestamp getTimestamp(int column) throws Exception;
+
+    /**
+     * Return the {@link Object} in the current row on the given column.
+     *
+     * @param column Index of the column.
+     * @return The {@link Object} in the current row on the given column.
+     */
+    Object getObject(int column) throws Exception;
+
+    /**
+     * Return the {@link BigDecimal} in the current row on the given column.
+     *
+     * @param column Index of the column.
+     * @return The {@link BigDecimal} in the current row on the given column.
+     */
+    BigDecimal getBigDecimal(int column) throws Exception;
+
+    /**
+     * Return the {@link String} in the current row on the given column.
+     *
+     * @param column Name of the column.
+     * @return The {@link String} in the current row on the given column.
+     */
+    String getString(String column) throws Exception;
+
+    /**
+     * Return the boolean in the current row on the given column.
+     *
+     * @param column Name of the column.
+     * @return The boolean in the current row on the given column.
+     */
+    boolean getBoolean(String column) throws Exception;
+
+    /**
+     * Return the byte in the current row on the given column.
+     *
+     * @param column Name of the column.
+     * @return The byte in the current row on the given column.
+     */
+    byte getByte(String column) throws Exception;
+
+    /**
+     * Return the short in the current row on the given column.
+     *
+     * @param column Name of the column.
+     * @return The short in the current row on the given column.
+     */
+    short getShort(String column) throws Exception;
+
+    /**
+     * Return the int in the current row on the given column.
+     *
+     * @param column Name of the column.
+     * @return The int in the current row on the given column.
+     */
+    int getInt(String column) throws Exception;
+
+    /**
+     * Return the long in the current row on the given column.
+     *
+     * @param column Name of the column.
+     * @return The long in the current row on the given column.
+     */
+    long getLong(String column) throws Exception;
+
+    /**
+     * Return the float in the current row on the given column.
+     *
+     * @param column Name of the column.
+     * @return The float in the current row on the given column.
+     */
+    float getFloat(String column) throws Exception;
+
+    /**
+     * Return the double in the current row on the given column.
+     *
+     * @param column Name of the column.
+     * @return The double in the current row on the given column.
+     */
+    double getDouble(String column) throws Exception;
+
+    /**
+     * Return the byte array in the current row on the given column.
+     *
+     * @param column Name of the column.
+     * @return The byte array in the current row on the given column.
+     */
+    byte[] getBytes(String column) throws Exception;
+
+    /**
+     * Return the {@link Date} in the current row on the given column.
+     *
+     * @param column Name of the column.
+     * @return The {@link Date} in the current row on the given column.
+     */
+    Date getDate(String column) throws Exception;
+
+    /**
+     * Return the {@link Time} in the current row on the given column.
+     *
+     * @param column Name of the column.
+     * @return The {@link Time} in the current row on the given column.
+     */
+    Time getTime(String column) throws Exception;
+
+    /**
+     * Return the {@link Timestamp} in the current row on the given column.
+     *
+     * @param column Name of the column.
+     * @return The {@link Timestamp} in the current row on the given column.
+     */
+    Timestamp getTimestamp(String column) throws Exception;
+
+    /**
+     * Return the {@link Object} in the current row on the given column.
+     *
+     * @param column Name of the column.
+     * @return The {@link Object} in the current row on the given column.
+     */
+    Object getObject(String column) throws Exception;
+
+    /**
+     * Return the {@link BigDecimal} in the current row on the given column.
+     *
+     * @param column Name of the column.
+     * @return The {@link BigDecimal} in the current row on the given column.
+     */
+    BigDecimal getBigDecimal(String column) throws Exception;
+
+    /**
+     * Return the {@link U} in the current row on the given column.
+     *
+     * @param column Index of the column.
+     * @param clazz {@link Class} of the object.
+     * @return The {@link U} in the current row on the given column.
+     */
+    <U> U getObject(int column, Class<U> clazz) throws Exception;
+
+    /**
+     * Return the {@link U} in the current row on the given column.
+     *
+     * @param column Name of the column.
+     * @param clazz {@link Class} of the object.
+     * @return The {@link U} in the current row on the given column.
+     */
+    <U> U getObject(String column, Class<U> clazz) throws Exception;
 }

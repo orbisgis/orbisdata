@@ -42,6 +42,7 @@ import groovy.lang.MissingPropertyException;
 import groovy.sql.Sql;
 import org.codehaus.groovy.runtime.InvokerHelper;
 import org.codehaus.groovy.runtime.InvokerInvocationException;
+import org.codehaus.groovy.runtime.metaclass.MissingPropertyExceptionNoStack;
 import org.h2.jdbc.JdbcResultSetMetaData;
 import org.h2gis.functions.factory.H2GISDBFactory;
 import org.h2gis.utilities.JDBCUtilities;
@@ -591,7 +592,7 @@ class JdbcTableTest {
     void testGetProperty() {
         List<JdbcTable> tables = Arrays.asList(getTable(), getEmptyTable(), getTempTable(), getLinkedTable());
         tables.forEach(table -> {
-            assertThrows(MissingPropertyException.class, () -> table.getProperty("getLocation"));
+            assertThrows(MissingPropertyExceptionNoStack.class, () -> table.getProperty("getLocation"));
             assertEquals(table.getLocation(), table.getProperty("location"));
             assertEquals(JdbcResultSetMetaData.class, table.getProperty("meta").getClass());
             assertArrayEquals(new Object[]{"string", 0.2}, (Object[]) table.getProperty("data"));

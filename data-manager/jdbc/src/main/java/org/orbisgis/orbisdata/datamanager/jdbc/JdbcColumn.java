@@ -196,33 +196,35 @@ public class JdbcColumn implements IJdbcColumn, GroovyObject {
     }
 
     @Override
-    public boolean createIndex() {
-        if (!isIndexed()) {
-            try {
-                dataSource.execute("CREATE INDEX ON " + tableName.toString(isH2) + " USING BTREE (" +
-                        TableLocation.quoteIdentifier(name, isH2) + ")");
-                return true;
-            } catch (SQLException e) {
-                LOGGER.error("Unable to create an index on the column '" + name + "' in the table '" + tableName + "'.\n" +
-                        e.getLocalizedMessage());
-            }
-        }
-        return false;
+    public boolean createSpatialIndex() {
+        return createIndex();
     }
 
     @Override
-    public boolean createSpatialIndex() {
-        if (!isIndexed() && isSpatial()) {
-            try {
-                if (isH2) {
-                    dataSource.execute("CREATE INDEX ON " + tableName.toString(isH2) + " USING RTREE (" + name + ")");
-                } else {
-                    dataSource.execute("CREATE INDEX ON " + tableName.toString(isH2) + " USING GIST (" + name + ")");
+    public boolean createIndex() {
+        if (!isIndexed()) {
+            if(isSpatial()){
+                try {
+                    if (isH2) {
+                        dataSource.execute("CREATE INDEX ON " + tableName.toString(isH2) + " USING RTREE (" + name + ")");
+                    } else {
+                        dataSource.execute("CREATE INDEX ON " + tableName.toString(isH2) + " USING GIST (" + name + ")");
+                    }
+                    return true;
+                } catch (SQLException e) {
+                    LOGGER.error("Unable to create a spatial index on the column '" + name + "' in the table '" + tableName + "'.\n" +
+                            e.getLocalizedMessage());
                 }
-                return true;
-            } catch (SQLException e) {
-                LOGGER.error("Unable to create an index on the column '" + name + "' in the table '" + tableName + "'.\n" +
-                        e.getLocalizedMessage());
+            }
+            else {
+                try {
+                    dataSource.execute("CREATE INDEX ON " + tableName.toString(isH2) + " USING BTREE (" +
+                            TableLocation.quoteIdentifier(name, isH2) + ")");
+                    return true;
+                } catch (SQLException e) {
+                    LOGGER.error("Unable to create an index on the column '" + name + "' in the table '" + tableName + "'.\n" +
+                            e.getLocalizedMessage());
+                }
             }
         }
         return false;

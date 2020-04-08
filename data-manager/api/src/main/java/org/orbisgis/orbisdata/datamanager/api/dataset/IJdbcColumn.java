@@ -77,6 +77,7 @@ public interface IJdbcColumn extends IColumn {
      *
      * @return True if an index has been created.
      */
+    @Deprecated
     boolean createSpatialIndex();
 
     /**

@@ -51,6 +51,8 @@ import smile.math.matrix.DenseMatrix;
 import smile.math.matrix.Matrix;
 
 import java.io.*;
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.sql.Date;
 import java.sql.*;
 import java.util.*;
@@ -231,6 +233,146 @@ public class DataFrame implements smile.data.DataFrame, ITable<BaseVector> {
     @Override
     public Tuple get(int i) {
         return getInternalDataFrame().get(i);
+    }
+
+    @Override
+    public String getString(int column) {
+        return getInternalDataFrame().getString(getRow(), column);
+    }
+
+    @Override
+    public boolean getBoolean(int column) {
+        return getInternalDataFrame().getBoolean(getRow(), column);
+    }
+
+    @Override
+    public byte getByte(int column) {
+        return getInternalDataFrame().getByte(getRow(), column);
+    }
+
+    @Override
+    public short getShort(int column) {
+        return getInternalDataFrame().getShort(getRow(), column);
+    }
+
+    @Override
+    public int getInt(int column) {
+        return getInternalDataFrame().getInt(getRow(), column);
+    }
+
+    @Override
+    public long getLong(int column) {
+        return getInternalDataFrame().getLong(getRow(), column);
+    }
+
+    @Override
+    public float getFloat(int column) {
+        return getInternalDataFrame().getFloat(getRow(), column);
+    }
+
+    @Override
+    public double getDouble(int column) {
+        return getInternalDataFrame().getDouble(getRow(), column);
+    }
+
+    @Override
+    public byte[] getBytes(int column) {
+        throw new UnsupportedOperationException("The methods 'getBytes(int)' is not supported.");
+    }
+
+    @Override
+    public Date getDate(int column) {
+        return Date.valueOf(getInternalDataFrame().getDate(getRow(), column));
+    }
+
+    @Override
+    public Time getTime(int column) {
+        return Time.valueOf(getInternalDataFrame().getTime(getRow(), column));
+    }
+
+    @Override
+    public Timestamp getTimestamp(int column) {
+        throw new UnsupportedOperationException("The methods 'getTimestamp(int)' is not supported.");
+    }
+
+    @Override
+    public Object getObject(int column) {
+        return getInternalDataFrame().get(getRow(), column);
+    }
+
+    @Override
+    public BigDecimal getBigDecimal(int column) {
+        throw new UnsupportedOperationException("The methods 'getBigDecimal(int)' is not supported.");
+    }
+
+    @Override
+    public String getString(String column) {
+        return getInternalDataFrame().getString(getRow(), column);
+    }
+
+    @Override
+    public boolean getBoolean(String column) {
+        return getInternalDataFrame().getBoolean(getRow(), column);
+    }
+
+    @Override
+    public byte getByte(String column) {
+        return getInternalDataFrame().getByte(getRow(), column);
+    }
+
+    @Override
+    public short getShort(String column) {
+        return getInternalDataFrame().getShort(getRow(), column);
+    }
+
+    @Override
+    public int getInt(String column) {
+        return getInternalDataFrame().getInt(getRow(), column);
+    }
+
+    @Override
+    public long getLong(String column) {
+        return getInternalDataFrame().getLong(getRow(), column);
+    }
+
+    @Override
+    public float getFloat(String column) {
+        return getInternalDataFrame().getFloat(getRow(), column);
+    }
+
+    @Override
+    public double getDouble(String column) {
+        return getInternalDataFrame().getDouble(getRow(), column);
+    }
+
+    @Override
+    public byte[] getBytes(String column) {
+        throw new UnsupportedOperationException("The methods 'getBytes(String)' is not supported.");
+    }
+
+    @Override
+    public Date getDate(String column) {
+        return Date.valueOf(getInternalDataFrame().getDate(getRow(), column));
+    }
+
+    @Override
+    public Time getTime(String column) {
+        return Time.valueOf(getInternalDataFrame().getTime(getRow(), column));
+    }
+
+    @Override
+    public Timestamp getTimestamp(String column) {
+        throw new UnsupportedOperationException("The methods 'getTimestamp(String)' is not supported.");
+    }
+
+    @Override
+    public Object getObject(String column) {
+        return getInternalDataFrame().getBoolean(getRow(), column);
+    }
+
+    @Override
+    public BigDecimal getBigDecimal(String column) {
+        throw new UnsupportedOperationException("The methods 'getBigDecimal(String)' is not supported.");
     }
 
     @Override
@@ -612,5 +754,79 @@ public class DataFrame implements smile.data.DataFrame, ITable<BaseVector> {
     public static <T> DataFrame of(Collection<Map<String, T>> data, StructType schema) {
         smile.data.DataFrame df = smile.data.DataFrame.of(data, schema);
         return of(df);
+    }
+
+    @Override
+    public Object getObject(int column, Class clazz){
+        if (clazz == BigDecimal.class) {
+            return this.getBigDecimal(column);
+        } else if (clazz == BigInteger.class) {
+            return this.getBigDecimal(column).toBigInteger();
+        } else if (clazz == String.class) {
+            return this.getString(column);
+        } else if (clazz == Boolean.class) {
+            return this.getBoolean(column);
+        } else if (clazz == Byte.class) {
+            return this.getByte(column);
+        } else if (clazz == Short.class) {
+            return this.getShort(column);
+        } else if (clazz == Integer.class) {
+            return this.getInt(column);
+        } else if (clazz == Long.class) {
+            return this.getLong(column);
+        } else if (clazz == Float.class) {
+            return this.getFloat(column);
+        } else if (clazz == Double.class) {
+            return this.getDouble(column);
+        } else if (clazz == Date.class) {
+            return this.getDate(column);
+        } else if (clazz == Time.class) {
+            return this.getTime(column);
+        } else if (clazz == Timestamp.class) {
+            return this.getTimestamp(column);
+        } else if (clazz == UUID.class) {
+            return this.getObject(column);
+        } else if (clazz == byte[].class) {
+            return this.getBytes(column);
+        } else {
+            throw new UnsupportedOperationException();
+        }
+    }
+
+    @Override
+    public Object getObject(String column, Class clazz){
+        if (clazz == BigDecimal.class) {
+            return this.getBigDecimal(column);
+        } else if (clazz == BigInteger.class) {
+            return this.getBigDecimal(column).toBigInteger();
+        } else if (clazz == String.class) {
+            return this.getString(column);
+        } else if (clazz == Boolean.class) {
+            return this.getBoolean(column);
+        } else if (clazz == Byte.class) {
+            return this.getByte(column);
+        } else if (clazz == Short.class) {
+            return this.getShort(column);
+        } else if (clazz == Integer.class) {
+            return this.getInt(column);
+        } else if (clazz == Long.class) {
+            return this.getLong(column);
+        } else if (clazz == Float.class) {
+            return this.getFloat(column);
+        } else if (clazz == Double.class) {
+            return this.getDouble(column);
+        } else if (clazz == Date.class) {
+            return this.getDate(column);
+        } else if (clazz == Time.class) {
+            return this.getTime(column);
+        } else if (clazz == Timestamp.class) {
+            return this.getTimestamp(column);
+        } else if (clazz == UUID.class) {
+            return this.getObject(column);
+        } else if (clazz == byte[].class) {
+            return this.getBytes(column);
+        } else {
+            throw new UnsupportedOperationException();
+        }
     }
 }

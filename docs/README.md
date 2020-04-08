@@ -105,7 +105,7 @@ of conduct, and the process for submitting pull requests.
 ## License
 
 This project is licensed under the GPL v3 License - see the 
-[LICENSE.md](LICENSE.md) file for details
+[LICENSE.md](../LICENSE.md) file for details
 
 ##  Funding
 

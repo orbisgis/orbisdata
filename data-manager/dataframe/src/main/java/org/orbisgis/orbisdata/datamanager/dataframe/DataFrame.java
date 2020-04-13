@@ -37,6 +37,9 @@
 package org.orbisgis.orbisdata.datamanager.dataframe;
 
 import org.locationtech.jts.geom.Geometry;
+import org.orbisgis.commons.printer.Ascii;
+import org.orbisgis.commons.printer.Html;
+import org.orbisgis.commons.printer.ICustomPrinter;
 import org.orbisgis.orbisdata.datamanager.api.dataset.IJdbcTable;
 import org.orbisgis.orbisdata.datamanager.api.dataset.ITable;
 import org.slf4j.Logger;
@@ -59,6 +62,9 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static org.orbisgis.commons.printer.ICustomPrinter.CellPosition.CENTER;
+import static org.orbisgis.commons.printer.ICustomPrinter.CellPosition.RIGHT;
+
 /**
  * Wrap the {@link smile.data.DataFrame} into a new class implementing the {@link ITable} interface. This new
  * DataFrame is compatible with the OrbisData API and can be generated from an {@link ITable instance}.
@@ -76,6 +82,11 @@ public class DataFrame implements smile.data.DataFrame, ITable<BaseVector> {
      * Wrapped {@link smile.data.DataFrame}
      */
     private smile.data.DataFrame internalDataFrame;
+
+    /**
+     * Row index.
+     */
+    private int row = -1;
 
     /**
      * Return the internal {@link DataFrame}.
@@ -419,7 +430,15 @@ public class DataFrame implements smile.data.DataFrame, ITable<BaseVector> {
 
     @Override
     public int getRow() {
-        return -1;
+        return row;
+    }
+
+    public boolean next(){
+        if(row < this.getRowCount()){
+            row++;
+            return true;
+        }
+        return false;
     }
 
     @Override
@@ -528,6 +547,33 @@ public class DataFrame implements smile.data.DataFrame, ITable<BaseVector> {
             return toString();
         } else if (DataFrame.class.isAssignableFrom(clazz)) {
             return this;
+        } else if (Ascii.class.equals(clazz) || Html.class.equals(clazz)) {
+            ICustomPrinter printer;
+            if (Ascii.class.equals(clazz)) {
+                printer = new Ascii();
+            } else {
+                printer = new Html();
+            }
+            int maxWidth = this.getName().length();
+            for (String name : this.names()) {
+                maxWidth = Math.max(maxWidth, name.length());
+            }
+            printer.startTable(maxWidth, this.getColumnCount());
+            printer.appendTableTitle(this.getName());
+            printer.appendTableLineSeparator();
+            String[] titles = this.names();
+            for (String title : titles) {
+                printer.appendTableHeaderValue(title, CENTER);
+            }
+            printer.appendTableLineSeparator();
+            for (int i = 0; i < this.size(); i++) {
+                for (int j = 0; j < this.getColumnCount(); j++) {
+                    printer.appendTableValue(this.get(i, j), RIGHT);
+                }
+                printer.appendTableLineSeparator();
+            }
+            printer.endTable();
+            return printer;
         }
         return null;
     }

@@ -36,7 +36,10 @@
  */
 package org.orbisgis.orbisdata.datamanager.dataframe;
 
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.orbisgis.commons.printer.Ascii;
+import org.orbisgis.commons.printer.Html;
 import org.orbisgis.orbisdata.datamanager.jdbc.h2gis.H2GIS;
 import smile.data.vector.BaseVector;
 import smile.math.matrix.DenseMatrix;
@@ -57,8 +60,10 @@ import static org.orbisgis.orbisdata.datamanager.dataframe.TestUtils.RANDOM_DS;
  */
 public class DataFrameTest {
 
-    @Test
-    void testDataFrameFromTable() throws SQLException, IOException {
+    private static DataFrame dataFrame;
+
+    @BeforeAll
+    public static void beforeEach() throws SQLException {
         H2GIS h2gis = RANDOM_DS();
         h2gis.execute("CREATE TABLE toto(col1 int, col2 varchar, col3 boolean, col4 char, col5 TINYINT, col6 SMALLINT, col7 INT8, col8 REAL, col9 double)");
         h2gis.execute("INSERT INTO toto VALUES (0, 'val0', true , 0, 0, 0, 0, 0.0, 0.0)");
@@ -66,135 +71,224 @@ public class DataFrameTest {
         h2gis.execute("INSERT INTO toto VALUES (2, 'val2', true , 2, 2, 2, 2, 2.0, 2.0)");
         h2gis.execute("INSERT INTO toto VALUES (3, 'val3', false, 3, 3, 3, 3, 3.0, 3.0)");
         h2gis.execute("INSERT INTO toto VALUES (4, 'val4', true , 4, 4, 4, 4, 4.0, 4.0)");
+        dataFrame = DataFrame.of(h2gis.getTable("toto"));
+    }
 
+    /**
+     * Tests the {@link DataFrame#vector(int)}, {@link DataFrame#intVector(int)},
+     * {@link DataFrame#stringVector(int)}, {@link DataFrame#booleanVector(int)}, {@link DataFrame#charVector(int)},
+     * {@link DataFrame#byteVector(int)}, {@link DataFrame#shortVector(int)}, {@link DataFrame#longVector(int)},
+     * {@link DataFrame#floatVector(int)}, {@link DataFrame#doubleVector(int)} methods test.
+     */
+    @Test
+    void typeVectorTest(){
+        assertEquals(5, dataFrame.vector(1).size());
+        assertEquals(5, dataFrame.intVector(0).size());
+        assertEquals(5, dataFrame.stringVector(1).size());
+        assertEquals(5, dataFrame.booleanVector(2).size());
+        assertEquals(5, dataFrame.stringVector(3).size());
+        assertEquals(5, dataFrame.byteVector(4).size());
+        assertEquals(5, dataFrame.shortVector(5).size());
+        assertEquals(5, dataFrame.longVector(6).size());
+        assertEquals(5, dataFrame.floatVector(7).size());
+        assertEquals(5, dataFrame.doubleVector(8).size());
+    }
 
-        DataFrame df = DataFrame.of(h2gis.getTable("toto"));
-        assertNotNull(df);
-        assertNotNull(df.schema());
-        assertEquals(9, df.schema().length());
-        assertEquals(9, df.ncols());
-        assertEquals(0, df.columnIndex("COL1"));
-        assertEquals(5, df.column(0).size());
-        assertEquals(5, df.vector(1).size());
-        assertEquals(5, df.intVector(0).size());
-        assertEquals(5, df.stringVector(1).size());
-        assertEquals(5, df.booleanVector(2).size());
-        //assertEquals(5, df.charVector(3).size());
-        assertEquals(5, df.byteVector(4).size());
-        assertEquals(5, df.shortVector(5).size());
-        assertEquals(5, df.longVector(6).size());
-        assertEquals(5, df.floatVector(7).size());
-        assertEquals(5, df.doubleVector(8).size());
+    @Test
+    void getTypeTest(){
+        dataFrame.next();
+        assertEquals(0, dataFrame.getInt(0));
+        assertEquals("val0", dataFrame.getString(1));
+        assertEquals(true, dataFrame.getBoolean(2));
+        assertEquals("0", dataFrame.getString(3));
+        assertEquals(0, dataFrame.getByte(4));
+        assertEquals(0, dataFrame.getShort(5));
+        assertEquals(0, dataFrame.getLong(6));
+        assertEquals(0, dataFrame.getFloat(7));
+        assertEquals(0, dataFrame.getDouble(8));
+    }
 
-        DataFrame df01 = df.select(0, 1, 2, 3, 4);
+    /**
+     * Tests the {@link DataFrame#select(int...)}, {@link DataFrame#select(String...)},
+     * {@link DataFrame#merge(smile.data.DataFrame...)}, {@link DataFrame#merge(BaseVector[])},
+     * {@link DataFrame#drop(int...)}, {@link DataFrame#drop(String...)}
+     */
+    @Test
+    void testSelect() {
+        DataFrame df01 = dataFrame.select(0, 1, 2, 3, 4);
         assertEquals(5, df01.ncols());
+        assertEquals(5, df01.nrows());
         assertArrayEquals(new String[]{"COL1", "COL2", "COL3", "COL4", "COL5"}, df01.names());
 
         String[] cols = new String[]{"COL6", "COL7", "COL8", "COL9"};
-        DataFrame df02 = df.select(cols);
+        DataFrame df02 = dataFrame.select(cols);
         assertEquals(4, df02.ncols());
+        assertEquals(5, df02.nrows());
         assertArrayEquals(cols, df02.names());
 
         DataFrame df03 = df01.merge(df02);
         assertEquals(9, df03.ncols());
+        assertEquals(5, df03.nrows());
         assertArrayEquals(new String[]{"COL1", "COL2", "COL3", "COL4", "COL5", "COL6", "COL7", "COL8", "COL9"}, df03.names());
 
         DataFrame df06 = df02.drop(0, 1, 2);
         assertEquals(1, df06.ncols());
+        assertEquals(5, df06.nrows());
         assertArrayEquals(new String[]{"COL9"}, df06.names());
 
-        DataFrame df04 = df.select("COL9");
+        DataFrame df04 = dataFrame.select("COL9");
         assertEquals(1, df04.ncols());
+        assertEquals(5, df04.nrows());
         assertArrayEquals(new String[]{"COL9"}, df04.names());
 
         DataFrame df05 = df01.merge(df02.column(0), df02.column(1), df02.column(2)).merge(df04);
         assertEquals(9, df05.ncols());
+        assertEquals(5, df05.nrows());
         assertArrayEquals(new String[]{"COL1", "COL2", "COL3", "COL4", "COL5", "COL6", "COL7", "COL8", "COL9"}, df05.names());
 
-        DataFrame df07 = df05.union(df03, df);
+        DataFrame df07 = df05.union(df03, dataFrame);
         assertEquals(9, df07.ncols());
         assertEquals(15, df07.nrows());
         assertArrayEquals(new String[]{"COL1", "COL2", "COL3", "COL4", "COL5", "COL6", "COL7", "COL8", "COL9"}, df07.names());
 
-        assertEquals(5, df02.toArray().length);
-        assertEquals(4, df02.toArray()[0].length);
-        assertEquals(4, df02.toArray()[1].length);
-        assertEquals(4, df02.toArray()[2].length);
-        assertEquals(4, df02.toArray()[3].length);
-        assertEquals(4, df02.toArray()[4].length);
-        assertNotNull(df02.toMatrix());
+        DataFrame df08 = df07.drop("COL1", "COL2", "COL4");
+        assertEquals(6, df08.ncols());
+        assertEquals(15, df08.nrows());
+        assertArrayEquals(new String[]{"COL3", "COL5", "COL6", "COL7", "COL8", "COL9"}, df08.names());
+    }
 
+    /**
+     * Tests the {@link DataFrame#getColumns()}, {@link DataFrame#getColumnsTypes()},
+     * {@link DataFrame#getColumnType(String)}, {@link DataFrame#getColumnCount()}
+     */
+    @Test
+    void columnsTest(){
+        assertEquals(9, dataFrame.ncols());
+        assertEquals(0, dataFrame.columnIndex("COL1"));
+        assertEquals(5, dataFrame.column(0).size());
+
+        assertArrayEquals(new String[]{"COL1", "COL2", "COL3"}, dataFrame.columns("COL1", "COL2", "COL3").names());
+        assertArrayEquals(new String[]{"COL1", "COL2", "COL3"}, dataFrame.columns(Arrays.asList("COL1", "COL2", "COL3")).names());
+
+        assertEquals(9, dataFrame.getColumns().size());
+        assertTrue(dataFrame.getColumns().contains("COL1"));
+        assertTrue(dataFrame.getColumns().contains("COL2"));
+        assertTrue(dataFrame.getColumns().contains("COL3"));
+        assertTrue(dataFrame.getColumns().contains("COL4"));
+        assertTrue(dataFrame.getColumns().contains("COL5"));
+        assertTrue(dataFrame.getColumns().contains("COL6"));
+        assertTrue(dataFrame.getColumns().contains("COL7"));
+        assertTrue(dataFrame.getColumns().contains("COL8"));
+        assertTrue(dataFrame.getColumns().contains("COL9"));
+
+        assertEquals(9, dataFrame.getColumnsTypes().size());
+        assertEquals("int", dataFrame.getColumnType("COL1"));
+        assertEquals("String", dataFrame.getColumnType("COL2"));
+        assertEquals("boolean", dataFrame.getColumnType("COL3"));
+        assertEquals("String", dataFrame.getColumnType("COL4"));
+        assertEquals("byte", dataFrame.getColumnType("COL5"));
+        assertEquals("short", dataFrame.getColumnType("COL6"));
+        assertEquals("long", dataFrame.getColumnType("COL7"));
+        assertEquals("float", dataFrame.getColumnType("COL8"));
+        assertEquals("double", dataFrame.getColumnType("COL9"));
+        assertEquals("int", dataFrame.getColumnType("COL1"));
+        assertEquals("String", dataFrame.getColumnType("COL2"));
+        assertEquals("boolean", dataFrame.getColumnType("COL3"));
+        assertEquals("String", dataFrame.getColumnType("COL4"));
+        assertEquals("byte", dataFrame.getColumnType("COL5"));
+        assertEquals("short", dataFrame.getColumnType("COL6"));
+        assertEquals("long", dataFrame.getColumnType("COL7"));
+        assertEquals("float", dataFrame.getColumnType("COL8"));
+        assertEquals("double", dataFrame.getColumnType("COL9"));
+        assertTrue(dataFrame.hasColumn("COL9", double.class));
+        assertFalse(dataFrame.hasColumn("COL9", float.class));
+    }
+
+    /**
+     * Tests the {@link DataFrame#toArray()}, {@link DataFrame#toMatrix()} methods.
+     */
+    @Test
+    void toArrayMatrixTest() {
+        String[] cols = new String[]{"COL6", "COL7", "COL8", "COL9"};
+        DataFrame df = dataFrame.select(cols);
+        assertEquals(5, df.toArray().length);
+        assertEquals(4, df.toArray()[0].length);
+        assertEquals(4, df.toArray()[1].length);
+        assertEquals(4, df.toArray()[2].length);
+        assertEquals(4, df.toArray()[3].length);
+        assertEquals(4, df.toArray()[4].length);
+        assertNotNull(df.toMatrix());
+    }
+
+    /**
+     * Tests the {@link DataFrame#isSpatial()}, {@link DataFrame#getLocation()}, {@link DataFrame#getName()},
+     * {@link DataFrame#getMetaData()}, {@link DataFrame#summary()}, {@link DataFrame#getSummary()},
+     * {@link DataFrame#isEmpty()}, {@link DataFrame#schema()} methods.
+     */
+    @Test
+    void informationTest(){
+        assertFalse(dataFrame.isEmpty());
+        assertNotNull(dataFrame.schema());
+        assertEquals(9, dataFrame.schema().length());
+        assertFalse(dataFrame.isSpatial());
+        assertEquals("smile.data.DataFrame", dataFrame.getLocation());
+        assertEquals("DataFrame", dataFrame.getName());
+        assertNotNull(dataFrame.summary());
+        assertNotNull(dataFrame.getMetaData());
+        assertEquals(dataFrame.summary().toString(), dataFrame.getMetaData().toString());
+        assertNotNull(dataFrame.getSummary());
+        assertEquals(dataFrame.summary().toString(), dataFrame.getSummary().toString());
+
+    }
+
+    /**
+     * Tests the {@link DataFrame#stream()}, {@link DataFrame#nrows()}, {@link DataFrame#getRowCount()},
+     * {@link DataFrame#getRow()}, {@link DataFrame#getUniqueValues(String)}, {@link DataFrame#getFirstRow()} methods
+     * and for each iteration.
+     */
+    @Test
+    void rowTest(){
         int i = 0;
-        for (BaseVector baseVector : df) {
+        for (BaseVector baseVector : dataFrame) {
             i++;
             assertEquals(5, baseVector.size());
         }
         assertEquals(9, i);
-        assertEquals(5, df.stream().count());
+        assertEquals(5, dataFrame.stream().count());
 
-        assertFalse(df06.isEmpty());
+        assertEquals(dataFrame.nrows(), dataFrame.getRowCount());
+        assertEquals(-1, dataFrame.getRow());
 
-        assertEquals(9, df.getColumns().size());
-        assertTrue(df.getColumns().contains("COL1"));
-        assertTrue(df.getColumns().contains("COL2"));
-        assertTrue(df.getColumns().contains("COL3"));
-        assertTrue(df.getColumns().contains("COL4"));
-        assertTrue(df.getColumns().contains("COL5"));
-        assertTrue(df.getColumns().contains("COL6"));
-        assertTrue(df.getColumns().contains("COL7"));
-        assertTrue(df.getColumns().contains("COL8"));
-        assertTrue(df.getColumns().contains("COL9"));
+        assertEquals(2, dataFrame.getUniqueValues("COL3").size());
+        assertEquals(9, dataFrame.getFirstRow().size());
+    }
 
-        assertEquals(9, df.getColumnsTypes().size());
-        assertEquals("int", df.getColumnType("COL1"));
-        assertEquals("String", df.getColumnType("COL2"));
-        assertEquals("boolean", df.getColumnType("COL3"));
-        assertEquals("String", df.getColumnType("COL4"));
-        assertEquals("byte", df.getColumnType("COL5"));
-        assertEquals("short", df.getColumnType("COL6"));
-        assertEquals("long", df.getColumnType("COL7"));
-        assertEquals("float", df.getColumnType("COL8"));
-        assertEquals("double", df.getColumnType("COL9"));
-        assertEquals("int", df.getColumnType("COL1"));
-        assertEquals("String", df.getColumnType("COL2"));
-        assertEquals("boolean", df.getColumnType("COL3"));
-        assertEquals("String", df.getColumnType("COL4"));
-        assertEquals("byte", df.getColumnType("COL5"));
-        assertEquals("short", df.getColumnType("COL6"));
-        assertEquals("long", df.getColumnType("COL7"));
-        assertEquals("float", df.getColumnType("COL8"));
-        assertEquals("double", df.getColumnType("COL9"));
-        assertTrue(df.hasColumn("COL9", double.class));
-        assertFalse(df.hasColumn("COL9", float.class));
+    /**
+     * Tests the {@link DataFrame#asType(Class)} method.
+     */
+    @Test
+    void asTypeTest(){
+        assertNotNull(dataFrame.asType(String.class));
+        assertNotNull(dataFrame.asType(DenseMatrix.class));
+        assertNotNull(dataFrame.asType(DataFrame.class));
+        assertNotNull(dataFrame.asType(Ascii.class));
+        assertNotNull(dataFrame.asType(Html.class));
+        assertNull(dataFrame.asType(Float.class));
+    }
 
-        assertEquals(df.nrows(), df.getRowCount());
-        assertEquals(-1, df.getRow());
-
-        assertEquals(2, df.getUniqueValues("COL3").size());
-        assertEquals(9, df.getFirstRow().size());
-        assertArrayEquals(new String[]{"COL1", "COL2", "COL3"}, df.columns("COL1", "COL2", "COL3").names());
-        assertArrayEquals(new String[]{"COL1", "COL2", "COL3"}, df.columns(Arrays.asList("COL1", "COL2", "COL3")).names());
-
-        assertFalse(df.isSpatial());
-        assertEquals("smile.data.DataFrame", df.getLocation());
-        assertEquals("DataFrame", df.getName());
-        assertNotNull(df.summary());
-        assertNotNull(df.getMetaData());
-        assertEquals(df.summary().toString(), df.getMetaData().toString());
-        assertNotNull(df.getSummary());
-        assertEquals(df.summary().toString(), df.getSummary().toString());
-
-        assertNotNull(df.asType(String.class));
-        assertNotNull(df.asType(DenseMatrix.class));
-        assertNotNull(df.asType(DataFrame.class));
-        assertNull(df.asType(Float.class));
-
+    /**
+     * Tests the {@link DataFrame#save(String, String)}, {@link DataFrame#save(String)},
+     * {@link DataFrame#of(File)}, {@link DataFrame#of(String)} methods.
+     */
+    @Test
+    void saveLoadTest() throws IOException {
         String path = "./target/" + UUID.randomUUID().toString().replaceAll("-", "_") + ".csv";
-        assertTrue(df.save(path, null));
+        assertTrue(dataFrame.save(path, null));
         DataFrame df2 = DataFrame.of(new File(path));
         assertNotNull(df2);
         assertEquals(9, df2.schema().length());
 
+        assertTrue(dataFrame.save(path));
         DataFrame df3 = DataFrame.of(path);
         assertNotNull(df3);
         assertEquals(9, df3.schema().length());
@@ -205,6 +299,11 @@ public class DataFrameTest {
         assertNull(DataFrame.of(notCsv));
     }
 
+    /**
+     * Tests the wrapping of a spatial table into a {@link DataFrame}.
+     *
+     * @throws SQLException Exception thrown when a SQL error occurs.
+     */
     @Test
     void testDataFrameFromSpatialTable() throws SQLException {
         H2GIS h2GIS = RANDOM_DS();

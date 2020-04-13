@@ -63,7 +63,7 @@ import java.util.stream.Stream;
  * Wrap the {@link smile.data.DataFrame} into a new class implementing the {@link ITable} interface. This new
  * DataFrame is compatible with the OrbisData API and can be generated from an {@link ITable instance}.
  *
- * @author Sylvain PALOMINOS (UBS LAB-STICC 2019)
+ * @author Sylvain PALOMINOS (UBS LAB-STICC 2019-2020)
  */
 public class DataFrame implements smile.data.DataFrame, ITable<BaseVector> {
 

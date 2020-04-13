@@ -48,7 +48,7 @@ import java.util.Arrays;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.orbisgis.orbisdata.datamanager.jdbc.h2gis.H2GIS.open;
+import static org.orbisgis.orbisdata.datamanager.dataframe.TestUtils.RANDOM_DS;
 
 /**
  * Test class for {@link DataFrame}.
@@ -56,10 +56,6 @@ import static org.orbisgis.orbisdata.datamanager.jdbc.h2gis.H2GIS.open;
  * @author Sylvain PALOMINOS (UBS LAB-STICC 2019)
  */
 public class DataFrameTest {
-
-    private static H2GIS RANDOM_DS() {
-        return open("./target/" + UUID.randomUUID().toString().replaceAll("-", "_"));
-    }
 
     @Test
     void testDataFrameFromTable() throws SQLException, IOException {

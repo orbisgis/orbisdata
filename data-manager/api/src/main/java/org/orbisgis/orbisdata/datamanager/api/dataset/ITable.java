@@ -50,7 +50,7 @@ import java.util.Map;
  * Extension of the {@link IDataSet} interface. A {@link ITable} is a 2D (column/line) representation of raw data.
  *
  * @author Erwan Bocher (CNRS)
- * @author Sylvain PALOMINOS (Lab-STICC UBS 2018-2019)
+ * @author Sylvain PALOMINOS (Lab-STICC UBS 2018-2020)
  */
 public interface ITable<T> extends IMatrix<T> {
 

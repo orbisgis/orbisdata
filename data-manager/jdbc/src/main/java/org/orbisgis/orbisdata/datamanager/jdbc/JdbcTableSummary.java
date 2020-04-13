@@ -98,4 +98,9 @@ public class JdbcTableSummary implements IJdbcTableSummary {
         return (tableLocation == null ? IJdbcTable.QUERY_LOCATION : tableLocation.toString()) + "; row count : " +
                 rowCount + "; column count : " + columnCount;
     }
+
+    @Override
+    public Object asType(Class clazz) {
+        return null;
+    }
 }

@@ -233,10 +233,8 @@ public class H2GIS extends JdbcDataSource {
         try {
             TableLocation location = new TableLocation(Objects.requireNonNull(getLocation()).toString(), tableName);
             Connection con = getConnection();
-            if(con != null) {
-                if (!SFSUtilities.getGeometryFields(con, location).isEmpty()) {
-                    return new H2gisSpatialTable(new TableLocation(this.getLocation().toString(), name), query, statement, this);
-                }
+            if(con != null && !SFSUtilities.getGeometryFields(con, location).isEmpty()) {
+                return new H2gisSpatialTable(new TableLocation(this.getLocation().toString(), name), query, statement, this);
             }
         } catch (SQLException e) {
             LOGGER.error("Unable to check if table '" + name + "' contains geometric fields.\n" +

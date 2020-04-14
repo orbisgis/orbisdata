@@ -104,7 +104,6 @@ class JdbcDataSourceTest {
     void init() throws SQLException {
         DataSource dataSource = H2GISDBFactory.createDataSource(new File(DB_NAME).toURI().toString(), true);
         Connection connection = dataSource.getConnection();
-        Sql sql = new Sql(connection);
 
         ds1 = new DummyJdbcDataSource(dataSource, DataBaseType.H2GIS);
         ds2 = new DummyJdbcDataSource(connection, DataBaseType.POSTGIS);

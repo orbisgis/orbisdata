@@ -106,7 +106,7 @@ public class DataFrame implements smile.data.DataFrame, ITable<BaseVector> {
      *
      * @param dataFrame The internal {@link DataFrame}.
      */
-    void setInternalDataFrame(@NotNull smile.data.DataFrame dataFrame) {
+    protected void setInternalDataFrame(@NotNull smile.data.DataFrame dataFrame) {
         internalDataFrame = dataFrame;
     }
 

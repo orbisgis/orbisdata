@@ -49,10 +49,10 @@ import org.orbisgis.orbisdata.datamanager.api.dataset.IDataSet;
 public interface IDataSource<T> {
 
     /**
-     * Return the {@link IDataSet} implementation corresponding to the given name.
+     * Return the {@link IDataSet} implementation corresponding to the given name or null if not {@link IDataSet found}.
      *
      * @param name Name of the {@link IDataSet}.
-     * @return The implementation of {@link IDataSet} corresponding to the given name.
+     * @return The implementation of {@link IDataSet} corresponding to the given name or null.
      */
     @Nullable
     IDataSet<T> getDataSet(@NotNull String name);

@@ -51,7 +51,6 @@ public interface IDataSourceLocation {
      * Cast the {@link IDataSourceLocation} into the given type
      *
      * @param type Type used for the cast
-     * @param <T>  Class used for the cast
      * @return The {@link IDataSourceLocation} into the given type
      */
     @Nullable

@@ -159,10 +159,8 @@ public class POSTGIS extends JdbcDataSource {
         try {
             TableLocation location = new TableLocation(Objects.requireNonNull(getLocation()).toString(), tableName);
             Connection con = getConnection();
-            if(con != null) {
-                if (!SFSUtilities.getGeometryFields(con, location).isEmpty()) {
-                    return new PostgisSpatialTable(new TableLocation(getLocation().toString(), tableName), query, statement, this);
-                }
+            if(con != null && !SFSUtilities.getGeometryFields(con, location).isEmpty()) {
+                return new PostgisSpatialTable(new TableLocation(getLocation().toString(), tableName), query, statement, this);
             }
         } catch (SQLException e) {
             LOGGER.error("Unable to check if table '" + tableName + "' contains geometric fields.\n" +
@@ -193,10 +191,8 @@ public class POSTGIS extends JdbcDataSource {
         try {
             TableLocation location = new TableLocation(Objects.requireNonNull(getLocation()).toString(), tableName);
             Connection con = getConnection();
-            if(con != null) {
-                if (!SFSUtilities.getGeometryFields(con, new TableLocation(location.toString(), tableName)).isEmpty()) {
-                    return new PostgisSpatialTable(new TableLocation(this.getLocation().toString(), tableName), query, statement, this);
-                }
+            if(con != null && !SFSUtilities.getGeometryFields(con, new TableLocation(location.toString(), tableName)).isEmpty()) {
+                return new PostgisSpatialTable(new TableLocation(this.getLocation().toString(), tableName), query, statement, this);
             }
         } catch (SQLException e) {
             LOGGER.error("Unable to check if table '" + tableName + "' contains geometric fields.\n" +

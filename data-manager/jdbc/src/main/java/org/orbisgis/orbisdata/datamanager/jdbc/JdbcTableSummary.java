@@ -36,6 +36,8 @@
  */
 package org.orbisgis.orbisdata.datamanager.jdbc;
 
+import org.orbisgis.commons.annotations.NotNull;
+import org.orbisgis.commons.annotations.Nullable;
 import org.orbisgis.orbisdata.datamanager.api.dataset.IJdbcTable;
 import org.orbisgis.orbisdata.datamanager.api.dataset.IJdbcTableSummary;
 import org.orbisgis.orbisdata.datamanager.api.dataset.ISummary;
@@ -50,17 +52,17 @@ public class JdbcTableSummary implements IJdbcTableSummary {
     /**
      * Count of column of the summarized {@link JdbcTable}
      */
-    private int columnCount;
+    private final int columnCount;
     /**
      * Count of row of the summarized {@link JdbcTable}
      */
-    private int rowCount;
+    private final int rowCount;
     /**
      * {@link TableLocation} of the summarized {@link JdbcTable}
      */
-    private TableLocation tableLocation;
+    private final TableLocation tableLocation;
 
-    public JdbcTableSummary(TableLocation tableLocation, int columnCount, int rowCount) {
+    public JdbcTableSummary(@Nullable TableLocation tableLocation, int columnCount, int rowCount) {
         this.tableLocation = tableLocation;
         this.columnCount = columnCount;
         this.rowCount = rowCount;
@@ -100,7 +102,7 @@ public class JdbcTableSummary implements IJdbcTableSummary {
     }
 
     @Override
-    public Object asType(Class clazz) {
+    public Object asType(@NotNull Class<?> clazz) {
         return null;
     }
 }

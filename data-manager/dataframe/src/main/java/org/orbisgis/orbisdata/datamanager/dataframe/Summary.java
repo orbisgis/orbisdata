@@ -36,6 +36,7 @@
  */
 package org.orbisgis.orbisdata.datamanager.dataframe;
 
+import org.orbisgis.commons.annotations.NotNull;
 import org.orbisgis.commons.printer.Ascii;
 import org.orbisgis.commons.printer.Html;
 import org.orbisgis.commons.printer.ICustomPrinter;
@@ -61,7 +62,7 @@ public class Summary extends DataFrame implements ISummary {
     }
 
     @Override
-    public Object asType(Class clazz) {
+    public Object asType(@NotNull Class<?> clazz) {
         if (Ascii.class.equals(clazz) || Html.class.equals(clazz)) {
             ICustomPrinter printer;
             if (Ascii.class.equals(clazz)) {

@@ -53,6 +53,7 @@ import java.sql.SQLException;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.UUID;
 
@@ -118,7 +119,7 @@ public class DataFrameTest {
         assertEquals(0, dataFrame.getLong(6));
         assertEquals(0, dataFrame.getFloat(7));
         assertEquals(0, dataFrame.getDouble(8));
-        assertEquals(new BigDecimal(0), dataFrame.getBigDecimal(8));
+        assertEquals(new BigDecimal("0.0"), dataFrame.getBigDecimal(8));
         assertEquals("12:34:56", dataFrame.getTime(9).toString());
         assertEquals("2020-04-16", dataFrame.getDate(10).toString());
         assertEquals("2020-04-16 12:34:56.7", dataFrame.getTimestamp(11).toString());
@@ -135,7 +136,7 @@ public class DataFrameTest {
         assertEquals(1, dataFrame.getLong("COL7"));
         assertEquals(1, dataFrame.getFloat("COL8"));
         assertEquals(1, dataFrame.getDouble("COL9"));
-        assertEquals(new BigDecimal(1), dataFrame.getBigDecimal("COL9"));
+        assertEquals(new BigDecimal("1.0"), dataFrame.getBigDecimal("COL9"));
         assertEquals("12:34:56", dataFrame.getTime("COL10").toString());
         assertEquals("2020-04-16", dataFrame.getDate("COL11").toString());
         assertEquals("2020-04-16 12:34:56.7", dataFrame.getTimestamp("COL12").toString());
@@ -162,7 +163,7 @@ public class DataFrameTest {
         assertEquals(3f, dataFrame.getObject(7, Float.class));
         assertEquals(3d, dataFrame.getObject(8, double.class));
         assertEquals(3d, dataFrame.getObject(8, Double.class));
-        assertEquals(new BigDecimal(3), dataFrame.getObject(8, BigDecimal.class));
+        assertEquals(new BigDecimal("3.0"), dataFrame.getObject(8, BigDecimal.class));
         assertEquals(new BigDecimal(3).toBigInteger(), dataFrame.getObject(8, BigInteger.class));
         assertEquals("12:34:56", dataFrame.getObject(9, Time.class).toString());
         assertEquals("2020-04-16", dataFrame.getObject(10, Date.class).toString());
@@ -186,7 +187,7 @@ public class DataFrameTest {
         assertEquals(4f, dataFrame.getObject("COL8", Float.class));
         assertEquals(4d, dataFrame.getObject("COL9", double.class));
         assertEquals(4d, dataFrame.getObject("COL9", Double.class));
-        assertEquals(new BigDecimal(4), dataFrame.getObject("COL9", BigDecimal.class));
+        assertEquals(new BigDecimal("4.0"), dataFrame.getObject("COL9", BigDecimal.class));
         assertEquals(new BigDecimal(4).toBigInteger(), dataFrame.getObject("COL9", BigInteger.class));
         assertEquals("12:34:56", dataFrame.getObject("COL10", Time.class).toString());
         assertEquals("2020-04-16", dataFrame.getObject("COL11", Date.class).toString());
@@ -295,7 +296,7 @@ public class DataFrameTest {
         assertTrue(dataFrame.hasColumn("COL9", double.class));
         assertFalse(dataFrame.hasColumn("COL9", float.class));
 
-        DataFrame df = new DataFrame();
+        DataFrame df = DataFrame.of(new int[][]{{0}});
         assertNull(df.getColumnType("COL"));
     }
 

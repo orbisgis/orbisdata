@@ -125,7 +125,7 @@ public class JdbcColumn implements IJdbcColumn, GroovyObject {
             return null;
         }
         try {
-            Map map = dataSource.firstRow("SELECT TYPE_NAME FROM INFORMATION_SCHEMA.COLUMNS " +
+            Map<?, ?> map = dataSource.firstRow("SELECT TYPE_NAME FROM INFORMATION_SCHEMA.COLUMNS " +
                             "WHERE INFORMATION_SCHEMA.COLUMNS.TABLE_NAME=? " +
                             "AND INFORMATION_SCHEMA.COLUMNS.TABLE_SCHEMA=? " +
                             "AND INFORMATION_SCHEMA.COLUMNS.COLUMN_NAME=?;",

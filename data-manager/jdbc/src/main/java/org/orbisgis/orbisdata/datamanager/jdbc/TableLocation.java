@@ -36,6 +36,7 @@
  */
 package org.orbisgis.orbisdata.datamanager.jdbc;
 
+import org.orbisgis.commons.annotations.NotNull;
 import org.orbisgis.orbisdata.datamanager.api.dataset.DataBaseType;
 import org.orbisgis.orbisdata.datamanager.api.dataset.ITableLocation;
 
@@ -50,12 +51,12 @@ public class TableLocation extends org.h2gis.utilities.TableLocation implements 
     /**
      * The dataSource name.
      */
-    private String dataSource;
+    private final String dataSource;
 
     /**
      * @param dataSource DataSource name
-     * @param rs         Result set obtained through {@link java.sql.DatabaseMetaData#getTables(String, String, String, String[])}
-     * @throws SQLException
+     * @param rs         {@link ResultSet} obtained through {@link java.sql.DatabaseMetaData#getTables(String, String, String, String[])}
+     * @throws SQLException Exception get on getting data from the given {@link ResultSet}.
      */
     public TableLocation(String dataSource, ResultSet rs) throws SQLException {
         super(rs);
@@ -93,12 +94,14 @@ public class TableLocation extends org.h2gis.utilities.TableLocation implements 
     }
 
     @Override
+    @NotNull
     public String getDataSource() {
         return dataSource;
     }
 
     @Override
-    public String toString(DataBaseType type) {
+    @NotNull
+    public String toString(@NotNull DataBaseType type) {
         return super.toString();
     }
 }

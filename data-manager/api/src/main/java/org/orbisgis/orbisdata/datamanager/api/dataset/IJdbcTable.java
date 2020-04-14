@@ -37,6 +37,8 @@
 package org.orbisgis.orbisdata.datamanager.api.dataset;
 
 import groovy.lang.Closure;
+import org.orbisgis.commons.annotations.NotNull;
+import org.orbisgis.commons.annotations.Nullable;
 import org.orbisgis.orbisdata.datamanager.api.dsl.IWhereBuilderOrOptionBuilder;
 
 import java.sql.ResultSet;
@@ -68,6 +70,7 @@ public interface IJdbcTable extends ITable<Object>, ResultSet, IWhereBuilderOrOp
      *
      * @return The {@link ITableLocation}.
      */
+    @Nullable
     ITableLocation getTableLocation();
 
     /**
@@ -75,9 +78,11 @@ public interface IJdbcTable extends ITable<Object>, ResultSet, IWhereBuilderOrOp
      *
      * @return The {@link DataBaseType} type
      */
+    @NotNull
     DataBaseType getDbType();
 
     @Override
+    @Nullable
     ResultSetMetaData getMetaData();
 
     /**
@@ -105,6 +110,7 @@ public interface IJdbcTable extends ITable<Object>, ResultSet, IWhereBuilderOrOp
     }
 
     @Override
+    @NotNull
     default String getName() {
         ITableLocation location = getTableLocation();
         if (location == null || location.getTable().isEmpty()) {
@@ -115,6 +121,7 @@ public interface IJdbcTable extends ITable<Object>, ResultSet, IWhereBuilderOrOp
     }
 
     @Override
+    @NotNull
     default ResultSetIterator iterator() {
         try {
             return new ResultSetIterator(this);
@@ -124,16 +131,19 @@ public interface IJdbcTable extends ITable<Object>, ResultSet, IWhereBuilderOrOp
     }
 
     @Override
-    default void eachRow(Closure<Object> closure) {
+    default void eachRow(@NotNull Closure<Object> closure) {
         this.forEach(closure::call);
     }
 
     @Override
+    @NotNull
     IJdbcTableSummary getSummary();
 
     @Override
-    IJdbcTable columns(String... columns);
+    @NotNull
+    IJdbcTable columns(@NotNull String... columns);
 
     @Override
-    IJdbcTable columns(List<String> columns);
+    @NotNull
+    IJdbcTable columns(@NotNull List<String> columns);
 }

@@ -37,6 +37,8 @@
 package org.orbisgis.orbisdata.datamanager.jdbc.postgis;
 
 import org.h2gis.postgis_jts.StatementWrapper;
+import org.orbisgis.commons.annotations.NotNull;
+import org.orbisgis.commons.annotations.Nullable;
 import org.orbisgis.orbisdata.datamanager.api.dataset.DataBaseType;
 import org.orbisgis.orbisdata.datamanager.api.dataset.ISpatialTable;
 import org.orbisgis.orbisdata.datamanager.api.dataset.ITable;
@@ -60,13 +62,13 @@ public class PostgisTable extends JdbcTable {
      * @param statement      Statement used to request the database.
      * @param jdbcDataSource DataSource to use for the creation of the resultSet.
      */
-    public PostgisTable(TableLocation tableLocation, String baseQuery, StatementWrapper statement,
-                        JdbcDataSource jdbcDataSource) {
+    public PostgisTable(@Nullable TableLocation tableLocation, @NotNull String baseQuery,
+                        @NotNull StatementWrapper statement, @NotNull JdbcDataSource jdbcDataSource) {
         super(DataBaseType.H2GIS, jdbcDataSource, tableLocation, statement, baseQuery);
     }
 
     @Override
-    public Object asType(Class clazz) {
+    public Object asType(@NotNull Class<?> clazz) {
         if (ISpatialTable.class.isAssignableFrom(clazz)) {
             return new PostgisSpatialTable(getTableLocation(), getBaseQuery(), (StatementWrapper) getStatement(),
                     getJdbcDataSource());

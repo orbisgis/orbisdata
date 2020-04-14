@@ -122,7 +122,7 @@ public class SpatialResultSetWrapper extends ResultSetWrapper implements Spatial
     //TODO move to the postgis-jts project.
     private static class SpatialResultSetMetaDataImpl extends ResultSetMetaDataWrapper implements SpatialResultSetMetaData {
         private int firstGeometryFieldIndex = -1;
-        private StatementWrapper statement;
+        private final StatementWrapper statement;
 
         public SpatialResultSetMetaDataImpl(ResultSetMetaData resultSetMetaData, StatementWrapper statement) {
             super(resultSetMetaData);

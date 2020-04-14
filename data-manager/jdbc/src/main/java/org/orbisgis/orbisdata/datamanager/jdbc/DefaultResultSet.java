@@ -36,6 +36,9 @@
  */
 package org.orbisgis.orbisdata.datamanager.jdbc;
 
+import org.orbisgis.commons.annotations.NotNull;
+import org.orbisgis.commons.annotations.Nullable;
+
 import java.io.InputStream;
 import java.io.Reader;
 import java.math.BigDecimal;
@@ -56,6 +59,7 @@ public abstract class DefaultResultSet implements ResultSet {
      *
      * @return The table ResultSet.
      */
+    @Nullable
     protected abstract ResultSet getResultSet();
 
     @Override
@@ -156,27 +160,27 @@ public abstract class DefaultResultSet implements ResultSet {
     }
 
     @Override
-    public String getString(String s) throws SQLException {
+    public String getString(@NotNull String s) throws SQLException {
         return getResultSet().getString(s);
     }
 
     @Override
-    public boolean getBoolean(String s) throws SQLException {
+    public boolean getBoolean(@NotNull String s) throws SQLException {
         return getResultSet().getBoolean(s);
     }
 
     @Override
-    public byte getByte(String s) throws SQLException {
+    public byte getByte(@NotNull String s) throws SQLException {
         return getResultSet().getByte(s);
     }
 
     @Override
-    public short getShort(String s) throws SQLException {
+    public short getShort(@NotNull String s) throws SQLException {
         return getResultSet().getShort(s);
     }
 
     @Override
-    public int getInt(String s) throws SQLException {
+    public int getInt(@NotNull String s) throws SQLException {
         return getResultSet().getInt(s);
     }
 
@@ -186,12 +190,12 @@ public abstract class DefaultResultSet implements ResultSet {
     }
 
     @Override
-    public float getFloat(String s) throws SQLException {
+    public float getFloat(@NotNull String s) throws SQLException {
         return getResultSet().getFloat(s);
     }
 
     @Override
-    public double getDouble(String s) throws SQLException {
+    public double getDouble(@NotNull String s) throws SQLException {
         return getResultSet().getDouble(s);
     }
 
@@ -202,22 +206,22 @@ public abstract class DefaultResultSet implements ResultSet {
     }
 
     @Override
-    public byte[] getBytes(String s) throws SQLException {
+    public byte[] getBytes(@NotNull String s) throws SQLException {
         return getResultSet().getBytes(s);
     }
 
     @Override
-    public Date getDate(String s) throws SQLException {
+    public Date getDate(@NotNull String s) throws SQLException {
         return getResultSet().getDate(s);
     }
 
     @Override
-    public Time getTime(String s) throws SQLException {
+    public Time getTime(@NotNull String s) throws SQLException {
         return getResultSet().getTime(s);
     }
 
     @Override
-    public Timestamp getTimestamp(String s) throws SQLException {
+    public Timestamp getTimestamp(@NotNull String s) throws SQLException {
         return getResultSet().getTimestamp(s);
     }
 
@@ -263,7 +267,7 @@ public abstract class DefaultResultSet implements ResultSet {
     }
 
     @Override
-    public Object getObject(String s) throws SQLException {
+    public Object getObject(@NotNull String s) throws SQLException {
         return getResultSet().getObject(s);
     }
 
@@ -288,7 +292,7 @@ public abstract class DefaultResultSet implements ResultSet {
     }
 
     @Override
-    public BigDecimal getBigDecimal(String s) throws SQLException {
+    public BigDecimal getBigDecimal(@NotNull String s) throws SQLException {
         return getResultSet().getBigDecimal(s);
     }
 
@@ -993,12 +997,12 @@ public abstract class DefaultResultSet implements ResultSet {
     }
 
     @Override
-    public <T> T getObject(int i, Class<T> aClass) throws SQLException {
+    public <T> T getObject(int i, @NotNull Class<T> aClass) throws SQLException {
         return getResultSet().getObject(i, aClass);
     }
 
     @Override
-    public <T> T getObject(String s, Class<T> aClass) throws SQLException {
+    public <T> T getObject(@NotNull String s, @NotNull Class<T> aClass) throws SQLException {
         return getResultSet().getObject(s, aClass);
     }
 

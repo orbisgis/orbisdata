@@ -48,8 +48,8 @@ import org.orbisgis.orbisdata.datamanager.jdbc.JdbcDataSource;
  */
 public class ConditionOrOptionBuilder extends OptionBuilder implements IConditionOrOptionBuilder {
 
-    private StringBuilder query;
-    private JdbcDataSource dataSource;
+    private final StringBuilder query;
+    private final JdbcDataSource dataSource;
 
     /**
      * Main constructor.

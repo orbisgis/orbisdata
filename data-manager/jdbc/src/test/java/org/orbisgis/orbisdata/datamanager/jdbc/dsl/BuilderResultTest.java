@@ -43,6 +43,7 @@ import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.wrapper.SpatialResultSetImpl;
 import org.h2gis.utilities.wrapper.StatementWrapper;
 import org.junit.jupiter.api.Test;
+import org.orbisgis.commons.annotations.NotNull;
 import org.orbisgis.commons.printer.Ascii;
 import org.orbisgis.orbisdata.datamanager.api.dataset.*;
 import org.orbisgis.orbisdata.datamanager.jdbc.JdbcDataSource;
@@ -166,6 +167,7 @@ public class BuilderResultTest {
             return new SpatialResultSetImpl(resultSet, (StatementWrapper) getStatement());
         }
 
+        @NotNull
         @Override
         public ISpatialTable reproject(int srid) {
             throw new IllegalArgumentException("Unsupported operation");
@@ -182,12 +184,12 @@ public class BuilderResultTest {
         }
 
         @Override
-        public IJdbcTable getTable(String tableName) {
+        public IJdbcTable getTable(@NotNull String tableName) {
             return null;
         }
 
         @Override
-        public IJdbcSpatialTable getSpatialTable(String tableName) {
+        public IJdbcSpatialTable getSpatialTable(@NotNull String tableName) {
             String name = TableLocation.parse(tableName, getDataBaseType().equals(DataBaseType.H2GIS)).toString(getDataBaseType().equals(DataBaseType.H2GIS));
             try {
                 if (!JDBCUtilities.tableExists(connection, name)) {
@@ -206,6 +208,7 @@ public class BuilderResultTest {
             return new DummyJdbcSpatialTable(new TableLocation(null, name), query, statement, this);
         }
 
+        @NotNull
         @Override
         public Collection<String> getTableNames() {
             try {
@@ -216,12 +219,12 @@ public class BuilderResultTest {
         }
 
         @Override
-        public IJdbcTable getDataSet(String name) {
+        public IJdbcTable getDataSet(@NotNull String name) {
             return null;
         }
 
         @Override
-        public boolean hasTable(String tableName) {
+        public boolean hasTable(@NotNull String tableName) {
             try {
                 return JDBCUtilities.tableExists(connection, tableName);
             } catch (SQLException ex) {

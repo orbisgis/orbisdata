@@ -50,8 +50,8 @@ import org.orbisgis.orbisdata.datamanager.jdbc.JdbcDataSource;
  */
 public class WhereBuilder extends OptionBuilder implements IWhereBuilderOrOptionBuilder, IBuilderResult {
 
-    private StringBuilder query;
-    private JdbcDataSource dataSource;
+    private final StringBuilder query;
+    private final JdbcDataSource dataSource;
 
     /**
      * Main constructor.

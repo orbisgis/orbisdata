@@ -37,6 +37,8 @@
 package org.orbisgis.orbisdata.datamanager.dataframe;
 
 import org.locationtech.jts.geom.Geometry;
+import org.orbisgis.commons.annotations.NotNull;
+import org.orbisgis.commons.annotations.Nullable;
 import org.orbisgis.commons.printer.Ascii;
 import org.orbisgis.commons.printer.Html;
 import org.orbisgis.commons.printer.ICustomPrinter;
@@ -94,6 +96,7 @@ public class DataFrame implements smile.data.DataFrame, ITable<BaseVector> {
      *
      * @return The internal {@link DataFrame}.
      */
+    @NotNull
     private smile.data.DataFrame getInternalDataFrame() {
         return internalDataFrame;
     }
@@ -103,13 +106,14 @@ public class DataFrame implements smile.data.DataFrame, ITable<BaseVector> {
      *
      * @param dataFrame The internal {@link DataFrame}.
      */
-    void setInternalDataFrame(smile.data.DataFrame dataFrame) {
+    void setInternalDataFrame(@NotNull smile.data.DataFrame dataFrame) {
         internalDataFrame = dataFrame;
     }
 
     @Override
+    @NotNull
     public StructType schema() {
-        return getInternalDataFrame()!=null ? getInternalDataFrame().schema() : new StructType();
+        return getInternalDataFrame().schema();
     }
 
     @Override
@@ -123,101 +127,121 @@ public class DataFrame implements smile.data.DataFrame, ITable<BaseVector> {
     }
 
     @Override
-    public BaseVector column(int i) {
+    @NotNull
+    public BaseVector<?, ?, ?> column(int i) {
         return getInternalDataFrame().column(i);
     }
 
     @Override
+    @NotNull
     public <T> Vector<T> vector(int i) {
         return getInternalDataFrame().vector(i);
     }
 
     @Override
+    @NotNull
     public BooleanVector booleanVector(int i) {
         return getInternalDataFrame().booleanVector(i);
     }
 
     @Override
+    @NotNull
     public CharVector charVector(int i) {
         return getInternalDataFrame().charVector(i);
     }
 
     @Override
+    @NotNull
     public ByteVector byteVector(int i) {
         return getInternalDataFrame().byteVector(i);
     }
 
     @Override
+    @NotNull
     public ShortVector shortVector(int i) {
         return getInternalDataFrame().shortVector(i);
     }
 
     @Override
+    @NotNull
     public IntVector intVector(int i) {
         return getInternalDataFrame().intVector(i);
     }
 
     @Override
+    @NotNull
     public LongVector longVector(int i) {
         return getInternalDataFrame().longVector(i);
     }
 
     @Override
+    @NotNull
     public FloatVector floatVector(int i) {
         return getInternalDataFrame().floatVector(i);
     }
 
     @Override
+    @NotNull
     public DoubleVector doubleVector(int i) {
         return getInternalDataFrame().doubleVector(i);
     }
 
     @Override
+    @NotNull
     public StringVector stringVector(int i) {
         return getInternalDataFrame().stringVector(i);
     }
 
     @Override
+    @NotNull
     public DataFrame select(int... ints) {
         return of(getInternalDataFrame().select(ints));
     }
 
     @Override
+    @NotNull
     public DataFrame select(String... cols) {
         return of(getInternalDataFrame().select(cols));
     }
 
     @Override
+    @NotNull
     public DataFrame drop(int... ints) {
         return of(getInternalDataFrame().drop(ints));
     }
 
     @Override
+    @NotNull
     public DataFrame merge(smile.data.DataFrame... dataFrames) {
         return of(getInternalDataFrame().merge(dataFrames));
     }
 
     @Override
+    @NotNull
     public DataFrame merge(BaseVector... baseVectors) {
         return of(getInternalDataFrame().merge(baseVectors));
     }
 
     @Override
+    @NotNull
     public DataFrame union(smile.data.DataFrame... dataFrames) {
         return of(getInternalDataFrame().union(dataFrames));
     }
 
     @Override
+    @NotNull
     public double[][] toArray() {
         return getInternalDataFrame().toArray();
     }
 
     @Override
+    @NotNull
     public DenseMatrix toMatrix() {
         return getInternalDataFrame().toMatrix();
     }
 
     @Override
+    @NotNull
     public Iterator<BaseVector> iterator() {
         return getInternalDataFrame().iterator();
     }
@@ -233,11 +257,13 @@ public class DataFrame implements smile.data.DataFrame, ITable<BaseVector> {
     }
 
     @Override
+    @NotNull
     public Summary getSummary() {
         return summary();
     }
 
     @Override
+    @NotNull
     public Summary summary() {
         return new Summary(getInternalDataFrame().summary());
     }
@@ -289,7 +315,8 @@ public class DataFrame implements smile.data.DataFrame, ITable<BaseVector> {
 
     @Override
     public byte[] getBytes(int column) {
-        return getString(column).getBytes();
+        String str = getString(column);
+        return str != null ? str.getBytes() : new byte[]{};
     }
 
     @Override
@@ -304,7 +331,11 @@ public class DataFrame implements smile.data.DataFrame, ITable<BaseVector> {
 
     @Override
     public Timestamp getTimestamp(int column) {
-        return Timestamp.valueOf((LocalDateTime)getObject(column));
+        Object obj = getObject(column);
+        if(obj instanceof LocalDateTime) {
+            return Timestamp.valueOf((LocalDateTime)obj);
+        }
+        return null;
     }
 
     @Override
@@ -314,85 +345,94 @@ public class DataFrame implements smile.data.DataFrame, ITable<BaseVector> {
 
     @Override
     public BigDecimal getBigDecimal(int column) {
-        return new BigDecimal(getDouble(column));
+        return BigDecimal.valueOf(getDouble(column));
     }
 
     @Override
-    public String getString(String column) {
+    public String getString(@NotNull String column) {
         return getInternalDataFrame().getString(getRow(), column);
     }
 
     @Override
-    public boolean getBoolean(String column) {
+    public boolean getBoolean(@NotNull String column) {
         return getInternalDataFrame().getBoolean(getRow(), column);
     }
 
     @Override
-    public byte getByte(String column) {
+    public byte getByte(@NotNull String column) {
         return getInternalDataFrame().getByte(getRow(), column);
     }
 
     @Override
-    public short getShort(String column) {
+    public short getShort(@NotNull String column) {
         return getInternalDataFrame().getShort(getRow(), column);
     }
 
     @Override
-    public int getInt(String column) {
+    public int getInt(@NotNull String column) {
         return getInternalDataFrame().getInt(getRow(), column);
     }
 
     @Override
-    public long getLong(String column) {
+    public long getLong(@NotNull String column) {
         return getInternalDataFrame().getLong(getRow(), column);
     }
 
     @Override
-    public float getFloat(String column) {
+    public float getFloat(@NotNull String column) {
         return getInternalDataFrame().getFloat(getRow(), column);
     }
 
     @Override
-    public double getDouble(String column) {
+    public double getDouble(@NotNull String column) {
         return getInternalDataFrame().getDouble(getRow(), column);
     }
 
     @Override
-    public byte[] getBytes(String column) {
-        return getString(column).getBytes();
+    public byte[] getBytes(@NotNull String column) {
+        String str = getString(column);
+        return str != null ? str.getBytes() : new byte[]{};
     }
 
     @Override
-    public Date getDate(String column) {
+    public Date getDate(@NotNull String column) {
         return Date.valueOf(getInternalDataFrame().getDate(getRow(), column));
     }
 
     @Override
-    public Time getTime(String column) {
+    public Time getTime(@NotNull String column) {
         return Time.valueOf(getInternalDataFrame().getTime(getRow(), column));
     }
 
     @Override
-    public Timestamp getTimestamp(String column) {
-        return Timestamp.valueOf((LocalDateTime)getObject(column));
+    public Timestamp getTimestamp(@NotNull String column) {
+        Object obj = getObject(column);
+        if(obj instanceof LocalDateTime) {
+            return Timestamp.valueOf((LocalDateTime)obj);
+        }
+        return null;
     }
 
     @Override
-    public Object getObject(String column) {
+    public Object getObject(@NotNull String column) {
         return getInternalDataFrame().get(getRow(), column);
     }
 
     @Override
-    public BigDecimal getBigDecimal(String column) {
-        return new BigDecimal(getDouble(column));
+    public BigDecimal getBigDecimal(@NotNull String column) {
+        return BigDecimal.valueOf(getDouble(column));
     }
 
     @Override
-    public Object getObject(int column, Class clazz){
+    public Object getObject(int column, @NotNull Class clazz){
         if (clazz == BigDecimal.class) {
             return this.getBigDecimal(column);
         } else if (clazz == BigInteger.class) {
-            return this.getBigDecimal(column).toBigInteger();
+            BigDecimal bd = this.getBigDecimal(column);
+            if(bd != null) {
+                return bd.toBigInteger();
+            }
+            return null;
         } else if (clazz == String.class) {
             return this.getString(column);
         } else if (clazz == Boolean.class || clazz == boolean.class) {
@@ -426,11 +466,15 @@ public class DataFrame implements smile.data.DataFrame, ITable<BaseVector> {
     }
 
     @Override
-    public Object getObject(String column, Class clazz){
+    public Object getObject(@NotNull String column, @NotNull Class clazz){
         if (clazz == BigDecimal.class) {
             return this.getBigDecimal(column);
         } else if (clazz == BigInteger.class) {
-            return this.getBigDecimal(column).toBigInteger();
+            BigDecimal bd = this.getBigDecimal(column);
+            if(bd != null) {
+                return bd.toBigInteger();
+            }
+            return null;
         } else if (clazz == String.class) {
             return this.getString(column);
         } else if (clazz == Boolean.class || clazz == boolean.class) {
@@ -469,11 +513,13 @@ public class DataFrame implements smile.data.DataFrame, ITable<BaseVector> {
     }
 
     @Override
+    @NotNull
     public Collection<String> getColumns() {
         return Arrays.asList(names());
     }
 
     @Override
+    @NotNull
     public Map<String, String> getColumnsTypes() {
         DataType[] dataTypes = types();
         String[] names = names();
@@ -485,7 +531,7 @@ public class DataFrame implements smile.data.DataFrame, ITable<BaseVector> {
     }
 
     @Override
-    public String getColumnType(String columnName) {
+    public String getColumnType(@NotNull String columnName) {
         String[] names = names();
         for (int i = 0; i < names.length; i++) {
             String name = names[i];
@@ -497,7 +543,7 @@ public class DataFrame implements smile.data.DataFrame, ITable<BaseVector> {
     }
 
     @Override
-    public boolean hasColumn(String columnName, Class clazz) {
+    public boolean hasColumn(@NotNull String columnName, @NotNull Class<?> clazz) {
         return getColumnsTypes().get(columnName).equalsIgnoreCase(clazz.getCanonicalName());
     }
 
@@ -521,7 +567,7 @@ public class DataFrame implements smile.data.DataFrame, ITable<BaseVector> {
     }
 
     @Override
-    public Collection<String> getUniqueValues(String column) {
+    public Collection<String> getUniqueValues(@NotNull String column) {
         int colIndex = columnIndex(column);
         List<String> values = new ArrayList<>();
 
@@ -532,7 +578,7 @@ public class DataFrame implements smile.data.DataFrame, ITable<BaseVector> {
     }
 
     @Override
-    public boolean save(String filePath, String encoding) {
+    public boolean save(@NotNull String filePath, String encoding) {
         File f = new File(filePath);
         if (!f.exists()) {
             try {
@@ -576,6 +622,7 @@ public class DataFrame implements smile.data.DataFrame, ITable<BaseVector> {
     }
 
     @Override
+    @NotNull
     public List<Object> getFirstRow() {
         List<Object> firstRow = new ArrayList<>();
         for (int i = 0; i < ncols(); i++) {
@@ -585,14 +632,16 @@ public class DataFrame implements smile.data.DataFrame, ITable<BaseVector> {
     }
 
     @Override
-    public DataFrame columns(String... columns) {
+    @NotNull
+    public DataFrame columns(@NotNull String... columns) {
         List<String> col = new ArrayList<>(getColumns());
         col.removeAll(Arrays.asList(columns));
         return of(drop(col.toArray(new String[0])));
     }
 
     @Override
-    public DataFrame columns(List<String> columns) {
+    @NotNull
+    public DataFrame columns(@NotNull List<String> columns) {
         List<String> col = new ArrayList<>(getColumns());
         col.removeAll(columns);
         return of(drop(col.toArray(new String[0])));
@@ -609,17 +658,19 @@ public class DataFrame implements smile.data.DataFrame, ITable<BaseVector> {
     }
 
     @Override
+    @NotNull
     public String getName() {
         return "DataFrame";
     }
 
     @Override
+    @NotNull
     public Object getMetaData() {
         return summary();
     }
 
     @Override
-    public Object asType(Class clazz) {
+    public Object asType(@NotNull Class<?> clazz) {
         if (String.class.isAssignableFrom(clazz)) {
             return toString();
         } else if (Matrix.class.isAssignableFrom(clazz)) {
@@ -663,7 +714,8 @@ public class DataFrame implements smile.data.DataFrame, ITable<BaseVector> {
      * @param dataFrame Smile {@link smile.data.DataFrame}.
      * @return OrbisData {@link DataFrame}.
      */
-    public static DataFrame of(smile.data.DataFrame dataFrame) {
+    @NotNull
+    public static DataFrame of(@NotNull smile.data.DataFrame dataFrame) {
         DataFrame df = new DataFrame();
         df.internalDataFrame = dataFrame;
         return df;
@@ -676,7 +728,8 @@ public class DataFrame implements smile.data.DataFrame, ITable<BaseVector> {
      * @return OrbisData {@link DataFrame}.
      * @throws SQLException Exception thrown in case or error while manipulation SQL base {@link ResultSet}.
      */
-    public static DataFrame of(ResultSet rs) throws SQLException {
+    @NotNull
+    public static DataFrame of(@NotNull ResultSet rs) throws SQLException {
         if (rs instanceof IJdbcTable) {
             IJdbcTable jdbcTable = (IJdbcTable) rs;
             StructType schema = getStructure(jdbcTable);
@@ -690,7 +743,8 @@ public class DataFrame implements smile.data.DataFrame, ITable<BaseVector> {
         }
     }
 
-    private static StructType getStructure(IJdbcTable table) {
+    @NotNull
+    private static StructType getStructure(@NotNull IJdbcTable table) {
         StructField[] fields = new StructField[table.getColumnCount()];
         int i = -1;
         for (Map.Entry<String, String> entry : table.getColumnsTypes().entrySet()) {
@@ -724,7 +778,8 @@ public class DataFrame implements smile.data.DataFrame, ITable<BaseVector> {
      * @param path Path to the file to load into the {@link DataFrame}.
      * @return OrbisData {@link DataFrame}.
      */
-    public static DataFrame of(String path) throws IOException {
+    @Nullable
+    public static DataFrame of(@NotNull String path) throws IOException {
         return of(new File(path));
     }
 
@@ -734,7 +789,8 @@ public class DataFrame implements smile.data.DataFrame, ITable<BaseVector> {
      * @param file {@link File} to load into the {@link DataFrame}.
      * @return OrbisData {@link DataFrame}.
      */
-    public static DataFrame of(File file) throws IOException {
+    @Nullable
+    public static DataFrame of(@NotNull File file) throws IOException {
         if (!file.exists()) {
             LOGGER.error("The file '" + file.getAbsolutePath() + "' does not exists.");
             return null;
@@ -768,9 +824,10 @@ public class DataFrame implements smile.data.DataFrame, ITable<BaseVector> {
      * @param rs     {@link ResultSet} to read.
      * @param schema Smile {@link smile.data.DataFrame} schema.
      * @return {@link Tuple} containing the data from the {@link ResultSet}.
-     * @throws SQLException
+     * @throws SQLException Exception get on fetching data from the given {@link ResultSet}.
      */
-    private static Tuple toTuple(ResultSet rs, StructType schema) throws SQLException {
+    @NotNull
+    private static Tuple toTuple(@NotNull ResultSet rs, @NotNull StructType schema) throws SQLException {
         Object[] row = new Object[rs.getMetaData().getColumnCount()];
 
         for (int i = 0; i < row.length; ++i) {
@@ -798,73 +855,89 @@ public class DataFrame implements smile.data.DataFrame, ITable<BaseVector> {
     /* Override methods from SMILE API */
 
     @Override
+    @NotNull
     public DataFrame structure() {
         return of(getInternalDataFrame().structure());
     }
 
     @Override
+    @NotNull
     public DataFrame omitNullRows() {
         return of(getInternalDataFrame().omitNullRows());
     }
 
     @Override
+    @NotNull
     public DataFrame of(int... index) {
         return of(getInternalDataFrame().of(index));
     }
 
     @Override
+    @NotNull
     public DataFrame of(boolean... index) {
         return of(getInternalDataFrame().of(index));
     }
 
     @Override
+    @NotNull
     public DataFrame slice(int from, int to) {
         return of(getInternalDataFrame().slice(from, to));
     }
 
     @Override
+    @NotNull
     public DataFrame drop(String... cols) {
         return of(getInternalDataFrame().drop(cols));
     }
 
     @Override
+    @NotNull
     public DataFrame factorize(String... cols) {
         return of(getInternalDataFrame().factorize(cols));
     }
 
-    public static DataFrame of(BaseVector... vectors) {
+    @NotNull
+    public static DataFrame of(BaseVector<?, ?, ?>... vectors) {
         return of(smile.data.DataFrame.of(vectors));
     }
 
-    public static DataFrame of(double[][] data, String... names) {
+    @NotNull
+    public static DataFrame of(double[][] data, @NotNull String... names) {
         return of(smile.data.DataFrame.of(data, names));
     }
 
-    public static DataFrame of(int[][] data, String... names) {
+    @NotNull
+    public static DataFrame of(int[][] data, @NotNull String... names) {
         return of(smile.data.DataFrame.of(data, names));
     }
 
-    public static <T> DataFrame of(List<T> data, Class<T> clazz) {
+    @NotNull
+    public static <T> DataFrame of(@NotNull List<T> data, @NotNull Class<T> clazz) {
         return of(smile.data.DataFrame.of(data, clazz));
     }
 
-    public static DataFrame of(Stream<Tuple> data) {
+    @NotNull
+    public static DataFrame of(@NotNull Stream<Tuple> data) {
         return of(smile.data.DataFrame.of(data));
     }
 
-    public static DataFrame of(Stream<Tuple> data, StructType schema) {
+    @NotNull
+    public static DataFrame of(@NotNull Stream<Tuple> data, @NotNull StructType schema) {
         return of(smile.data.DataFrame.of(data, schema));
     }
 
-    public static DataFrame of(List<Tuple> data) {
+    @NotNull
+    public static DataFrame of(@NotNull List<Tuple> data) {
         return of(smile.data.DataFrame.of(data));
     }
 
-    public static DataFrame of(List<Tuple> data, StructType schema) {
+    @NotNull
+    public static DataFrame of(@NotNull List<Tuple> data, @NotNull StructType schema) {
         return of(smile.data.DataFrame.of(data, schema));
     }
 
-    public static <T> DataFrame of(Collection<Map<String, T>> data, StructType schema) {
+    @NotNull
+    public static <T> DataFrame of(@NotNull Collection<Map<String, T>> data, @NotNull StructType schema) {
         return of(smile.data.DataFrame.of(data, schema));
     }
 }

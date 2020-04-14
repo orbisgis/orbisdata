@@ -36,6 +36,9 @@
  */
 package org.orbisgis.orbisdata.datamanager.api.dataset;
 
+import org.orbisgis.commons.annotations.NotNull;
+import org.orbisgis.commons.annotations.Nullable;
+
 /**
  * Interface describing the location of a {@link ITable} under the pattern 'dataSource : catalog.schema.table'
  *
@@ -49,7 +52,7 @@ public interface ITableLocation {
      *
      * @return The name of the table
      */
-
+    @NotNull
     String getTable();
 
     /**
@@ -57,6 +60,7 @@ public interface ITableLocation {
      *
      * @return The schema or null.
      */
+    @Nullable
     String getSchema();
 
     /**
@@ -64,6 +68,7 @@ public interface ITableLocation {
      *
      * @return The catalog or null.
      */
+    @Nullable
     String getCatalog();
 
     /**
@@ -71,13 +76,15 @@ public interface ITableLocation {
      *
      * @return The name of the dataSource
      */
+    @NotNull
     String getDataSource();
 
     /**
      * Return the String representation of the table location for the given database type.
      *
-     * @param type Type of teh database.
+     * @param type Type of the database.
      * @return The String representation of the table location.
      */
-    String toString(DataBaseType type);
+    @NotNull
+    String toString(@NotNull DataBaseType type);
 }

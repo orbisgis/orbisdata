@@ -36,6 +36,8 @@
  */
 package org.orbisgis.orbisdata.datamanager.api.dataset;
 
+import org.orbisgis.commons.annotations.NotNull;
+
 /**
  * Raster data.
  *
@@ -49,5 +51,6 @@ public interface IRaster {
      *
      * @return The {@link IRasterMetadata} of a raster.
      */
+    @NotNull
     IRasterMetadata getMetadata();
 }

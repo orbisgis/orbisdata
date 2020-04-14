@@ -36,6 +36,8 @@
  */
 package org.orbisgis.orbisdata.datamanager.api.datasource;
 
+import org.orbisgis.commons.annotations.NotNull;
+import org.orbisgis.commons.annotations.Nullable;
 import org.orbisgis.orbisdata.datamanager.api.dataset.IDataSet;
 
 /**
@@ -44,7 +46,7 @@ import org.orbisgis.orbisdata.datamanager.api.dataset.IDataSet;
  * @author Erwan Bocher (CNRS)
  * @author Sylvain PALOMINOS (Lab-STICC UBS 2018-2019)
  */
-public interface IDataSource {
+public interface IDataSource<T> {
 
     /**
      * Return the {@link IDataSet} implementation corresponding to the given name.
@@ -52,12 +54,14 @@ public interface IDataSource {
      * @param name Name of the {@link IDataSet}.
      * @return The implementation of {@link IDataSet} corresponding to the given name.
      */
-    IDataSet getDataSet(String name);
+    @Nullable
+    IDataSet<T> getDataSet(@NotNull String name);
 
     /**
      * Return the location of the {@link IDataSourceLocation}
      *
      * @return The location of the {@link IDataSourceLocation}
      */
+    @Nullable
     IDataSourceLocation getLocation();
 }

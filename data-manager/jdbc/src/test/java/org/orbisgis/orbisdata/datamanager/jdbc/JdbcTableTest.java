@@ -53,6 +53,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.Point;
+import org.orbisgis.commons.annotations.NotNull;
 import org.orbisgis.commons.printer.Ascii;
 import org.orbisgis.commons.printer.Html;
 import org.orbisgis.orbisdata.datamanager.api.dataset.*;
@@ -855,12 +856,12 @@ class JdbcTableTest {
         }
 
         @Override
-        public IJdbcTable getTable(String tableName) {
+        public IJdbcTable getTable(@NotNull String tableName) {
             return null;
         }
 
         @Override
-        public IJdbcSpatialTable getSpatialTable(String tableName) {
+        public IJdbcSpatialTable getSpatialTable(@NotNull String tableName) {
             try {
                 if (!JDBCUtilities.tableExists(connection,
                         TableLocation.parse(tableName, getDataBaseType().equals(DataBaseType.H2GIS)).getTable())) {
@@ -880,6 +881,7 @@ class JdbcTableTest {
                     new StatementWrapper(statement, new ConnectionWrapper(connection)), this);
         }
 
+        @NotNull
         @Override
         public Collection<String> getTableNames() {
             try {
@@ -891,12 +893,12 @@ class JdbcTableTest {
         }
 
         @Override
-        public IJdbcTable getDataSet(String name) {
+        public IJdbcTable getDataSet(@NotNull String name) {
             return null;
         }
 
         @Override
-        public boolean hasTable(String tableName) {
+        public boolean hasTable(@NotNull String tableName) {
             try {
                 return JDBCUtilities.tableExists(connection, tableName);
             } catch (SQLException ex) {
@@ -965,13 +967,15 @@ class JdbcTableTest {
             }
         }
 
+        @NotNull
         @Override
-        public JdbcTable columns(String... cols) {
+        public JdbcTable columns(@NotNull String... cols) {
             return (JdbcTable) super.columns(cols);
         }
 
+        @NotNull
         @Override
-        public JdbcTable columns(List<String> cols) {
+        public JdbcTable columns(@NotNull List<String> cols) {
             return (JdbcTable) super.columns(cols);
         }
     }

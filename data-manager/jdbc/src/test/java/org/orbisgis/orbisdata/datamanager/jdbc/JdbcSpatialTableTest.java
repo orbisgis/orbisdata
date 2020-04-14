@@ -45,6 +45,7 @@ import org.h2gis.utilities.wrapper.StatementWrapper;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.orbisgis.commons.annotations.NotNull;
 import org.orbisgis.orbisdata.datamanager.api.dataset.DataBaseType;
 import org.orbisgis.orbisdata.datamanager.api.dataset.IJdbcSpatialTable;
 import org.orbisgis.orbisdata.datamanager.api.dataset.IJdbcTable;
@@ -273,6 +274,7 @@ public class JdbcSpatialTableTest {
             return new SpatialResultSetImpl(resultSet, (StatementWrapper) getStatement());
         }
 
+        @NotNull
         @Override
         public ISpatialTable reproject(int srid) {
             throw new IllegalArgumentException("Unsupported operation");
@@ -289,12 +291,12 @@ public class JdbcSpatialTableTest {
         }
 
         @Override
-        public IJdbcTable getTable(String tableName) {
+        public IJdbcTable getTable(@NotNull String tableName) {
             return null;
         }
 
         @Override
-        public IJdbcSpatialTable getSpatialTable(String tableName) {
+        public IJdbcSpatialTable getSpatialTable(@NotNull String tableName) {
             String name = TableLocation.parse(tableName, getDataBaseType().equals(DataBaseType.H2GIS)).toString(getDataBaseType().equals(DataBaseType.H2GIS));
             try {
                 if (!JDBCUtilities.tableExists(connection, name)) {
@@ -313,6 +315,7 @@ public class JdbcSpatialTableTest {
             return new DummyJdbcSpatialTable(new TableLocation(null, name), query, statement, this);
         }
 
+        @NotNull
         @Override
         public Collection<String> getTableNames() {
             try {
@@ -323,12 +326,12 @@ public class JdbcSpatialTableTest {
         }
 
         @Override
-        public IJdbcTable getDataSet(String name) {
+        public IJdbcTable getDataSet(@NotNull String name) {
             return null;
         }
 
         @Override
-        public boolean hasTable(String tableName) {
+        public boolean hasTable(@NotNull String tableName) {
             try {
                 return JDBCUtilities.tableExists(connection, tableName);
             } catch (SQLException ex) {

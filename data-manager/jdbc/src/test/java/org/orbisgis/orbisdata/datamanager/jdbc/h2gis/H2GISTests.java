@@ -82,7 +82,7 @@ public class H2GISTests {
                 "colvarchar VARCHAR2, colbool boolean, coltiny tinyint, colpoint GEOMETRY(POINT), colgeom GEOMETRY)");
         assertTrue(h2GIS.getTable("TYPES").hasColumn("colint", Integer.class));
         assertFalse(h2GIS.getTable("TYPES").hasColumn("colint", Short.class));
-        Map<String, Class> columns = new HashMap<>();
+        Map<String, Class<?>> columns = new HashMap<>();
         columns.put("colint", Integer.class);
         columns.put("colreal", Float.class);
         columns.put("colint2", Integer.class);

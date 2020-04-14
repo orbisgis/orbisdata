@@ -50,8 +50,8 @@ import java.util.Map;
  */
 public class OptionBuilder extends BuilderResult implements IOptionBuilder {
 
-    private StringBuilder query;
-    private JdbcDataSource dataSource;
+    private final StringBuilder query;
+    private final JdbcDataSource dataSource;
 
     /**
      * Main constructor.

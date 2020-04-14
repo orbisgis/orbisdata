@@ -39,6 +39,7 @@ package org.orbisgis.orbisdata.datamanager.api.dataset;
 import groovy.lang.Closure;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.orbisgis.commons.annotations.NotNull;
 
 import java.math.BigDecimal;
 import java.sql.Date;
@@ -308,13 +309,14 @@ public class ITableTest {
             columns.add(list);
         }
 
+        @NotNull
         @Override
         public Collection<String> getColumns() {
             return columns.stream().map(column -> column.get(0).toString()).collect(Collectors.toList());
         }
 
         @Override
-        public boolean hasColumn(String columnName, Class clazz) {
+        public boolean hasColumn(@NotNull String columnName, @NotNull Class clazz) {
             return columns
                     .stream()
                     .filter(column -> column.size() >= 2 &&
@@ -343,27 +345,30 @@ public class ITableTest {
         }
 
         @Override
-        public Collection<String> getUniqueValues(String column) {
+        public Collection<String> getUniqueValues(@NotNull String column) {
             return null;
         }
 
         @Override
-        public boolean save(String filePath, String encoding) {
+        public boolean save(@NotNull String filePath, String encoding) {
             return true;
         }
 
+        @NotNull
         @Override
         public List<Object> getFirstRow() {
             return null;
         }
 
+        @NotNull
         @Override
-        public ITable columns(String... columns) {
+        public ITable columns(@NotNull String... columns) {
             return null;
         }
 
+        @NotNull
         @Override
-        public ITable columns(List<String> columns) {
+        public ITable columns(@NotNull List<String> columns) {
             return null;
         }
 
@@ -443,27 +448,27 @@ public class ITableTest {
         }
 
         @Override
-        public String getString(String column) {
+        public String getString(@NotNull String column) {
             return null;
         }
 
         @Override
-        public boolean getBoolean(String column) {
+        public boolean getBoolean(@NotNull String column) {
             return false;
         }
 
         @Override
-        public byte getByte(String column) {
+        public byte getByte(@NotNull String column) {
             return 0;
         }
 
         @Override
-        public short getShort(String column) {
+        public short getShort(@NotNull String column) {
             return 0;
         }
 
         @Override
-        public int getInt(String column) {
+        public int getInt(@NotNull String column) {
             return 0;
         }
 
@@ -473,52 +478,52 @@ public class ITableTest {
         }
 
         @Override
-        public float getFloat(String column) {
+        public float getFloat(@NotNull String column) {
             return 0;
         }
 
         @Override
-        public double getDouble(String column) {
+        public double getDouble(@NotNull String column) {
             return 0;
         }
 
         @Override
-        public byte[] getBytes(String column) {
+        public byte[] getBytes(@NotNull String column) {
             return new byte[0];
         }
 
         @Override
-        public Date getDate(String column) {
+        public Date getDate(@NotNull String column) {
             return null;
         }
 
         @Override
-        public Time getTime(String column) {
+        public Time getTime(@NotNull String column) {
             return null;
         }
 
         @Override
-        public Timestamp getTimestamp(String column) {
+        public Timestamp getTimestamp(@NotNull String column) {
             return null;
         }
 
         @Override
-        public Object getObject(String column) {
+        public Object getObject(@NotNull String column) {
             return null;
         }
 
         @Override
-        public BigDecimal getBigDecimal(String column) {
+        public BigDecimal getBigDecimal(@NotNull String column) {
             return null;
         }
 
         @Override
-        public <U> U getObject(int column, Class<U> clazz) throws Exception {
+        public <U> U getObject(int column, @NotNull Class<U> clazz) throws Exception {
             return null;
         }
 
         @Override
-        public <U> U getObject(String column, Class<U> clazz) throws Exception {
+        public <U> U getObject(@NotNull String column, @NotNull Class<U> clazz) throws Exception {
             return null;
         }
 
@@ -527,21 +532,24 @@ public class ITableTest {
             return null;
         }
 
+        @NotNull
         @Override
         public String getName() {
             return null;
         }
 
+        @NotNull
         @Override
         public Object getMetaData() {
             return null;
         }
 
         @Override
-        public Object asType(Class clazz) {
+        public Object asType(@NotNull Class clazz) {
             return null;
         }
 
+        @NotNull
         @Override
         public ISummary getSummary() {
             return null;
@@ -552,13 +560,14 @@ public class ITableTest {
             return new DummyIterator();
         }
 
+        @NotNull
         @Override
         public Map<String, String> getColumnsTypes() {
             return null;
         }
 
         @Override
-        public String getColumnType(String columnName) {
+        public String getColumnType(@NotNull String columnName) {
             return null;
         }
     }

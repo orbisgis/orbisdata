@@ -20,3 +20,4 @@ make it compatible with `smile` API)
 + Add get*Type*() methods on `ITable` interface
 + Merge `createSpatialIndex` in `createIndex()`
 + Rename `getShape()` into `getSize()`
++ Add `next()` methods on `ITable` interface

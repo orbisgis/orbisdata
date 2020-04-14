@@ -52,7 +52,6 @@ import java.sql.Date;
 import java.sql.SQLException;
 import java.sql.Time;
 import java.sql.Timestamp;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.UUID;
@@ -444,5 +443,9 @@ public class DataFrameTest {
         assertEquals(2, df.stringVector(6).size());
         assertEquals(2, df.stringVector(7).size());
         assertEquals(2, df.stringVector(8).size());
+
+        df = DataFrame.of(h2GIS.getConnection().createStatement().executeQuery("SELECT id FROM h2gis"));
+        assertNotNull(df);
+        assertNotNull(df.schema());
     }
 }

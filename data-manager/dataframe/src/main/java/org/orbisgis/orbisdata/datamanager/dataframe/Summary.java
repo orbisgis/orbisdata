@@ -89,8 +89,9 @@ public class Summary extends DataFrame implements ISummary {
             }
             printer.endTable();
             return printer;
-        } else {
+        } else if (String.class.equals(clazz)){
             return toString();
         }
+        return null;
     }
 }

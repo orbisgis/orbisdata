@@ -43,8 +43,10 @@ import org.orbisgis.commons.printer.Html;
 import org.orbisgis.orbisdata.datamanager.jdbc.h2gis.H2GIS;
 
 import java.sql.SQLException;
+import java.sql.Time;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.orbisgis.orbisdata.datamanager.dataframe.TestUtils.RANDOM_DS;
 
 /**
@@ -73,6 +75,7 @@ public class SummaryTest {
 
     @Test
     public void asTypeTest(){
+        assertNull(summary.asType(Time.class));
         String str = "+------+-----+---+---+---+\n" +
                 "|column|count|min|avg|max|\n" +
                 "+------+-----+---+---+---+\n" +

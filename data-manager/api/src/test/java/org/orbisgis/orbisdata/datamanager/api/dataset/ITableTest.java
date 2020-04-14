@@ -338,6 +338,11 @@ public class ITableTest {
         }
 
         @Override
+        public boolean next() {
+            return false;
+        }
+
+        @Override
         public Collection<String> getUniqueValues(String column) {
             return null;
         }

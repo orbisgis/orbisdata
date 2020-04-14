@@ -58,6 +58,7 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.sql.Date;
 import java.sql.*;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -108,7 +109,7 @@ public class DataFrame implements smile.data.DataFrame, ITable<BaseVector> {
 
     @Override
     public StructType schema() {
-        return getInternalDataFrame().schema();
+        return getInternalDataFrame()!=null ? getInternalDataFrame().schema() : new StructType();
     }
 
     @Override
@@ -288,7 +289,7 @@ public class DataFrame implements smile.data.DataFrame, ITable<BaseVector> {
 
     @Override
     public byte[] getBytes(int column) {
-        throw new UnsupportedOperationException("The methods 'getBytes(int)' is not supported.");
+        return getString(column).getBytes();
     }
 
     @Override
@@ -303,7 +304,7 @@ public class DataFrame implements smile.data.DataFrame, ITable<BaseVector> {
 
     @Override
     public Timestamp getTimestamp(int column) {
-        throw new UnsupportedOperationException("The methods 'getTimestamp(int)' is not supported.");
+        return Timestamp.valueOf((LocalDateTime)getObject(column));
     }
 
     @Override
@@ -313,7 +314,7 @@ public class DataFrame implements smile.data.DataFrame, ITable<BaseVector> {
 
     @Override
     public BigDecimal getBigDecimal(int column) {
-        throw new UnsupportedOperationException("The methods 'getBigDecimal(int)' is not supported.");
+        return new BigDecimal(getDouble(column));
     }
 
     @Override
@@ -358,7 +359,7 @@ public class DataFrame implements smile.data.DataFrame, ITable<BaseVector> {
 
     @Override
     public byte[] getBytes(String column) {
-        throw new UnsupportedOperationException("The methods 'getBytes(String)' is not supported.");
+        return getString(column).getBytes();
     }
 
     @Override
@@ -373,17 +374,93 @@ public class DataFrame implements smile.data.DataFrame, ITable<BaseVector> {
 
     @Override
     public Timestamp getTimestamp(String column) {
-        throw new UnsupportedOperationException("The methods 'getTimestamp(String)' is not supported.");
+        return Timestamp.valueOf((LocalDateTime)getObject(column));
     }
 
     @Override
     public Object getObject(String column) {
-        return getInternalDataFrame().getBoolean(getRow(), column);
+        return getInternalDataFrame().get(getRow(), column);
     }
 
     @Override
     public BigDecimal getBigDecimal(String column) {
-        throw new UnsupportedOperationException("The methods 'getBigDecimal(String)' is not supported.");
+        return new BigDecimal(getDouble(column));
+    }
+
+    @Override
+    public Object getObject(int column, Class clazz){
+        if (clazz == BigDecimal.class) {
+            return this.getBigDecimal(column);
+        } else if (clazz == BigInteger.class) {
+            return this.getBigDecimal(column).toBigInteger();
+        } else if (clazz == String.class) {
+            return this.getString(column);
+        } else if (clazz == Boolean.class || clazz == boolean.class) {
+            return this.getBoolean(column);
+        } else if (clazz == Byte.class || clazz == byte.class) {
+            return this.getByte(column);
+        } else if (clazz == Short.class || clazz == short.class) {
+            return this.getShort(column);
+        } else if (clazz == Integer.class || clazz == int.class) {
+            return this.getInt(column);
+        } else if (clazz == Long.class || clazz == long.class) {
+            return this.getLong(column);
+        } else if (clazz == Float.class || clazz == float.class) {
+            return this.getFloat(column);
+        } else if (clazz == Double.class || clazz == double.class) {
+            return this.getDouble(column);
+        } else if (clazz == Date.class) {
+            return this.getDate(column);
+        } else if (clazz == Time.class) {
+            return this.getTime(column);
+        } else if (clazz == Timestamp.class) {
+            return this.getTimestamp(column);
+        } else if (clazz == UUID.class) {
+            throw new UnsupportedOperationException();
+            //return this.getObject(column);
+        } else if (clazz == byte[].class) {
+            return this.getBytes(column);
+        } else {
+            throw new UnsupportedOperationException();
+        }
+    }
+
+    @Override
+    public Object getObject(String column, Class clazz){
+        if (clazz == BigDecimal.class) {
+            return this.getBigDecimal(column);
+        } else if (clazz == BigInteger.class) {
+            return this.getBigDecimal(column).toBigInteger();
+        } else if (clazz == String.class) {
+            return this.getString(column);
+        } else if (clazz == Boolean.class || clazz == boolean.class) {
+            return this.getBoolean(column);
+        } else if (clazz == Byte.class || clazz == byte.class) {
+            return this.getByte(column);
+        } else if (clazz == Short.class || clazz == short.class) {
+            return this.getShort(column);
+        } else if (clazz == Integer.class || clazz == int.class) {
+            return this.getInt(column);
+        } else if (clazz == Long.class || clazz == long.class) {
+            return this.getLong(column);
+        } else if (clazz == Float.class || clazz == float.class) {
+            return this.getFloat(column);
+        } else if (clazz == Double.class || clazz == double.class) {
+            return this.getDouble(column);
+        } else if (clazz == Date.class) {
+            return this.getDate(column);
+        } else if (clazz == Time.class) {
+            return this.getTime(column);
+        } else if (clazz == Timestamp.class) {
+            return this.getTimestamp(column);
+        } else if (clazz == UUID.class) {
+            throw new UnsupportedOperationException();
+            //return this.getObject(column);
+        } else if (clazz == byte[].class) {
+            return this.getBytes(column);
+        } else {
+            throw new UnsupportedOperationException();
+        }
     }
 
     @Override
@@ -409,13 +486,14 @@ public class DataFrame implements smile.data.DataFrame, ITable<BaseVector> {
 
     @Override
     public String getColumnType(String columnName) {
-        int index = -1;
-        for (String name : names()) {
-            index++;
-            if (name.equalsIgnoreCase(columnName))
-                break;
+        String[] names = names();
+        for (int i = 0; i < names.length; i++) {
+            String name = names[i];
+            if (name.equalsIgnoreCase(columnName)) {
+                return types()[i].name();
+            }
         }
-        return types()[index].name();
+        return null;
     }
 
     @Override
@@ -433,6 +511,7 @@ public class DataFrame implements smile.data.DataFrame, ITable<BaseVector> {
         return row;
     }
 
+    @Override
     public boolean next(){
         if(row < this.getRowCount()){
             row++;
@@ -754,125 +833,38 @@ public class DataFrame implements smile.data.DataFrame, ITable<BaseVector> {
     }
 
     public static DataFrame of(BaseVector... vectors) {
-        smile.data.DataFrame df = smile.data.DataFrame.of(vectors);
-        return of(df);
+        return of(smile.data.DataFrame.of(vectors));
     }
 
     public static DataFrame of(double[][] data, String... names) {
-        smile.data.DataFrame df = smile.data.DataFrame.of(data, names);
-        return of(df);
+        return of(smile.data.DataFrame.of(data, names));
     }
 
     public static DataFrame of(int[][] data, String... names) {
-        smile.data.DataFrame df = smile.data.DataFrame.of(data, names);
-        return of(df);
+        return of(smile.data.DataFrame.of(data, names));
     }
 
     public static <T> DataFrame of(List<T> data, Class<T> clazz) {
-        smile.data.DataFrame df = smile.data.DataFrame.of(data, clazz);
-        return of(df);
+        return of(smile.data.DataFrame.of(data, clazz));
     }
 
     public static DataFrame of(Stream<Tuple> data) {
-
-        smile.data.DataFrame df = smile.data.DataFrame.of(data);
-        return of(df);
+        return of(smile.data.DataFrame.of(data));
     }
 
     public static DataFrame of(Stream<Tuple> data, StructType schema) {
-
-        smile.data.DataFrame df = smile.data.DataFrame.of(data, schema);
-        return of(df);
+        return of(smile.data.DataFrame.of(data, schema));
     }
 
     public static DataFrame of(List<Tuple> data) {
-
-        smile.data.DataFrame df = smile.data.DataFrame.of(data);
-        return of(df);
+        return of(smile.data.DataFrame.of(data));
     }
 
     public static DataFrame of(List<Tuple> data, StructType schema) {
-
-        smile.data.DataFrame df = smile.data.DataFrame.of(data, schema);
-        return of(df);
+        return of(smile.data.DataFrame.of(data, schema));
     }
 
     public static <T> DataFrame of(Collection<Map<String, T>> data, StructType schema) {
-        smile.data.DataFrame df = smile.data.DataFrame.of(data, schema);
-        return of(df);
-    }
-
-    @Override
-    public Object getObject(int column, Class clazz){
-        if (clazz == BigDecimal.class) {
-            return this.getBigDecimal(column);
-        } else if (clazz == BigInteger.class) {
-            return this.getBigDecimal(column).toBigInteger();
-        } else if (clazz == String.class) {
-            return this.getString(column);
-        } else if (clazz == Boolean.class) {
-            return this.getBoolean(column);
-        } else if (clazz == Byte.class) {
-            return this.getByte(column);
-        } else if (clazz == Short.class) {
-            return this.getShort(column);
-        } else if (clazz == Integer.class) {
-            return this.getInt(column);
-        } else if (clazz == Long.class) {
-            return this.getLong(column);
-        } else if (clazz == Float.class) {
-            return this.getFloat(column);
-        } else if (clazz == Double.class) {
-            return this.getDouble(column);
-        } else if (clazz == Date.class) {
-            return this.getDate(column);
-        } else if (clazz == Time.class) {
-            return this.getTime(column);
-        } else if (clazz == Timestamp.class) {
-            return this.getTimestamp(column);
-        } else if (clazz == UUID.class) {
-            return this.getObject(column);
-        } else if (clazz == byte[].class) {
-            return this.getBytes(column);
-        } else {
-            throw new UnsupportedOperationException();
-        }
-    }
-
-    @Override
-    public Object getObject(String column, Class clazz){
-        if (clazz == BigDecimal.class) {
-            return this.getBigDecimal(column);
-        } else if (clazz == BigInteger.class) {
-            return this.getBigDecimal(column).toBigInteger();
-        } else if (clazz == String.class) {
-            return this.getString(column);
-        } else if (clazz == Boolean.class) {
-            return this.getBoolean(column);
-        } else if (clazz == Byte.class) {
-            return this.getByte(column);
-        } else if (clazz == Short.class) {
-            return this.getShort(column);
-        } else if (clazz == Integer.class) {
-            return this.getInt(column);
-        } else if (clazz == Long.class) {
-            return this.getLong(column);
-        } else if (clazz == Float.class) {
-            return this.getFloat(column);
-        } else if (clazz == Double.class) {
-            return this.getDouble(column);
-        } else if (clazz == Date.class) {
-            return this.getDate(column);
-        } else if (clazz == Time.class) {
-            return this.getTime(column);
-        } else if (clazz == Timestamp.class) {
-            return this.getTimestamp(column);
-        } else if (clazz == UUID.class) {
-            return this.getObject(column);
-        } else if (clazz == byte[].class) {
-            return this.getBytes(column);
-        } else {
-            throw new UnsupportedOperationException();
-        }
+        return of(smile.data.DataFrame.of(data, schema));
     }
 }

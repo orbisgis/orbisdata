@@ -150,6 +150,13 @@ public interface ITable<T> extends IMatrix<T> {
     int getRow() throws Exception;
 
     /**
+     * Go to the next row.
+     *
+     * @return True if the next row has been reach, false otherwise.
+     */
+    boolean next() throws Exception;
+
+    /**
      * Return a {@link Collection} of all the unique values of the {@link ITable}. This method can take a lot of time and
      * resources according the the table size. If no values are found, return an empty collection. If an error occurred,
      * return null.

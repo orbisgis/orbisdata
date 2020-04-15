@@ -37,22 +37,20 @@
 package org.orbisgis.orbisdata.datamanager.jdbc.h2gis;
 
 import org.h2gis.utilities.wrapper.StatementWrapper;
+import org.orbisgis.commons.annotations.NotNull;
+import org.orbisgis.commons.annotations.Nullable;
 import org.orbisgis.orbisdata.datamanager.api.dataset.DataBaseType;
 import org.orbisgis.orbisdata.datamanager.api.dataset.ISpatialTable;
 import org.orbisgis.orbisdata.datamanager.api.dataset.ITable;
 import org.orbisgis.orbisdata.datamanager.jdbc.JdbcDataSource;
 import org.orbisgis.orbisdata.datamanager.jdbc.JdbcTable;
 import org.orbisgis.orbisdata.datamanager.jdbc.TableLocation;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * @author Erwan Bocher (CNRS)
  * @author Sylvain PALOMINOS (UBS 2018-2019)
  */
 public class H2gisTable extends JdbcTable {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(H2gisTable.class);
 
     /**
      * Main constructor.
@@ -62,13 +60,13 @@ public class H2gisTable extends JdbcTable {
      * @param statement      Statement used to request the database.
      * @param jdbcDataSource DataSource to use for the creation of the resultSet.
      */
-    public H2gisTable(TableLocation tableLocation, String baseQuery, StatementWrapper statement,
-                      JdbcDataSource jdbcDataSource) {
+    public H2gisTable(@Nullable TableLocation tableLocation, @NotNull String baseQuery,
+                      @NotNull StatementWrapper statement, @NotNull JdbcDataSource jdbcDataSource) {
         super(DataBaseType.H2GIS, jdbcDataSource, tableLocation, statement, baseQuery);
     }
 
     @Override
-    public Object asType(Class clazz) {
+    public Object asType(@NotNull Class<?> clazz) {
         if (ISpatialTable.class.isAssignableFrom(clazz)) {
             return new H2gisSpatialTable(getTableLocation(), getBaseQuery(), (StatementWrapper) getStatement(),
                     getJdbcDataSource());

@@ -38,6 +38,8 @@ package org.orbisgis.orbisdata.datamanager.jdbc.h2gis;
 
 import org.h2gis.utilities.wrapper.SpatialResultSetImpl;
 import org.h2gis.utilities.wrapper.StatementWrapper;
+import org.orbisgis.commons.annotations.NotNull;
+import org.orbisgis.commons.annotations.Nullable;
 import org.orbisgis.orbisdata.datamanager.api.dataset.DataBaseType;
 import org.orbisgis.orbisdata.datamanager.api.dataset.ISpatialTable;
 import org.orbisgis.orbisdata.datamanager.api.dataset.ITable;
@@ -69,8 +71,8 @@ public class H2gisSpatialTable extends JdbcSpatialTable {
      * @param statement      Statement used to request the database.
      * @param jdbcDataSource DataSource to use for the creation of the resultSet.
      */
-    public H2gisSpatialTable(TableLocation tableLocation, String baseQuery, StatementWrapper statement,
-                             JdbcDataSource jdbcDataSource) {
+    public H2gisSpatialTable(@Nullable TableLocation tableLocation, @NotNull String baseQuery,
+                             @NotNull StatementWrapper statement, @NotNull JdbcDataSource jdbcDataSource) {
         super(DataBaseType.H2GIS, jdbcDataSource, tableLocation, statement, baseQuery);
     }
 
@@ -95,7 +97,7 @@ public class H2gisSpatialTable extends JdbcSpatialTable {
 
 
     @Override
-    public Object asType(Class clazz) {
+    public Object asType(@NotNull Class<?> clazz) {
         if (ISpatialTable.class.isAssignableFrom(clazz)) {
             return new H2gisSpatialTable(getTableLocation(), getBaseQuery(), (StatementWrapper) getStatement(),
                     getJdbcDataSource());
@@ -108,9 +110,12 @@ public class H2gisSpatialTable extends JdbcSpatialTable {
     }
 
     @Override
-    public ISpatialTable reproject(int srid) {
+    public ISpatialTable<Object> reproject(int srid) {
         try {
             ResultSetMetaData meta = getMetaData();
+            if(meta == null){
+                return null;
+            }
             int columnCount = meta.getColumnCount();
             String[] fieldNames = new String[columnCount];
             for (int i = 1; i <= columnCount; i++) {
@@ -123,7 +128,7 @@ public class H2gisSpatialTable extends JdbcSpatialTable {
             }
 
             String query = "SELECT " + String.join(",", fieldNames) + " FROM " +
-                    (getTableLocation() == null ? "(" + getBaseQuery() + ")" : getTableLocation().toString(true)).toString();
+                    (getTableLocation() == null ? "(" + getBaseQuery() + ")" : getTableLocation().toString(true));
             return new H2gisSpatialTable(null, query, (StatementWrapper) getStatement(), getJdbcDataSource());
         } catch (SQLException e) {
             LOGGER.error("Cannot reproject the table '" + getLocation() + "' in the SRID '" + srid + "'.\n", e);

@@ -49,8 +49,8 @@ import org.orbisgis.orbisdata.datamanager.jdbc.JdbcDataSource;
  */
 public class FromBuilder implements IFromBuilder {
 
-    private StringBuilder query;
-    private JdbcDataSource dataSource;
+    private final StringBuilder query;
+    private final JdbcDataSource dataSource;
 
     /**
      * Main constructor.

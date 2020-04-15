@@ -36,6 +36,8 @@
  */
 package org.orbisgis.orbisdata.datamanager.api.dataset;
 
+import org.orbisgis.commons.annotations.Nullable;
+
 /**
  * Extension of the {@link ISummary} interface dedicated to the {@link IJdbcTable}.
  *
@@ -48,6 +50,7 @@ public interface IJdbcTableSummary extends ISummary {
      *
      * @return The {@link ITableLocation} of the summarized {@link IJdbcTable}.
      */
+    @Nullable
     ITableLocation getLocation();
 
     /**

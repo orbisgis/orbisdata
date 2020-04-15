@@ -36,6 +36,9 @@
  */
 package org.orbisgis.orbisdata.datamanager.api.dataset;
 
+import org.orbisgis.commons.annotations.NotNull;
+import org.orbisgis.commons.annotations.Nullable;
+
 /**
  * Summary of a {@link IDataSet}
  *
@@ -49,5 +52,6 @@ public interface ISummary {
      * @param clazz New class of the result.
      * @return The current object into an other class.
      */
-    Object asType(Class clazz);
+    @Nullable
+    Object asType(@NotNull Class<?> clazz);
 }

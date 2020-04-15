@@ -37,6 +37,8 @@
 package org.orbisgis.orbisdata.datamanager.jdbc.postgis;
 
 import org.h2gis.postgis_jts.StatementWrapper;
+import org.orbisgis.commons.annotations.NotNull;
+import org.orbisgis.commons.annotations.Nullable;
 import org.orbisgis.orbisdata.datamanager.api.dataset.DataBaseType;
 import org.orbisgis.orbisdata.datamanager.api.dataset.ISpatialTable;
 import org.orbisgis.orbisdata.datamanager.api.dataset.ITable;
@@ -68,8 +70,8 @@ public class PostgisSpatialTable extends JdbcSpatialTable {
      * @param statement      Statement used to request the database.
      * @param jdbcDataSource DataSource to use for the creation of the resultSet.
      */
-    public PostgisSpatialTable(TableLocation tableLocation, String baseQuery, StatementWrapper statement,
-                               JdbcDataSource jdbcDataSource) {
+    public PostgisSpatialTable(@Nullable TableLocation tableLocation, @NotNull String baseQuery,
+                               @NotNull StatementWrapper statement, @NotNull JdbcDataSource jdbcDataSource) {
         super(DataBaseType.H2GIS, jdbcDataSource, tableLocation, statement, baseQuery);
     }
 
@@ -93,7 +95,7 @@ public class PostgisSpatialTable extends JdbcSpatialTable {
     }
 
     @Override
-    public Object asType(Class clazz) {
+    public Object asType(@NotNull Class<?> clazz) {
         if (ISpatialTable.class.isAssignableFrom(clazz)) {
             return new PostgisSpatialTable(getTableLocation(), getBaseQuery(), (StatementWrapper) getStatement(),
                     getJdbcDataSource());
@@ -106,9 +108,13 @@ public class PostgisSpatialTable extends JdbcSpatialTable {
     }
 
     @Override
-    public ISpatialTable reproject(int srid) {
+    public ISpatialTable<Object> reproject(int srid) {
         try {
             ResultSetMetaData meta = getMetaData();
+            if(meta == null){
+                LOGGER.error("Unable to get metadata for reprojection");
+                return null;
+            }
             int columnCount = meta.getColumnCount();
             String[] fieldNames = new String[columnCount];
             for (int i = 1; i <= columnCount; i++) {
@@ -119,7 +125,12 @@ public class PostgisSpatialTable extends JdbcSpatialTable {
                     fieldNames[i - 1] = columnName;
                 }
             }
-            String query = "SELECT " + String.join(",", fieldNames) + " FROM " + getTableLocation().toString(true);
+            TableLocation location = getTableLocation();
+            if(location == null){
+                LOGGER.error("Unable to get table location for reprojection");
+                return null;
+            }
+            String query = "SELECT " + String.join(",", fieldNames) + " FROM " + location.toString(true);
             return new PostgisSpatialTable(null, query, (StatementWrapper) getStatement(), getJdbcDataSource());
         } catch (SQLException e) {
             LOGGER.error("Cannot reproject the table '" + getLocation() + "' in the SRID '" + srid + "'.\n", e);

@@ -52,6 +52,8 @@ import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.TableLocation;
 import org.h2gis.utilities.URIUtilities;
+import org.orbisgis.commons.annotations.NotNull;
+import org.orbisgis.commons.annotations.Nullable;
 import org.orbisgis.orbisdata.datamanager.api.dataset.DataBaseType;
 import org.orbisgis.orbisdata.datamanager.api.dataset.IJdbcTable;
 import org.orbisgis.orbisdata.datamanager.api.datasource.IDataSourceLocation;
@@ -97,11 +99,11 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, ISe
     /**
      * Type of the database
      */
-    private DataBaseType databaseType;
+    private final DataBaseType databaseType;
     /**
      * Wrapped {@link DataSource}
      */
-    private DataSource dataSource;
+    private final DataSource dataSource;
 
     /**
      * Constructor to create a {@link JdbcDataSource} from a {@link Sql} object.
@@ -109,7 +111,7 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, ISe
      * @param parent       Parent {@link Sql} object.
      * @param databaseType Type of the database
      */
-    public JdbcDataSource(Sql parent, DataBaseType databaseType) {
+    public JdbcDataSource(@NotNull Sql parent, @NotNull DataBaseType databaseType) {
         super(parent);
         this.dataSource = parent.getDataSource();
         this.metaClass = InvokerHelper.getMetaClass(getClass());
@@ -123,7 +125,7 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, ISe
      * @param dataSource   Parent {@link DataSource} object.
      * @param databaseType Type of the database
      */
-    public JdbcDataSource(DataSource dataSource, DataBaseType databaseType) {
+    public JdbcDataSource(@NotNull DataSource dataSource, @NotNull DataBaseType databaseType) {
         super(dataSource);
         this.dataSource = dataSource;
         this.metaClass = InvokerHelper.getMetaClass(getClass());
@@ -137,7 +139,7 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, ISe
      * @param connection   Parent {@link Sql} object.
      * @param databaseType Type of the database
      */
-    public JdbcDataSource(Connection connection, DataBaseType databaseType) {
+    public JdbcDataSource(@NotNull Connection connection, @NotNull DataBaseType databaseType) {
         super(connection);
         this.dataSource = null;
         this.metaClass = InvokerHelper.getMetaClass(getClass());
@@ -146,7 +148,8 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, ISe
     }
 
     @Override
-    public Connection getConnection(String var1, String var2) throws SQLException {
+    @Nullable
+    public Connection getConnection(@NotNull String var1, @NotNull String var2) throws SQLException {
         if (this.dataSource != null) {
             return this.dataSource.getConnection(var1, var2);
         }
@@ -154,6 +157,7 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, ISe
         return null;
     }
 
+    @Nullable
     public PrintWriter getLogWriter() throws SQLException {
         if (this.dataSource != null) {
             return this.dataSource.getLogWriter();
@@ -185,6 +189,7 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, ISe
     }
 
     @Override
+    @Nullable
     public <T> T unwrap(Class<T> aClass) throws SQLException {
         if (this.dataSource != null) {
             return this.dataSource.unwrap(aClass);
@@ -203,6 +208,7 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, ISe
     }
 
     @Override
+    @Nullable
     public java.util.logging.Logger getParentLogger() throws SQLFeatureNotSupportedException {
         if (this.dataSource != null) {
             return this.dataSource.getParentLogger();
@@ -217,6 +223,7 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, ISe
     }
 
     @Override
+    @Nullable
     public Connection getConnection() {
         Connection con = super.getConnection();
         if (con == null) {
@@ -230,6 +237,7 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, ISe
     }
 
     @Override
+    @NotNull
     public DataBaseType getDataBaseType() {
         return databaseType;
     }
@@ -289,7 +297,7 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, ISe
     }
 
     @Override
-    public boolean executeScript(String fileName, Map<String, String> bindings) {
+    public boolean executeScript(@NotNull String fileName, Map<String, String> bindings) {
         File file = URIUtilities.fileFromString(fileName);
         try {
             if (FileUtil.isExtensionWellFormated(file, "sql")) {
@@ -302,7 +310,7 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, ISe
     }
 
     @Override
-    public boolean executeScript(InputStream stream, Map<String, String> bindings) {
+    public boolean executeScript(@NotNull InputStream stream, Map<String, String> bindings) {
         SimpleTemplateEngine engine = null;
         if (bindings != null && !bindings.isEmpty()) {
             engine = new SimpleTemplateEngine();
@@ -346,22 +354,26 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, ISe
     }
 
     @Override
-    public boolean save(String tableName, String filePath) {
+    public boolean save(@NotNull String tableName, @NotNull String filePath) {
         return save(tableName, filePath, null);
     }
 
     @Override
-    public boolean save(String tableName, String filePath, String encoding) {
+    public boolean save(@NotNull String tableName, @NotNull String filePath, @Nullable String encoding) {
+        if(getConnection() == null){
+            LOGGER.error("No connection, cannot save.");
+            return false;
+        }
         return IOMethods.saveAsFile(getConnection(), tableName, filePath, encoding);
     }
 
     @Override
-    public boolean save(String tableName, URL url) {
+    public boolean save(@NotNull String tableName, @NotNull URL url) {
         return save(tableName, url, null);
     }
 
     @Override
-    public boolean save(String tableName, URL url, String encoding) {
+    public boolean save(@NotNull String tableName, @NotNull URL url, @Nullable String encoding) {
         try {
             return save(tableName, url.toURI(), encoding);
         } catch (URISyntaxException e) {
@@ -371,22 +383,22 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, ISe
     }
 
     @Override
-    public boolean save(String tableName, URI uri) {
+    public boolean save(@NotNull String tableName, @NotNull URI uri) {
         return save(tableName, uri, null);
     }
 
     @Override
-    public boolean save(String tableName, URI uri, String encoding) {
+    public boolean save(@NotNull String tableName, @NotNull URI uri, @Nullable String encoding) {
         return save(tableName, new File(uri), encoding);
     }
 
     @Override
-    public boolean save(String tableName, File file) {
+    public boolean save(@NotNull String tableName, @NotNull File file) {
         return save(tableName, file, null);
     }
 
     @Override
-    public boolean save(String tableName, File file, String encoding) {
+    public boolean save(@NotNull String tableName, @NotNull File file, @Nullable String encoding) {
         return save(tableName, file.getAbsolutePath(), encoding);
     }
 
@@ -400,18 +412,18 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, ISe
     }
 
     @Override
-    public IJdbcTable link(String filePath, String tableName, boolean delete) {
+    public IJdbcTable link(@NotNull String filePath, @NotNull String tableName, boolean delete) {
         IOMethods.link(filePath, tableName, delete, this);
         return getTable(tableName);
     }
 
     @Override
-    public IJdbcTable link(String filePath, String tableName) {
+    public IJdbcTable link(@NotNull String filePath, @NotNull String tableName) {
         return link(filePath, tableName, false);
     }
 
     @Override
-    public IJdbcTable link(String filePath, boolean delete) {
+    public IJdbcTable link(@NotNull String filePath, boolean delete) {
         String tableName = getTableNameFromPath(filePath);
         if (Pattern.compile("^[a-zA-Z][a-zA-Z0-9_]*$").matcher(tableName).find()) {
             return link(filePath, tableName, delete);
@@ -422,12 +434,12 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, ISe
     }
 
     @Override
-    public IJdbcTable link(String filePath) {
+    public IJdbcTable link(@NotNull String filePath) {
         return link(filePath, false);
     }
 
     @Override
-    public IJdbcTable link(URL url, String tableName, boolean delete) {
+    public IJdbcTable link(@NotNull URL url, String tableName, boolean delete) {
         try {
             return link(url.toURI(), tableName, delete);
         } catch (URISyntaxException e) {
@@ -437,7 +449,7 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, ISe
     }
 
     @Override
-    public IJdbcTable link(URL url, String tableName) {
+    public IJdbcTable link(@NotNull URL url, String tableName) {
         try {
             return link(url.toURI(), tableName);
         } catch (URISyntaxException e) {
@@ -447,7 +459,7 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, ISe
     }
 
     @Override
-    public IJdbcTable link(URL url, boolean delete) {
+    public IJdbcTable link(@NotNull URL url, boolean delete) {
         try {
             return link(url.toURI(), delete);
         } catch (URISyntaxException e) {
@@ -457,7 +469,7 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, ISe
     }
 
     @Override
-    public IJdbcTable link(URL url) {
+    public IJdbcTable link(@NotNull URL url) {
         try {
             return link(url.toURI());
         } catch (URISyntaxException e) {
@@ -467,89 +479,92 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, ISe
     }
 
     @Override
-    public IJdbcTable link(URI uri, String tableName, boolean delete) {
+    public IJdbcTable link(@NotNull URI uri, String tableName, boolean delete) {
         return link(new File(uri), tableName, delete);
     }
 
     @Override
-    public IJdbcTable link(URI uri, String tableName) {
+    public IJdbcTable link(@NotNull URI uri, String tableName) {
         return link(new File(uri), tableName);
     }
 
     @Override
-    public IJdbcTable link(URI uri, boolean delete) {
+    public IJdbcTable link(@NotNull URI uri, boolean delete) {
         return link(new File(uri), delete);
     }
 
     @Override
-    public IJdbcTable link(URI uri) {
+    public IJdbcTable link(@NotNull URI uri) {
         return link(new File(uri));
     }
 
     @Override
-    public IJdbcTable link(File file, String tableName, boolean delete) {
+    public IJdbcTable link(@NotNull File file, @NotNull String tableName, boolean delete) {
         return link(file.getAbsolutePath(), tableName, delete);
     }
 
     @Override
-    public IJdbcTable link(File file, String tableName) {
+    public IJdbcTable link(@NotNull File file, @NotNull String tableName) {
         return link(file.getAbsolutePath(), tableName);
     }
 
     @Override
-    public IJdbcTable link(File file, boolean delete) {
+    public IJdbcTable link(@NotNull File file, boolean delete) {
         return link(file.getAbsolutePath(), delete);
     }
 
     @Override
-    public IJdbcTable link(File file) {
+    public IJdbcTable link(@NotNull File file) {
         return link(file.getAbsolutePath());
     }
 
     @Override
-    public IJdbcTable load(Map<String, String> properties, String inputTableName) {
+    public IJdbcTable load(@NotNull Map<String, String> properties, @NotNull String inputTableName) {
         return load(properties, inputTableName, inputTableName, false);
     }
 
     @Override
-    public IJdbcTable load(Map<String, String> properties, String inputTableName, boolean delete) {
+    public IJdbcTable load(@NotNull Map<String, String> properties, @NotNull String inputTableName, boolean delete) {
         return load(properties, inputTableName, inputTableName, delete);
     }
 
     @Override
-    public IJdbcTable load(Map<String, String> properties, String inputTableName, String outputTableName) {
+    public IJdbcTable load(@NotNull Map<String, String> properties, @NotNull String inputTableName,
+                           @NotNull String outputTableName) {
         return load(properties, inputTableName, outputTableName, false);
     }
 
     @Override
-    public IJdbcTable load(Map<String, String> properties, String inputTableName, String outputTableName, boolean delete) {
+    public IJdbcTable load(@NotNull Map<String, String> properties, @NotNull String inputTableName,
+                           @NotNull String outputTableName, boolean delete) {
         IOMethods.loadTable(properties, inputTableName, outputTableName, delete, this);
         return getTable(outputTableName);
     }
 
     @Override
-    public IJdbcTable load(String filePath, String tableName, String encoding, boolean delete) {
+    public IJdbcTable load(@NotNull String filePath, @NotNull String tableName, @Nullable String encoding,
+                           boolean delete) {
         IOMethods.loadFile(filePath, tableName, encoding, delete, this);
         return getTable(tableName);
     }
 
     @Override
-    public IJdbcTable load(String filePath, String tableName) {
+    public IJdbcTable load(@NotNull String filePath, @NotNull String tableName) {
         return load(filePath, tableName, null, false);
     }
 
     @Override
-    public IJdbcTable load(String filePath, String tableName, boolean delete) {
+    public IJdbcTable load(@NotNull String filePath, @NotNull String tableName, boolean delete) {
         return load(filePath, tableName, null, delete);
     }
 
     @Override
-    public IJdbcTable load(String filePath) {
+    public IJdbcTable load(@NotNull String filePath) {
         return load(filePath, false);
     }
 
     @Override
-    public IJdbcTable load(String filePath, boolean delete) {
+    public IJdbcTable load(@NotNull String filePath, boolean delete) {
         String tableName = getTableNameFromPath(filePath);
         if (Pattern.compile("^[a-zA-Z][a-zA-Z0-9_]*$").matcher(tableName).find()) {
             return load(filePath, tableName, null, delete);
@@ -560,7 +575,7 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, ISe
     }
 
     @Override
-    public IJdbcTable load(URL url, String tableName) {
+    public IJdbcTable load(@NotNull URL url, @NotNull String tableName) {
         try {
             return load(url.toURI(), tableName, null, false);
         } catch (URISyntaxException e) {
@@ -570,7 +585,7 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, ISe
     }
 
     @Override
-    public IJdbcTable load(URL url, String tableName, boolean delete) {
+    public IJdbcTable load(@NotNull URL url, @NotNull String tableName, boolean delete) {
         try {
             return load(url.toURI(), tableName, null, delete);
         } catch (URISyntaxException e) {
@@ -580,7 +595,7 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, ISe
     }
 
     @Override
-    public IJdbcTable load(URL url) {
+    public IJdbcTable load(@NotNull URL url) {
         try {
             return load(url.toURI(), false);
         } catch (URISyntaxException e) {
@@ -590,7 +605,7 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, ISe
     }
 
     @Override
-    public IJdbcTable load(URL url, boolean delete) {
+    public IJdbcTable load(@NotNull URL url, boolean delete) {
         try {
             return load(url.toURI(), delete);
         } catch (URISyntaxException e) {
@@ -600,7 +615,7 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, ISe
     }
 
     @Override
-    public IJdbcTable load(URL url, String tableName, String encoding, boolean delete) {
+    public IJdbcTable load(@NotNull URL url, @NotNull String tableName, @Nullable String encoding, boolean delete) {
         try {
             return load(url.toURI(), tableName, encoding, delete);
         } catch (URISyntaxException e) {
@@ -610,59 +625,64 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, ISe
     }
 
     @Override
-    public IJdbcTable load(URI uri, String tableName) {
+    public IJdbcTable load(@NotNull URI uri, @NotNull String tableName) {
         return load(new File(uri), tableName, null, false);
     }
 
     @Override
-    public IJdbcTable load(URI uri, String tableName, boolean delete) {
+    public IJdbcTable load(@NotNull URI uri, @NotNull String tableName, boolean delete) {
         return load(new File(uri), tableName, null, delete);
     }
 
     @Override
-    public IJdbcTable load(URI uri) {
+    public IJdbcTable load(@NotNull URI uri) {
         return load(new File(uri), false);
     }
 
     @Override
-    public IJdbcTable load(URI uri, boolean delete) {
+    public IJdbcTable load(@NotNull URI uri, boolean delete) {
         return load(new File(uri), delete);
     }
 
     @Override
-    public IJdbcTable load(URI uri, String tableName, String encoding, boolean delete) {
+    public IJdbcTable load(@NotNull URI uri, @NotNull String tableName, @Nullable String encoding, boolean delete) {
         return load(new File(uri), tableName, encoding, delete);
     }
 
     @Override
-    public IJdbcTable load(File file, String tableName) {
+    public IJdbcTable load(@NotNull File file, @NotNull String tableName) {
         return load(file.getAbsolutePath(), tableName, null, false);
     }
 
     @Override
-    public IJdbcTable load(File file, String tableName, boolean delete) {
+    public IJdbcTable load(@NotNull File file, @NotNull String tableName, boolean delete) {
         return load(file.getAbsolutePath(), tableName, null, delete);
     }
 
     @Override
-    public IJdbcTable load(File file) {
+    public IJdbcTable load(@NotNull File file) {
         return load(file.getAbsolutePath(), false);
     }
 
     @Override
-    public IJdbcTable load(File file, boolean delete) {
+    public IJdbcTable load(@NotNull File file, boolean delete) {
         return load(file.getAbsolutePath(), delete);
     }
 
     @Override
-    public IJdbcTable load(File file, String tableName, String encoding, boolean delete) {
+    public IJdbcTable load(@NotNull File file, @NotNull String tableName, @Nullable String encoding, boolean delete) {
         return load(file.getAbsolutePath(), tableName, encoding, delete);
     }
 
     @Override
     public IDataSourceLocation getLocation() {
         try {
-            String url = this.getConnection().getMetaData().getURL();
+            Connection con = getConnection();
+            if(con == null){
+                LOGGER.error("Unable to get the connection.");
+                return null;
+            }
+            String url = con.getMetaData().getURL();
             return url == null ? null : new DataSourceLocation(url.substring(url.lastIndexOf(":") + 1));
         } catch (SQLException e) {
             LOGGER.error("Unable to get the connection metadata.\n" + e.getLocalizedMessage());
@@ -672,9 +692,15 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, ISe
 
 
     @Override
+    @NotNull
     public Collection<String> getTableNames() {
         try {
-            return JDBCUtilities.getTableNames(getConnection().getMetaData(), null, null, null, null);
+            Connection con = getConnection();
+            if(con == null){
+                LOGGER.error("Unable to get the connection.");
+                return new ArrayList<>();
+            }
+            return JDBCUtilities.getTableNames(con.getMetaData(), null, null, null, null);
         } catch (SQLException e) {
             LOGGER.error("Unable to get the database metadata.\n" + e.getLocalizedMessage());
             return new ArrayList<>();
@@ -682,10 +708,15 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, ISe
     }
 
     @Override
-    public IJdbcTable getDataSet(String dataSetName) {
+    public IJdbcTable getDataSet(@NotNull String dataSetName) {
         List<String> geomFields;
         try {
-            geomFields = SFSUtilities.getGeometryFields(getConnection(), new TableLocation(dataSetName));
+            Connection con = getConnection();
+            if(con == null){
+                LOGGER.error("Unable to get the connection.");
+                return getTable(dataSetName);
+            }
+            geomFields = SFSUtilities.getGeometryFields(con, new TableLocation(dataSetName));
         } catch (SQLException e) {
             LOGGER.error("Unable to get the geometric fields.\n" + e.getLocalizedMessage());
             return getTable(dataSetName);

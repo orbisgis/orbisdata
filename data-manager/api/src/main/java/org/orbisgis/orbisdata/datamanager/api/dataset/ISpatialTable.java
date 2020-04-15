@@ -38,6 +38,8 @@ package org.orbisgis.orbisdata.datamanager.api.dataset;
 
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
+import org.orbisgis.commons.annotations.NotNull;
+import org.orbisgis.commons.annotations.Nullable;
 
 import java.util.List;
 import java.util.Map;
@@ -48,7 +50,7 @@ import java.util.Map;
  * @author Erwan Bocher (CNRS)
  * @author Sylvain PALOMINOS (Lab-STICC UBS 2018-2019)
  */
-public interface ISpatialTable extends ITable<Object> {
+public interface ISpatialTable<T> extends ITable<T> {
 
     /**
      * Returns the {@link Geometry} value of the given column at the current row.
@@ -56,6 +58,7 @@ public interface ISpatialTable extends ITable<Object> {
      * @param columnIndex Index of the geometric column.
      * @return The {@link Geometry} value of the given column at the current row.
      */
+    @Nullable
     Geometry getGeometry(int columnIndex);
 
     /**
@@ -64,13 +67,15 @@ public interface ISpatialTable extends ITable<Object> {
      * @param columnLabel Label of the geometric column.
      * @return The {@link Geometry} value of the given column at the current row.
      */
-    Geometry getGeometry(String columnLabel);
+    @Nullable
+    Geometry getGeometry(@NotNull String columnLabel);
 
     /**
      * Returns the {@link Geometry} value of the first geometric column at the current row.
      *
      * @return The {@link Geometry} value of the first geometric column at the current row.
      */
+    @Nullable
     Geometry getGeometry();
 
     /**
@@ -79,6 +84,7 @@ public interface ISpatialTable extends ITable<Object> {
      * @param columnIndex Index of the raster column.
      * @return The {@link IRaster} value of the given column at the current row.
      */
+    @Nullable
     IRaster getRaster(int columnIndex);
 
     /**
@@ -87,13 +93,15 @@ public interface ISpatialTable extends ITable<Object> {
      * @param columnLabel Label of the raster column.
      * @return The {@link IRaster} value of the given column at the current row.
      */
-    IRaster getRaster(String columnLabel);
+    @Nullable
+    IRaster getRaster(@NotNull String columnLabel);
 
     /**
      * Returns the {@link IRaster} value of the first raster column at the current row.
      *
      * @return The {@link IRaster} value of the first raster column at the current row.
      */
+    @Nullable
     IRaster getRaster();
 
     /**
@@ -101,6 +109,7 @@ public interface ISpatialTable extends ITable<Object> {
      *
      * @return The list of the table spatial columns.
      */
+    @Nullable
     List<String> getSpatialColumns();
 
     /**
@@ -108,6 +117,7 @@ public interface ISpatialTable extends ITable<Object> {
      *
      * @return The list of the table raster columns.
      */
+    @NotNull
     List<String> getRasterColumns();
 
     /**
@@ -115,6 +125,7 @@ public interface ISpatialTable extends ITable<Object> {
      *
      * @return The list of the table geometric columns.
      */
+    @Nullable
     List<String> getGeometricColumns();
 
     /**
@@ -122,6 +133,7 @@ public interface ISpatialTable extends ITable<Object> {
      *
      * @return The full extend {@link Geometry} of the first geometry column of the table.
      */
+    @Nullable
     Envelope getExtend();
 
     /**
@@ -129,6 +141,7 @@ public interface ISpatialTable extends ITable<Object> {
      *
      * @return The estimated extend {@link Geometry} of the first geometry column of the table.
      */
+    @Nullable
     Geometry getEstimatedExtend();
 
     /**
@@ -143,6 +156,7 @@ public interface ISpatialTable extends ITable<Object> {
      *
      * @return The field names as key and geometry types as value.
      */
+    @Nullable
     Map<String, String> getGeometryTypes();
 
     /**
@@ -152,5 +166,6 @@ public interface ISpatialTable extends ITable<Object> {
      * @param srid EPSG code as specified by the EPSG spatial reference system database.
      * @return A reproject {@link ISpatialTable}.
      */
-    ISpatialTable reproject(int srid);
+    @Nullable
+    ISpatialTable<T> reproject(int srid);
 }

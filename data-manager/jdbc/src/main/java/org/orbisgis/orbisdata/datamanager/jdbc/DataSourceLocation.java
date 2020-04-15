@@ -49,7 +49,7 @@ import java.net.MalformedURLException;
  */
 public class DataSourceLocation implements IDataSourceLocation {
 
-    private String location;
+    private final String location;
 
     /**
      * Main constructor.
@@ -62,25 +62,26 @@ public class DataSourceLocation implements IDataSourceLocation {
 
     @Override
     public String toString() {
-        return asType(String.class);
+        Object obj = asType(String.class);
+        return obj != null ? obj.toString() : "No location";
     }
 
     @Override
-    public <T> T asType(Class<T> type) {
+    public Object asType(Class<?> type) {
 
         switch (type.getCanonicalName()) {
             case "java.io.File":
-                return (T) new File(location);
+                return new File(location);
             case "java.net.URL":
                 try {
-                    return (T) new File(location).toURI().toURL();
+                    return new File(location).toURI().toURL();
                 } catch (MalformedURLException ignored) {
                 }
                 return null;
             case "java.lang.String":
-                return (T) location;
+                return location;
             case "java.net.URI":
-                return (T) new File(location).toURI();
+                return new File(location).toURI();
             default:
                 return null;
         }

@@ -6,6 +6,8 @@ import org.h2gis.postgis_jts.StatementWrapper;
 import org.h2gis.postgis_jts_osgi.DataSourceFactoryImpl;
 import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.SFSUtilities;
+import org.orbisgis.commons.annotations.NotNull;
+import org.orbisgis.commons.annotations.Nullable;
 import org.orbisgis.orbisdata.datamanager.api.dataset.DataBaseType;
 import org.orbisgis.orbisdata.datamanager.api.dataset.IJdbcSpatialTable;
 import org.orbisgis.orbisdata.datamanager.api.dataset.IJdbcTable;
@@ -23,6 +25,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Properties;
 
 /**
@@ -36,7 +39,7 @@ public class POSTGIS extends JdbcDataSource {
     private static final Logger LOGGER = LoggerFactory.getLogger(POSTGIS.class);
     private static final DataSourceFactory dataSourceFactory = new DataSourceFactoryImpl();
 
-    private ConnectionWrapper connectionWrapper;
+    private final ConnectionWrapper connectionWrapper;
 
 
     /**
@@ -56,7 +59,8 @@ public class POSTGIS extends JdbcDataSource {
      * @param file .properties file containing the information for the DataBase opening.
      * @return {@link POSTGIS} object if the DataBase has been successfully open, null otherwise.
      */
-    public static POSTGIS open(File file) {
+    @Nullable
+    public static POSTGIS open(@NotNull File file) {
         try {
             if (FileUtil.isExtensionWellFormated(file, "properties")) {
                 Properties prop = new Properties();
@@ -77,7 +81,8 @@ public class POSTGIS extends JdbcDataSource {
      * @param properties Properties for the opening of the DataBase.
      * @return {@link POSTGIS} object if the DataBase has been successfully open, null otherwise.
      */
-    public static POSTGIS open(Properties properties) {
+    @Nullable
+    public static POSTGIS open(@NotNull Properties properties) {
         Connection connection;
         try {
             connection = dataSourceFactory.createDataSource(properties).getConnection();
@@ -94,6 +99,7 @@ public class POSTGIS extends JdbcDataSource {
      * @param properties Map of the properties to use for the database opening.
      * @return An instantiated {@link POSTGIS} object wrapping the Sql object connected to the database.
      */
+    @Nullable
     public static POSTGIS open(Map<String, String> properties) {
         Properties props = new Properties();
         properties.forEach(props::put);
@@ -107,6 +113,7 @@ public class POSTGIS extends JdbcDataSource {
      * @param path Path of the database to open.
      * @return An instantiated {@link POSTGIS} object wrapping the Sql object connected to the database.
      */
+    @Nullable
     public static POSTGIS open(String path) {
         Map<String, String> map = new HashMap<>();
         map.put("databaseName", path);
@@ -121,6 +128,7 @@ public class POSTGIS extends JdbcDataSource {
      * @param password Password for the user.
      * @return An instantiated {@link POSTGIS} object wrapping the Sql object connected to the database.
      */
+    @Nullable
     public static POSTGIS open(String path, String user, String password) {
         Map<String, String> map = new HashMap<>();
         map.put("databaseName", path);
@@ -130,7 +138,7 @@ public class POSTGIS extends JdbcDataSource {
     }
 
     @Override
-    public IJdbcTable getTable(String tableName) {
+    public IJdbcTable getTable(@NotNull String tableName) {
         try {
             if (!JDBCUtilities.tableExists(connectionWrapper,
                     TableLocation.parse(tableName, getDataBaseType().equals(DataBaseType.H2GIS)).getTable())) {
@@ -149,18 +157,20 @@ public class POSTGIS extends JdbcDataSource {
         }
         String query = String.format("SELECT * FROM %s", tableName);
         try {
-            if (!SFSUtilities.getGeometryFields(getConnection(), new TableLocation(this.getLocation().toString(), tableName)).isEmpty()) {
-                return new PostgisSpatialTable(new TableLocation(this.getLocation().toString(), tableName), query, statement, this);
+            TableLocation location = new TableLocation(Objects.requireNonNull(getLocation()).toString(), tableName);
+            Connection con = getConnection();
+            if(con != null && !SFSUtilities.getGeometryFields(con, location).isEmpty()) {
+                return new PostgisSpatialTable(new TableLocation(getLocation().toString(), tableName), query, statement, this);
             }
         } catch (SQLException e) {
             LOGGER.error("Unable to check if table '" + tableName + "' contains geometric fields.\n" +
                     e.getLocalizedMessage());
         }
-        return new PostgisTable(new TableLocation(this.getLocation().toString(), tableName), query, statement, this);
+        return new PostgisTable(new TableLocation(getLocation().toString(), tableName), query, statement, this);
     }
 
     @Override
-    public IJdbcSpatialTable getSpatialTable(String tableName) {
+    public IJdbcSpatialTable getSpatialTable(@NotNull String tableName) {
         try {
             if (!JDBCUtilities.tableExists(connectionWrapper,
                     TableLocation.parse(tableName, getDataBaseType().equals(DataBaseType.H2GIS)).getTable())) {
@@ -179,7 +189,9 @@ public class POSTGIS extends JdbcDataSource {
         }
         String query = String.format("SELECT * FROM %s", tableName);
         try {
-            if (!SFSUtilities.getGeometryFields(getConnection(), new TableLocation(this.getLocation().toString(), tableName)).isEmpty()) {
+            TableLocation location = new TableLocation(Objects.requireNonNull(getLocation()).toString(), tableName);
+            Connection con = getConnection();
+            if(con != null && !SFSUtilities.getGeometryFields(con, new TableLocation(location.toString(), tableName)).isEmpty()) {
                 return new PostgisSpatialTable(new TableLocation(this.getLocation().toString(), tableName), query, statement, this);
             }
         } catch (SQLException e) {
@@ -191,7 +203,7 @@ public class POSTGIS extends JdbcDataSource {
     }
 
     @Override
-    public boolean hasTable(String tableName) {
+    public boolean hasTable(@NotNull String tableName) {
         try {
             return JDBCUtilities.tableExists(connectionWrapper, TableLocation.parse(tableName, false).toString());
         } catch (SQLException ex) {

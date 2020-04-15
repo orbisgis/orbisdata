@@ -37,6 +37,8 @@
 package org.orbisgis.orbisdata.datamanager.api.dataset;
 
 import groovy.lang.Closure;
+import org.orbisgis.commons.annotations.NotNull;
+import org.orbisgis.commons.annotations.Nullable;
 
 import java.math.BigDecimal;
 import java.sql.Date;
@@ -59,7 +61,7 @@ public interface ITable<T> extends IMatrix<T> {
      *
      * @param closure {@link Closure} to apply to each row.
      */
-    default void eachRow(Closure<Object> closure) {
+    default void eachRow(@NotNull Closure<Object> closure) {
         this.forEach(closure::call);
     }
 
@@ -69,6 +71,7 @@ public interface ITable<T> extends IMatrix<T> {
      *
      * @return A {@link Collection} containing the name of the column.
      */
+    @Nullable
     Collection<String> getColumns();
 
     /**
@@ -76,6 +79,7 @@ public interface ITable<T> extends IMatrix<T> {
      *
      * @return A {@link Map} containing the information of the column.
      */
+    @NotNull
     Map<String, String> getColumnsTypes();
 
     /**
@@ -84,7 +88,8 @@ public interface ITable<T> extends IMatrix<T> {
      * @param columnName set the name of the column
      * @return The type of the column.
      */
-    String getColumnType(String columnName);
+    @Nullable
+    String getColumnType(@NotNull String columnName);
 
     /**
      * Return true if the {@link ITable} contains a column with the given name with the given type (case sensible).
@@ -93,7 +98,7 @@ public interface ITable<T> extends IMatrix<T> {
      * @param clazz      Class of the column to check.
      * @return True if the column is found, false otherwise.
      */
-    boolean hasColumn(String columnName, Class clazz);
+    boolean hasColumn(@NotNull String columnName, @NotNull Class<?> clazz);
 
     /**
      * Return true if the {@link ITable} contains a column with the given name (case sensible).
@@ -101,7 +106,7 @@ public interface ITable<T> extends IMatrix<T> {
      * @param columnName Name of the column to check.
      * @return True if the column is found, false otherwise.
      */
-    default boolean hasColumn(String columnName) {
+    default boolean hasColumn(@NotNull String columnName) {
         return getColumns().contains(columnName);
     }
 
@@ -111,7 +116,7 @@ public interface ITable<T> extends IMatrix<T> {
      * @param columnMap {@link Map} containing the columns with the column name as key and the column type as value.
      * @return True if the columns are found, false otherwise.
      */
-    default boolean hasColumns(Map<String, Class> columnMap) {
+    default boolean hasColumns(@NotNull Map<String, Class<?>> columnMap) {
         return columnMap.entrySet().stream().allMatch(entry -> hasColumn(entry.getKey(), entry.getValue()));
     }
 
@@ -121,7 +126,7 @@ public interface ITable<T> extends IMatrix<T> {
      * @param columnList {@link List} containing the columns with the column name as key and the column type as value.
      * @return True if the columns are found, false otherwise.
      */
-    default boolean hasColumns(List<String> columnList) {
+    default boolean hasColumns(@NotNull List<String> columnList) {
         return columnList.stream().allMatch(this::hasColumn);
     }
 
@@ -158,13 +163,13 @@ public interface ITable<T> extends IMatrix<T> {
 
     /**
      * Return a {@link Collection} of all the unique values of the {@link ITable}. This method can take a lot of time and
-     * resources according the the table size. If no values are found, return an empty collection. If an error occurred,
-     * return null.
+     * resources according the the table size. If no values are found, return an empty collection.
      *
      * @param column Name of the column to request.
      * @return A {@link Collection} of all the unique values of the {@link ITable}.
      */
-    Collection<String> getUniqueValues(String column);
+    @Nullable
+    Collection<String> getUniqueValues(@NotNull String column);
 
     /**
      * Save the {@link ITable} into a file.
@@ -172,7 +177,7 @@ public interface ITable<T> extends IMatrix<T> {
      * @param filePath Path of the file to be saved.
      * @return True is the file has been saved, false otherwise.
      */
-    default boolean save(String filePath) {
+    default boolean save(@NotNull String filePath) {
         return save(filePath, null);
     }
 
@@ -183,13 +188,14 @@ public interface ITable<T> extends IMatrix<T> {
      * @param encoding Encoding of the file.
      * @return True is the file has been saved, false otherwise.
      */
-    boolean save(String filePath, String encoding);
+    boolean save(@NotNull String filePath, @Nullable String encoding);
 
     /**
      * Return the values of the first row in a {@link List}. If there is no row, return an empty list.
      *
      * @return The values of the first row in a {@link List}.
      */
+    @NotNull
     List<Object> getFirstRow();
 
     /**
@@ -198,7 +204,8 @@ public interface ITable<T> extends IMatrix<T> {
      * @param columns Array of the columns use for the selection.
      * @return Filtered {@link ITable}.
      */
-    ITable columns(String... columns);
+    @NotNull
+    ITable<T> columns(@NotNull String... columns);
 
     /**
      * Indicates the columns use for the selection.
@@ -206,7 +213,8 @@ public interface ITable<T> extends IMatrix<T> {
      * @param columns List of the columns use for the selection.
      * @return Filtered {@link ITable}.
      */
-    ITable columns(List<String> columns);
+    @NotNull
+    ITable<T> columns(@NotNull List<String> columns);
 
     /**
      * Return true if the {@link ITable} is spatial.
@@ -226,6 +234,7 @@ public interface ITable<T> extends IMatrix<T> {
     }
 
     @Override
+    @NotNull
     default int[] getSize() {
         return new int[]{getColumnCount(), getRowCount()};
     }
@@ -236,6 +245,7 @@ public interface ITable<T> extends IMatrix<T> {
      * @param column Index of the column.
      * @return The {@link String} in the current row on the given column.
      */
+    @Nullable
     String getString(int column) throws Exception;
 
     /**
@@ -300,6 +310,7 @@ public interface ITable<T> extends IMatrix<T> {
      * @param column Index of the column.
      * @return The byte array in the current row on the given column.
      */
+    @Nullable
     byte[] getBytes(int column) throws Exception;
 
     /**
@@ -308,6 +319,7 @@ public interface ITable<T> extends IMatrix<T> {
      * @param column Index of the column.
      * @return The {@link Date} in the current row on the given column.
      */
+    @Nullable
     Date getDate(int column) throws Exception;
 
     /**
@@ -316,6 +328,7 @@ public interface ITable<T> extends IMatrix<T> {
      * @param column Index of the column.
      * @return The {@link Time} in the current row on the given column.
      */
+    @Nullable
     Time getTime(int column) throws Exception;
 
     /**
@@ -324,6 +337,7 @@ public interface ITable<T> extends IMatrix<T> {
      * @param column Index of the column.
      * @return The {@link Timestamp} in the current row on the given column.
      */
+    @Nullable
     Timestamp getTimestamp(int column) throws Exception;
 
     /**
@@ -332,6 +346,7 @@ public interface ITable<T> extends IMatrix<T> {
      * @param column Index of the column.
      * @return The {@link Object} in the current row on the given column.
      */
+    @Nullable
     Object getObject(int column) throws Exception;
 
     /**
@@ -340,6 +355,7 @@ public interface ITable<T> extends IMatrix<T> {
      * @param column Index of the column.
      * @return The {@link BigDecimal} in the current row on the given column.
      */
+    @Nullable
     BigDecimal getBigDecimal(int column) throws Exception;
 
     /**
@@ -348,7 +364,8 @@ public interface ITable<T> extends IMatrix<T> {
      * @param column Name of the column.
      * @return The {@link String} in the current row on the given column.
      */
-    String getString(String column) throws Exception;
+    @Nullable
+    String getString(@NotNull String column) throws Exception;
 
     /**
      * Return the boolean in the current row on the given column.
@@ -356,7 +373,7 @@ public interface ITable<T> extends IMatrix<T> {
      * @param column Name of the column.
      * @return The boolean in the current row on the given column.
      */
-    boolean getBoolean(String column) throws Exception;
+    boolean getBoolean(@NotNull String column) throws Exception;
 
     /**
      * Return the byte in the current row on the given column.
@@ -364,7 +381,7 @@ public interface ITable<T> extends IMatrix<T> {
      * @param column Name of the column.
      * @return The byte in the current row on the given column.
      */
-    byte getByte(String column) throws Exception;
+    byte getByte(@NotNull String column) throws Exception;
 
     /**
      * Return the short in the current row on the given column.
@@ -372,7 +389,7 @@ public interface ITable<T> extends IMatrix<T> {
      * @param column Name of the column.
      * @return The short in the current row on the given column.
      */
-    short getShort(String column) throws Exception;
+    short getShort(@NotNull String column) throws Exception;
 
     /**
      * Return the int in the current row on the given column.
@@ -380,7 +397,7 @@ public interface ITable<T> extends IMatrix<T> {
      * @param column Name of the column.
      * @return The int in the current row on the given column.
      */
-    int getInt(String column) throws Exception;
+    int getInt(@NotNull String column) throws Exception;
 
     /**
      * Return the long in the current row on the given column.
@@ -388,7 +405,7 @@ public interface ITable<T> extends IMatrix<T> {
      * @param column Name of the column.
      * @return The long in the current row on the given column.
      */
-    long getLong(String column) throws Exception;
+    long getLong(@NotNull String column) throws Exception;
 
     /**
      * Return the float in the current row on the given column.
@@ -396,7 +413,7 @@ public interface ITable<T> extends IMatrix<T> {
      * @param column Name of the column.
      * @return The float in the current row on the given column.
      */
-    float getFloat(String column) throws Exception;
+    float getFloat(@NotNull String column) throws Exception;
 
     /**
      * Return the double in the current row on the given column.
@@ -404,7 +421,7 @@ public interface ITable<T> extends IMatrix<T> {
      * @param column Name of the column.
      * @return The double in the current row on the given column.
      */
-    double getDouble(String column) throws Exception;
+    double getDouble(@NotNull String column) throws Exception;
 
     /**
      * Return the byte array in the current row on the given column.
@@ -412,7 +429,8 @@ public interface ITable<T> extends IMatrix<T> {
      * @param column Name of the column.
      * @return The byte array in the current row on the given column.
      */
-    byte[] getBytes(String column) throws Exception;
+    @Nullable
+    byte[] getBytes(@NotNull String column) throws Exception;
 
     /**
      * Return the {@link Date} in the current row on the given column.
@@ -420,7 +438,8 @@ public interface ITable<T> extends IMatrix<T> {
      * @param column Name of the column.
      * @return The {@link Date} in the current row on the given column.
      */
-    Date getDate(String column) throws Exception;
+    @Nullable
+    Date getDate(@NotNull String column) throws Exception;
 
     /**
      * Return the {@link Time} in the current row on the given column.
@@ -428,7 +447,8 @@ public interface ITable<T> extends IMatrix<T> {
      * @param column Name of the column.
      * @return The {@link Time} in the current row on the given column.
      */
-    Time getTime(String column) throws Exception;
+    @Nullable
+    Time getTime(@NotNull String column) throws Exception;
 
     /**
      * Return the {@link Timestamp} in the current row on the given column.
@@ -436,7 +456,8 @@ public interface ITable<T> extends IMatrix<T> {
      * @param column Name of the column.
      * @return The {@link Timestamp} in the current row on the given column.
      */
-    Timestamp getTimestamp(String column) throws Exception;
+    @Nullable
+    Timestamp getTimestamp(@NotNull String column) throws Exception;
 
     /**
      * Return the {@link Object} in the current row on the given column.
@@ -444,7 +465,8 @@ public interface ITable<T> extends IMatrix<T> {
      * @param column Name of the column.
      * @return The {@link Object} in the current row on the given column.
      */
-    Object getObject(String column) throws Exception;
+    @Nullable
+    Object getObject(@NotNull String column) throws Exception;
 
     /**
      * Return the {@link BigDecimal} in the current row on the given column.
@@ -452,7 +474,8 @@ public interface ITable<T> extends IMatrix<T> {
      * @param column Name of the column.
      * @return The {@link BigDecimal} in the current row on the given column.
      */
-    BigDecimal getBigDecimal(String column) throws Exception;
+    @Nullable
+    BigDecimal getBigDecimal(@NotNull String column) throws Exception;
 
     /**
      * Return the {@link U} in the current row on the given column.
@@ -461,7 +484,8 @@ public interface ITable<T> extends IMatrix<T> {
      * @param clazz {@link Class} of the object.
      * @return The {@link U} in the current row on the given column.
      */
-    <U> U getObject(int column, Class<U> clazz) throws Exception;
+    @Nullable
+    <U> U getObject(int column, @NotNull Class<U> clazz) throws Exception;
 
     /**
      * Return the {@link U} in the current row on the given column.
@@ -470,5 +494,6 @@ public interface ITable<T> extends IMatrix<T> {
      * @param clazz {@link Class} of the object.
      * @return The {@link U} in the current row on the given column.
      */
-    <U> U getObject(String column, Class<U> clazz) throws Exception;
+    @Nullable
+    <U> U getObject(@NotNull String column, @NotNull Class<U> clazz) throws Exception;
 }

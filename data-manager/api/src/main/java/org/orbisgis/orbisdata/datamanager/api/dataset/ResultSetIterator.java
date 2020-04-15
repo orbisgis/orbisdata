@@ -39,6 +39,9 @@ package org.orbisgis.orbisdata.datamanager.api.dataset;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Iterator;
+
+import org.orbisgis.commons.annotations.NotNull;
+import org.orbisgis.commons.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -58,7 +61,7 @@ public class ResultSetIterator implements Iterator<Object> {
     /**
      * Iterated {@link ResultSet}
      */
-    private ResultSet resultSet;
+    private final ResultSet resultSet;
     /**
      * Count of {@link ResultSet} row
      */
@@ -74,7 +77,7 @@ public class ResultSetIterator implements Iterator<Object> {
      *
      * @param resultSet {@link ResultSet} to iterate.
      */
-    public ResultSetIterator(ResultSet resultSet) throws SQLException {
+    public ResultSetIterator(@NotNull ResultSet resultSet) throws SQLException {
         this.resultSet = resultSet;
         try {
             this.resultSet.last();
@@ -102,6 +105,7 @@ public class ResultSetIterator implements Iterator<Object> {
     }
 
     @Override
+    @Nullable
     public ResultSet next() {
         if (resultSet == null) {
             return null;

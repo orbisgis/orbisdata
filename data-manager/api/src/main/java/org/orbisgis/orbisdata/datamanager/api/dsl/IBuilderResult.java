@@ -38,6 +38,8 @@ package org.orbisgis.orbisdata.datamanager.api.dsl;
 
 
 import groovy.lang.Closure;
+import org.orbisgis.commons.annotations.NotNull;
+import org.orbisgis.commons.annotations.Nullable;
 import org.orbisgis.orbisdata.datamanager.api.dataset.ISpatialTable;
 import org.orbisgis.orbisdata.datamanager.api.dataset.ITable;
 
@@ -55,7 +57,7 @@ public interface IBuilderResult {
      *
      * @param closure {@link Closure} to apply to each row.
      */
-    void eachRow(Closure<Object> closure);
+    void eachRow(@NotNull Closure<Object> closure);
 
     /**
      * Convert the result of the SQL request into a {@link ITable} or {@link ISpatialTable}.
@@ -63,19 +65,22 @@ public interface IBuilderResult {
      * @param clazz New class of the result.
      * @return The result wrapped into the given class.
      */
-    Object asType(Class clazz);
+    @Nullable
+    Object asType(@NotNull Class<?> clazz);
 
     /**
      * Return the {@link ITable} representing the result of the SQL query.
      *
      * @return The {@link ITable} representing the result of the SQL query.
      */
-    ITable getTable();
+    @Nullable
+    ITable<?> getTable();
 
     /**
      * Return the {@link ISpatialTable} representing the result of the SQL query.
      *
      * @return The {@link ISpatialTable} representing the result of the SQL query.
      */
+    @Nullable
     ISpatialTable getSpatialTable();
 }

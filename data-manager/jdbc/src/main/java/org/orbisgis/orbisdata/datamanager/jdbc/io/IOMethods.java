@@ -14,6 +14,8 @@ import org.h2gis.functions.io.tsv.TSVDriverFunction;
 import org.h2gis.functions.io.utility.FileUtil;
 import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.URIUtilities;
+import org.orbisgis.commons.annotations.NotNull;
+import org.orbisgis.commons.annotations.Nullable;
 import org.orbisgis.orbisdata.datamanager.api.dataset.DataBaseType;
 import org.orbisgis.orbisdata.datamanager.jdbc.JdbcDataSource;
 import org.osgi.service.jdbc.DataSourceFactory;
@@ -39,7 +41,8 @@ public class IOMethods {
     private static final String ENCODING_OPTION = "charset=";
     private static final String UTF_ENCODING = "UTF-8";
 
-    private static DriverFunction getDriverFromFile(File file) {
+    @Nullable
+    private static DriverFunction getDriverFromFile(@NotNull File file) {
         String path = file.getAbsolutePath();
         String extension = "";
         int i = path.lastIndexOf(46);
@@ -73,7 +76,8 @@ public class IOMethods {
         }
     }
 
-    private static String unsupportedEncoding(String encoding) {
+    @Nullable
+    private static String unsupportedEncoding(@Nullable String encoding) {
         if (encoding != null && !encoding.isEmpty()) {
             LOGGER.warn("Encoding is not yet supported for this file format");
         }
@@ -89,7 +93,8 @@ public class IOMethods {
      * @param encoding   Encoding of the file.
      * @return True if the file has been saved, false otherwise.
      */
-    public static boolean saveAsFile(Connection connection, String tableName, String filePath, String encoding) {
+    public static boolean saveAsFile(@NotNull Connection connection, @NotNull String tableName,
+                                     @NotNull String filePath, @Nullable String encoding) {
         String enc = encoding;
         boolean isH2 = false;
         try {
@@ -126,7 +131,8 @@ public class IOMethods {
      * @param dataSource the database
      */
     //TODO reformat the code once all the driver have the same importFile signature
-    public static boolean loadFile(String filePath, String tableName, String encoding, boolean delete, JdbcDataSource dataSource) {
+    public static boolean loadFile(@NotNull String filePath, @NotNull String tableName, @Nullable String encoding,
+                                   boolean delete, @NotNull JdbcDataSource dataSource) {
         String enc = encoding;
         Connection connection = dataSource.getConnection();
         File fileToImport = URIUtilities.fileFromString(filePath);
@@ -177,7 +183,7 @@ public class IOMethods {
                                  boolean delete, JdbcDataSource jdbcDataSource) {
         if (jdbcDataSource.getDataBaseType() != DataBaseType.H2GIS) {
             DataBaseType dbType = jdbcDataSource.getDataBaseType();
-            String name = dbType == null ? "null" : dbType.name();
+            String name = dbType.name();
             LOGGER.error(name + " database not supported for file link.");
             return;
         }
@@ -233,7 +239,7 @@ public class IOMethods {
     public static void link(String filePath, String tableName, boolean delete, JdbcDataSource jdbcDataSource) {
         if (jdbcDataSource.getDataBaseType() != DataBaseType.H2GIS) {
             DataBaseType dbType = jdbcDataSource.getDataBaseType();
-            String name = dbType == null ? "null" : dbType.name();
+            String name = dbType.name();
             LOGGER.error(name + " database not supported for file link.");
             return;
         }

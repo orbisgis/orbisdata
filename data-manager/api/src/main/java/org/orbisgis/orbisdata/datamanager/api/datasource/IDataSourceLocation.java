@@ -36,6 +36,9 @@
  */
 package org.orbisgis.orbisdata.datamanager.api.datasource;
 
+
+import org.orbisgis.commons.annotations.Nullable;
+
 /**
  * Location of the IDataSource which can be converted in several type.
  *
@@ -48,8 +51,8 @@ public interface IDataSourceLocation {
      * Cast the {@link IDataSourceLocation} into the given type
      *
      * @param type Type used for the cast
-     * @param <T>  Class used for the cast
      * @return The {@link IDataSourceLocation} into the given type
      */
-    <T> T asType(Class<T> type);
+    @Nullable
+    Object asType(Class<?> type);
 }

@@ -39,6 +39,7 @@ package org.orbisgis.orbisdata.datamanager.api.dataset;
 import groovy.lang.Closure;
 import org.h2gis.utilities.TableLocation;
 import org.junit.jupiter.api.Test;
+import org.orbisgis.commons.annotations.NotNull;
 import org.orbisgis.orbisdata.datamanager.api.dsl.IConditionOrOptionBuilder;
 import org.orbisgis.orbisdata.datamanager.api.dsl.IOptionBuilder;
 
@@ -166,6 +167,7 @@ public class IJdbcTableTest {
             this.location = location;
         }
 
+        @NotNull
         @Override
         public String getTable() {
             return location.isEmpty()?"":location.split("\\.")[2].toLowerCase();
@@ -181,13 +183,15 @@ public class IJdbcTableTest {
             return location.isEmpty()?"":location.split("\\.")[0].toLowerCase();
         }
 
+        @NotNull
         @Override
         public String getDataSource() {
             return null;
         }
 
+        @NotNull
         @Override
-        public String toString(DataBaseType type) {
+        public String toString(@NotNull DataBaseType type) {
             if(location == null){
                 return null;
             }
@@ -261,11 +265,13 @@ public class IJdbcTableTest {
             return location;
         }
 
+        @NotNull
         @Override
         public DataBaseType getDbType() {
             return databaseType;
         }
 
+        @NotNull
         @Override
         public ResultSetMetaData getMetaData() {
             return new RowSetMetaDataImpl();
@@ -286,6 +292,7 @@ public class IJdbcTableTest {
             return false;
         }
 
+        @NotNull
         @Override
         public IJdbcTableSummary getSummary() {
             return null;
@@ -389,27 +396,27 @@ public class IJdbcTableTest {
         }
 
         @Override
-        public String getString(String s) {
+        public String getString(@NotNull String s) {
             return null;
         }
 
         @Override
-        public boolean getBoolean(String s) {
+        public boolean getBoolean(@NotNull String s) {
             return false;
         }
 
         @Override
-        public byte getByte(String s) {
+        public byte getByte(@NotNull String s) {
             return 0;
         }
 
         @Override
-        public short getShort(String s) {
+        public short getShort(@NotNull String s) {
             return 0;
         }
 
         @Override
-        public int getInt(String s) {
+        public int getInt(@NotNull String s) {
             return 0;
         }
 
@@ -419,12 +426,12 @@ public class IJdbcTableTest {
         }
 
         @Override
-        public float getFloat(String s) {
+        public float getFloat(@NotNull String s) {
             return 0;
         }
 
         @Override
-        public double getDouble(String s) {
+        public double getDouble(@NotNull String s) {
             return 0;
         }
 
@@ -434,22 +441,22 @@ public class IJdbcTableTest {
         }
 
         @Override
-        public byte[] getBytes(String s) {
+        public byte[] getBytes(@NotNull String s) {
             return new byte[0];
         }
 
         @Override
-        public Date getDate(String s) {
+        public Date getDate(@NotNull String s) {
             return null;
         }
 
         @Override
-        public Time getTime(String s) {
+        public Time getTime(@NotNull String s) {
             return null;
         }
 
         @Override
-        public Timestamp getTimestamp(String s) {
+        public Timestamp getTimestamp(@NotNull String s) {
             return null;
         }
 
@@ -487,7 +494,7 @@ public class IJdbcTableTest {
         }
 
         @Override
-        public Object getObject(String s) throws SQLException {
+        public Object getObject(@NotNull String s) throws SQLException {
             if (sqlException) {
                 throw new SQLException();
             }
@@ -518,7 +525,7 @@ public class IJdbcTableTest {
         }
 
         @Override
-        public BigDecimal getBigDecimal(String s) {
+        public BigDecimal getBigDecimal(@NotNull String s) {
             return null;
         }
 
@@ -1052,12 +1059,12 @@ public class IJdbcTableTest {
         public void updateNClob(String s, Reader reader) {/*Does nothing*/}
 
         @Override
-        public <T> T getObject(int i, Class<T> aClass) {
+        public <T> T getObject(int i, @NotNull Class<T> aClass) {
             return null;
         }
 
         @Override
-        public <T> T getObject(String s, Class<T> aClass) {
+        public <T> T getObject(@NotNull String s, @NotNull Class<T> aClass) {
             return null;
         }
 
@@ -1071,23 +1078,25 @@ public class IJdbcTableTest {
             return false;
         }
 
+        @NotNull
         @Override
         public Collection<String> getColumns() {
             return null;
         }
 
+        @NotNull
         @Override
         public Map<String, String> getColumnsTypes() {
             return null;
         }
 
         @Override
-        public String getColumnType(String columnName) {
+        public String getColumnType(@NotNull String columnName) {
             return null;
         }
 
         @Override
-        public boolean hasColumn(String columnName, Class clazz) {
+        public boolean hasColumn(@NotNull String columnName, @NotNull Class clazz) {
             return false;
         }
 
@@ -1097,27 +1106,30 @@ public class IJdbcTableTest {
         }
 
         @Override
-        public Collection<String> getUniqueValues(String column) {
+        public Collection<String> getUniqueValues(@NotNull String column) {
             return null;
         }
 
         @Override
-        public boolean save(String filePath, String encoding) {
+        public boolean save(@NotNull String filePath, String encoding) {
             return false;
         }
 
+        @NotNull
         @Override
         public List<Object> getFirstRow() {
             return null;
         }
 
+        @NotNull
         @Override
-        public IJdbcTable columns(String... columns) {
+        public IJdbcTable columns(@NotNull String... columns) {
             return null;
         }
 
+        @NotNull
         @Override
-        public IJdbcTable columns(List<String> columns) {
+        public IJdbcTable columns(@NotNull List<String> columns) {
             return null;
         }
 
@@ -1152,7 +1164,7 @@ public class IJdbcTableTest {
         }
 
         @Override
-        public Object asType(Class clazz) {
+        public Object asType(@NotNull Class clazz) {
             return null;
         }
 

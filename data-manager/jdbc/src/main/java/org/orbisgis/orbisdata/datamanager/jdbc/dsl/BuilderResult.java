@@ -39,6 +39,7 @@ package org.orbisgis.orbisdata.datamanager.jdbc.dsl;
 import groovy.lang.Closure;
 import org.h2gis.utilities.wrapper.ConnectionWrapper;
 import org.h2gis.utilities.wrapper.StatementWrapper;
+import org.orbisgis.commons.annotations.NotNull;
 import org.orbisgis.commons.printer.ICustomPrinter;
 import org.orbisgis.orbisdata.datamanager.api.dataset.ISpatialTable;
 import org.orbisgis.orbisdata.datamanager.api.dataset.ITable;
@@ -51,6 +52,7 @@ import org.orbisgis.orbisdata.datamanager.jdbc.postgis.PostgisTable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -80,19 +82,29 @@ public abstract class BuilderResult implements IBuilderResult {
     protected abstract String getQuery();
 
     @Override
-    public void eachRow(Closure closure) {
-        ((ISpatialTable) asType(ISpatialTable.class)).eachRow(closure);
+    public void eachRow(@NotNull Closure<Object> closure) {
+        ISpatialTable<?> table = ((ISpatialTable<?>) asType(ISpatialTable.class));
+        if(table != null) {
+            table.eachRow(closure);
+        }
     }
 
     @Override
-    public Object asType(Class clazz) {
+    public Object asType(@NotNull Class<?> clazz) {
         if (ICustomPrinter.class.isAssignableFrom(clazz)) {
-            return this.getTable().asType(clazz);
+            ITable<?> table = this.getTable();
+            if(table != null) {
+                return table.asType(clazz);
+            }
         }
         Statement statement;
         try {
-            statement = getDataSource().getConnection()
-                    .createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);
+            Connection con = getDataSource().getConnection();
+            if(con == null){
+                LOGGER.error("Unable to create the StatementWrapper.\n");
+                return null;
+            }
+            statement = con.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);
         } catch (SQLException e) {
             LOGGER.error("Unable to create the StatementWrapper.\n", e);
             return null;
@@ -131,12 +143,12 @@ public abstract class BuilderResult implements IBuilderResult {
     }
 
     @Override
-    public ITable getTable() {
-        return (ITable) this.asType(ITable.class);
+    public ITable<?> getTable() {
+        return (ITable<?>) this.asType(ITable.class);
     }
 
     @Override
-    public ISpatialTable getSpatialTable() {
-        return (ISpatialTable) this.asType(ISpatialTable.class);
+    public ISpatialTable<?> getSpatialTable() {
+        return (ISpatialTable<?>) this.asType(ISpatialTable.class);
     }
 }

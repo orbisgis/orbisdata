@@ -37,6 +37,7 @@
 package org.orbisgis.orbisdata.processmanager.process.check;
 
 import groovy.lang.Closure;
+import org.orbisgis.commons.annotations.NotNull;
 import org.orbisgis.orbisdata.processmanager.api.IProcess;
 import org.orbisgis.orbisdata.processmanager.api.check.IProcessCheck;
 import org.orbisgis.orbisdata.processmanager.api.inoutput.IInOutPut;
@@ -50,7 +51,7 @@ import java.util.LinkedList;
  * Implementation of the {@link IProcessCheck} interface.
  *
  * @author Erwan Bocher (CNRS)
- * @author Sylvain PALOMINOS (UBS 2019)
+ * @author Sylvain PALOMINOS (UBS 2019-2020)
  */
 public class ProcessCheck implements IProcessCheck {
 
@@ -59,15 +60,15 @@ public class ProcessCheck implements IProcessCheck {
     /**
      * {@link IProcess} concerned by the check.
      */
-    private IProcess process;
+    private final IProcess process;
     /**
      * Inputs/outputs to use for the check.
      */
-    private LinkedList<IInOutPut> inOutPuts = new LinkedList<>();
+    private final LinkedList<IInOutPut> inOutPuts = new LinkedList<>();
     /**
      * {@link Closure} to perform for the check.
      */
-    private Closure cl;
+    private Closure<?> cl;
     /**
      * Action to do on fail.
      */
@@ -95,14 +96,15 @@ public class ProcessCheck implements IProcessCheck {
     }
 
     @Override
-    public void run(LinkedHashMap<String, Object> processInData) {
+    public void run(@NotNull LinkedHashMap<String, Object> processInData) {
         if (cl == null) {
             LOGGER.error("A closure for the process check should be defined.");
             fail();
         }
         LinkedList<Object> dataList = new LinkedList<>();
         for (IInOutPut inOutPut : inOutPuts) {
-            if (inOutPut.getProcess().getOutputs().stream().anyMatch(output -> output.getName().equals(inOutPut.getName()))) {
+            if (inOutPut.getProcess() != null &&
+                    inOutPut.getProcess().getOutputs().stream().anyMatch(output -> output.getName().equals(inOutPut.getName()))) {
                 dataList.push(inOutPut.getProcess().getResults().get(inOutPut.getName()));
             } else {
                 dataList.push(processInData.get(inOutPut.getName()));
@@ -122,19 +124,19 @@ public class ProcessCheck implements IProcessCheck {
     }
 
     @Override
-    public void onFail(String action, String message) {
+    public void onFail(@NotNull String action, String message) {
         failAction = action;
         failMessage = message;
     }
 
     @Override
-    public void onSuccess(String action, String message) {
+    public void onSuccess(@NotNull String action, String message) {
         successAction = action;
         successMessage = message;
     }
 
     @Override
-    public void setInOutputs(Object... data) {
+    public void setInOutputs(@NotNull Object... data) {
         for (Object obj : data) {
             if (obj instanceof IInOutPut) {
                 this.inOutPuts.add((IInOutPut) obj);
@@ -145,7 +147,7 @@ public class ProcessCheck implements IProcessCheck {
     }
 
     @Override
-    public void setClosure(Closure cl) {
+    public void setClosure(@NotNull Closure<?> cl) {
         this.cl = cl;
     }
 
@@ -173,6 +175,7 @@ public class ProcessCheck implements IProcessCheck {
         }
     }
 
+    @NotNull
     @Override
     public IProcess getProcess() {
         return process;

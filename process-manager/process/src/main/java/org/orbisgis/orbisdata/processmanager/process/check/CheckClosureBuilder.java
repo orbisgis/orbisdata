@@ -37,6 +37,7 @@
 package org.orbisgis.orbisdata.processmanager.process.check;
 
 import groovy.lang.Closure;
+import org.orbisgis.commons.annotations.NotNull;
 import org.orbisgis.orbisdata.processmanager.api.check.ICheckClosureBuilder;
 import org.orbisgis.orbisdata.processmanager.api.check.ICheckOptionBuilder;
 import org.orbisgis.orbisdata.processmanager.api.check.IProcessCheck;
@@ -45,26 +46,27 @@ import org.orbisgis.orbisdata.processmanager.api.check.IProcessCheck;
  * Implementation of the {@link ICheckClosureBuilder} interface.
  *
  * @author Erwan Bocher (CNRS)
- * @author Sylvain PALOMINOS (UBS 2019)
+ * @author Sylvain PALOMINOS (UBS 2019-2020)
  */
 public class CheckClosureBuilder implements ICheckClosureBuilder {
 
     /**
      * {@link IProcessCheck} being built
      */
-    private IProcessCheck processCheck;
+    private final IProcessCheck processCheck;
 
     /**
      * Default constructor.
      *
      * @param processCheck {@link IProcessCheck} to build.
      */
-    public CheckClosureBuilder(IProcessCheck processCheck) {
+    public CheckClosureBuilder(@NotNull IProcessCheck processCheck) {
         this.processCheck = processCheck;
     }
 
     @Override
-    public ICheckOptionBuilder check(Closure cl) {
+    @NotNull
+    public ICheckOptionBuilder check(@NotNull Closure<?> cl) {
         processCheck.setClosure(cl);
         return new CheckOptionBuilder(processCheck);
     }

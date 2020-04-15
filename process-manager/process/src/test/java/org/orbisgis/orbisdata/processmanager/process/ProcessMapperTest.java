@@ -361,7 +361,7 @@ public class ProcessMapperTest {
     @Test
     public void getAttributes() {
         IProcessMapper mapper = new ProcessMapper();
-        assertNull(mapper.getTitle());
+        assertNotNull(mapper.getTitle());
         assertNull(mapper.getDescription());
         assertNull(mapper.getKeywords());
         assertNull(mapper.getVersion());
@@ -393,7 +393,7 @@ public class ProcessMapperTest {
         mapper.link((InOutPut) pA1.getProperty("outA1")).to("out");
         mapper.execute(null);
         IProcessMapper mapper2 = mapper.newInstance();
-        assertEquals(mapper.getTitle(), mapper2.getTitle());
+        assertNotEquals(mapper.getTitle(), mapper2.getTitle());
         assertEquals(mapper.getDescription(), mapper2.getDescription());
         assertEquals(mapper.getKeywords(), mapper2.getKeywords());
         assertEquals(mapper.getInputs(), mapper2.getInputs());

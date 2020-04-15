@@ -36,6 +36,9 @@
  */
 package org.orbisgis.orbisdata.processmanager.api.inoutput;
 
+import org.orbisgis.commons.annotations.NotNull;
+import org.orbisgis.commons.annotations.Nullable;
+
 /**
  * This interface defines the methods dedicated the wrapping of input.
  *
@@ -50,7 +53,8 @@ public interface IInput extends IInOutPut {
      * @param dfltValue Default value to use if no value is provided.
      * @return The {@link IInput} to continue its configuration.
      */
-    IInOutPut optional(Object dfltValue);
+    @NotNull
+    IInOutPut optional(@Nullable Object dfltValue);
 
     /**
      * Return true if the input is optional, false otherwise.
@@ -64,6 +68,7 @@ public interface IInput extends IInOutPut {
      *
      * @return The {@link IInput} to continue its configuration.
      */
+    @NotNull
     IInOutPut mandatory();
 
     /**
@@ -78,5 +83,6 @@ public interface IInput extends IInOutPut {
      *
      * @return The default value of the input.
      */
+    @Nullable
     Object getDefaultValue();
 }

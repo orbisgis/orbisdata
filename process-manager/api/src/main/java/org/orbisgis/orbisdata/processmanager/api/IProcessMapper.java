@@ -36,6 +36,7 @@
  */
 package org.orbisgis.orbisdata.processmanager.api;
 
+import org.orbisgis.commons.annotations.NotNull;
 import org.orbisgis.orbisdata.processmanager.api.check.ICheckDataBuilder;
 import org.orbisgis.orbisdata.processmanager.api.check.IProcessCheck;
 import org.orbisgis.orbisdata.processmanager.api.inoutput.IInOutPut;
@@ -55,6 +56,7 @@ public interface IProcessMapper extends IProcess {
      *
      * @return A process new instance.
      */
+    @NotNull
     IProcessMapper newInstance();
 
     /**
@@ -63,7 +65,8 @@ public interface IProcessMapper extends IProcess {
      * @param inOutPuts Inputs or outputs to link.
      * @return A {@link ILinker} object which will do the link.
      */
-    ILinker link(IInOutPut... inOutPuts);
+    @NotNull
+    ILinker link(@NotNull IInOutPut... inOutPuts);
 
     /**
      * Add a {@link IProcessCheck} before the execution of the given {@link IProcess}.
@@ -71,7 +74,8 @@ public interface IProcessMapper extends IProcess {
      * @param process {@link IProcess} before which the check should be done.
      * @return A {@link ICheckDataBuilder} to continue the {@link IProcessCheck} build.
      */
-    ICheckDataBuilder before(IProcess process);
+    @NotNull
+    ICheckDataBuilder before(@NotNull IProcess process);
 
 
     /**
@@ -80,7 +84,8 @@ public interface IProcessMapper extends IProcess {
      * @param process {@link IProcess} after which the check should be done.
      * @return A {@link ICheckDataBuilder} to continue the {@link IProcessCheck} build.
      */
-    ICheckDataBuilder after(IProcess process);
+    @NotNull
+    ICheckDataBuilder after(@NotNull IProcess process);
 
     @Override
     default String getVersion() {
@@ -98,6 +103,7 @@ public interface IProcessMapper extends IProcess {
     }
 
     @Override
+    @NotNull
     default String getIdentifier() {
         return UUID.randomUUID().toString();
     }

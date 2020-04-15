@@ -36,14 +36,18 @@
  */
 package org.orbisgis.orbisdata.processmanager.process.inoutput;
 
+import org.orbisgis.commons.annotations.NotNull;
+import org.orbisgis.commons.annotations.Nullable;
 import org.orbisgis.orbisdata.processmanager.api.IProcess;
 import org.orbisgis.orbisdata.processmanager.api.inoutput.IOutput;
+
+import java.util.UUID;
 
 /**
  * Implementation of the {@link IOutput} interface.
  *
  * @author Erwan Bocher (CNRS)
- * @author Sylvain PALOMINOS (UBS 2019)
+ * @author Sylvain PALOMINOS (UBS 2019-2020)
  */
 public class Output extends InOutPut implements IOutput {
     /**
@@ -52,7 +56,7 @@ public class Output extends InOutPut implements IOutput {
      * @param process {@link IProcess} of the input/output.
      * @param name    Name of the input/output.
      */
-    public Output(IProcess process, String name) {
+    public Output(@Nullable IProcess process, @NotNull String name) {
         super(process, name);
     }
 
@@ -60,33 +64,38 @@ public class Output extends InOutPut implements IOutput {
      * Empty constructor.
      */
     public Output() {
-        super(null, null);
+        super(null, "output_" + UUID.randomUUID().toString());
     }
 
+    @NotNull
     public static Output call() {
-        return new Output(null, null);
+        return new Output();
     }
 
     @Override
+    @NotNull
     public Output setTitle(String title) {
         super.setTitle(title);
         return this;
     }
 
     @Override
+    @NotNull
     public Output setDescription(String description) {
         super.setDescription(description);
         return this;
     }
 
     @Override
+    @NotNull
     public Output setKeywords(String[] keywords) {
         super.setKeywords(keywords);
         return this;
     }
 
     @Override
-    public Output setType(Class type) {
+    @NotNull
+    public Output setType(@Nullable Class<?> type) {
         super.setType(type);
         return this;
     }

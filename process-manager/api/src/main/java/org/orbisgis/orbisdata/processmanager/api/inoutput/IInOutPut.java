@@ -36,6 +36,8 @@
  */
 package org.orbisgis.orbisdata.processmanager.api.inoutput;
 
+import org.orbisgis.commons.annotations.NotNull;
+import org.orbisgis.commons.annotations.Nullable;
 import org.orbisgis.orbisdata.processmanager.api.IProcess;
 
 /**
@@ -51,6 +53,7 @@ public interface IInOutPut {
      *
      * @return The input/output name.
      */
+    @NotNull
     String getName();
 
     /**
@@ -58,13 +61,14 @@ public interface IInOutPut {
      *
      * @param name Name of the input/output.
      */
-    void setName(String name);
+    void setName(@NotNull String name);
 
     /**
      * Return the {@link IProcess} of the input/output.
      *
      * @return The {@link IProcess} of the input/output.
      */
+    @Nullable
     IProcess getProcess();
 
     /**
@@ -72,34 +76,38 @@ public interface IInOutPut {
      *
      * @param process The {@link IProcess} of the input/output.
      */
-    void setProcess(IProcess process);
+    void setProcess(@NotNull IProcess process);
 
     /**
      * Sets the type of the input/output.
      *
      * @param type The type of the input/output.
      */
-    IInOutPut setType(Class type);
+    @NotNull
+    IInOutPut setType(@Nullable Class<?> type);
 
     /**
      * Return the type of the input/output.
      *
      * @return The type of the input/output.
      */
-    Class getType();
+    @Nullable
+    Class<?> getType();
 
     /**
      * Sets the title of the input/output.
      *
      * @param title The title of the input/output.
      */
-    IInOutPut setTitle(String title);
+    @NotNull
+    IInOutPut setTitle(@Nullable String title);
 
     /**
      * Return the title or the input/output.
      *
      * @return The title of the input/output.
      */
+    @Nullable
     String getTitle();
 
     /**
@@ -107,13 +115,15 @@ public interface IInOutPut {
      *
      * @param description The description of the input/output.
      */
-    IInOutPut setDescription(String description);
+    @NotNull
+    IInOutPut setDescription(@Nullable String description);
 
     /**
      * Return the description of the input/output.
      *
      * @return The description of the input/output.
      */
+    @Nullable
     String getDescription();
 
     /**
@@ -121,13 +131,15 @@ public interface IInOutPut {
      *
      * @param keywords The keywords of the input/output.
      */
-    IInOutPut setKeywords(String[] keywords);
+    @NotNull
+    IInOutPut setKeywords(@Nullable String[] keywords);
 
     /**
      * Return the keywords of the input/output.
      *
      * @return The keywords of the input/output.
      */
+    @Nullable
     String[] getKeywords();
 
     /**

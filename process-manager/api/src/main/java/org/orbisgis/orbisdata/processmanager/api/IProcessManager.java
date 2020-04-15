@@ -38,6 +38,8 @@ package org.orbisgis.orbisdata.processmanager.api;
 
 import groovy.lang.Closure;
 import groovy.lang.DelegatesTo;
+import org.orbisgis.commons.annotations.NotNull;
+import org.orbisgis.commons.annotations.Nullable;
 
 import java.util.List;
 
@@ -55,6 +57,7 @@ public interface IProcessManager {
      *
      * @return A {@link IProcessBuilder} to create a {@link IProcess}.
      */
+    @NotNull
     IProcessBuilder create();
 
     /**
@@ -64,13 +67,15 @@ public interface IProcessManager {
      * @param cl {@link Closure} delegated to {@link IProcessBuilder}.
      * @return A {@link IProcess}.
      */
-    IProcess create(@DelegatesTo(IProcessBuilder.class) Closure cl);
+    @NotNull
+    IProcess create(@NotNull @DelegatesTo(IProcessBuilder.class) Closure<?> cl);
 
     /**
      * Return the list of the factory identifiers.
      *
      * @return The list of the factory identifier.
      */
+    @NotNull
     List<String> factoryIds();
 
     /**
@@ -79,13 +84,15 @@ public interface IProcessManager {
      * @param identifier Identifier of the factory.
      * @return The process factory with the given identifier.
      */
-    IProcessFactory factory(String identifier);
+    @Nullable
+    IProcessFactory factory(@NotNull String identifier);
 
     /**
      * Returns the default process factory.
      *
      * @return The default process factory.
      */
+    @Nullable
     IProcessFactory factory();
 
     /**
@@ -94,7 +101,8 @@ public interface IProcessManager {
      * @param processId Identifier of the process to get.
      * @return The process with the given identifier from the default factory.
      */
-    IProcess process(String processId);
+    @Nullable
+    IProcess process(@NotNull String processId);
 
     /**
      * Returns the process with the given identifier from the factory with the given identifier.
@@ -103,5 +111,6 @@ public interface IProcessManager {
      * @param factoryId Identifier of the factory.
      * @return The process with the given identifier from the factory with the given identifier.
      */
-    IProcess process(String processId, String factoryId);
+    @Nullable
+    IProcess process(@NotNull String processId, @Nullable String factoryId);
 }

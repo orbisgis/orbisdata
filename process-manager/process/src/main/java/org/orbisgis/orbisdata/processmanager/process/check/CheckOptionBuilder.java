@@ -36,6 +36,8 @@
  */
 package org.orbisgis.orbisdata.processmanager.process.check;
 
+import org.orbisgis.commons.annotations.NotNull;
+import org.orbisgis.commons.annotations.Nullable;
 import org.orbisgis.orbisdata.processmanager.api.check.ICheckOptionBuilder;
 import org.orbisgis.orbisdata.processmanager.api.check.IProcessCheck;
 
@@ -43,14 +45,14 @@ import org.orbisgis.orbisdata.processmanager.api.check.IProcessCheck;
  * Implementation of the {@link ICheckOptionBuilder} interface.
  *
  * @author Erwan Bocher (CNRS)
- * @author Sylvain PALOMINOS (UBS 2019)
+ * @author Sylvain PALOMINOS (UBS 2019-2020)
  */
 public class CheckOptionBuilder implements ICheckOptionBuilder {
 
     /**
      * {@link IProcessCheck} being built
      */
-    private IProcessCheck processCheck;
+    private final IProcessCheck processCheck;
 
     /**
      * Default constructor.
@@ -61,26 +63,30 @@ public class CheckOptionBuilder implements ICheckOptionBuilder {
         this.processCheck = processCheck;
     }
 
+    @NotNull
     @Override
-    public ICheckOptionBuilder stopOnFail(String message) {
+    public ICheckOptionBuilder stopOnFail(@Nullable String message) {
         processCheck.onFail(IProcessCheck.STOP, message);
         return this;
     }
 
+    @NotNull
     @Override
-    public ICheckOptionBuilder stopOnSuccess(String message) {
+    public ICheckOptionBuilder stopOnSuccess(@Nullable String message) {
         processCheck.onSuccess(IProcessCheck.STOP, message);
         return this;
     }
 
+    @NotNull
     @Override
-    public ICheckOptionBuilder continueOnFail(String message) {
+    public ICheckOptionBuilder continueOnFail(@Nullable String message) {
         processCheck.onFail(IProcessCheck.CONTINUE, message);
         return this;
     }
 
+    @NotNull
     @Override
-    public ICheckOptionBuilder continueOnSuccess(String message) {
+    public ICheckOptionBuilder continueOnSuccess(@Nullable String message) {
         processCheck.onSuccess(IProcessCheck.CONTINUE, message);
         return this;
     }

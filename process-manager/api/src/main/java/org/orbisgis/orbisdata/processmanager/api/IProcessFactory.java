@@ -38,6 +38,8 @@ package org.orbisgis.orbisdata.processmanager.api;
 
 import groovy.lang.Closure;
 import groovy.lang.DelegatesTo;
+import org.orbisgis.commons.annotations.NotNull;
+import org.orbisgis.commons.annotations.Nullable;
 
 /**
  * This interface defines the methods dedicated to the process creation and managing.
@@ -52,7 +54,7 @@ public interface IProcessFactory {
      *
      * @param process {@link IProcess} to register.
      */
-    void registerProcess(IProcess process);
+    void registerProcess(@NotNull IProcess process);
 
     /**
      * Return true if the process creation is locked, false otherwise.
@@ -74,7 +76,8 @@ public interface IProcessFactory {
      * @param processId Identifier of the process to get.
      * @return The process with the given identifier.
      */
-    IProcess getProcess(String processId);
+    @Nullable
+    IProcess getProcess(@NotNull String processId);
 
     /**
      * Return a {@link IProcessBuilder} to create a {@link IProcess}. Once the process created, it will be register
@@ -82,6 +85,7 @@ public interface IProcessFactory {
      *
      * @return A {@link IProcessBuilder} to create a {@link IProcess}.
      */
+    @NotNull
     IProcessBuilder create();
 
     /**
@@ -91,5 +95,6 @@ public interface IProcessFactory {
      * @param cl {@link Closure} delegated to {@link IProcessBuilder}.
      * @return A {@link IProcess}.
      */
-    IProcess create(@DelegatesTo(IProcessBuilder.class) Closure cl);
+    @NotNull
+    IProcess create(@NotNull @DelegatesTo(IProcessBuilder.class) Closure<?> cl);
 }

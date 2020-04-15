@@ -37,6 +37,8 @@
 package org.orbisgis.orbisdata.processmanager.process;
 
 import groovy.lang.Closure;
+import org.orbisgis.commons.annotations.NotNull;
+import org.orbisgis.commons.annotations.Nullable;
 import org.orbisgis.orbisdata.processmanager.api.IProcess;
 import org.orbisgis.orbisdata.processmanager.api.IProcessBuilder;
 import org.orbisgis.orbisdata.processmanager.api.IProcessFactory;
@@ -47,18 +49,18 @@ import java.util.LinkedHashMap;
  * Implementation of the interface {@link IProcessBuilder}.
  *
  * @author Erwan Bocher (CNRS)
- * @author Sylvain PALOMINOS (UBS 2019)
+ * @author Sylvain PALOMINOS (UBS 2019-2020)
  */
 public class ProcessBuilder implements IProcessBuilder {
 
     /**
      * {@link IProcessFactory} used to register the process.
      */
-    private IProcessFactory factory;
+    private final IProcessFactory factory;
     /**
      * Delegate for the closure
      */
-    private Object delegate;
+    private final Object delegate;
     /**
      * Title of the process.
      */
@@ -66,27 +68,33 @@ public class ProcessBuilder implements IProcessBuilder {
     /**
      * Human readable description of the process.
      */
+    @Nullable
     private String description;
     /**
      * List of simple keyword (one word) of the process.
      */
+    @Nullable
     private String[] keywords;
     /**
      * @link LinkedHashMap} of inputs with the name as key and the input Object as value.
      */
+    @Nullable
     private LinkedHashMap<String, Object> inputs;
     /**
      * {@link LinkedHashMap} of outputs with the name as key and the output Object as value.
      */
+    @Nullable
     private LinkedHashMap<String, Object> outputs;
     /**
      * Process version.
      */
+    @Nullable
     private String version;
     /**
      * {@link Closure} containing the code to execute on the process execution.
      */
-    private Closure closure;
+    @Nullable
+    private Closure<?> closure;
 
     /**
      * Main constructor.
@@ -94,49 +102,56 @@ public class ProcessBuilder implements IProcessBuilder {
      * @param factory  {@link IProcessFactory} used to register the process.
      * @param delegate Delegate for the closure.
      */
-    public ProcessBuilder(IProcessFactory factory, Object delegate) {
+    public ProcessBuilder(@NotNull IProcessFactory factory, @NotNull Object delegate) {
         this.factory = factory;
         this.delegate = delegate;
     }
 
     @Override
-    public IProcessBuilder title(String title) {
+    @NotNull
+    public IProcessBuilder title(@NotNull String title) {
         this.title = title;
         return this;
     }
 
     @Override
-    public IProcessBuilder description(String description) {
+    @NotNull
+    public IProcessBuilder description(@Nullable String description) {
         this.description = description;
         return this;
     }
 
     @Override
-    public IProcessBuilder keywords(String[] keywords) {
+    @NotNull
+    public IProcessBuilder keywords(@Nullable String[] keywords) {
         this.keywords = keywords;
         return this;
     }
 
     @Override
-    public IProcessBuilder inputs(LinkedHashMap<String, Object> inputs) {
+    @NotNull
+    public IProcessBuilder inputs(@Nullable LinkedHashMap<String, Object> inputs) {
         this.inputs = inputs;
         return this;
     }
 
     @Override
-    public IProcessBuilder outputs(LinkedHashMap<String, Object> outputs) {
+    @NotNull
+    public IProcessBuilder outputs(@Nullable LinkedHashMap<String, Object> outputs) {
         this.outputs = outputs;
         return this;
     }
 
+    @NotNull
     @Override
-    public IProcessBuilder version(String version) {
+    public IProcessBuilder version(@Nullable String version) {
         this.version = version;
         return this;
     }
 
+    @NotNull
     @Override
-    public IProcessBuilder run(Closure closure) {
+    public IProcessBuilder run(@Nullable Closure<?> closure) {
         this.closure = closure;
         if (closure != null) {
             this.closure.setDelegate(delegate);
@@ -146,6 +161,7 @@ public class ProcessBuilder implements IProcessBuilder {
     }
 
     @Override
+    @NotNull
     public IProcess getProcess() {
         IProcess process = new Process(title, description, keywords, inputs, outputs, version, closure);
         factory.registerProcess(process);

@@ -38,29 +38,30 @@ package org.orbisgis.orbisdata.processmanager.process;
 
 import groovy.lang.Closure;
 import groovy.lang.DelegatesTo;
+import org.orbisgis.commons.annotations.NotNull;
+import org.orbisgis.commons.annotations.Nullable;
 import org.orbisgis.orbisdata.processmanager.api.IProcess;
 import org.orbisgis.orbisdata.processmanager.api.IProcessBuilder;
 import org.orbisgis.orbisdata.processmanager.api.IProcessFactory;
 import org.orbisgis.orbisdata.processmanager.api.IProcessManager;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import static java.util.stream.Collectors.toList;
 
 /**
  * Implementation of IProcessManager as a singleton.
  *
  * @author Erwan Bocher (CNRS)
- * @author Sylvain PALOMINOS (UBS 2019)
+ * @author Sylvain PALOMINOS (UBS 2019-2020)
  */
 public class ProcessManager implements IProcessManager {
 
     /**
      * Map of the process factory and their identifier.
      */
-    private Map<String, IProcessFactory> processFactoryMap;
+    private final Map<String, IProcessFactory> processFactoryMap;
     /**
      * Unique ProcessManager instance.
      */
@@ -83,6 +84,7 @@ public class ProcessManager implements IProcessManager {
      *
      * @return The unique instance of the ProcessManager.
      */
+    @NotNull
     public static ProcessManager getProcessManager() {
         if (instance == null) {
             instance = new ProcessManager();
@@ -90,38 +92,43 @@ public class ProcessManager implements IProcessManager {
         return instance;
     }
 
+    @NotNull
     @Override
     public IProcessBuilder create() {
         return new ProcessBuilder(processFactoryMap.get(DEFAULT_FACTORY_NAME), processFactoryMap.get(DEFAULT_FACTORY_NAME));
     }
 
+    @NotNull
     @Override
-    public IProcess create(@DelegatesTo(IProcessBuilder.class) Closure cl) {
+    public IProcess create(@NotNull @DelegatesTo(IProcessBuilder.class) Closure<?> cl) {
         IProcessBuilder builder = new ProcessBuilder(processFactoryMap.get(DEFAULT_FACTORY_NAME), processFactoryMap.get(DEFAULT_FACTORY_NAME));
-        Closure code = cl.rehydrate(builder, this, this);
+        Closure<?> code = cl.rehydrate(builder, this, this);
         code.setResolveStrategy(Closure.DELEGATE_FIRST);
         code.call();
         return builder.getProcess();
     }
 
+    @NotNull
     @Override
     public List<String> factoryIds() {
-        return processFactoryMap.entrySet().stream().map(Map.Entry::getKey).collect(toList());
+        return new ArrayList<>(processFactoryMap.keySet());
     }
 
     @Override
-    public IProcessFactory factory(String identifier) {
+    public IProcessFactory factory(@NotNull String identifier) {
         if (!processFactoryMap.containsKey(identifier)) {
             processFactoryMap.put(identifier, new ProcessFactory());
         }
         return processFactoryMap.get(identifier);
     }
 
-    public static IProcessFactory createFactory(String identifier) {
+    @Nullable
+    public static IProcessFactory createFactory(@NotNull String identifier) {
         return getProcessManager().factory(identifier);
     }
 
     @Override
+    @Nullable
     public IProcessFactory factory() {
         return processFactoryMap
                 .values()
@@ -131,18 +138,21 @@ public class ProcessManager implements IProcessManager {
                 .orElse(null);
     }
 
+    @Nullable
     public static IProcessFactory createFactory() {
         return getProcessManager().factory();
     }
 
     @Override
-    public IProcess process(String processId) {
+    @Nullable
+    public IProcess process(@NotNull String processId) {
         IProcessFactory processFactory = factory();
         return processFactory == null ? null : processFactory.getProcess(processId);
     }
 
     @Override
-    public IProcess process(String processId, String factoryId) {
+    @Nullable
+    public IProcess process(@NotNull String processId, String factoryId) {
         IProcessFactory processFactory = factory(factoryId);
         return processFactory == null ? null : processFactory.getProcess(processId);
     }

@@ -36,16 +36,49 @@
  */
 package org.orbisgis.orbisdata.processmanager.api;
 
+import org.orbisgis.commons.annotations.NotNull;
+
 /**
- * This interface declare
+ * This interface declare the methods for a progress monitoring the running of a {@link IProcess} or a
+ * {@link IProcessMapper}.
  *
  * @author Erwan Bocher (CNRS)
  * @author Sylvain PALOMINOS (Lab-STICC UBS 2020)
  */
 public interface IProgressMonitor {
+
+    /**
+     * Increments the current step of the progression.
+     */
     void incrementStep();
+
+    /**
+     * Returns the progression.
+     *
+     * @return The progression.
+     */
     double getProgress();
+
+    /**
+     * Returns the maximum number of steps.
+     *
+     * @return The maximum number of steps.
+     */
     int getMaxStep();
-    IProgressMonitor getSubProgress(String taskName, int maximum);
+
+    /**
+     * Returns a nested {@link IProgressMonitor} with the given name as task name and the given maximum as maximum
+     * step number.
+     *
+     * @param taskName Name of the task.
+     * @param maximum Maximum step number.
+     * @return A nested {@link IProgressMonitor}.
+     */
+    @NotNull
+    IProgressMonitor getSubProgress(@NotNull String taskName, int maximum);
+
+    /**
+     * Log the progression.
+     */
     void log();
 }

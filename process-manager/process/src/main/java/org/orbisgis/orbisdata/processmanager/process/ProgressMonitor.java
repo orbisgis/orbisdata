@@ -44,6 +44,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Implementation of the {@link IProgressMonitor} interface.
@@ -53,37 +54,150 @@ import java.util.List;
  */
 public class ProgressMonitor implements IProgressMonitor {
 
-    private final Logger logger;
+    /**
+     * Actual step of the progression.
+     */
     private int step;
+    /**
+     * Maximum step count.
+     */
     private final int maximum;
-    private final List<IProgressMonitor> children;
+    /**
+     * True if the progression should be logged, false otherwise.
+     */
     private final boolean autoLog;
+    /**
+     * {@link Logger} used to log progression.
+     */
+    @NotNull
+    private final Logger logger;
+    /**
+     * List of child.
+     */
+    @NotNull
+    private final List<IProgressMonitor> children;
+    /**
+     * Name of the task.
+     */
+    @NotNull
     private final String name;
+    /**
+     * Reference to the parent {@link IProgressMonitor}
+     */
     @Nullable
-    private IProgressMonitor parent;
+    private final IProgressMonitor parent;
+    /**
+     * Indicates if the progression has end.
+     */
+    private boolean end;
 
-    public ProgressMonitor(@NotNull String taskName, int maximum, boolean autoLog){
-        this.name = taskName;
+    /**
+     * Returns a child {@link IProgressMonitor} with the given name as task name, the given maximum as maximum
+     * step count and logging the progression if autoLog to true.
+     *
+     * @param parent Parent {@link IProgressMonitor}.
+     * @param taskName Name of the task.
+     * @param maximum Maximum step number.
+     * @param autoLog Log the progression if true, otherwise do not log.
+     */
+    public ProgressMonitor(@Nullable IProgressMonitor parent, @Nullable String taskName, int maximum, boolean autoLog){
+        this.name = taskName == null ? "task_" + UUID.randomUUID().toString() : taskName;
         this.maximum = maximum;
         this.step = 0;
         this.children = new ArrayList<>();
         this.autoLog = autoLog;
         this.logger = LoggerFactory.getLogger(ProgressMonitor.class);
-        this.parent = null;
-    }
-
-    public ProgressMonitor(@NotNull String taskName, int maximum){
-        this(taskName, maximum, false);
-    }
-
-    private ProgressMonitor(@Nullable IProgressMonitor parent, @NotNull String taskName, int maximum, boolean autoLog){
-        this(taskName, maximum, autoLog);
         this.parent = parent;
+        this.end = false;
+    }
+
+    /**
+     * Creates a child {@link IProgressMonitor} with the given name as task name, the given maximum as maximum
+     * step count and logging the progression if autoLog to true.
+     *
+     * @param taskName Name of the task.
+     * @param maximum Maximum step number.
+     * @param autoLog Log the progression if true, otherwise do not log.
+     */
+    public ProgressMonitor(@Nullable String taskName, int maximum, boolean autoLog){
+        this(null, taskName, maximum, autoLog);
+    }
+
+    /**
+     * Creates a child {@link IProgressMonitor} with the given maximum as maximum step count and logging the
+     * progression if autoLog to true.
+     *
+     * @param maximum Maximum step number.
+     * @param autoLog Log the progression if true, otherwise do not log.
+     */
+    public ProgressMonitor(int maximum, boolean autoLog){
+        this(null, null, maximum, autoLog);
+    }
+
+    /**
+     * Creates a child {@link IProgressMonitor} with the given name as task name, without maximum step count and
+     * logging the progression if autoLog to true.
+     *
+     * @param taskName Name of the task.
+     * @param autoLog Log the progression if true, otherwise do not log.
+     */
+    public ProgressMonitor(@Nullable String taskName, boolean autoLog){
+        this(null, taskName, -1, autoLog);
+    }
+
+    /**
+     * Creates a child {@link IProgressMonitor} with the given name as task name and the given maximum as maximum
+     * step count.
+     *
+     * @param taskName Name of the task.
+     * @param maximum Maximum step number.
+     */
+    public ProgressMonitor(@Nullable String taskName, int maximum){
+        this(null, taskName, maximum, false);
+    }
+
+    /**
+     * Creates a child {@link IProgressMonitor} with the given name as task name, without maximum step count.
+     *
+     * @param taskName Name of the task.
+     */
+    public ProgressMonitor(@Nullable String taskName){
+        this(null, taskName, -1, false);
+    }
+
+    /**
+     * Creates a child {@link IProgressMonitor} with the given maximum as maximum step count.
+     *
+     * @param maximum Maximum step number.
+     */
+    public ProgressMonitor(int maximum){
+        this(null, null, maximum, false);
+    }
+
+    /**
+     * Creates a child {@link IProgressMonitor} without maximum step count, logging the progression if autoLog to true.
+     *
+     * @param autoLog Log the progression if true, otherwise do not log.
+     */
+    public ProgressMonitor(boolean autoLog){
+        this(null, null, -1, autoLog);
+    }
+
+    /**
+     * Creates a child {@link IProgressMonitor} without maximum step count.
+     */
+    public ProgressMonitor(){
+        this(null, null, -1, false);
     }
 
     @Override
     public void incrementStep() {
-        this.step++;
+        if(step < maximum) {
+            this.step++;
+        }
+        if(maximum != -1 && step >= maximum){
+            end = true;
+        }
         if(autoLog) {
             if(parent != null) {
                 parent.log();
@@ -96,10 +210,18 @@ public class ProgressMonitor implements IProgressMonitor {
 
     @Override
     public double getProgress() {
-        double tot = 100.0 / getMaxStep() *(step + children.stream().map(IProgressMonitor::getProgress).reduce(0.0, Double::sum)/100);
-        if(tot > 100){
+        if(end){
             return 100;
         }
+        if(maximum == -1){
+            return -1;
+        }
+        if(children.stream().map(IProgressMonitor::getProgress).anyMatch(d -> d==-1)){
+            return -1;
+        }
+        double tot = 100.0 /
+                (children.size() + maximum) *
+                (children.stream().map(IProgressMonitor::getProgress).reduce(0.0, Double::sum)/100 +step);
         return tot;
     }
 
@@ -110,7 +232,49 @@ public class ProgressMonitor implements IProgressMonitor {
 
     @Override
     @NotNull
-    public IProgressMonitor getSubProgress(@NotNull String taskName, int maximum) {
+    public String getName() {
+        return name;
+    }
+
+    @Override
+    @NotNull
+    public IProgressMonitor getSubProgress(@Nullable String taskName) {
+        return getSubProgress(taskName, -1, autoLog);
+    }
+
+    @Override
+    @NotNull
+    public IProgressMonitor getSubProgress(boolean autoLog) {
+        return getSubProgress(null, -1, autoLog);
+    }
+
+    @Override
+    @NotNull
+    public IProgressMonitor getSubProgress(int maximum) {
+        return getSubProgress(null, maximum, autoLog);
+    }
+
+    @Override
+    @NotNull
+    public IProgressMonitor getSubProgress(@Nullable String taskName, int maximum) {
+        return getSubProgress(taskName, maximum, autoLog);
+    }
+
+    @Override
+    @NotNull
+    public IProgressMonitor getSubProgress(@Nullable String taskName, boolean autoLog) {
+        return getSubProgress(taskName, -1, autoLog);
+    }
+
+    @Override
+    @NotNull
+    public IProgressMonitor getSubProgress(int maximum, boolean autoLog) {
+        return getSubProgress(null, maximum, autoLog);
+    }
+
+    @Override
+    @NotNull
+    public IProgressMonitor getSubProgress(@Nullable String taskName, int maximum, boolean autoLog) {
         IProgressMonitor pm = new ProgressMonitor(this, taskName, maximum, autoLog);
         children.add(pm);
         return pm;
@@ -119,10 +283,18 @@ public class ProgressMonitor implements IProgressMonitor {
     @Override
     public void log() {
         if(parent == null) {
-            logger.info((name != null ? name + " : " : "") + String.format("%.2f", getProgress()) + "/100.00");
+            logger.info(name + " : " + String.format("%.2f", getProgress()) + "/100.00");
         }
         else {
             parent.log();
+        }
+    }
+
+    @Override
+    public void end() {
+        end = true;
+        if(autoLog){
+            log();
         }
     }
 }

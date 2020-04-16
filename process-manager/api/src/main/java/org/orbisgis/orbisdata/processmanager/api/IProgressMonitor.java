@@ -37,6 +37,7 @@
 package org.orbisgis.orbisdata.processmanager.api;
 
 import org.orbisgis.commons.annotations.NotNull;
+import org.orbisgis.commons.annotations.Nullable;
 
 /**
  * This interface declare the methods for a progress monitoring the running of a {@link IProcess} or a
@@ -53,32 +54,106 @@ public interface IProgressMonitor {
     void incrementStep();
 
     /**
-     * Returns the progression.
+     * Returns the progression or -1 if the {@link IProgressMonitor} has not maximum step count.
      *
-     * @return The progression.
+     * @return The progression or -1.
      */
     double getProgress();
 
     /**
-     * Returns the maximum number of steps.
+     * Returns the maximum count of steps.
      *
-     * @return The maximum number of steps.
+     * @return The maximum count of steps.
      */
     int getMaxStep();
-
-    /**
-     * Returns a nested {@link IProgressMonitor} with the given name as task name and the given maximum as maximum
-     * step number.
-     *
-     * @param taskName Name of the task.
-     * @param maximum Maximum step number.
-     * @return A nested {@link IProgressMonitor}.
-     */
-    @NotNull
-    IProgressMonitor getSubProgress(@NotNull String taskName, int maximum);
 
     /**
      * Log the progression.
      */
     void log();
+
+    /**
+     * Make the progression reach its end.
+     */
+    void end();
+
+    /**
+     * Returns the {@link IProgressMonitor} name.
+     *
+     * @return The {@link IProgressMonitor} name.
+     */
+    @NotNull
+    String getName();
+
+    /**
+     * Returns a child {@link IProgressMonitor} with the given name as task name, without maximum step count.
+     *
+     * @param taskName Name of the task.
+     * @return A child {@link IProgressMonitor}.
+     */
+    @NotNull
+    IProgressMonitor getSubProgress(@Nullable String taskName);
+
+    /**
+     * Returns a child {@link IProgressMonitor} with the given maximum as maximum step count.
+     *
+     * @param maximum Maximum step number.
+     * @return A child {@link IProgressMonitor}.
+     */
+    @NotNull
+    IProgressMonitor getSubProgress(int maximum);
+
+    /**
+     * Returns a child {@link IProgressMonitor} without maximum step count, logging the progression if autoLog to true.
+     *
+     * @param autoLog Log the progression if true, otherwise do not log.
+     * @return A child {@link IProgressMonitor}.
+     */
+    @NotNull
+    IProgressMonitor getSubProgress(boolean autoLog);
+
+    /**
+     * Returns a child {@link IProgressMonitor} with the given name as task name and the given maximum as maximum
+     * step count.
+     *
+     * @param taskName Name of the task.
+     * @param maximum Maximum step number.
+     * @return A child {@link IProgressMonitor}.
+     */
+    @NotNull
+    IProgressMonitor getSubProgress(@Nullable String taskName, int maximum);
+
+    /**
+     * Returns a child {@link IProgressMonitor} with the given name as task name, without maximum step count and
+     * logging the progression if autoLog to true.
+     *
+     * @param taskName Name of the task.
+     * @param autoLog Log the progression if true, otherwise do not log.
+     * @return A child {@link IProgressMonitor}.
+     */
+    @NotNull
+    IProgressMonitor getSubProgress(@Nullable String taskName, boolean autoLog);
+
+    /**
+     * Returns a child {@link IProgressMonitor} with the given maximum as maximum step count and logging the
+     * progression if autoLog to true.
+     *
+     * @param maximum Maximum step number.
+     * @param autoLog Log the progression if true, otherwise do not log.
+     * @return A child {@link IProgressMonitor}.
+     */
+    @NotNull
+    IProgressMonitor getSubProgress(int maximum, boolean autoLog);
+
+    /**
+     * Returns a child {@link IProgressMonitor} with the given name as task name, the given maximum as maximum
+     * step count and logging the progression if autoLog to true.
+     *
+     * @param taskName Name of the task.
+     * @param maximum Maximum step number.
+     * @param autoLog Log the progression if true, otherwise do not log.
+     * @return A child {@link IProgressMonitor}.
+     */
+    @NotNull
+    IProgressMonitor getSubProgress(@Nullable String taskName, int maximum, boolean autoLog);
 }

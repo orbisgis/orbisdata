@@ -37,6 +37,7 @@
 package org.orbisgis.orbisdata.processmanager.api;
 
 import org.junit.jupiter.api.Test;
+import org.orbisgis.commons.annotations.NotNull;
 import org.orbisgis.orbisdata.processmanager.api.check.ICheckDataBuilder;
 import org.orbisgis.orbisdata.processmanager.api.inoutput.IInOutPut;
 import org.orbisgis.orbisdata.processmanager.api.inoutput.IInput;
@@ -98,46 +99,54 @@ public class IProcessMapperTest {
      */
     private class DummyProcessMapper implements IProcessMapper {
 
+        @NotNull
         @Override
-        public ILinker link(IInOutPut... inOutPuts) {
+        public ILinker link(@NotNull IInOutPut... inOutPuts) {
             return null;
         }
 
+        @NotNull
         @Override
-        public ICheckDataBuilder before(IProcess process) {
+        public ICheckDataBuilder before(@NotNull IProcess process) {
             return null;
         }
 
+        @NotNull
         @Override
-        public ICheckDataBuilder after(IProcess process) {
+        public ICheckDataBuilder after(@NotNull IProcess process) {
             return null;
         }
 
+        @NotNull
         @Override
         public IProcessMapper newInstance() {
             return null;
         }
 
         @Override
-        public boolean execute(LinkedHashMap<String, Object> inputDataMap) {
+        public boolean execute(@NotNull LinkedHashMap<String, Object> inputDataMap) {
             return false;
         }
 
+        @NotNull
         @Override
         public String getTitle() {
             return null;
         }
 
+        @NotNull
         @Override
         public Map<String, Object> getResults() {
             return null;
         }
 
+        @NotNull
         @Override
         public List<IInput> getInputs() {
             return null;
         }
 
+        @NotNull
         @Override
         public List<IOutput> getOutputs() {
             return null;

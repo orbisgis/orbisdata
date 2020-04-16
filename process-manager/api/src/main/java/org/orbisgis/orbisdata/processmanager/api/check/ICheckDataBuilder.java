@@ -36,6 +36,8 @@
  */
 package org.orbisgis.orbisdata.processmanager.api.check;
 
+import org.orbisgis.commons.annotations.NotNull;
+
 /**
  * Interface for the definition of which data are provided for the getProcess check execution.
  *
@@ -50,5 +52,6 @@ public interface ICheckDataBuilder {
      * @param data Input or output list to use to do the check.
      * @return A {@link ICheckClosureBuilder} to continue the check building.
      */
-    ICheckClosureBuilder with(Object... data);
+    @NotNull
+    ICheckClosureBuilder with(@NotNull Object... data);
 }

@@ -37,6 +37,8 @@
 package org.orbisgis.orbisdata.processmanager.api.check;
 
 import groovy.lang.Closure;
+import org.orbisgis.commons.annotations.NotNull;
+import org.orbisgis.commons.annotations.Nullable;
 import org.orbisgis.orbisdata.processmanager.api.IProcess;
 
 import java.util.LinkedHashMap;
@@ -65,7 +67,7 @@ public interface IProcessCheck {
      *
      * @param processInData {@link LinkedHashMap} containing the input data for the {@link IProcess} execution.
      */
-    void run(LinkedHashMap<String, Object> processInData);
+    void run(@NotNull LinkedHashMap<String, Object> processInData);
 
     /**
      * Set the action to do on check fail.
@@ -73,7 +75,7 @@ public interface IProcessCheck {
      * @param action  Action to do on fail.
      * @param message Message to log.
      */
-    void onFail(String action, String message);
+    void onFail(@NotNull String action, @Nullable String message);
 
     /**
      * Set the action to do on check success.
@@ -81,21 +83,21 @@ public interface IProcessCheck {
      * @param action  Action to do on success.
      * @param message Message to log.
      */
-    void onSuccess(String action, String message);
+    void onSuccess(@NotNull String action, @Nullable String message);
 
     /**
      * Sets the input and output to use inside the check.
      *
      * @param inputOrOutput Input or output list to use for the check.
      */
-    void setInOutputs(Object... inputOrOutput);
+    void setInOutputs(@NotNull Object... inputOrOutput);
 
     /**
      * Set the {@link Closure} to call to execute the check.
      *
      * @param cl {@link Closure} to call to execute the check.
      */
-    void setClosure(Closure cl);
+    void setClosure(@NotNull Closure<?> cl);
 
     /**
      * Method executed on check fail.
@@ -112,5 +114,6 @@ public interface IProcessCheck {
      *
      * @return The {@link IProcess} concerned by the check.
      */
+    @NotNull
     IProcess getProcess();
 }

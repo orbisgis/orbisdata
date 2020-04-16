@@ -36,17 +36,22 @@
  */
 package org.orbisgis.orbisdata.processmanager.process.inoutput;
 
+import org.orbisgis.commons.annotations.NotNull;
+import org.orbisgis.commons.annotations.Nullable;
 import org.orbisgis.orbisdata.processmanager.api.IProcess;
 import org.orbisgis.orbisdata.processmanager.api.inoutput.IInput;
+
+import java.util.UUID;
 
 /**
  * Implementation of the {@link IInput} interface.
  *
  * @author Erwan Bocher (CNRS)
- * @author Sylvain PALOMINOS (UBS 2019)
+ * @author Sylvain PALOMINOS (UBS 2019-2020)
  */
 public class Input extends InOutPut implements IInput {
 
+    @Nullable
     private Object dfltValue;
 
     /**
@@ -55,7 +60,7 @@ public class Input extends InOutPut implements IInput {
      * @param process {@link IProcess} of the input/output.
      * @param name    Name of the input/output.
      */
-    public Input(IProcess process, String name) {
+    public Input(@Nullable IProcess process, @NotNull String name) {
         super(process, name);
     }
 
@@ -63,14 +68,16 @@ public class Input extends InOutPut implements IInput {
      * Empty constructor.
      */
     public Input() {
-        super(null, null);
+        super(null, "input_" + UUID.randomUUID().toString());
     }
 
+    @NotNull
     public static Input call() {
-        return new Input(null, null);
+        return new Input();
     }
 
     @Override
+    @NotNull
     public Input optional(Object dfltValue) {
         this.dfltValue = dfltValue;
         return this;
@@ -87,6 +94,7 @@ public class Input extends InOutPut implements IInput {
     }
 
     @Override
+    @NotNull
     public Input mandatory() {
         dfltValue = null;
         return this;
@@ -98,25 +106,29 @@ public class Input extends InOutPut implements IInput {
     }
 
     @Override
+    @NotNull
     public Input setTitle(String title) {
         super.setTitle(title);
         return this;
     }
 
     @Override
+    @NotNull
     public Input setDescription(String description) {
         super.setDescription(description);
         return this;
     }
 
     @Override
+    @NotNull
     public Input setKeywords(String[] keywords) {
         super.setKeywords(keywords);
         return this;
     }
 
     @Override
-    public Input setType(Class type) {
+    @NotNull
+    public Input setType(Class<?> type) {
         super.setType(type);
         return this;
     }

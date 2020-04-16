@@ -40,6 +40,8 @@ import groovy.lang.Closure;
 import groovy.lang.GroovyObject;
 import groovy.lang.MetaClass;
 import org.codehaus.groovy.runtime.InvokerHelper;
+import org.orbisgis.commons.annotations.NotNull;
+import org.orbisgis.commons.annotations.Nullable;
 import org.orbisgis.orbisdata.processmanager.api.IProcess;
 import org.orbisgis.orbisdata.processmanager.api.inoutput.IInOutPut;
 import org.orbisgis.orbisdata.processmanager.api.inoutput.IInput;
@@ -50,13 +52,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Implementation of the {@link IProcess} interface dedicated to the local creation and execution of process (no link with
  * WPS process for now).
  *
  * @author Erwan Bocher (CNRS)
- * @author Sylvain PALOMINOS (UBS 2019)
+ * @author Sylvain PALOMINOS (UBS 2019-2020)
  */
 public class Process implements IProcess, GroovyObject {
 
@@ -65,18 +68,22 @@ public class Process implements IProcess, GroovyObject {
     /**
      * Title of the process
      */
+    @Nullable
     private String title;
     /**
      * Process version
      */
+    @Nullable
     private String version;
     /**
      * Human readable description of the process
      */
+    @Nullable
     private String description;
     /**
      * List of simple keyword (one word) of the process
      */
+    @Nullable
     private String[] keywords;
     /**
      * List of inputs
@@ -89,7 +96,8 @@ public class Process implements IProcess, GroovyObject {
     /**
      * Closure containing the code to execute on the process execution
      */
-    private Closure closure;
+    @Nullable
+    private Closure<?> closure;
     /**
      * Map of the process Result
      */
@@ -123,8 +131,8 @@ public class Process implements IProcess, GroovyObject {
      * @param version     Process version.
      * @param closure     Closure containing the code to execute on the process execution.
      */
-    Process(String title, String description, String[] keywords, LinkedHashMap<String, Object> inputs,
-            LinkedHashMap<String, Object> outputs, String version, Closure closure) {
+    Process(@Nullable String title, @Nullable String description, @Nullable String[] keywords, @Nullable LinkedHashMap<String, Object> inputs,
+            @Nullable LinkedHashMap<String, Object> outputs, @Nullable String version, @Nullable Closure<?> closure) {
         if (inputs != null && closure != null && closure.getMaximumNumberOfParameters() != inputs.size()) {
             LOGGER.error("The number of the closure parameters and the number of process input names are different.");
             return;
@@ -139,7 +147,7 @@ public class Process implements IProcess, GroovyObject {
             for (Map.Entry<String, Object> entry : inputs.entrySet()) {
                 if (entry.getValue() instanceof Class) {
                     Input input = new Input(this, entry.getKey());
-                    input.setType((Class) entry.getValue());
+                    input.setType((Class<?>) entry.getValue());
                     this.inputs.add(input);
                 } else if (entry.getValue() instanceof Input) {
                     Input input = (Input) entry.getValue();
@@ -163,7 +171,7 @@ public class Process implements IProcess, GroovyObject {
             for (Map.Entry<String, Object> entry : outputs.entrySet()) {
                 if (entry.getValue() instanceof Class) {
                     Output output = new Output(this, entry.getKey());
-                    output.setType((Class) entry.getValue());
+                    output.setType((Class<?>) entry.getValue());
                     this.outputs.add(output);
                 } else {
                     Output output = (Output) entry.getValue();
@@ -180,6 +188,7 @@ public class Process implements IProcess, GroovyObject {
     }
 
     @Override
+    @NotNull
     public IProcess newInstance() {
         Process process = new Process(title, description, keywords, null, null,
                 version, closure);
@@ -196,8 +205,9 @@ public class Process implements IProcess, GroovyObject {
      *                     inputs.
      * @return The closure if the missing inputs are all optional, false otherwise.
      */
-    private Closure getClosureWithCurry(LinkedHashMap<String, Object> inputDataMap) {
-        Closure cl = closure;
+    @Nullable
+    private Closure<?> getClosureWithCurry(@NotNull LinkedHashMap<String, Object> inputDataMap) {
+        Closure<?> cl = closure;
         int curryIndex = 0;
         for (IInput input : inputs) {
             if (!inputDataMap.containsKey(input.getName())) {
@@ -219,7 +229,8 @@ public class Process implements IProcess, GroovyObject {
      * @param inputDataMap Map containing the data for the execution of the closure.
      * @return The casted input data as an Object array.
      */
-    private Object[] getClosureArgs(LinkedHashMap<String, Object> inputDataMap) {
+    @NotNull
+    private Object[] getClosureArgs(@NotNull LinkedHashMap<String, Object> inputDataMap) {
         return inputs
                 .stream()
                 .map(IInOutPut::getName)
@@ -229,7 +240,7 @@ public class Process implements IProcess, GroovyObject {
     }
 
     @Override
-    public boolean execute(LinkedHashMap<String, Object> inputDataMap) {
+    public boolean execute(@Nullable LinkedHashMap<String, Object> inputDataMap) {
         LinkedHashMap<String, Object> map = (inputDataMap == null ? new LinkedHashMap<>() : inputDataMap);
         if (closure == null) {
             LOGGER.error("The process should have a Closure defined.");
@@ -245,7 +256,7 @@ public class Process implements IProcess, GroovyObject {
         Object result;
         try {
             if (inputs.size() != 0) {
-                Closure cl = getClosureWithCurry(map);
+                Closure<?> cl = getClosureWithCurry(map);
                 if (cl == null) {
                     return false;
                 }
@@ -270,13 +281,18 @@ public class Process implements IProcess, GroovyObject {
      * @param result Result of the process execution.
      * @return True if the execution hes been successful, false otherwise.
      */
-    private boolean checkResults(Object result) {
+    private boolean checkResults(@Nullable Object result) {
         Map<String, Object> map;
         if (!(result instanceof Map)) {
             map = new HashMap<>();
             map.put("result", result);
         } else {
-            map = (Map<String, Object>) result;
+            map = ((Map<?, ?>)result).entrySet()
+                    .stream()
+                    .collect(Collectors.toMap(
+                            e -> e.getKey().toString(),
+                            Map.Entry::getValue
+                    ));
         }
         boolean isResultValid = true;
         for (IOutput output : outputs) {
@@ -292,45 +308,54 @@ public class Process implements IProcess, GroovyObject {
     }
 
     @Override
+    @Nullable
     public String getTitle() {
         return title;
     }
 
     @Override
+    @Nullable
     public String getVersion() {
         return version;
     }
 
     @Override
+    @Nullable
     public String getDescription() {
         return description;
     }
 
     @Override
+    @Nullable
     public String[] getKeywords() {
         return keywords;
     }
 
     @Override
+    @NotNull
     public Map<String, Object> getResults() {
         return resultMap;
     }
 
     @Override
+    @NotNull
     public String getIdentifier() {
         return identifier;
     }
 
     @Override
+    @NotNull
     public List<IInput> getInputs() {
         return inputs;
     }
 
     @Override
+    @NotNull
     public List<IOutput> getOutputs() {
         return outputs;
     }
 
+    //Groovy object methods
     @Override
     public Object invokeMethod(String name, Object args) {
         return metaClass.invokeMethod(this, name, args);

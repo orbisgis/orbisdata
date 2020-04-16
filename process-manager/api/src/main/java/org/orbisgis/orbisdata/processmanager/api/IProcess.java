@@ -38,6 +38,8 @@ package org.orbisgis.orbisdata.processmanager.api;
 
 import org.orbisgis.orbisdata.processmanager.api.inoutput.IInput;
 import org.orbisgis.orbisdata.processmanager.api.inoutput.IOutput;
+import org.orbisgis.commons.annotations.NotNull;
+import org.orbisgis.commons.annotations.Nullable;
 
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -56,6 +58,7 @@ public interface IProcess {
      *
      * @return A process new instance.
      */
+    @NotNull
     IProcess newInstance();
 
     /**
@@ -64,13 +67,14 @@ public interface IProcess {
      * @param inputDataMap Map of the inputs with the name as key and the input value as value.
      * @return True if the execution is successful, false otherwise.
      */
-    boolean execute(LinkedHashMap<String, Object> inputDataMap);
+    boolean execute(@Nullable LinkedHashMap<String, Object> inputDataMap);
 
     /**
      * Return the title of the process.
      *
      * @return The title of the process.
      */
+    @Nullable
     String getTitle();
 
     /**
@@ -78,6 +82,7 @@ public interface IProcess {
      *
      * @return The process version.
      */
+    @Nullable
     String getVersion();
 
     /**
@@ -85,6 +90,7 @@ public interface IProcess {
      *
      * @return The description of the process.
      */
+    @Nullable
     String getDescription();
 
     /**
@@ -92,6 +98,7 @@ public interface IProcess {
      *
      * @return The array of the process keywords.
      */
+    @Nullable
     String[] getKeywords();
 
     /**
@@ -99,6 +106,7 @@ public interface IProcess {
      *
      * @return A Map of the results with the output name as key and the output value as value.
      */
+    @NotNull
     Map<String, Object> getResults();
 
     /**
@@ -106,6 +114,7 @@ public interface IProcess {
      *
      * @return The process identifier.
      */
+    @NotNull
     String getIdentifier();
 
     /**
@@ -113,6 +122,7 @@ public interface IProcess {
      *
      * @return A {@link Map} with the input name as key and its {@link Class} as value.
      */
+    @NotNull
     List<IInput> getInputs();
 
     /**
@@ -120,6 +130,7 @@ public interface IProcess {
      *
      * @return A {@link Map} with the output name as key and its {@link Class} as value.
      */
+    @NotNull
     List<IOutput> getOutputs();
 
     /**
@@ -128,5 +139,5 @@ public interface IProcess {
      * @param inputDataMap Map of the inputs with the name as key and the input value as value.
      * @return True if the execution is successful, false otherwise.
      */
-    boolean call(LinkedHashMap<String, Object> inputDataMap);
+    boolean call(@Nullable LinkedHashMap<String, Object> inputDataMap);
 }

@@ -36,6 +36,7 @@
  */
 package org.orbisgis.orbisdata.processmanager.process.check;
 
+import org.orbisgis.commons.annotations.NotNull;
 import org.orbisgis.orbisdata.processmanager.api.check.ICheckClosureBuilder;
 import org.orbisgis.orbisdata.processmanager.api.check.ICheckDataBuilder;
 import org.orbisgis.orbisdata.processmanager.api.check.IProcessCheck;
@@ -44,26 +45,27 @@ import org.orbisgis.orbisdata.processmanager.api.check.IProcessCheck;
  * Implementation of the {@link ICheckDataBuilder} interface.
  *
  * @author Erwan Bocher (CNRS)
- * @author Sylvain PALOMINOS (UBS 2019)
+ * @author Sylvain PALOMINOS (UBS 2019-2020)
  */
 public class CheckDataBuilder implements ICheckDataBuilder {
 
     /**
      * {@link IProcessCheck} being built
      */
-    private IProcessCheck processCheck;
+    private final IProcessCheck processCheck;
 
     /**
      * Default constructor.
      *
      * @param processCheck {@link IProcessCheck} to build.
      */
-    public CheckDataBuilder(IProcessCheck processCheck) {
+    public CheckDataBuilder(@NotNull IProcessCheck processCheck) {
         this.processCheck = processCheck;
     }
 
     @Override
-    public ICheckClosureBuilder with(Object... data) {
+    @NotNull
+    public ICheckClosureBuilder with(@NotNull Object... data) {
         processCheck.setInOutputs(data);
         return new CheckClosureBuilder(processCheck);
     }

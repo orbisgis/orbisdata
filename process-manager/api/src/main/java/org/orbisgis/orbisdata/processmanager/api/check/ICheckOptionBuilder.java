@@ -36,6 +36,9 @@
  */
 package org.orbisgis.orbisdata.processmanager.api.check;
 
+import org.orbisgis.commons.annotations.NotNull;
+import org.orbisgis.commons.annotations.Nullable;
+
 /**
  * Interface for the definition of the getProcess check execution options.
  *
@@ -50,7 +53,8 @@ public interface ICheckOptionBuilder {
      * @param message Message to log.
      * @return A {@link ICheckOptionBuilder} to continue the check building.
      */
-    ICheckOptionBuilder stopOnFail(String message);
+    @NotNull
+    ICheckOptionBuilder stopOnFail(@Nullable String message);
 
     /**
      * Make the check log the given message and stop the program on success .
@@ -58,7 +62,8 @@ public interface ICheckOptionBuilder {
      * @param message Message to log.
      * @return A {@link ICheckOptionBuilder} to continue the check building.
      */
-    ICheckOptionBuilder stopOnSuccess(String message);
+    @NotNull
+    ICheckOptionBuilder stopOnSuccess(@Nullable String message);
 
     /**
      * Make the check log the given message and continue the program on fail .
@@ -66,7 +71,8 @@ public interface ICheckOptionBuilder {
      * @param message Message to log.
      * @return A {@link ICheckOptionBuilder} to continue the check building.
      */
-    ICheckOptionBuilder continueOnFail(String message);
+    @NotNull
+    ICheckOptionBuilder continueOnFail(@Nullable String message);
 
     /**
      * Make the check log the given message and continue the program on success .
@@ -74,5 +80,6 @@ public interface ICheckOptionBuilder {
      * @param message Message to log.
      * @return A {@link ICheckOptionBuilder} to continue the check building.
      */
-    ICheckOptionBuilder continueOnSuccess(String message);
+    @NotNull
+    ICheckOptionBuilder continueOnSuccess(@Nullable String message);
 }

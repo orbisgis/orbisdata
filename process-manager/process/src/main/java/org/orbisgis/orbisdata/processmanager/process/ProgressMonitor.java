@@ -36,6 +36,8 @@
  */
 package org.orbisgis.orbisdata.processmanager.process;
 
+import org.orbisgis.commons.annotations.NotNull;
+import org.orbisgis.commons.annotations.Nullable;
 import org.orbisgis.orbisdata.processmanager.api.IProgressMonitor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,15 +53,16 @@ import java.util.List;
  */
 public class ProgressMonitor implements IProgressMonitor {
 
-    private Logger logger;
+    private final Logger logger;
     private int step;
-    private int maximum;
-    private List<IProgressMonitor> children;
-    private boolean autoLog;
-    private String name;
+    private final int maximum;
+    private final List<IProgressMonitor> children;
+    private final boolean autoLog;
+    private final String name;
+    @Nullable
     private IProgressMonitor parent;
 
-    public ProgressMonitor(String taskName, int maximum, boolean autoLog){
+    public ProgressMonitor(@NotNull String taskName, int maximum, boolean autoLog){
         this.name = taskName;
         this.maximum = maximum;
         this.step = 0;
@@ -69,11 +72,11 @@ public class ProgressMonitor implements IProgressMonitor {
         this.parent = null;
     }
 
-    public ProgressMonitor(String taskName, int maximum){
+    public ProgressMonitor(@NotNull String taskName, int maximum){
         this(taskName, maximum, false);
     }
 
-    private ProgressMonitor(IProgressMonitor parent, String taskName, int maximum, boolean autoLog){
+    private ProgressMonitor(@Nullable IProgressMonitor parent, @NotNull String taskName, int maximum, boolean autoLog){
         this(taskName, maximum, autoLog);
         this.parent = parent;
     }
@@ -106,7 +109,8 @@ public class ProgressMonitor implements IProgressMonitor {
     }
 
     @Override
-    public IProgressMonitor getSubProgress(String taskName, int maximum) {
+    @NotNull
+    public IProgressMonitor getSubProgress(@NotNull String taskName, int maximum) {
         IProgressMonitor pm = new ProgressMonitor(this, taskName, maximum, autoLog);
         children.add(pm);
         return pm;

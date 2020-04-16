@@ -38,6 +38,8 @@ package org.orbisgis.orbisdata.processmanager.process;
 
 import groovy.lang.Closure;
 import groovy.lang.DelegatesTo;
+import org.orbisgis.commons.annotations.NotNull;
+import org.orbisgis.commons.annotations.Nullable;
 import org.orbisgis.orbisdata.processmanager.api.IProcess;
 import org.orbisgis.orbisdata.processmanager.api.IProcessBuilder;
 import org.orbisgis.orbisdata.processmanager.api.IProcessFactory;
@@ -49,7 +51,7 @@ import java.util.List;
  * Implementation of the {@link IProcessFactory}.
  *
  * @author Erwan Bocher (CNRS)
- * @author Sylvain PALOMINOS (UBS 2019)
+ * @author Sylvain PALOMINOS (UBS 2019-2020)
  */
 public class ProcessFactory implements IProcessFactory {
 
@@ -64,7 +66,7 @@ public class ProcessFactory implements IProcessFactory {
     /**
      * List of the processes created with this factory.
      */
-    private List<IProcess> processList;
+    private final List<IProcess> processList;
 
     /**
      * Default empty constructor.
@@ -86,7 +88,7 @@ public class ProcessFactory implements IProcessFactory {
     }
 
     @Override
-    public void registerProcess(IProcess process) {
+    public void registerProcess(@NotNull IProcess process) {
         if (!isLock) {
             processList.add(process);
         }
@@ -103,7 +105,8 @@ public class ProcessFactory implements IProcessFactory {
     }
 
     @Override
-    public IProcess getProcess(String processId) {
+    @Nullable
+    public IProcess getProcess(@NotNull String processId) {
         IProcess process = processList
                 .stream()
                 .filter(iProcess ->
@@ -114,14 +117,16 @@ public class ProcessFactory implements IProcessFactory {
     }
 
     @Override
+    @NotNull
     public IProcessBuilder create() {
         return new ProcessBuilder(this, this);
     }
 
     @Override
-    public IProcess create(@DelegatesTo(IProcessBuilder.class) Closure cl) {
+    @NotNull
+    public IProcess create(@NotNull @DelegatesTo(IProcessBuilder.class) Closure<?> cl) {
         IProcessBuilder builder = new ProcessBuilder(this, this);
-        Closure code = cl.rehydrate(builder, this, this);
+        Closure<?> code = cl.rehydrate(builder, this, this);
         code.setResolveStrategy(Closure.DELEGATE_FIRST);
         return ((IProcessBuilder) code.call()).getProcess();
     }

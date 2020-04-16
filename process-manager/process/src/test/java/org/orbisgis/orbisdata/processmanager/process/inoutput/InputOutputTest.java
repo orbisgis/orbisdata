@@ -69,7 +69,7 @@ public class InputOutputTest {
         assertNull(input1.getDefaultValue());
         assertNull(input1.getDescription());
         assertNull(input1.getKeywords());
-        assertNull(input1.getName());
+        assertNotNull(input1.getName());
         assertNull(input1.getProcess());
         assertNull(input1.getTitle());
         assertNull(input1.getType());
@@ -79,7 +79,7 @@ public class InputOutputTest {
         assertEquals("dflt", input2.getDefaultValue());
         assertEquals("desc", input2.getDescription());
         assertArrayEquals(new String[]{"key1", "key2"}, input2.getKeywords());
-        assertNull(input2.getName());
+        assertNotNull(input2.getName());
         assertNull(input2.getProcess());
         assertEquals("title", input2.getTitle());
         assertEquals(String.class, input2.getType());
@@ -89,7 +89,7 @@ public class InputOutputTest {
         assertNull(input3.getDefaultValue());
         assertNull(input3.getDescription());
         assertNull(input3.getKeywords());
-        assertNull(input3.getName());
+        assertNotNull(input3.getName());
         assertNull(input3.getProcess());
         assertNull(input3.getTitle());
         assertNull(input3.getType());
@@ -109,14 +109,14 @@ public class InputOutputTest {
 
         assertNull(output1.getDescription());
         assertNull(output1.getKeywords());
-        assertNull(output1.getName());
+        assertNotNull(output1.getName());
         assertNull(output1.getProcess());
         assertNull(output1.getTitle());
         assertNull(output1.getType());
 
         assertEquals("desc", output2.getDescription());
         assertArrayEquals(new String[]{"key1", "key2"}, output2.getKeywords());
-        assertNull(output2.getName());
+        assertNotNull(output2.getName());
         assertNull(output2.getProcess());
         assertEquals("title", output2.getTitle());
         assertEquals(String.class, output2.getType());

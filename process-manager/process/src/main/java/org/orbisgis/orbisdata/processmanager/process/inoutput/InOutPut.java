@@ -37,6 +37,8 @@
 package org.orbisgis.orbisdata.processmanager.process.inoutput;
 
 import groovy.lang.MissingMethodException;
+import org.orbisgis.commons.annotations.NotNull;
+import org.orbisgis.commons.annotations.Nullable;
 import org.orbisgis.orbisdata.processmanager.api.IProcess;
 import org.orbisgis.orbisdata.processmanager.api.inoutput.IInOutPut;
 
@@ -46,12 +48,13 @@ import java.util.Arrays;
  * Implementation of the {@link IInOutPut} interface.
  *
  * @author Erwan Bocher (CNRS)
- * @author Sylvain PALOMINOS (UBS 2019)
+ * @author Sylvain PALOMINOS (UBS 2019-2020)
  */
 public abstract class InOutPut implements IInOutPut {
     /**
      * {@link IProcess} of the input/output.
      */
+    @Nullable
     private IProcess process;
     /**
      * Name of the input/output.
@@ -60,7 +63,8 @@ public abstract class InOutPut implements IInOutPut {
     /**
      * Type of the input/output.
      */
-    private Class type;
+    @Nullable
+    private Class<?> type;
     /**
      * Title of the input/output.
      */
@@ -80,30 +84,33 @@ public abstract class InOutPut implements IInOutPut {
      * @param process {@link IProcess} of the input/output.
      * @param name    Name of the input/output.
      */
-    public InOutPut(IProcess process, String name) {
+    public InOutPut(@Nullable IProcess process, @NotNull String name) {
         this.process = process;
         this.name = name;
     }
 
+    @NotNull
     public String getName() {
         return name;
     }
 
     @Override
-    public void setName(String name) {
+    public void setName(@NotNull String name) {
         this.name = name;
     }
 
+    @Nullable
     public IProcess getProcess() {
         return process;
     }
 
     @Override
-    public void setProcess(IProcess process) {
+    public void setProcess(@NotNull IProcess process) {
         this.process = process;
     }
 
     @Override
+    @NotNull
     public IInOutPut setTitle(String title) {
         this.title = title;
         return this;
@@ -115,6 +122,7 @@ public abstract class InOutPut implements IInOutPut {
     }
 
     @Override
+    @NotNull
     public IInOutPut setDescription(String description) {
         this.description = description;
         return this;
@@ -125,6 +133,7 @@ public abstract class InOutPut implements IInOutPut {
         return description;
     }
 
+    @NotNull
     @Override
     public IInOutPut setKeywords(String[] keywords) {
         this.keywords = keywords;
@@ -137,19 +146,22 @@ public abstract class InOutPut implements IInOutPut {
     }
 
     @Override
-    public IInOutPut setType(Class type) {
+    @NotNull
+    public IInOutPut setType(@Nullable Class<?> type) {
         this.type = type;
         return this;
     }
 
     @Override
-    public Class getType() {
+    @Nullable
+    public Class<?> getType() {
         return type;
     }
 
     @Override
     public String toString() {
-        return name + ":" + process.getIdentifier();
+        String pId = process != null ? ":" + process.getIdentifier() : "";
+        return name + pId;
     }
 
     @Override
@@ -162,7 +174,7 @@ public abstract class InOutPut implements IInOutPut {
             switch (name) {
                 case "type":
                     if (objs[0] instanceof Class) {
-                        return setType((Class) objs[0]);
+                        return setType((Class<?>) objs[0]);
                     }
                 case "keywords":
                     if (Arrays.stream(objs).allMatch(String.class::isInstance)) {

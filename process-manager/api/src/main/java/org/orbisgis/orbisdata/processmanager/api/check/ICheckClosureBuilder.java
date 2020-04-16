@@ -38,6 +38,7 @@
 package org.orbisgis.orbisdata.processmanager.api.check;
 
 import groovy.lang.Closure;
+import org.orbisgis.commons.annotations.NotNull;
 
 /**
  * Interface for the definition of which closure is provided for the getProcess check execution.
@@ -53,5 +54,6 @@ public interface ICheckClosureBuilder {
      * @param cl {@link Closure} to execute to perform the check.
      * @return A {@link ICheckClosureBuilder} to continue the check building.
      */
-    ICheckOptionBuilder check(Closure cl);
+    @NotNull
+    ICheckOptionBuilder check(@NotNull Closure<?> cl);
 }

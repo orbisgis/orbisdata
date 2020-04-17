@@ -287,12 +287,7 @@ public class Process implements IProcess, GroovyObject {
             map = new HashMap<>();
             map.put("result", result);
         } else {
-            map = ((Map<?, ?>)result).entrySet()
-                    .stream()
-                    .collect(Collectors.toMap(
-                            e -> e.getKey().toString(),
-                            Map.Entry::getValue
-                    ));
+            map = (Map<String, Object>) result;
         }
         boolean isResultValid = true;
         for (IOutput output : outputs) {

@@ -263,6 +263,11 @@ public class DataFrame implements smile.data.DataFrame, ITable<BaseVector> {
     }
 
     @Override
+    public boolean reload() {
+        return false;
+    }
+
+    @Override
     @NotNull
     public Summary summary() {
         return new Summary(getInternalDataFrame().summary());

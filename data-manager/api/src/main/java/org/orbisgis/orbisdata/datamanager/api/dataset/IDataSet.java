@@ -95,4 +95,11 @@ public interface IDataSet<T> extends Iterable<T> {
      */
     @NotNull
     ISummary getSummary();
+
+    /**
+     * Reload the source of the {@link IDataSet}.
+     *
+     * @return true if the reload has been done successfully, false otherwise.
+     */
+    boolean reload();
 }

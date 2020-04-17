@@ -556,6 +556,11 @@ public class ITableTest {
         }
 
         @Override
+        public boolean reload() {
+            return false;
+        }
+
+        @Override
         public Iterator<Object> iterator() {
             return new DummyIterator();
         }

@@ -110,6 +110,7 @@ public abstract class JdbcTable extends DefaultResultSet implements IJdbcTable, 
     /**
      * Cached resultSet
      */
+    @Nullable
     protected ResultSet resultSet;
 
     /**
@@ -139,6 +140,12 @@ public abstract class JdbcTable extends DefaultResultSet implements IJdbcTable, 
     @NotNull
     protected String getBaseQuery() {
         return baseQuery;
+    }
+
+    @Override
+    public boolean reload(){
+        resultSet = null;
+        return getResultSet() != null;
     }
 
     @Override

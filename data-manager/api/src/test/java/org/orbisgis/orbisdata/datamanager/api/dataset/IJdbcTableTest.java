@@ -299,6 +299,11 @@ public class IJdbcTableTest {
         }
 
         @Override
+        public boolean reload() {
+            return false;
+        }
+
+        @Override
         public boolean next() throws SQLException {
             if (!sqlException) {
                 return rowIndex++ < data.length;

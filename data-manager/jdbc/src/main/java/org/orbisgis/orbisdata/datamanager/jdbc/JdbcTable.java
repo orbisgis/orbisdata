@@ -49,10 +49,7 @@ import org.orbisgis.commons.annotations.Nullable;
 import org.orbisgis.commons.printer.Ascii;
 import org.orbisgis.commons.printer.Html;
 import org.orbisgis.commons.printer.ICustomPrinter;
-import org.orbisgis.orbisdata.datamanager.api.dataset.DataBaseType;
-import org.orbisgis.orbisdata.datamanager.api.dataset.IJdbcSpatialTable;
-import org.orbisgis.orbisdata.datamanager.api.dataset.IJdbcTable;
-import org.orbisgis.orbisdata.datamanager.api.dataset.ITable;
+import org.orbisgis.orbisdata.datamanager.api.dataset.*;
 import org.orbisgis.orbisdata.datamanager.api.dsl.IConditionOrOptionBuilder;
 import org.orbisgis.orbisdata.datamanager.api.dsl.IOptionBuilder;
 import org.orbisgis.orbisdata.datamanager.jdbc.dsl.OptionBuilder;
@@ -605,6 +602,12 @@ public abstract class JdbcTable extends DefaultResultSet implements IJdbcTable, 
     @Override
     public IOptionBuilder limit(int limitCount) {
         return new OptionBuilder(getQuery(), getJdbcDataSource()).limit(limitCount);
+    }
+
+    @Override
+    @Nullable
+    public ITable<?> filter(String filter) {
+        return where(filter).getTable();
     }
 
     @Override

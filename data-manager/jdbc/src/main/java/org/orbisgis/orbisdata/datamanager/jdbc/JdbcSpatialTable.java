@@ -43,9 +43,7 @@ import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
 import org.orbisgis.commons.annotations.NotNull;
 import org.orbisgis.commons.annotations.Nullable;
-import org.orbisgis.orbisdata.datamanager.api.dataset.DataBaseType;
-import org.orbisgis.orbisdata.datamanager.api.dataset.IJdbcSpatialTable;
-import org.orbisgis.orbisdata.datamanager.api.dataset.IRaster;
+import org.orbisgis.orbisdata.datamanager.api.dataset.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -339,5 +337,11 @@ public abstract class JdbcSpatialTable extends JdbcTable implements IJdbcSpatial
             LOGGER.error("Unable to get the metadata.", e);
             return null;
         }
+    }
+
+    @Override
+    @Nullable
+    public ISpatialTable<?> filter(String filter) {
+        return where(filter).getSpatialTable();
     }
 }

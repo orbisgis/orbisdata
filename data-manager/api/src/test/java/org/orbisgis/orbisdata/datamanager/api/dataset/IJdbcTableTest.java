@@ -304,6 +304,11 @@ public class IJdbcTableTest {
         }
 
         @Override
+        public IDataSet<?> filter(String filter) {
+            return null;
+        }
+
+        @Override
         public boolean next() throws SQLException {
             if (!sqlException) {
                 return rowIndex++ < data.length;

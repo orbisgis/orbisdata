@@ -42,6 +42,7 @@ import org.orbisgis.commons.annotations.Nullable;
 
 import java.math.BigDecimal;
 import java.sql.Date;
+import java.sql.SQLException;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.Collection;
@@ -155,11 +156,46 @@ public interface ITable<T> extends IMatrix<T> {
     int getRow() throws Exception;
 
     /**
-     * Go to the next row.
+     * Goes to the next row.
      *
      * @return True if the next row has been reach, false otherwise.
      */
     boolean next() throws Exception;
+
+    /**
+     * Goes to the previous row.
+     *
+     * @return True if the previous row has been reach, false otherwise.
+     */
+    boolean previous() throws Exception;
+
+    /**
+     * Goes to the first row.
+     *
+     * @return True if the first row has been reach, false otherwise.
+     */
+    boolean first() throws Exception;
+
+    /**
+     * Goes to the last row.
+     *
+     * @return True if the last row has been reach, false otherwise.
+     */
+    boolean last() throws Exception;
+
+    /**
+     * Returns true if the current row position is the first row.
+     *
+     * @return True if the current row position is the first row.
+     */
+    boolean isFirst() throws Exception;
+
+    /**
+     * Returns true if the current row position is the last row.
+     *
+     * @return True if the current row position is the last row.
+     */
+    boolean isLast() throws Exception;
 
     /**
      * Return a {@link Collection} of all the unique values of the {@link ITable}. This method can take a lot of time and

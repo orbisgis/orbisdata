@@ -572,6 +572,37 @@ public class DataFrame implements smile.data.DataFrame, ITable<BaseVector> {
     }
 
     @Override
+    public boolean previous() {
+        if(row > 0){
+            row--;
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public boolean first() {
+        row = 0;
+        return true;
+    }
+
+    @Override
+    public boolean last() {
+        row = getRowCount()-1;
+        return true;
+    }
+
+    @Override
+    public boolean isFirst() {
+        return row == 0;
+    }
+
+    @Override
+    public boolean isLast() {
+        return row == getRowCount()-1;
+    }
+
+    @Override
     public Collection<String> getUniqueValues(@NotNull String column) {
         int colIndex = columnIndex(column);
         List<String> values = new ArrayList<>();
@@ -650,6 +681,12 @@ public class DataFrame implements smile.data.DataFrame, ITable<BaseVector> {
         List<String> col = new ArrayList<>(getColumns());
         col.removeAll(columns);
         return of(drop(col.toArray(new String[0])));
+    }
+
+    @Override
+    @Nullable
+    public ITable<?> filter(String filter) {
+        throw new UnsupportedOperationException();
     }
 
     @Override

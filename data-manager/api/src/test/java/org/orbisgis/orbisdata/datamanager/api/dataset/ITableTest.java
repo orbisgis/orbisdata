@@ -345,6 +345,31 @@ public class ITableTest {
         }
 
         @Override
+        public boolean previous() throws Exception {
+            return false;
+        }
+
+        @Override
+        public boolean first() throws Exception {
+            return false;
+        }
+
+        @Override
+        public boolean last() throws Exception {
+            return false;
+        }
+
+        @Override
+        public boolean isFirst() throws Exception {
+            return false;
+        }
+
+        @Override
+        public boolean isLast() throws Exception {
+            return false;
+        }
+
+        @Override
         public Collection<String> getUniqueValues(@NotNull String column) {
             return null;
         }
@@ -558,6 +583,11 @@ public class ITableTest {
         @Override
         public boolean reload() {
             return false;
+        }
+
+        @Override
+        public IDataSet<?> filter(String filter) {
+            return null;
         }
 
         @Override

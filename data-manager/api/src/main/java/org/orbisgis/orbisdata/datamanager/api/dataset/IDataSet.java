@@ -102,4 +102,13 @@ public interface IDataSet<T> extends Iterable<T> {
      * @return true if the reload has been done successfully, false otherwise.
      */
     boolean reload();
+
+    /**
+     * Returns a {@link IDataSet} with the given filter applied.
+     * The filter syntax depends on the {@link IDataSet} type.
+     *
+     * @param filter Filtes to apply.
+     * @return A filtered {@link IDataSet}
+     */
+    IDataSet<?> filter(String filter);
 }

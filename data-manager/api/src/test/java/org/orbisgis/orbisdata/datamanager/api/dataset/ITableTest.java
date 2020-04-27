@@ -43,10 +43,12 @@ import org.orbisgis.commons.annotations.NotNull;
 
 import java.math.BigDecimal;
 import java.sql.Date;
+import java.sql.ResultSet;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -282,7 +284,7 @@ public class ITableTest {
     /**
      * Simple implementation of {@link ITable} for test purpose.
      */
-    private static class DummyTable implements ITable<Object> {
+    private static class DummyTable implements ITable<ResultSet, ResultSet> {
 
         /**
          * {@link List} of columns. A column is a list with the column name as first value.
@@ -553,6 +555,16 @@ public class ITableTest {
         }
 
         @Override
+        public Stream<ResultSet> stream() {
+            return null;
+        }
+
+        @Override
+        public ITable<ResultSet, ResultSet> filter(String filter) {
+            return null;
+        }
+
+        @Override
         public String getLocation() {
             return null;
         }
@@ -586,12 +598,7 @@ public class ITableTest {
         }
 
         @Override
-        public IDataSet<?> filter(String filter) {
-            return null;
-        }
-
-        @Override
-        public Iterator<Object> iterator() {
+        public Iterator<ResultSet> iterator() {
             return new DummyIterator();
         }
 

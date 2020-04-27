@@ -45,6 +45,8 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 /**
  * Extension of the {@link ITable} specially dedicated to the JDBC databases thanks to the extension of the
@@ -53,7 +55,7 @@ import java.util.List;
  * @author Erwan Bocher (CNRS)
  * @author Sylvain Palominos (Lab-STICC UBS 2019)
  */
-public interface IJdbcTable extends ITable<Object>, ResultSet, IWhereBuilderOrOptionBuilder {
+public interface IJdbcTable extends ITable<ResultSet, ResultSet>, ResultSet, IWhereBuilderOrOptionBuilder {
 
     /**
      * {@link String} location/name of the query built table
@@ -146,4 +148,12 @@ public interface IJdbcTable extends ITable<Object>, ResultSet, IWhereBuilderOrOp
     @Override
     @NotNull
     IJdbcTable columns(@NotNull List<String> columns);
+
+    @Override
+    default Stream<ResultSet> stream() {
+        return StreamSupport.stream(this.spliterator(), false);
+    }
+
+    @Override
+    IJdbcTable filter(String filter);
 }

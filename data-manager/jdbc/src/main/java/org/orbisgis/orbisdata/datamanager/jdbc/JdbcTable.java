@@ -60,7 +60,9 @@ import org.slf4j.LoggerFactory;
 
 import java.sql.*;
 import java.util.*;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.orbisgis.commons.printer.ICustomPrinter.CellPosition.*;
 
@@ -449,6 +451,27 @@ public abstract class JdbcTable extends DefaultResultSet implements IJdbcTable, 
     }
 
     @Override
+    public int getColumnCount(){
+        ResultSet rs = getResultSet();
+        if(rs == null){
+            return -1;
+        }
+        ResultSetMetaData metaData = null;
+        try {
+            metaData = rs.getMetaData();
+        } catch (SQLException e) {
+            LOGGER.error("Unable to get the ResultSet Metadata.", e);
+            return -1;
+        }
+        try {
+            return metaData.getColumnCount();
+        } catch (SQLException e) {
+            LOGGER.error("Unable to get the ResultSet Metadata column count.", e);
+            return -1;
+        }
+    }
+
+    @Override
     public int getRowCount() {
         ResultSet rs = getResultSet();
         if(rs == null){
@@ -606,8 +629,8 @@ public abstract class JdbcTable extends DefaultResultSet implements IJdbcTable, 
 
     @Override
     @Nullable
-    public ITable<?> filter(String filter) {
-        return where(filter).getTable();
+    public JdbcTable filter(String filter) {
+        return (JdbcTable)where(filter).getTable();
     }
 
     @Override
@@ -756,5 +779,10 @@ public abstract class JdbcTable extends DefaultResultSet implements IJdbcTable, 
     @NotNull
     public JdbcTableSummary getSummary() {
         return new JdbcTableSummary(getTableLocation(), getColumnCount(), getRowCount());
+    }
+
+    public Stream<ResultSet> stream() {
+        Spliterator<ResultSet> spliterator = new ResultSetSpliterator(this.getRowCount(), getResultSet());
+        return java.util.stream.StreamSupport.stream(spliterator, true);
     }
 }

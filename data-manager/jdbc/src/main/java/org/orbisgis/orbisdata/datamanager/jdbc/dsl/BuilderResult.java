@@ -83,7 +83,7 @@ public abstract class BuilderResult implements IBuilderResult {
 
     @Override
     public void eachRow(@NotNull Closure<Object> closure) {
-        ISpatialTable<?> table = ((ISpatialTable<?>) asType(ISpatialTable.class));
+        ISpatialTable table = ((ISpatialTable) asType(ISpatialTable.class));
         if(table != null) {
             table.eachRow(closure);
         }
@@ -92,7 +92,7 @@ public abstract class BuilderResult implements IBuilderResult {
     @Override
     public Object asType(@NotNull Class<?> clazz) {
         if (ICustomPrinter.class.isAssignableFrom(clazz)) {
-            ITable<?> table = this.getTable();
+            ITable table = this.getTable();
             if(table != null) {
                 return table.asType(clazz);
             }
@@ -144,12 +144,12 @@ public abstract class BuilderResult implements IBuilderResult {
     }
 
     @Override
-    public ITable<?> getTable() {
-        return (ITable<?>) this.asType(ITable.class);
+    public ITable getTable() {
+        return (ITable) this.asType(ITable.class);
     }
 
     @Override
-    public ISpatialTable<?> getSpatialTable() {
-        return (ISpatialTable<?>) this.asType(ISpatialTable.class);
+    public ISpatialTable getSpatialTable() {
+        return (ISpatialTable) this.asType(ISpatialTable.class);
     }
 }

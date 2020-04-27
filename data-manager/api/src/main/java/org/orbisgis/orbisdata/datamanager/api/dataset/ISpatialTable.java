@@ -41,16 +41,20 @@ import org.locationtech.jts.geom.Geometry;
 import org.orbisgis.commons.annotations.NotNull;
 import org.orbisgis.commons.annotations.Nullable;
 
+import java.sql.ResultSet;
 import java.util.List;
 import java.util.Map;
 
 /**
  * Extension of {@link ITable}. A {@link ISpatialTable} is a specialisation with at least one Geometry column.
  *
+ * @param <T> The type of elements returned by the iterator.
+ * @param <U> The type of elements streamed.
+ *
  * @author Erwan Bocher (CNRS)
  * @author Sylvain PALOMINOS (Lab-STICC UBS 2018-2019)
  */
-public interface ISpatialTable<T> extends ITable<T> {
+public interface ISpatialTable<T, U> extends ITable<T, U> {
 
     /**
      * Returns the {@link Geometry} value of the given column at the current row.
@@ -167,5 +171,8 @@ public interface ISpatialTable<T> extends ITable<T> {
      * @return A reproject {@link ISpatialTable}.
      */
     @Nullable
-    ISpatialTable<T> reproject(int srid);
+    ISpatialTable<T, U> reproject(int srid);
+
+    @Override
+    ISpatialTable<T, U> filter(String filter);
 }

@@ -68,6 +68,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -239,6 +240,19 @@ class JdbcTableTest {
         assertNotNull(getTempTable());
         assertNotNull(getEmptyTable());
         assertNotNull(getBuiltTable());
+    }
+
+    @Test
+    void streamTest(){
+        String str = getTable().stream().map(resultSet -> {
+            try {
+                return resultSet.getObject(COL_THE_GEOM).toString();
+            } catch (SQLException throwables) {
+                throwables.printStackTrace();
+                return "";
+            }
+        }).collect(Collectors.joining(" ; "));
+        assertEquals("POINT (0 0) ; POINT (0 1)", str);
     }
 
 

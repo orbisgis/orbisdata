@@ -62,7 +62,7 @@ public interface IDataSource<T> {
      * @return The implementation of {@link IDataSet} corresponding to the given name or null.
      */
     @Nullable
-    IDataSet<T> getDataSet(@NotNull String name);
+    IDataSet<T, T> getDataSet(@NotNull String name);
 
     /**
      * Return the location of the {@link IDataSourceLocation}
@@ -97,7 +97,7 @@ public interface IDataSource<T> {
      * @return The {@link IDataSet} containing the loaded data.
      */
     @Nullable
-    IDataSet<?> load(@NotNull String filePath);
+    IDataSet<?, ?> load(@NotNull String filePath);
 
     /**
      * Load a file into the {@link IDataSource}.
@@ -107,7 +107,7 @@ public interface IDataSource<T> {
      * @return The {@link IDataSet} containing the loaded data.
      */
     @Nullable
-    IDataSet<?> load(@NotNull String filePath, boolean delete);
+    IDataSet<?, ?> load(@NotNull String filePath, boolean delete);
 
     /**
      * Load a file to the {@link IDataSource}.
@@ -117,7 +117,7 @@ public interface IDataSource<T> {
      * @return The {@link IDataSet} containing the loaded data.
      */
     @Nullable
-    IDataSet<?> load(@NotNull String filePath, @NotNull String dataSetId);
+    IDataSet<?, ?> load(@NotNull String filePath, @NotNull String dataSetId);
 
     /**
      * Load a file to the {@link IDataSource}.
@@ -128,7 +128,7 @@ public interface IDataSource<T> {
      * @return The {@link IDataSet} containing the loaded data.
      */
     @Nullable
-    IDataSet<?> load(@NotNull String filePath, @NotNull String dataSetId, boolean delete);
+    IDataSet<?, ?> load(@NotNull String filePath, @NotNull String dataSetId, boolean delete);
 
     /**
      * Load a file to the {@link IDataSource}.
@@ -140,7 +140,7 @@ public interface IDataSource<T> {
      * @return The {@link IDataSet} containing the loaded data.
      */
     @Nullable
-    IDataSet<?> load(@NotNull String filePath, @NotNull String dataSetId, @Nullable String encoding, boolean delete);
+    IDataSet<?, ?> load(@NotNull String filePath, @NotNull String dataSetId, @Nullable String encoding, boolean delete);
 
     /**
      * Load a file into the {@link IDataSource}.
@@ -149,7 +149,7 @@ public interface IDataSource<T> {
      * @return The {@link IDataSet} containing the loaded data.
      */
     @Nullable
-    IDataSet<?> load(@NotNull URL url);
+    IDataSet<?, ?> load(@NotNull URL url);
 
     /**
      * Load a file into the {@link IDataSource}.
@@ -159,7 +159,7 @@ public interface IDataSource<T> {
      * @return The {@link IDataSet} containing the loaded data.
      */
     @Nullable
-    IDataSet<?> load(@NotNull URL url, boolean delete);
+    IDataSet<?, ?> load(@NotNull URL url, boolean delete);
 
     /**
      * Load a file to the {@link IDataSource}.
@@ -169,7 +169,7 @@ public interface IDataSource<T> {
      * @return The {@link IDataSet} containing the loaded data.
      */
     @Nullable
-    IDataSet<?> load(@NotNull URL url, @NotNull String dataSetId);
+    IDataSet<?, ?> load(@NotNull URL url, @NotNull String dataSetId);
 
     /**
      * Load a file to the {@link IDataSource}.
@@ -180,7 +180,7 @@ public interface IDataSource<T> {
      * @return The {@link IDataSet} containing the loaded data.
      */
     @Nullable
-    IDataSet<?> load(@NotNull URL url, @NotNull String dataSetId, boolean delete);
+    IDataSet<?, ?> load(@NotNull URL url, @NotNull String dataSetId, boolean delete);
 
     /**
      * Load a file to the {@link IDataSource}.
@@ -192,7 +192,7 @@ public interface IDataSource<T> {
      * @return The {@link IDataSet} containing the loaded data.
      */
     @Nullable
-    IDataSet<?> load(@NotNull URL url, @NotNull String dataSetId, @Nullable String encoding, boolean delete);
+    IDataSet<?, ?> load(@NotNull URL url, @NotNull String dataSetId, @Nullable String encoding, boolean delete);
 
     /**
      * Load a file into the {@link IDataSource}.
@@ -201,7 +201,7 @@ public interface IDataSource<T> {
      * @return The {@link IDataSet} containing the loaded data.
      */
     @Nullable
-    IDataSet<?> load(@NotNull URI uri);
+    IDataSet<?, ?> load(@NotNull URI uri);
 
     /**
      * Load a file into the {@link IDataSource}.
@@ -211,7 +211,7 @@ public interface IDataSource<T> {
      * @return The {@link IDataSet} containing the loaded data.
      */
     @Nullable
-    IDataSet<?> load(@NotNull URI uri, boolean delete);
+    IDataSet<?, ?> load(@NotNull URI uri, boolean delete);
 
     /**
      * Load a file to the {@link IDataSource}.
@@ -221,7 +221,7 @@ public interface IDataSource<T> {
      * @return The {@link IDataSet} containing the loaded data.
      */
     @Nullable
-    IDataSet<?> load(@NotNull URI uri, @NotNull String dataSetId);
+    IDataSet<?, ?> load(@NotNull URI uri, @NotNull String dataSetId);
 
     /**
      * Load a file to the {@link IDataSource}.
@@ -232,7 +232,7 @@ public interface IDataSource<T> {
      * @return The {@link IDataSet} containing the loaded data.
      */
     @Nullable
-    IDataSet<?> load(@NotNull URI uri, @NotNull String dataSetId, boolean delete);
+    IDataSet<?, ?> load(@NotNull URI uri, @NotNull String dataSetId, boolean delete);
 
     /**
      * Load a file to the {@link IDataSource}.
@@ -244,7 +244,7 @@ public interface IDataSource<T> {
      * @return The {@link IDataSet} containing the loaded data.
      */
     @Nullable
-    IDataSet<?> load(@NotNull URI uri, @NotNull String dataSetId, @Nullable String encoding, boolean delete);
+    IDataSet<?, ?> load(@NotNull URI uri, @NotNull String dataSetId, @Nullable String encoding, boolean delete);
 
     /**
      * Load a file into the {@link IDataSource}.
@@ -253,7 +253,7 @@ public interface IDataSource<T> {
      * @return The {@link IDataSet} containing the loaded data.
      */
     @Nullable
-    IDataSet<?> load(@NotNull File file);
+    IDataSet<?, ?> load(@NotNull File file);
 
     /**
      * Load a file into the {@link IDataSource}.
@@ -263,7 +263,7 @@ public interface IDataSource<T> {
      * @return The {@link IDataSet} containing the loaded data.
      */
     @Nullable
-    IDataSet<?> load(@NotNull File file, boolean delete);
+    IDataSet<?, ?> load(@NotNull File file, boolean delete);
 
     /**
      * Load a file to the {@link IDataSource}.
@@ -273,7 +273,7 @@ public interface IDataSource<T> {
      * @return The {@link IDataSet} containing the loaded data.
      */
     @Nullable
-    IDataSet<?> load(@NotNull File file, @NotNull String dataSetId);
+    IDataSet<?, ?> load(@NotNull File file, @NotNull String dataSetId);
 
     /**
      * Load a file to the {@link IDataSource}.
@@ -284,7 +284,7 @@ public interface IDataSource<T> {
      * @return The {@link IDataSet} containing the loaded data.
      */
     @Nullable
-    IDataSet<?> load(@NotNull File file, @NotNull String dataSetId, boolean delete);
+    IDataSet<?, ?> load(@NotNull File file, @NotNull String dataSetId, boolean delete);
 
     /**
      * Load a file to the {@link IDataSource}.
@@ -296,7 +296,7 @@ public interface IDataSource<T> {
      * @return The {@link IDataSet} containing the loaded data.
      */
     @Nullable
-    IDataSet<?> load(@NotNull File file, @NotNull String dataSetId, @Nullable String encoding, boolean delete);
+    IDataSet<?, ?> load(@NotNull File file, @NotNull String dataSetId, @Nullable String encoding, boolean delete);
 
     /**
      * Load a table from another {@link IDataSource}.
@@ -306,7 +306,7 @@ public interface IDataSource<T> {
      * @return The {@link IDataSet} containing the loaded data.
      */
     @Nullable
-    IDataSet<?> load(@NotNull Map<String, String> properties, @NotNull String inputdataSetId);
+    IDataSet<?, ?> load(@NotNull Map<String, String> properties, @NotNull String inputdataSetId);
 
 
     /**
@@ -318,7 +318,7 @@ public interface IDataSource<T> {
      * @return The {@link IDataSet} containing the loaded data.
      */
     @Nullable
-    IDataSet<?> load(@NotNull Map<String, String> properties, @NotNull String inputdataSetId,
+    IDataSet<?, ?> load(@NotNull Map<String, String> properties, @NotNull String inputdataSetId,
                     @NotNull String outputdataSetId);
 
     /**
@@ -330,7 +330,7 @@ public interface IDataSource<T> {
      * @return The {@link IDataSet} containing the loaded data.
      */
     @Nullable
-    IDataSet<?> load(@NotNull Map<String, String> properties, @NotNull String inputdataSetId, boolean delete);
+    IDataSet<?, ?> load(@NotNull Map<String, String> properties, @NotNull String inputdataSetId, boolean delete);
 
     /**
      * Load a table from another {@link IDataSource}.
@@ -342,7 +342,7 @@ public interface IDataSource<T> {
      * @return The {@link IDataSet} containing the loaded data.
      */
     @Nullable
-    IDataSet<?> load(@NotNull Map<String, String> properties, @NotNull String inputdataSetId,
+    IDataSet<?, ?> load(@NotNull Map<String, String> properties, @NotNull String inputdataSetId,
                     @NotNull String outputdataSetId, boolean delete);
 
 
@@ -440,7 +440,7 @@ public interface IDataSource<T> {
      * @return A {@link IDataSet} representing the linked file.
      */
     @Nullable
-    IDataSet<?> link(@NotNull String filePath, @NotNull String dataSetId, boolean delete);
+    IDataSet<?, ?> link(@NotNull String filePath, @NotNull String dataSetId, boolean delete);
 
     /**
      * Link a file to the {@link IDataSource}.
@@ -450,7 +450,7 @@ public interface IDataSource<T> {
      * @return A {@link IDataSet} representing the linked file.
      */
     @Nullable
-    IDataSet<?> link(@NotNull String filePath, @NotNull String dataSetId);
+    IDataSet<?, ?> link(@NotNull String filePath, @NotNull String dataSetId);
 
     /**
      * Link a file to the {@link IDataSource}.
@@ -460,7 +460,7 @@ public interface IDataSource<T> {
      * @return A {@link IDataSet} representing the linked file.
      */
     @Nullable
-    IDataSet<?> link(@NotNull String filePath, boolean delete);
+    IDataSet<?, ?> link(@NotNull String filePath, boolean delete);
 
     /**
      * Link a file to the {@link IDataSource}.
@@ -469,7 +469,7 @@ public interface IDataSource<T> {
      * @return A {@link IDataSet} representing the linked file.
      */
     @Nullable
-    IDataSet<?> link(@NotNull String filePath);
+    IDataSet<?, ?> link(@NotNull String filePath);
 
     /**
      * Link a file to the {@link IDataSource}.
@@ -480,7 +480,7 @@ public interface IDataSource<T> {
      * @return A {@link IDataSet} representing the linked file.
      */
     @Nullable
-    IDataSet<?> link(@NotNull URI uri, @Nullable String dataSetId, boolean delete);
+    IDataSet<?, ?> link(@NotNull URI uri, @Nullable String dataSetId, boolean delete);
 
     /**
      * Link a file to the {@link IDataSource}.
@@ -490,7 +490,7 @@ public interface IDataSource<T> {
      * @return A {@link IDataSet} representing the linked file.
      */
     @Nullable
-    IDataSet<?> link(@NotNull URI uri, @Nullable String dataSetId);
+    IDataSet<?, ?> link(@NotNull URI uri, @Nullable String dataSetId);
 
     /**
      * Link a file to the {@link IDataSource}.
@@ -500,7 +500,7 @@ public interface IDataSource<T> {
      * @return A {@link IDataSet} representing the linked file.
      */
     @Nullable
-    IDataSet<?> link(@NotNull URI uri, boolean delete);
+    IDataSet<?, ?> link(@NotNull URI uri, boolean delete);
 
     /**
      * Link a file to the {@link IDataSource}.
@@ -509,7 +509,7 @@ public interface IDataSource<T> {
      * @return A {@link IDataSet} representing the linked file.
      */
     @Nullable
-    IDataSet<?> link(@NotNull URI uri);
+    IDataSet<?, ?> link(@NotNull URI uri);
 
     /**
      * Link a file to the {@link IDataSource}.
@@ -520,7 +520,7 @@ public interface IDataSource<T> {
      * @return A {@link IDataSet} representing the linked file.
      */
     @Nullable
-    IDataSet<?> link(@NotNull URL url, @Nullable String dataSetId, boolean delete);
+    IDataSet<?, ?> link(@NotNull URL url, @Nullable String dataSetId, boolean delete);
 
     /**
      * Link a file to the {@link IDataSource}.
@@ -530,7 +530,7 @@ public interface IDataSource<T> {
      * @return A {@link IDataSet} representing the linked file.
      */
     @Nullable
-    IDataSet<?> link(@NotNull URL url, @Nullable String dataSetId);
+    IDataSet<?, ?> link(@NotNull URL url, @Nullable String dataSetId);
 
     /**
      * Link a file to the {@link IDataSource}.
@@ -540,7 +540,7 @@ public interface IDataSource<T> {
      * @return A {@link IDataSet} representing the linked file.
      */
     @Nullable
-    IDataSet<?> link(@NotNull URL url, boolean delete);
+    IDataSet<?, ?> link(@NotNull URL url, boolean delete);
 
     /**
      * Link a file to the {@link IDataSource}.
@@ -549,7 +549,7 @@ public interface IDataSource<T> {
      * @return A {@link IDataSet} representing the linked file.
      */
     @Nullable
-    IDataSet<?> link(@NotNull URL url);
+    IDataSet<?, ?> link(@NotNull URL url);
 
     /**
      * Link a file to the {@link IDataSource}.
@@ -560,7 +560,7 @@ public interface IDataSource<T> {
      * @return A {@link IDataSet} representing the linked file.
      */
     @Nullable
-    IDataSet<?> link(@NotNull File file, @NotNull String dataSetId, boolean delete);
+    IDataSet<?, ?> link(@NotNull File file, @NotNull String dataSetId, boolean delete);
 
     /**
      * Link a file to the {@link IDataSource}.
@@ -570,7 +570,7 @@ public interface IDataSource<T> {
      * @return A {@link IDataSet} representing the linked file.
      */
     @Nullable
-    IDataSet<?> link(@NotNull File file, @NotNull String dataSetId);
+    IDataSet<?, ?> link(@NotNull File file, @NotNull String dataSetId);
 
     /**
      * Link a file to the {@link IDataSource}.
@@ -580,7 +580,7 @@ public interface IDataSource<T> {
      * @return A {@link IDataSet} representing the linked file.
      */
     @Nullable
-    IDataSet<?> link(@NotNull File file, boolean delete);
+    IDataSet<?, ?> link(@NotNull File file, boolean delete);
 
     /**
      * Link a file to the {@link IDataSource}.
@@ -589,5 +589,5 @@ public interface IDataSource<T> {
      * @return A {@link IDataSet} representing the linked file.
      */
     @Nullable
-    IDataSet<?> link(@NotNull File file);
+    IDataSet<?, ?> link(@NotNull File file);
 }

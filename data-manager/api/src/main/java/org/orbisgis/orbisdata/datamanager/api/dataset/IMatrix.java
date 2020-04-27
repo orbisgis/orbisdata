@@ -41,10 +41,13 @@ import org.orbisgis.commons.annotations.NotNull;
 /**
  * Multi-dimensional structured data.
  *
+ * @param <T> The type of elements returned by the iterator.
+ * @param <U> The type of elements streamed.
+ *
  * @author Ewan Bocher (CNRS)
  * @author Sylvain PALOMINOS (Lab-STICC UBS 2019)
  */
-public interface IMatrix<T> extends IDataSet<T> {
+public interface IMatrix<T, U> extends IDataSet<T, U> {
 
     /**
      * Return the number of dimensions of the {@link IMatrix}.

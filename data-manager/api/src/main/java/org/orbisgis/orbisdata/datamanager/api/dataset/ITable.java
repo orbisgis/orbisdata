@@ -45,17 +45,20 @@ import java.sql.Date;
 import java.sql.SQLException;
 import java.sql.Time;
 import java.sql.Timestamp;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 /**
  * Extension of the {@link IDataSet} interface. A {@link ITable} is a 2D (column/line) representation of raw data.
  *
+ * @param <T> The type of elements returned by the iterator.
+ * @param <U> The type of elements streamed.
+ *
  * @author Erwan Bocher (CNRS)
  * @author Sylvain PALOMINOS (Lab-STICC UBS 2018-2020)
  */
-public interface ITable<T> extends IMatrix<T> {
+public interface ITable<T, U> extends IMatrix<T, U> {
 
     /**
      * Apply the given {@link Closure} to each row.
@@ -241,7 +244,7 @@ public interface ITable<T> extends IMatrix<T> {
      * @return Filtered {@link ITable}.
      */
     @NotNull
-    ITable<T> columns(@NotNull String... columns);
+    ITable<T, U> columns(@NotNull String... columns);
 
     /**
      * Indicates the columns use for the selection.
@@ -250,7 +253,7 @@ public interface ITable<T> extends IMatrix<T> {
      * @return Filtered {@link ITable}.
      */
     @NotNull
-    ITable<T> columns(@NotNull List<String> columns);
+    ITable<T, U> columns(@NotNull List<String> columns);
 
     /**
      * Return true if the {@link ITable} is spatial.
@@ -514,22 +517,32 @@ public interface ITable<T> extends IMatrix<T> {
     BigDecimal getBigDecimal(@NotNull String column) throws Exception;
 
     /**
-     * Return the {@link U} in the current row on the given column.
+     * Return the {@link V} in the current row on the given column.
      *
      * @param column Index of the column.
      * @param clazz {@link Class} of the object.
-     * @return The {@link U} in the current row on the given column.
+     * @return The {@link V} in the current row on the given column.
      */
     @Nullable
-    <U> U getObject(int column, @NotNull Class<U> clazz) throws Exception;
+    <V> V getObject(int column, @NotNull Class<V> clazz) throws Exception;
 
     /**
-     * Return the {@link U} in the current row on the given column.
+     * Return the {@link V} in the current row on the given column.
      *
      * @param column Name of the column.
      * @param clazz {@link Class} of the object.
-     * @return The {@link U} in the current row on the given column.
+     * @return The {@link V} in the current row on the given column.
      */
     @Nullable
-    <U> U getObject(@NotNull String column, @NotNull Class<U> clazz) throws Exception;
+    <V> V getObject(@NotNull String column, @NotNull Class<V> clazz) throws Exception;
+
+    /**
+     * Return a {@link Stream} of {@link T} objects.
+     *
+     * @return A {@link Stream} of {@link T} objects.
+     */
+    Stream<U> stream();
+
+    @Override
+    ITable<T, U> filter(String filter);
 }

@@ -51,7 +51,7 @@ import org.slf4j.LoggerFactory;
  * @author Erwan Bocher (CNRS)
  * @author Sylvain PALOMINOS (Lab-STICC UBS 2018-2019)
  */
-public class ResultSetIterator implements Iterator<Object> {
+public class ResultSetIterator implements Iterator<ResultSet> {
 
     /**
      * Class {@link Logger}

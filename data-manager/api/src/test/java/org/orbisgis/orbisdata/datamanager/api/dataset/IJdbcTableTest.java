@@ -311,7 +311,7 @@ public class IJdbcTableTest {
         }
 
         @Override
-        public IDataSet<?> filter(String filter) {
+        public IJdbcTable filter(String filter) {
             return null;
         }
 

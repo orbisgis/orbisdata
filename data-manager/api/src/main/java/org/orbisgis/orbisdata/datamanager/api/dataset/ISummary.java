@@ -54,4 +54,8 @@ public interface ISummary {
      */
     @Nullable
     Object asType(@NotNull Class<?> clazz);
+
+    @Override
+    @NotNull
+    String toString();
 }

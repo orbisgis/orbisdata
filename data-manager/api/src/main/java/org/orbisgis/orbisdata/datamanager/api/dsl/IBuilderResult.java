@@ -82,5 +82,9 @@ public interface IBuilderResult {
      * @return The {@link ISpatialTable} representing the result of the SQL query.
      */
     @Nullable
-    ISpatialTable getSpatialTable();
+    ISpatialTable<?> getSpatialTable();
+
+    @Override
+    @NotNull
+    String toString();
 }

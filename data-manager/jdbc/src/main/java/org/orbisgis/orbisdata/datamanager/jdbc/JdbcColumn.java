@@ -42,6 +42,7 @@ import groovy.lang.MissingMethodException;
 import groovy.sql.GroovyRowResult;
 import org.codehaus.groovy.runtime.InvokerHelper;
 import org.h2gis.utilities.TableLocation;
+import org.orbisgis.commons.annotations.Nullable;
 import org.orbisgis.orbisdata.datamanager.api.dataset.DataBaseType;
 import org.orbisgis.orbisdata.datamanager.api.dataset.IJdbcColumn;
 import org.orbisgis.orbisdata.datamanager.api.datasource.IJdbcDataSource;
@@ -156,6 +157,12 @@ public class JdbcColumn implements IJdbcColumn, GroovyObject {
                     e.getLocalizedMessage());
         }
         return -1;
+    }
+
+    @Nullable
+    @Override
+    public Object asType(Class<?> clazz) {
+        return null;
     }
 
     @Override

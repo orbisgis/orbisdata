@@ -51,6 +51,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.orbisgis.commons.annotations.NotNull;
+import org.orbisgis.commons.annotations.Nullable;
 import org.orbisgis.orbisdata.datamanager.api.dataset.*;
 import org.orbisgis.orbisdata.datamanager.api.dsl.IFromBuilder;
 import org.orbisgis.orbisdata.datamanager.jdbc.h2gis.H2GIS;
@@ -877,6 +878,12 @@ class JdbcDataSourceTest {
             } catch (SQLException ex) {
                 return false;
             }
+        }
+
+        @Nullable
+        @Override
+        public Object asType(@NotNull Class<?> clazz) {
+            return null;
         }
     }
 }

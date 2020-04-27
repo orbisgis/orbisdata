@@ -95,6 +95,7 @@ public class JdbcTableSummary implements IJdbcTableSummary {
         return columnCount;
     }
 
+    @NotNull
     @Override
     public String toString() {
         return (tableLocation == null ? IJdbcTable.QUERY_LOCATION : tableLocation.toString()) + "; row count : " +

@@ -37,10 +37,14 @@
 package org.orbisgis.orbisdata.datamanager.dataframe;
 
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.orbisgis.commons.printer.Ascii;
 import org.orbisgis.commons.printer.Html;
 import org.orbisgis.orbisdata.datamanager.jdbc.h2gis.H2GIS;
+import smile.data.AbstractTuple;
+import smile.data.Tuple;
+import smile.data.type.StructType;
 import smile.data.vector.BaseVector;
 import smile.math.matrix.DenseMatrix;
 
@@ -53,8 +57,7 @@ import java.sql.SQLException;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.UUID;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.orbisgis.orbisdata.datamanager.dataframe.TestUtils.RANDOM_DS;
@@ -66,21 +69,27 @@ import static org.orbisgis.orbisdata.datamanager.dataframe.TestUtils.RANDOM_DS;
  */
 public class DataFrameTest {
 
-    private static DataFrame dataFrame;
+    private DataFrame dataFrame;
+    private static H2GIS h2gis;
 
     @BeforeAll
-    public static void beforeEach() {
+    public static void beforeAll() {
+        h2gis = RANDOM_DS();
+    }
+
+    @BeforeEach
+    public void beforeEach() {
         try {
-            H2GIS h2gis = RANDOM_DS();
+            h2gis.execute("DROP TABLE IF EXISTS toto");
             h2gis.execute("CREATE TABLE toto(col1 int, col2 varchar, col3 boolean, col4 char, col5 TINYINT, col6 SMALLINT, " +
-                    "col7 INT8, col8 REAL, col9 double, col10 time, col11 date, col12 timestamp)");
-            h2gis.execute("INSERT INTO toto VALUES (0, 'val0', true , 0, 0, 0, 0, 0.0, 0.0, '12:34:56', '2020-04-16', '2020-04-16 12:34:56.7')");
-            h2gis.execute("INSERT INTO toto VALUES (1, 'val1', false, 1, 1, 1, 1, 1.0, 1.0, '12:34:56', '2020-04-16', '2020-04-16 12:34:56.7')");
-            h2gis.execute("INSERT INTO toto VALUES (2, 'val2', true , 2, 2, 2, 2, 2.0, 2.0, '12:34:56', '2020-04-16', '2020-04-16 12:34:56.7')");
-            h2gis.execute("INSERT INTO toto VALUES (3, 'val3', false, 3, 3, 3, 3, 3.0, 3.0, '12:34:56', '2020-04-16', '2020-04-16 12:34:56.7')");
-            h2gis.execute("INSERT INTO toto VALUES (4, 'val4', true , 4, 4, 4, 4, 4.0, 4.0, '12:34:56', '2020-04-16', '2020-04-16 12:34:56.7')");
+                    "col7 INT8, col8 REAL, col9 double, col10 time, col11 date, col12 timestamp, col13 DECIMAL(20, 2))");
+            h2gis.execute("INSERT INTO toto VALUES (0, 'val0', true , 0, 0, 0, 0, 0.0, 0.0, '12:34:56', '2020-04-16', '2020-04-16 12:34:56.7', 0)");
+            h2gis.execute("INSERT INTO toto VALUES (1, 'val1', false, 1, 1, 1, 1, 1.0, 1.0, '12:34:56', '2020-04-16', '2020-04-16 12:34:56.7', 1)");
+            h2gis.execute("INSERT INTO toto VALUES (2, null, true , 2, 2, 2, 2, 2.0, 2.0, null, null, null, null)");
+            h2gis.execute("INSERT INTO toto VALUES (3, 'val3', false, 3, 3, 3, 3, 3.0, 3.0, '12:34:56', '2020-04-16', '2020-04-16 12:34:56.7', 3)");
+            h2gis.execute("INSERT INTO toto VALUES (4, 'val4', true , 4, 4, 4, 4, 4.0, 4.0, '12:34:56', '2020-04-16', '2020-04-16 12:34:56.7', 4)");
             dataFrame = DataFrame.of(h2gis.getTable("toto"));
-        }catch(Exception e){
+        } catch(Exception e){
             e.printStackTrace();
         }
     }
@@ -118,11 +127,11 @@ public class DataFrameTest {
         assertEquals(0, dataFrame.getLong(6));
         assertEquals(0, dataFrame.getFloat(7));
         assertEquals(0, dataFrame.getDouble(8));
-        assertEquals(new BigDecimal("0.0"), dataFrame.getBigDecimal(8));
         assertEquals("12:34:56", dataFrame.getTime(9).toString());
         assertEquals("2020-04-16", dataFrame.getDate(10).toString());
         assertEquals("2020-04-16 12:34:56.7", dataFrame.getTimestamp(11).toString());
         assertEquals(LocalDateTime.class, dataFrame.getObject(11).getClass());
+        assertEquals("0.00", dataFrame.getBigDecimal(12).toString());
 
         assertTrue(dataFrame.next());
         assertEquals(1, dataFrame.getInt("COL1"));
@@ -135,18 +144,31 @@ public class DataFrameTest {
         assertEquals(1, dataFrame.getLong("COL7"));
         assertEquals(1, dataFrame.getFloat("COL8"));
         assertEquals(1, dataFrame.getDouble("COL9"));
-        assertEquals(new BigDecimal("1.0"), dataFrame.getBigDecimal("COL9"));
         assertEquals("12:34:56", dataFrame.getTime("COL10").toString());
         assertEquals("2020-04-16", dataFrame.getDate("COL11").toString());
         assertEquals("2020-04-16 12:34:56.7", dataFrame.getTimestamp("COL12").toString());
         assertEquals(LocalDateTime.class, dataFrame.getObject("COL12").getClass());
+        assertEquals("1.00", dataFrame.getBigDecimal("COL13").toString());
 
         assertTrue(dataFrame.next());
+        assertNull(dataFrame.getString("COL2"));
+        assertNull(dataFrame.getString(1));
+        assertArrayEquals(new byte[]{}, dataFrame.getBytes("COL2"));
+        assertArrayEquals(new byte[]{}, dataFrame.getBytes(1));
+        assertNull(dataFrame.getTime("COL10"));
+        assertNull(dataFrame.getTime(9));
+        assertNull(dataFrame.getDate("COL11"));
+        assertNull(dataFrame.getDate(10));
+        assertNull(dataFrame.getTimestamp("COL12"));
+        assertNull(dataFrame.getTimestamp(11));
+        assertNull(dataFrame.getObject(12));
+        assertNull(dataFrame.getObject(12, BigInteger.class));
+        assertNull(dataFrame.getObject("COL13"));
+        assertNull(dataFrame.getObject("COL13", BigInteger.class));
 
         assertTrue(dataFrame.next());
         assertEquals(3, dataFrame.getObject(0, int.class));
         assertEquals(3, dataFrame.getObject(0, Integer.class));
-        assertEquals(new BigDecimal(3).toBigInteger(), dataFrame.getObject(0, BigInteger.class));
         assertEquals("val3", dataFrame.getObject(1, String.class));
         assertEquals(new String(new byte[]{'v', 'a', 'l', '3'}), new String((byte[])dataFrame.getObject(1, byte[].class)));
         assertEquals(false, dataFrame.getObject(2, boolean.class));
@@ -162,11 +184,11 @@ public class DataFrameTest {
         assertEquals(3f, dataFrame.getObject(7, Float.class));
         assertEquals(3d, dataFrame.getObject(8, double.class));
         assertEquals(3d, dataFrame.getObject(8, Double.class));
-        assertEquals(new BigDecimal("3.0"), dataFrame.getObject(8, BigDecimal.class));
-        assertEquals(new BigDecimal(3).toBigInteger(), dataFrame.getObject(8, BigInteger.class));
         assertEquals("12:34:56", dataFrame.getObject(9, Time.class).toString());
         assertEquals("2020-04-16", dataFrame.getObject(10, Date.class).toString());
         assertEquals("2020-04-16 12:34:56.7", dataFrame.getObject(11, Timestamp.class).toString());
+        assertEquals(new BigDecimal("3.00"), dataFrame.getObject(12, BigDecimal.class));
+        assertEquals(new BigInteger("3"), dataFrame.getObject(12, BigInteger.class));
 
         assertTrue(dataFrame.next());
         assertEquals(4, dataFrame.getObject("COL1", int.class));
@@ -186,13 +208,12 @@ public class DataFrameTest {
         assertEquals(4f, dataFrame.getObject("COL8", Float.class));
         assertEquals(4d, dataFrame.getObject("COL9", double.class));
         assertEquals(4d, dataFrame.getObject("COL9", Double.class));
-        assertEquals(new BigDecimal("4.0"), dataFrame.getObject("COL9", BigDecimal.class));
-        assertEquals(new BigDecimal(4).toBigInteger(), dataFrame.getObject("COL9", BigInteger.class));
         assertEquals("12:34:56", dataFrame.getObject("COL10", Time.class).toString());
         assertEquals("2020-04-16", dataFrame.getObject("COL11", Date.class).toString());
         assertEquals("2020-04-16 12:34:56.7", dataFrame.getObject("COL12", Timestamp.class).toString());
+        assertEquals(new BigDecimal("4.00"), dataFrame.getObject("COL13", BigDecimal.class));
+        assertEquals(new BigInteger("4"), dataFrame.getObject("COL13", BigInteger.class));
 
-        assertTrue(dataFrame.next());
         assertThrows(UnsupportedOperationException.class, () -> dataFrame.getObject(0, Ascii.class));
         assertThrows(UnsupportedOperationException.class, () -> dataFrame.getObject("COL1", Ascii.class));
         assertThrows(UnsupportedOperationException.class, () -> dataFrame.getObject(0, UUID.class));
@@ -256,7 +277,7 @@ public class DataFrameTest {
      */
     @Test
     void columnsTest(){
-        assertEquals(12, dataFrame.ncols());
+        assertEquals(13, dataFrame.ncols());
         assertEquals(0, dataFrame.columnIndex("COL1"));
         assertEquals(5, dataFrame.column(0).size());
 
@@ -265,7 +286,7 @@ public class DataFrameTest {
 
         assertNull(dataFrame.getColumnType("COL"));
 
-        assertEquals(12, dataFrame.getColumns().size());
+        assertEquals(13, dataFrame.getColumns().size());
         assertTrue(dataFrame.getColumns().contains("COL1"));
         assertTrue(dataFrame.getColumns().contains("COL2"));
         assertTrue(dataFrame.getColumns().contains("COL3"));
@@ -278,8 +299,9 @@ public class DataFrameTest {
         assertTrue(dataFrame.getColumns().contains("COL10"));
         assertTrue(dataFrame.getColumns().contains("COL11"));
         assertTrue(dataFrame.getColumns().contains("COL12"));
+        assertTrue(dataFrame.getColumns().contains("COL13"));
 
-        assertEquals(12, dataFrame.getColumnsTypes().size());
+        assertEquals(13, dataFrame.getColumnsTypes().size());
         assertEquals("int", dataFrame.getColumnType("COL1"));
         assertEquals("String", dataFrame.getColumnType("COL2"));
         assertEquals("boolean", dataFrame.getColumnType("COL3"));
@@ -292,6 +314,7 @@ public class DataFrameTest {
         assertEquals("Time[HH:mm[:ss]]", dataFrame.getColumnType("COL10"));
         assertEquals("Date[uuuu-MM-dd]", dataFrame.getColumnType("COL11"));
         assertEquals("DateTime[uuuu-MM-dd'T'HH:mm[:ss]]", dataFrame.getColumnType("COL12"));
+        assertEquals("Decimal", dataFrame.getColumnType("COL13"));
         assertTrue(dataFrame.hasColumn("COL9", double.class));
         assertFalse(dataFrame.hasColumn("COL9", float.class));
 
@@ -324,7 +347,7 @@ public class DataFrameTest {
     void informationTest(){
         assertFalse(dataFrame.isEmpty());
         assertNotNull(dataFrame.schema());
-        assertEquals(12, dataFrame.schema().length());
+        assertEquals(13, dataFrame.schema().length());
         assertFalse(dataFrame.isSpatial());
         assertEquals("smile.data.DataFrame", dataFrame.getLocation());
         assertEquals("DataFrame", dataFrame.getName());
@@ -348,14 +371,14 @@ public class DataFrameTest {
             i++;
             assertEquals(5, baseVector.size());
         }
-        assertEquals(12, i);
+        assertEquals(13, i);
         assertEquals(5, dataFrame.stream().count());
 
         assertEquals(dataFrame.nrows(), dataFrame.getRowCount());
         assertEquals(-1, dataFrame.getRow());
 
         assertEquals(2, dataFrame.getUniqueValues("COL3").size());
-        assertEquals(12, dataFrame.getFirstRow().size());
+        assertEquals(13, dataFrame.getFirstRow().size());
     }
 
     /**
@@ -381,12 +404,12 @@ public class DataFrameTest {
         assertTrue(dataFrame.save(path, null));
         DataFrame df2 = DataFrame.of(new File(path));
         assertNotNull(df2);
-        assertEquals(12, df2.schema().length());
+        assertEquals(13, df2.schema().length());
 
         assertTrue(dataFrame.save(path));
         DataFrame df3 = DataFrame.of(path);
         assertNotNull(df3);
-        assertEquals(12, df3.schema().length());
+        assertEquals(13, df3.schema().length());
 
         assertNull(DataFrame.of("not/ a valid /path"));
         File notCsv = new File(path.substring(0, path.lastIndexOf('.')));
@@ -447,5 +470,75 @@ public class DataFrameTest {
         df = DataFrame.of(h2GIS.getConnection().createStatement().executeQuery("SELECT id FROM h2gis"));
         assertNotNull(df);
         assertNotNull(df.schema());
+    }
+
+    /**
+     * Tests {@link DataFrame#reload()} method.
+     */
+    @Test
+    public void reloadTest(){
+        assertFalse(dataFrame.reload());
+    }
+
+    /**
+     * Tests {@link DataFrame#next()}, {@link DataFrame#previous()}, {@link DataFrame#last()},
+     * {@link DataFrame#first()}, {@link DataFrame#isFirst()}, {@link DataFrame#isLast()}, {@link DataFrame#getRow()}
+     * methods.
+     */
+    @Test
+    public void cursorPositionTest(){
+        assertFalse(dataFrame.isFirst());
+        assertFalse(dataFrame.isLast());
+        assertEquals(-1, dataFrame.getRow());
+
+        assertTrue(dataFrame.first());
+        assertTrue(dataFrame.isFirst());
+        assertFalse(dataFrame.isLast());
+        assertEquals(0, dataFrame.getRow());
+
+        assertTrue(dataFrame.next());
+        assertTrue(dataFrame.next());
+        assertFalse(dataFrame.isFirst());
+        assertFalse(dataFrame.isLast());
+        assertEquals(2, dataFrame.getRow());
+
+        assertTrue(dataFrame.previous());
+        assertFalse(dataFrame.isFirst());
+        assertFalse(dataFrame.isLast());
+        assertEquals(1, dataFrame.getRow());
+
+        assertTrue(dataFrame.first());
+        assertTrue(dataFrame.isFirst());
+        assertFalse(dataFrame.isLast());
+        assertEquals(0, dataFrame.getRow());
+
+        assertFalse(dataFrame.previous());
+        assertTrue(dataFrame.isFirst());
+        assertFalse(dataFrame.isLast());
+        assertEquals(0, dataFrame.getRow());
+
+        assertTrue(dataFrame.last());
+        assertFalse(dataFrame.isFirst());
+        assertTrue(dataFrame.isLast());
+        assertEquals(4, dataFrame.getRow());
+
+        assertFalse(dataFrame.next());
+        assertFalse(dataFrame.isFirst());
+        assertTrue(dataFrame.isLast());
+        assertEquals(4, dataFrame.getRow());
+
+        assertTrue(dataFrame.previous());
+        assertTrue(dataFrame.previous());
+        assertFalse(dataFrame.isFirst());
+        assertFalse(dataFrame.isLast());
+        assertEquals(2, dataFrame.getRow());
+    }
+
+    /**
+     * Tests {@link DataFrame#filter(String)} method.
+     */
+    @Test
+    public void filterTest(){
+        assertThrows(UnsupportedOperationException.class, () -> dataFrame.filter("tata"));
     }
 }

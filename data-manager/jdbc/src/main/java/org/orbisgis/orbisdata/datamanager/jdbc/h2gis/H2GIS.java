@@ -269,4 +269,10 @@ public class H2GIS extends JdbcDataSource {
             return false;
         }
     }
+
+    @Nullable
+    @Override
+    public Object asType(@NotNull Class<?> clazz) {
+        return null;
+    }
 }

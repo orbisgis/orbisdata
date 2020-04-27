@@ -23,4 +23,4 @@ make it compatible with `smile` API)
 + Add `next()` methods on `ITable` interface.
 + Move  `link`, `load`, `save` methods from `IJdbcDataSource` to `IDataSource`.
 + Add `previous()`, `first()`, `last()`, `isFirst()`, `isLast()` methods to `ITable`.
-+ Add `IDataSet<?> filter(String filter)` method to IDataSet.
++ Add `IDataSet<?> filter(String filter)` method to `IDataSet`.

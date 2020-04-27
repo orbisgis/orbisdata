@@ -111,4 +111,8 @@ public interface IDataSet<T> extends Iterable<T> {
      * @return A filtered {@link IDataSet}
      */
     IDataSet<?> filter(String filter);
+
+    @Override
+    @NotNull
+    String toString();
 }

@@ -60,7 +60,9 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.sql.Date;
 import java.sql.*;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -326,12 +328,20 @@ public class DataFrame implements smile.data.DataFrame, ITable<BaseVector> {
 
     @Override
     public Date getDate(int column) {
-        return Date.valueOf(getInternalDataFrame().getDate(getRow(), column));
+        LocalDate date = getInternalDataFrame().getDate(getRow(), column);
+        if(date == null){
+            return null;
+        }
+        return Date.valueOf(date);
     }
 
     @Override
     public Time getTime(int column) {
-        return Time.valueOf(getInternalDataFrame().getTime(getRow(), column));
+        LocalTime time = getInternalDataFrame().getTime(getRow(), column);
+        if(time == null){
+            return null;
+        }
+        return Time.valueOf(time);
     }
 
     @Override
@@ -350,7 +360,7 @@ public class DataFrame implements smile.data.DataFrame, ITable<BaseVector> {
 
     @Override
     public BigDecimal getBigDecimal(int column) {
-        return BigDecimal.valueOf(getDouble(column));
+        return getInternalDataFrame().getDecimal(getRow(), getColumns().get(column));
     }
 
     @Override
@@ -401,12 +411,20 @@ public class DataFrame implements smile.data.DataFrame, ITable<BaseVector> {
 
     @Override
     public Date getDate(@NotNull String column) {
-        return Date.valueOf(getInternalDataFrame().getDate(getRow(), column));
+        LocalDate date = getInternalDataFrame().getDate(getRow(), column);
+        if(date == null){
+            return null;
+        }
+        return Date.valueOf(date);
     }
 
     @Override
     public Time getTime(@NotNull String column) {
-        return Time.valueOf(getInternalDataFrame().getTime(getRow(), column));
+        LocalTime time = getInternalDataFrame().getTime(getRow(), column);
+        if(time == null){
+            return null;
+        }
+        return Time.valueOf(time);
     }
 
     @Override
@@ -425,7 +443,7 @@ public class DataFrame implements smile.data.DataFrame, ITable<BaseVector> {
 
     @Override
     public BigDecimal getBigDecimal(@NotNull String column) {
-        return BigDecimal.valueOf(getDouble(column));
+        return getInternalDataFrame().getDecimal(getRow(), column);
     }
 
     @Override
@@ -519,7 +537,7 @@ public class DataFrame implements smile.data.DataFrame, ITable<BaseVector> {
 
     @Override
     @NotNull
-    public Collection<String> getColumns() {
+    public List<String> getColumns() {
         return Arrays.asList(names());
     }
 
@@ -564,7 +582,7 @@ public class DataFrame implements smile.data.DataFrame, ITable<BaseVector> {
 
     @Override
     public boolean next(){
-        if(row < this.getRowCount()){
+        if(row < this.getRowCount() - 1){
             row++;
             return true;
         }
@@ -644,7 +662,8 @@ public class DataFrame implements smile.data.DataFrame, ITable<BaseVector> {
         for (int i = 0; i < nrows(); i++) {
             List<String> row = new ArrayList<>();
             for (int j = 0; j < ncols(); j++) {
-                row.add(get(i, j).toString());
+                Object obj = get(i, j);
+                row.add(obj == null ? "null" : obj.toString());
             }
             try {
                 writer.write(String.join(",", row) + "\n");
@@ -740,7 +759,8 @@ public class DataFrame implements smile.data.DataFrame, ITable<BaseVector> {
             printer.appendTableLineSeparator();
             for (int i = 0; i < this.size(); i++) {
                 for (int j = 0; j < this.getColumnCount(); j++) {
-                    printer.appendTableValue(this.get(i, j), RIGHT);
+                    Object obj = this.get(i, j);
+                    printer.appendTableValue(obj == null ? "null" : obj.toString(), RIGHT);
                 }
                 printer.appendTableLineSeparator();
             }
@@ -888,6 +908,7 @@ public class DataFrame implements smile.data.DataFrame, ITable<BaseVector> {
         return Tuple.of(row, schema);
     }
 
+    @NotNull
     @Override
     public String toString() {
         return getInternalDataFrame().toString();

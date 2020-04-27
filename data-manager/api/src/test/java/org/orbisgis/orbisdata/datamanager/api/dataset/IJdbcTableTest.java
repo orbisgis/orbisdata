@@ -40,6 +40,7 @@ import groovy.lang.Closure;
 import org.h2gis.utilities.TableLocation;
 import org.junit.jupiter.api.Test;
 import org.orbisgis.commons.annotations.NotNull;
+import org.orbisgis.commons.annotations.Nullable;
 import org.orbisgis.orbisdata.datamanager.api.dsl.IConditionOrOptionBuilder;
 import org.orbisgis.orbisdata.datamanager.api.dsl.IOptionBuilder;
 
@@ -203,6 +204,12 @@ public class IJdbcTableTest {
                 default:
                     return location;
             }
+        }
+
+        @Nullable
+        @Override
+        public Object asType(@NotNull Class<?> clazz) {
+            return null;
         }
     }
 

@@ -36,6 +36,11 @@
  */
 package org.orbisgis.orbisdata.datamanager.api.dataset;
 
+import org.orbisgis.commons.annotations.Nullable;
+import org.orbisgis.commons.printer.Ascii;
+import org.orbisgis.commons.printer.Html;
+import org.orbisgis.commons.printer.ICustomPrinter;
+
 /**
  * Enumeration of the supported databases.
  *
@@ -43,5 +48,24 @@ package org.orbisgis.orbisdata.datamanager.api.dataset;
  * @author Sylvain PALOMINOS (Lab-STICC UBS 2018-2019)
  */
 public enum DataBaseType {
-    H2GIS, POSTGIS, OTHER
+    H2GIS, POSTGIS, OTHER;
+
+    @Nullable
+    public Object asType(Class<?> clazz){
+        if(Html.class.equals(clazz) || Ascii.class.equals(clazz)){
+            ICustomPrinter printer;
+            if(clazz == Html.class){
+                printer = new Html();
+            }
+            else{
+                printer = new Ascii();
+            }
+            printer.appendValue(toString());
+            return printer;
+        }
+        else if(String.class.equals(clazz)){
+            return toString();
+        }
+        return null;
+    }
 }

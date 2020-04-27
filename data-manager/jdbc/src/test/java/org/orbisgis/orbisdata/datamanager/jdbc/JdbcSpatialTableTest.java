@@ -46,6 +46,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.orbisgis.commons.annotations.NotNull;
+import org.orbisgis.commons.annotations.Nullable;
 import org.orbisgis.orbisdata.datamanager.api.dataset.DataBaseType;
 import org.orbisgis.orbisdata.datamanager.api.dataset.IJdbcSpatialTable;
 import org.orbisgis.orbisdata.datamanager.api.dataset.IJdbcTable;
@@ -327,6 +328,12 @@ public class JdbcSpatialTableTest {
 
         @Override
         public IJdbcTable getDataSet(@NotNull String name) {
+            return null;
+        }
+
+        @Nullable
+        @Override
+        public Object asType(@NotNull Class<?> clazz) {
             return null;
         }
 

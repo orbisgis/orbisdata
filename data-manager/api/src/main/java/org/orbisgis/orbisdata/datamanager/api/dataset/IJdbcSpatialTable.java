@@ -36,11 +36,16 @@
  */
 package org.orbisgis.orbisdata.datamanager.api.dataset;
 
+import java.sql.ResultSet;
+
 /**
  * Extension of the {@link IJdbcTable} and {@link ISpatialTable} interfaces.
  *
  * @author Erwan Bocher (CNRS)
  * @author Sylvain PALOMINOS (Lab-STICC UBS 2019)
  */
-public interface IJdbcSpatialTable extends IJdbcTable, ISpatialTable<Object> {
+public interface IJdbcSpatialTable extends IJdbcTable, ISpatialTable<ResultSet, ResultSet> {
+
+    @Override
+    IJdbcSpatialTable filter(String filter);
 }

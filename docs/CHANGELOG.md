@@ -24,3 +24,5 @@ make it compatible with `smile` API)
 + Move  `link`, `load`, `save` methods from `IJdbcDataSource` to `IDataSource`.
 + Add `previous()`, `first()`, `last()`, `isFirst()`, `isLast()` methods to `ITable`.
 + Add `IDataSet<?> filter(String filter)` method to `IDataSet`.
++ Add `stream()` method to `IDataSet`.
++ Make `IDataSet` have two value parameter : one for the iterator, a second for the stream.

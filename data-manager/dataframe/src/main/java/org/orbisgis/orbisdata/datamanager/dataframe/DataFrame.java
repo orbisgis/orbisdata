@@ -76,7 +76,7 @@ import static org.orbisgis.commons.printer.ICustomPrinter.CellPosition.RIGHT;
  *
  * @author Sylvain PALOMINOS (UBS LAB-STICC 2019-2020)
  */
-public class DataFrame implements smile.data.DataFrame, ITable<BaseVector> {
+public class DataFrame implements smile.data.DataFrame, ITable<BaseVector, Tuple> {
 
     /**
      * Logger
@@ -704,7 +704,7 @@ public class DataFrame implements smile.data.DataFrame, ITable<BaseVector> {
 
     @Override
     @Nullable
-    public ITable<?> filter(String filter) {
+    public ITable filter(String filter) {
         throw new UnsupportedOperationException();
     }
 

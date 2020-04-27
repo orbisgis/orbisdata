@@ -43,6 +43,8 @@ import org.orbisgis.commons.annotations.Nullable;
 import org.orbisgis.orbisdata.datamanager.api.dataset.ISpatialTable;
 import org.orbisgis.orbisdata.datamanager.api.dataset.ITable;
 
+import java.sql.ResultSet;
+
 /**
  * Define the methods use to get the result of a SQL request built throw the {@link org.orbisgis.orbisdata.datamanager.api.dsl}
  * package interfaces.
@@ -74,7 +76,7 @@ public interface IBuilderResult {
      * @return The {@link ITable} representing the result of the SQL query.
      */
     @Nullable
-    ITable<?> getTable();
+    ITable<ResultSet, ResultSet> getTable();
 
     /**
      * Return the {@link ISpatialTable} representing the result of the SQL query.
@@ -82,7 +84,7 @@ public interface IBuilderResult {
      * @return The {@link ISpatialTable} representing the result of the SQL query.
      */
     @Nullable
-    ISpatialTable<?> getSpatialTable();
+    ISpatialTable<ResultSet, ResultSet> getSpatialTable();
 
     @Override
     @NotNull

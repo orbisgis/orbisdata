@@ -49,6 +49,8 @@ import org.orbisgis.orbisdata.datamanager.jdbc.h2gis.H2GIS
 
 import java.sql.SQLException
 import java.sql.Time
+import java.util.stream.Collector
+import java.util.stream.Collectors
 
 import static org.junit.jupiter.api.Assertions.*
 import static org.orbisgis.orbisdata.datamanager.api.dsl.IOptionBuilder.Order.DESC
@@ -695,5 +697,44 @@ class GroovyH2GISTest {
         assertEquals 2, queryTable.rowCount
         assertEquals 4326, queryTable.srid
         assertTrue queryTable.getFirstRow()[1] instanceof MultiPolygon
+    }
+
+    /*
+    sql.withStream('...') { stream ->
+    stream.collectMany { row ->
+        [row.col_a + row.col_b, row.col_c * 2]
+    }.collect {
+        it < 10 ? it * 10 : it + 10
+    }.findAll {
+        it % 2 == 0
+    }.toList()
+}
+     */
+    @Test
+    void streamTest(){
+        def h2GIS = H2GIS.open('./target/orbisgis')
+        h2GIS.execute("""
+                DROP TABLE IF EXISTS orbisgis;
+                CREATE TABLE orbisgis (id int, the_geom geometry(point), very_long_title_to_test_size_limits varchar);
+                INSERT INTO orbisgis VALUES (1, 'POINT(10 10)'::GEOMETRY, 'just a string'), 
+                                            (2, 'POINT(1 1)'::GEOMETRY, 'another string'), 
+                                            (3, 'POINT(0 2.36)'::GEOMETRY, 'a last very, very long string');
+        """)
+        String str = h2GIS.getTable("orbisgis")
+                .stream()
+                .map {
+                    rs ->
+                        rs.getObject("THE_GEOM").toString()}
+                .collect(Collectors.joining(";"))
+        assertEquals("POINT (10 10);POINT (1 1);POINT (0 2.36)", str)
+
+
+        String str2 = h2GIS.getTable("orbisgis")
+                .stream() //Get the stream
+                .map { [it.getInt(1), it.getString(3)] } //Get the first and third columns as array
+                .map { [it[0], it[1].size() > 15 ? it[1][0..12]+"..." : it[1]] } // Reduce the string to 15 char and add '...' if needed
+                .filter{ it[0]%2 == 1 } //Filter only the odd id row
+                .collect(Collectors.toList()) //Gather data into a list
+        assertEquals("[[1, just a string], [3, a last very, ...]]", str2)
     }
 }

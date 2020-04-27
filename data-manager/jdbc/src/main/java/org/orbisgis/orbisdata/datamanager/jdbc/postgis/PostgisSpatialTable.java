@@ -108,7 +108,7 @@ public class PostgisSpatialTable extends JdbcSpatialTable {
     }
 
     @Override
-    public ISpatialTable<Object> reproject(int srid) {
+    public ISpatialTable reproject(int srid) {
         try {
             ResultSetMetaData meta = getMetaData();
             if(meta == null){

@@ -341,7 +341,7 @@ public abstract class JdbcSpatialTable extends JdbcTable implements IJdbcSpatial
 
     @Override
     @Nullable
-    public ISpatialTable<?> filter(String filter) {
-        return where(filter).getSpatialTable();
+    public JdbcSpatialTable filter(String filter) {
+        return (JdbcSpatialTable)where(filter).getSpatialTable();
     }
 }

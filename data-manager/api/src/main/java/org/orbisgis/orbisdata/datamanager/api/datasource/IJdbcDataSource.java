@@ -50,6 +50,7 @@ import java.io.File;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URL;
+import java.sql.ResultSet;
 import java.util.Collection;
 import java.util.Map;
 
@@ -59,7 +60,7 @@ import java.util.Map;
  * @author Erwan Bocher (CNRS)
  * @author Sylvain PALOMINOS (Lab-STICC UBS 2018-2019)
  */
-public interface IJdbcDataSource extends IDataSource<Object>, GroovyObject, DataSource {
+public interface IJdbcDataSource extends IDataSource<ResultSet>, GroovyObject, DataSource {
 
     /**
      * Close the underlying database.

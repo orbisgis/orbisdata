@@ -778,6 +778,50 @@ class JdbcDataSourceTest {
     }
 
     /**
+     * Test the {@link JdbcDataSource#getColumnNames(String)} method.
+     */
+    @Test
+    void testGetColumnNames() {
+        Collection<String> names = ds1.getColumnNames("JDBCDATASOURCETEST.PUBLIC.TEST");
+        assertNotNull(names);
+        assertEquals(3, names.size());
+        assertTrue(names.contains("ID"));
+        assertTrue(names.contains("THE_GEOM"));
+        assertTrue(names.contains("TEXT"));
+        names = ds1.getColumnNames("PUBLIC.TEST");
+        assertNotNull(names);
+        assertEquals(3, names.size());
+        assertTrue(names.contains("ID"));
+        assertTrue(names.contains("THE_GEOM"));
+        assertTrue(names.contains("TEXT"));
+        names = ds1.getColumnNames("TEST");
+        assertNotNull(names);
+        assertEquals(3, names.size());
+        assertTrue(names.contains("ID"));
+        assertTrue(names.contains("THE_GEOM"));
+        assertTrue(names.contains("TEXT"));
+
+        names = ds2.getColumnNames("JDBCDATASOURCETEST.PUBLIC.TEST");
+        assertNotNull(names);
+        assertEquals(3, names.size());
+        assertTrue(names.contains("ID"));
+        assertTrue(names.contains("THE_GEOM"));
+        assertTrue(names.contains("TEXT"));
+        names = ds2.getColumnNames("PUBLIC.TEST");
+        assertNotNull(names);
+        assertEquals(3, names.size());
+        assertTrue(names.contains("ID"));
+        assertTrue(names.contains("THE_GEOM"));
+        assertTrue(names.contains("TEXT"));
+        names = ds2.getColumnNames("TEST");
+        assertNotNull(names);
+        assertEquals(3, names.size());
+        assertTrue(names.contains("ID"));
+        assertTrue(names.contains("THE_GEOM"));
+        assertTrue(names.contains("TEXT"));
+    }
+
+    /**
      * Test the {@link JdbcDataSource#hasTable(String)} method.
      */
     @Test

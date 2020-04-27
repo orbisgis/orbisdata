@@ -708,6 +708,17 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, ISe
     }
 
     @Override
+    @Nullable
+    public Collection<String> getColumnNames(String location){
+        try {
+            return JDBCUtilities.getFieldNames(getConnection().getMetaData(), location);
+        } catch (SQLException e) {
+            LOGGER.error("Unable to get the column names of the table " + location + ".", e);
+            return null;
+        }
+    }
+
+    @Override
     public IJdbcTable getDataSet(@NotNull String dataSetName) {
         List<String> geomFields;
         try {

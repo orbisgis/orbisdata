@@ -567,7 +567,7 @@ public abstract class JdbcTable extends DefaultResultSet implements IJdbcTable, 
     }
 
     @Nullable
-    private String getQuery(String... columns) {
+    protected String getQuery(String... columns) {
         TableLocation loc = getTableLocation();
         if(loc == null){
             return null;
@@ -577,12 +577,12 @@ public abstract class JdbcTable extends DefaultResultSet implements IJdbcTable, 
 
     @Override
     @NotNull
-    public IJdbcTable columns(@NotNull String... columns) {
+    public JdbcTable columns(@NotNull String... columns) {
         WhereBuilder builder = new WhereBuilder(getQuery(columns), getJdbcDataSource());
         if (isSpatial()) {
-            return (IJdbcTable) builder.getSpatialTable();
+            return (JdbcTable) builder.getSpatialTable();
         } else {
-            return (IJdbcTable) builder.getTable();
+            return (JdbcTable) builder.getTable();
         }
     }
 

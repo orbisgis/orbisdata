@@ -175,4 +175,12 @@ public interface ISpatialTable<T, U> extends ITable<T, U> {
 
     @Override
     ISpatialTable<T, U> filter(String filter);
+
+    @NotNull
+    @Override
+    ISpatialTable<T, U> columns(@NotNull String... columns);
+
+    @NotNull
+    @Override
+    ISpatialTable<T, U> columns(@NotNull List<String> columns);
 }

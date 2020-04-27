@@ -36,7 +36,10 @@
  */
 package org.orbisgis.orbisdata.datamanager.api.dataset;
 
+import org.orbisgis.commons.annotations.NotNull;
+
 import java.sql.ResultSet;
+import java.util.List;
 
 /**
  * Extension of the {@link IJdbcTable} and {@link ISpatialTable} interfaces.
@@ -48,4 +51,12 @@ public interface IJdbcSpatialTable extends IJdbcTable, ISpatialTable<ResultSet, 
 
     @Override
     IJdbcSpatialTable filter(String filter);
+
+    @Override
+    @NotNull
+    IJdbcSpatialTable columns(@NotNull String... columns);
+
+    @Override
+    @NotNull
+    IJdbcSpatialTable columns(@NotNull List<String> columns);
 }

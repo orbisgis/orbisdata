@@ -49,7 +49,10 @@ import org.orbisgis.commons.annotations.Nullable;
 import org.orbisgis.commons.printer.Ascii;
 import org.orbisgis.commons.printer.Html;
 import org.orbisgis.commons.printer.ICustomPrinter;
-import org.orbisgis.orbisdata.datamanager.api.dataset.*;
+import org.orbisgis.orbisdata.datamanager.api.dataset.DataBaseType;
+import org.orbisgis.orbisdata.datamanager.api.dataset.IJdbcSpatialTable;
+import org.orbisgis.orbisdata.datamanager.api.dataset.IJdbcTable;
+import org.orbisgis.orbisdata.datamanager.api.dataset.ITable;
 import org.orbisgis.orbisdata.datamanager.api.dsl.IConditionOrOptionBuilder;
 import org.orbisgis.orbisdata.datamanager.api.dsl.IOptionBuilder;
 import org.orbisgis.orbisdata.datamanager.jdbc.dsl.OptionBuilder;
@@ -60,7 +63,6 @@ import org.slf4j.LoggerFactory;
 
 import java.sql.*;
 import java.util.*;
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 

@@ -43,12 +43,13 @@ import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
 import org.orbisgis.commons.annotations.NotNull;
 import org.orbisgis.commons.annotations.Nullable;
-import org.orbisgis.orbisdata.datamanager.api.dataset.*;
+import org.orbisgis.orbisdata.datamanager.api.dataset.DataBaseType;
+import org.orbisgis.orbisdata.datamanager.api.dataset.IJdbcSpatialTable;
+import org.orbisgis.orbisdata.datamanager.api.dataset.IRaster;
 import org.orbisgis.orbisdata.datamanager.jdbc.dsl.WhereBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.security.InvalidParameterException;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -354,7 +355,7 @@ public abstract class JdbcSpatialTable extends JdbcTable implements IJdbcSpatial
         if (isSpatial()) {
             return (JdbcSpatialTable) builder.getSpatialTable();
         } else {
-            throw new InvalidParameterException("A ISpatialTable should keep at least on spatial field.");
+            throw new IllegalArgumentException("A ISpatialTable should keep at least on spatial field.");
         }
     }
 
@@ -365,7 +366,7 @@ public abstract class JdbcSpatialTable extends JdbcTable implements IJdbcSpatial
         if (isSpatial()) {
             return (JdbcSpatialTable) builder.getSpatialTable();
         } else {
-            throw new InvalidParameterException("A ISpatialTable should keep at least on spatial field.");
+            throw new IllegalArgumentException("A ISpatialTable should keep at least on spatial field.");
         }
     }
 }

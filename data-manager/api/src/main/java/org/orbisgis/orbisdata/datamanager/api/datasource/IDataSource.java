@@ -39,8 +39,6 @@ package org.orbisgis.orbisdata.datamanager.api.datasource;
 import org.orbisgis.commons.annotations.NotNull;
 import org.orbisgis.commons.annotations.Nullable;
 import org.orbisgis.orbisdata.datamanager.api.dataset.IDataSet;
-import org.orbisgis.orbisdata.datamanager.api.dataset.IDataSet;
-import org.orbisgis.orbisdata.datamanager.api.dataset.IDataSet;
 
 import java.io.File;
 import java.net.URI;

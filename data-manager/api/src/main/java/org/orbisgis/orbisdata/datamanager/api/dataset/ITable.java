@@ -42,12 +42,12 @@ import org.orbisgis.commons.annotations.Nullable;
 
 import java.math.BigDecimal;
 import java.sql.Date;
-import java.sql.SQLException;
 import java.sql.Time;
 import java.sql.Timestamp;
-import java.util.*;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
 
 /**
  * Extension of the {@link IDataSet} interface. A {@link ITable} is a 2D (column/line) representation of raw data.

@@ -41,7 +41,6 @@ import org.locationtech.jts.geom.Geometry;
 import org.orbisgis.commons.annotations.NotNull;
 import org.orbisgis.commons.annotations.Nullable;
 
-import java.sql.ResultSet;
 import java.util.List;
 import java.util.Map;
 

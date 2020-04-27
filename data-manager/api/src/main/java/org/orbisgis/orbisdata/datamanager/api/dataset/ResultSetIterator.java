@@ -36,14 +36,14 @@
  */
 package org.orbisgis.orbisdata.datamanager.api.dataset;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.Iterator;
-
 import org.orbisgis.commons.annotations.NotNull;
 import org.orbisgis.commons.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.Iterator;
 
 /**
  * Iterator dedicated to the iteration on a {@link ResultSet}.

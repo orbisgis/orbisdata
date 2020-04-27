@@ -60,7 +60,6 @@ import org.orbisgis.commons.printer.Html;
 import org.orbisgis.orbisdata.datamanager.api.dataset.*;
 import org.orbisgis.orbisdata.datamanager.api.dsl.IOptionBuilder;
 import org.orbisgis.orbisdata.datamanager.jdbc.h2gis.H2gisSpatialTable;
-import org.orbisgis.orbisdata.datamanager.jdbc.h2gis.H2gisTable;
 
 import java.io.File;
 import java.sql.Connection;

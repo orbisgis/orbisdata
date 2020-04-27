@@ -36,7 +36,6 @@
  */
 package org.orbisgis.orbisdata.datamanager.jdbc
 
-
 import org.junit.jupiter.api.Test
 import org.locationtech.jts.geom.Geometry
 import org.locationtech.jts.geom.MultiPolygon
@@ -49,7 +48,6 @@ import org.orbisgis.orbisdata.datamanager.jdbc.h2gis.H2GIS
 
 import java.sql.SQLException
 import java.sql.Time
-import java.util.stream.Collector
 import java.util.stream.Collectors
 
 import static org.junit.jupiter.api.Assertions.*

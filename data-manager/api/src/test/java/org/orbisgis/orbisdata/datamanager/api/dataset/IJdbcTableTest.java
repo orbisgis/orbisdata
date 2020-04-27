@@ -37,7 +37,6 @@
 package org.orbisgis.orbisdata.datamanager.api.dataset;
 
 import groovy.lang.Closure;
-import org.h2gis.utilities.TableLocation;
 import org.junit.jupiter.api.Test;
 import org.orbisgis.commons.annotations.NotNull;
 import org.orbisgis.commons.annotations.Nullable;

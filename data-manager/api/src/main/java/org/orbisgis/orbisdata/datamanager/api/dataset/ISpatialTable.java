@@ -41,7 +41,6 @@ import org.locationtech.jts.geom.Geometry;
 import org.orbisgis.commons.annotations.NotNull;
 import org.orbisgis.commons.annotations.Nullable;
 
-import java.sql.ResultSet;
 import java.util.List;
 import java.util.Map;
 
@@ -175,4 +174,12 @@ public interface ISpatialTable<T, U> extends ITable<T, U> {
 
     @Override
     ISpatialTable<T, U> filter(String filter);
+
+    @NotNull
+    @Override
+    ISpatialTable<T, U> columns(@NotNull String... columns);
+
+    @NotNull
+    @Override
+    ISpatialTable<T, U> columns(@NotNull List<String> columns);
 }

@@ -42,9 +42,6 @@ import org.junit.jupiter.api.Test;
 import org.orbisgis.commons.printer.Ascii;
 import org.orbisgis.commons.printer.Html;
 import org.orbisgis.orbisdata.datamanager.jdbc.h2gis.H2GIS;
-import smile.data.AbstractTuple;
-import smile.data.Tuple;
-import smile.data.type.StructType;
 import smile.data.vector.BaseVector;
 import smile.math.matrix.DenseMatrix;
 
@@ -57,7 +54,8 @@ import java.sql.SQLException;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.Arrays;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.orbisgis.orbisdata.datamanager.dataframe.TestUtils.RANDOM_DS;

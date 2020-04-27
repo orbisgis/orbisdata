@@ -43,7 +43,10 @@ import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
 import org.orbisgis.commons.annotations.NotNull;
 import org.orbisgis.commons.annotations.Nullable;
-import org.orbisgis.orbisdata.datamanager.api.dataset.*;
+import org.orbisgis.orbisdata.datamanager.api.dataset.DataBaseType;
+import org.orbisgis.orbisdata.datamanager.api.dataset.IJdbcSpatialTable;
+import org.orbisgis.orbisdata.datamanager.api.dataset.IRaster;
+import org.orbisgis.orbisdata.datamanager.jdbc.dsl.WhereBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -343,5 +346,27 @@ public abstract class JdbcSpatialTable extends JdbcTable implements IJdbcSpatial
     @Nullable
     public JdbcSpatialTable filter(String filter) {
         return (JdbcSpatialTable)where(filter).getSpatialTable();
+    }
+
+    @Override
+    @NotNull
+    public JdbcSpatialTable columns(@NotNull String... columns) {
+        WhereBuilder builder = new WhereBuilder(getQuery(columns), getJdbcDataSource());
+        if (isSpatial()) {
+            return (JdbcSpatialTable) builder.getSpatialTable();
+        } else {
+            throw new IllegalArgumentException("A ISpatialTable should keep at least on spatial field.");
+        }
+    }
+
+    @Override
+    @NotNull
+    public JdbcSpatialTable columns(@NotNull List<String> columns) {
+        WhereBuilder builder = new WhereBuilder(getQuery(columns.toArray(new String[0])), getJdbcDataSource());
+        if (isSpatial()) {
+            return (JdbcSpatialTable) builder.getSpatialTable();
+        } else {
+            throw new IllegalArgumentException("A ISpatialTable should keep at least on spatial field.");
+        }
     }
 }

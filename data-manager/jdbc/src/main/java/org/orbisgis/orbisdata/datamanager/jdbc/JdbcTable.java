@@ -49,7 +49,10 @@ import org.orbisgis.commons.annotations.Nullable;
 import org.orbisgis.commons.printer.Ascii;
 import org.orbisgis.commons.printer.Html;
 import org.orbisgis.commons.printer.ICustomPrinter;
-import org.orbisgis.orbisdata.datamanager.api.dataset.*;
+import org.orbisgis.orbisdata.datamanager.api.dataset.DataBaseType;
+import org.orbisgis.orbisdata.datamanager.api.dataset.IJdbcSpatialTable;
+import org.orbisgis.orbisdata.datamanager.api.dataset.IJdbcTable;
+import org.orbisgis.orbisdata.datamanager.api.dataset.ITable;
 import org.orbisgis.orbisdata.datamanager.api.dsl.IConditionOrOptionBuilder;
 import org.orbisgis.orbisdata.datamanager.api.dsl.IOptionBuilder;
 import org.orbisgis.orbisdata.datamanager.jdbc.dsl.OptionBuilder;
@@ -60,7 +63,6 @@ import org.slf4j.LoggerFactory;
 
 import java.sql.*;
 import java.util.*;
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -567,7 +569,7 @@ public abstract class JdbcTable extends DefaultResultSet implements IJdbcTable, 
     }
 
     @Nullable
-    private String getQuery(String... columns) {
+    protected String getQuery(String... columns) {
         TableLocation loc = getTableLocation();
         if(loc == null){
             return null;
@@ -577,12 +579,12 @@ public abstract class JdbcTable extends DefaultResultSet implements IJdbcTable, 
 
     @Override
     @NotNull
-    public IJdbcTable columns(@NotNull String... columns) {
+    public JdbcTable columns(@NotNull String... columns) {
         WhereBuilder builder = new WhereBuilder(getQuery(columns), getJdbcDataSource());
         if (isSpatial()) {
-            return (IJdbcTable) builder.getSpatialTable();
+            return (JdbcTable) builder.getSpatialTable();
         } else {
-            return (IJdbcTable) builder.getTable();
+            return (JdbcTable) builder.getTable();
         }
     }
 

@@ -699,17 +699,6 @@ class GroovyH2GISTest {
         assertTrue queryTable.getFirstRow()[1] instanceof MultiPolygon
     }
 
-    /*
-    sql.withStream('...') { stream ->
-    stream.collectMany { row ->
-        [row.col_a + row.col_b, row.col_c * 2]
-    }.collect {
-        it < 10 ? it * 10 : it + 10
-    }.findAll {
-        it % 2 == 0
-    }.toList()
-}
-     */
     @Test
     void streamTest(){
         def h2GIS = H2GIS.open('./target/orbisgis')

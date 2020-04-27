@@ -709,6 +709,21 @@ public class DataFrame implements smile.data.DataFrame, ITable<BaseVector, Tuple
     }
 
     @Override
+    @NotNull
+    public Map<String, Object> firstRow() {
+        Map<String, Object> map = new HashMap<>();
+        if(first()){
+            for(String column : getColumns()){
+                map.put(column, getObject(column));
+            }
+        }
+        else{
+            LOGGER.error("Unable to go to the first row.");
+        }
+        return map;
+    }
+
+    @Override
     public boolean isSpatial() {
         return false;
     }

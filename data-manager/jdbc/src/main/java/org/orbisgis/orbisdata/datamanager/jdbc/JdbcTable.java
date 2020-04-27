@@ -552,6 +552,29 @@ public abstract class JdbcTable extends DefaultResultSet implements IJdbcTable, 
     }
 
     @Override
+    @NotNull
+    public Map<String, Object> firstRow() {
+        Map<String, Object> map = new HashMap<>();
+        if(isEmpty()){
+            return map;
+        }
+        ResultSet rs = getResultSetLimit(1);
+        try {
+            rs.next();
+        } catch (SQLException e) {
+            LOGGER.error("Unable to get first row.", e);
+        }
+        for(String column : getColumns()){
+            try {
+                map.put(column, rs.getObject(column));
+            } catch (SQLException e) {
+                LOGGER.error("Unable to get data from first row.", e);
+            }
+        }
+        return map;
+    }
+
+    @Override
     public boolean save(@NotNull String filePath, String encoding) {
         try {
             String toSave = getTableLocation() == null ? "(" + getBaseQuery() + ")" : getTableLocation().toString(getDbType());

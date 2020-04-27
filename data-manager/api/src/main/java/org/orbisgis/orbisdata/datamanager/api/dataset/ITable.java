@@ -541,8 +541,12 @@ public interface ITable<T, U> extends IMatrix<T, U> {
      *
      * @return A {@link Stream} of {@link T} objects.
      */
+    @Nullable
     Stream<U> stream();
 
     @Override
     ITable<T, U> filter(String filter);
+
+    @NotNull
+    Map<String, Object> firstRow();
 }

@@ -252,6 +252,94 @@ class JdbcTableTest {
             }
         }).collect(Collectors.joining(" ; "));
         assertEquals("POINT (0 0) ; POINT (0 1)", str);
+
+        str = getTempTable().stream().map(resultSet -> {
+            try {
+                return resultSet.getObject(COL_THE_GEOM).toString();
+            } catch (SQLException throwables) {
+                throwables.printStackTrace();
+                return "";
+            }
+        }).collect(Collectors.joining(" ; "));
+        assertEquals("", str);
+
+        str = getBuiltTable().stream().map(resultSet -> {
+            try {
+                return resultSet.getObject(COL_THE_GEOM).toString();
+            } catch (SQLException throwables) {
+                throwables.printStackTrace();
+                return "";
+            }
+        }).collect(Collectors.joining(" ; "));
+        assertEquals("POINT (0 0) ; POINT (0 1)", str);
+
+        str = getEmptyTable().stream().map(resultSet -> {
+            try {
+                return resultSet.getObject(COL_THE_GEOM).toString();
+            } catch (SQLException throwables) {
+                throwables.printStackTrace();
+                return "";
+            }
+        }).collect(Collectors.joining(" ; "));
+        assertEquals("", str);
+
+        str = getLinkedTable().stream().map(resultSet -> {
+            try {
+                return resultSet.getObject(COL_THE_GEOM).toString();
+            } catch (SQLException throwables) {
+                throwables.printStackTrace();
+                return "";
+            }
+        }).collect(Collectors.joining(" ; "));
+        assertEquals("POINT (0 0) ; POINT (0 1)", str);
+    }
+
+    @Test
+    void firstRowTest(){
+        Map<String, Object> map = getTable().firstRow();
+        assertEquals(5, map.size());
+        assertTrue(map.containsKey(COL_ID));
+        assertEquals(1, map.get(COL_ID));
+        assertTrue(map.containsKey(COL_THE_GEOM));
+        assertEquals("POINT (0 0)", map.get(COL_THE_GEOM).toString());
+        assertTrue(map.containsKey(COL_THE_GEOM2.toUpperCase()));
+        assertEquals("POINT (1 1)", map.get(COL_THE_GEOM2.toUpperCase()).toString());
+        assertTrue(map.containsKey(COL_VALUE));
+        assertEquals("2.3", map.get(COL_VALUE).toString());
+        assertTrue(map.containsKey(COL_MEANING));
+        assertEquals("Simple points", map.get(COL_MEANING));
+
+        map = getLinkedTable().firstRow();
+        assertEquals(5, map.size());
+        assertTrue(map.containsKey(COL_ID));
+        assertEquals(1, map.get(COL_ID));
+        assertTrue(map.containsKey(COL_THE_GEOM));
+        assertEquals("POINT (0 0)", map.get(COL_THE_GEOM).toString());
+        assertTrue(map.containsKey(COL_THE_GEOM2.toUpperCase()));
+        assertEquals("POINT (1 1)", map.get(COL_THE_GEOM2.toUpperCase()).toString());
+        assertTrue(map.containsKey(COL_VALUE));
+        assertEquals("2.3", map.get(COL_VALUE).toString());
+        assertTrue(map.containsKey(COL_MEANING));
+        assertEquals("Simple points", map.get(COL_MEANING));
+
+        map = getBuiltTable().firstRow();
+        assertEquals(5, map.size());
+        assertTrue(map.containsKey(COL_ID));
+        assertEquals(1, map.get(COL_ID));
+        assertTrue(map.containsKey(COL_THE_GEOM));
+        assertEquals("POINT (0 0)", map.get(COL_THE_GEOM).toString());
+        assertTrue(map.containsKey(COL_THE_GEOM2.toUpperCase()));
+        assertEquals("POINT (1 1)", map.get(COL_THE_GEOM2.toUpperCase()).toString());
+        assertTrue(map.containsKey(COL_VALUE));
+        assertEquals("2.3", map.get(COL_VALUE).toString());
+        assertTrue(map.containsKey(COL_MEANING));
+        assertEquals("Simple points", map.get(COL_MEANING));
+
+        map = getTempTable().firstRow();
+        assertTrue(map.isEmpty());
+
+        map = getEmptyTable().firstRow();
+        assertTrue(map.isEmpty());
     }
 
 

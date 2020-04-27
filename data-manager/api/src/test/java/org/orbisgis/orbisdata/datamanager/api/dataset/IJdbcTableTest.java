@@ -314,6 +314,12 @@ public class IJdbcTableTest {
             return null;
         }
 
+        @NotNull
+        @Override
+        public Map<String, Object> firstRow() {
+            return null;
+        }
+
         @Override
         public boolean next() throws SQLException {
             if (!sqlException) {

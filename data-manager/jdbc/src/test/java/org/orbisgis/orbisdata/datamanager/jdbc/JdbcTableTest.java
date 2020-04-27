@@ -54,6 +54,7 @@ import org.junit.jupiter.api.Test;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.Point;
 import org.orbisgis.commons.annotations.NotNull;
+import org.orbisgis.commons.annotations.Nullable;
 import org.orbisgis.commons.printer.Ascii;
 import org.orbisgis.commons.printer.Html;
 import org.orbisgis.orbisdata.datamanager.api.dataset.*;
@@ -897,6 +898,12 @@ class JdbcTableTest {
             return null;
         }
 
+        @Nullable
+        @Override
+        public Object asType(@NotNull Class<?> clazz) {
+            return null;
+        }
+
         @Override
         public boolean hasTable(@NotNull String tableName) {
             try {
@@ -904,6 +911,11 @@ class JdbcTableTest {
             } catch (SQLException ex) {
                 return false;
             }
+        }
+
+        @Override
+        public boolean executeScript(@NotNull String fileName) {
+            return false;
         }
     }
 

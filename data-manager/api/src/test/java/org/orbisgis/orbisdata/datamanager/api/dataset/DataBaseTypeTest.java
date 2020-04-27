@@ -37,8 +37,13 @@
 package org.orbisgis.orbisdata.datamanager.api.dataset;
 
 import org.junit.jupiter.api.Test;
+import org.orbisgis.commons.printer.Ascii;
+import org.orbisgis.commons.printer.Html;
+
+import java.util.Date;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 /**
  * Test class dedicated to the {@link DataBaseType} enum.
@@ -53,5 +58,31 @@ public class DataBaseTypeTest {
         assertEquals("H2GIS", DataBaseType.H2GIS.name());
         assertEquals("POSTGIS", DataBaseType.POSTGIS.name());
         assertEquals("OTHER", DataBaseType.OTHER.name());
+    }
+
+    @Test
+    public void toStringTest(){
+        assertEquals("H2GIS", DataBaseType.H2GIS.toString());
+        assertEquals("POSTGIS", DataBaseType.POSTGIS.toString());
+        assertEquals("OTHER", DataBaseType.OTHER.toString());
+    }
+
+    @Test
+    public void asTypeTest(){
+        assertEquals("H2GIS", DataBaseType.H2GIS.asType(String.class));
+        assertEquals("POSTGIS", DataBaseType.POSTGIS.asType(String.class));
+        assertEquals("OTHER", DataBaseType.OTHER.asType(String.class));
+
+        assertEquals("H2GIS\n", DataBaseType.H2GIS.asType(Ascii.class).toString());
+        assertEquals("POSTGIS\n", DataBaseType.POSTGIS.asType(Ascii.class).toString());
+        assertEquals("OTHER\n", DataBaseType.OTHER.asType(Ascii.class).toString());
+
+        assertEquals("<p>H2GIS</p>\n", DataBaseType.H2GIS.asType(Html.class).toString());
+        assertEquals("<p>POSTGIS</p>\n", DataBaseType.POSTGIS.asType(Html.class).toString());
+        assertEquals("<p>OTHER</p>\n", DataBaseType.OTHER.asType(Html.class).toString());
+
+        assertNull( DataBaseType.H2GIS.asType(Date.class));
+        assertNull(DataBaseType.POSTGIS.asType(Date.class));
+        assertNull(DataBaseType.OTHER.asType(Date.class));
     }
 }

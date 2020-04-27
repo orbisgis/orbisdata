@@ -87,4 +87,17 @@ public interface ITableLocation {
      */
     @NotNull
     String toString(@NotNull DataBaseType type);
+
+    /**
+     * Convert the current object into another with the given class.
+     *
+     * @param clazz New class of the result.
+     * @return The current object into an other class.
+     */
+    @Nullable
+    Object asType(@NotNull Class<?> clazz);
+
+    @Override
+    @NotNull
+    String toString();
 }

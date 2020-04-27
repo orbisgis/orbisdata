@@ -137,6 +137,7 @@ public abstract class BuilderResult implements IBuilderResult {
         return null;
     }
 
+    @NotNull
     @Override
     public String toString() {
         return getQuery();

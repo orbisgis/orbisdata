@@ -44,6 +44,7 @@ import org.h2gis.utilities.wrapper.SpatialResultSetImpl;
 import org.h2gis.utilities.wrapper.StatementWrapper;
 import org.junit.jupiter.api.Test;
 import org.orbisgis.commons.annotations.NotNull;
+import org.orbisgis.commons.annotations.Nullable;
 import org.orbisgis.commons.printer.Ascii;
 import org.orbisgis.orbisdata.datamanager.api.dataset.*;
 import org.orbisgis.orbisdata.datamanager.jdbc.JdbcDataSource;
@@ -220,6 +221,12 @@ public class BuilderResultTest {
 
         @Override
         public IJdbcTable getDataSet(@NotNull String name) {
+            return null;
+        }
+
+        @Nullable
+        @Override
+        public Object asType(@NotNull Class<?> clazz) {
             return null;
         }
 

@@ -37,6 +37,7 @@
 package org.orbisgis.orbisdata.datamanager.api.dataset;
 
 import org.orbisgis.commons.annotations.NotNull;
+import org.orbisgis.commons.annotations.Nullable;
 
 /**
  * Raster data.
@@ -53,4 +54,17 @@ public interface IRaster {
      */
     @NotNull
     IRasterMetadata getMetadata();
+
+    /**
+     * Convert the current object into another with the given class.
+     *
+     * @param clazz New class of the result.
+     * @return The current object into an other class.
+     */
+    @Nullable
+    Object asType(@NotNull Class<?> clazz);
+
+    @Override
+    @NotNull
+    String toString();
 }

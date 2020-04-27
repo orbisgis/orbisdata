@@ -36,6 +36,7 @@
  */
 package org.orbisgis.orbisdata.datamanager.jdbc;
 
+import org.orbisgis.commons.annotations.NotNull;
 import org.orbisgis.orbisdata.datamanager.api.datasource.IDataSourceLocation;
 
 import java.io.File;
@@ -60,6 +61,7 @@ public class DataSourceLocation implements IDataSourceLocation {
         this.location = location;
     }
 
+    @NotNull
     @Override
     public String toString() {
         Object obj = asType(String.class);

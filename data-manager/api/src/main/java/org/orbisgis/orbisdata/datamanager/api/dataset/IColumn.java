@@ -74,4 +74,13 @@ public interface IColumn {
     @Override
     @NotNull
     String toString();
+
+    /**
+     * Convert the current object into another with the given class.
+     *
+     * @param clazz New class of the result.
+     * @return The current object into an other class.
+     */
+    @Nullable
+    Object asType(Class<?> clazz);
 }

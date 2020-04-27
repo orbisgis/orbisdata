@@ -36,6 +36,9 @@
  */
 package org.orbisgis.orbisdata.datamanager.api.dataset;
 
+import org.orbisgis.commons.annotations.NotNull;
+import org.orbisgis.commons.annotations.Nullable;
+
 /**
  * Metadata of a {@link IRaster}.
  *
@@ -43,4 +46,17 @@ package org.orbisgis.orbisdata.datamanager.api.dataset;
  * @author Sylvain PALOMINOS (Lab-STICC UBS 2019)
  */
 public interface IRasterMetadata {
+
+    /**
+     * Convert the current object into another with the given class.
+     *
+     * @param clazz New class of the result.
+     * @return The current object into an other class.
+     */
+    @Nullable
+    Object asType(@NotNull Class<?> clazz);
+
+    @Override
+    @NotNull
+    String toString();
 }

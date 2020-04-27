@@ -43,6 +43,7 @@ import org.codehaus.groovy.runtime.InvokerHelper;
 import org.codehaus.groovy.runtime.InvokerInvocationException;
 import org.junit.jupiter.api.Test;
 import org.orbisgis.commons.annotations.NotNull;
+import org.orbisgis.commons.annotations.Nullable;
 import org.orbisgis.orbisdata.datamanager.api.dataset.DataBaseType;
 import org.orbisgis.orbisdata.datamanager.api.dataset.IJdbcSpatialTable;
 import org.orbisgis.orbisdata.datamanager.api.dataset.IJdbcTable;
@@ -484,6 +485,12 @@ public class IJdbcDataSourceTest {
         @NotNull
         @Override
         public IDataSourceLocation getLocation() {
+            return null;
+        }
+
+        @Nullable
+        @Override
+        public Object asType(@NotNull Class<?> clazz) {
             return null;
         }
 

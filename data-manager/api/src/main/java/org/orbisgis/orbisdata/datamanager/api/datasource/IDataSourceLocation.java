@@ -37,6 +37,7 @@
 package org.orbisgis.orbisdata.datamanager.api.datasource;
 
 
+import org.orbisgis.commons.annotations.NotNull;
 import org.orbisgis.commons.annotations.Nullable;
 
 /**
@@ -55,4 +56,8 @@ public interface IDataSourceLocation {
      */
     @Nullable
     Object asType(Class<?> type);
+
+    @Override
+    @NotNull
+    String toString();
 }

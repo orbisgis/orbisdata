@@ -47,7 +47,7 @@ import java.util.List;
  * @author Erwan Bocher (CNRS)
  * @author Sylvain PALOMINOS (Lab-STICC UBS 2019)
  */
-public interface IJdbcSpatialTable extends IJdbcTable, ISpatialTable<ResultSet, ResultSet> {
+public interface IJdbcSpatialTable<T> extends IJdbcTable<T>, ISpatialTable<ResultSet, T> {
 
     @Override
     IJdbcSpatialTable filter(String filter);

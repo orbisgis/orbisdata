@@ -243,54 +243,29 @@ class JdbcTableTest {
 
     @Test
     void streamTest(){
-        String str = getTable().stream().map(resultSet -> {
-            try {
-                return resultSet.getObject(COL_THE_GEOM).toString();
-            } catch (SQLException throwables) {
-                throwables.printStackTrace();
-                return "";
-            }
-        }).collect(Collectors.joining(" ; "));
+        String str = getTable().stream()
+                .map(resultSet -> resultSet.getObject(COL_THE_GEOM).toString())
+                .collect(Collectors.joining(" ; "));
         assertEquals("POINT (0 0) ; POINT (0 1)", str);
 
-        str = getTempTable().stream().map(resultSet -> {
-            try {
-                return resultSet.getObject(COL_THE_GEOM).toString();
-            } catch (SQLException throwables) {
-                throwables.printStackTrace();
-                return "";
-            }
-        }).collect(Collectors.joining(" ; "));
+        str = getTempTable().stream()
+                .map(resultSet -> resultSet.getObject(COL_THE_GEOM).toString())
+                .collect(Collectors.joining(" ; "));
         assertEquals("", str);
 
-        str = getBuiltTable().stream().map(resultSet -> {
-            try {
-                return resultSet.getObject(COL_THE_GEOM).toString();
-            } catch (SQLException throwables) {
-                throwables.printStackTrace();
-                return "";
-            }
-        }).collect(Collectors.joining(" ; "));
+        str = getBuiltTable().stream()
+                .map(resultSet -> resultSet.getObject(COL_THE_GEOM).toString())
+                .collect(Collectors.joining(" ; "));
         assertEquals("POINT (0 0) ; POINT (0 1)", str);
 
-        str = getEmptyTable().stream().map(resultSet -> {
-            try {
-                return resultSet.getObject(COL_THE_GEOM).toString();
-            } catch (SQLException throwables) {
-                throwables.printStackTrace();
-                return "";
-            }
-        }).collect(Collectors.joining(" ; "));
+        str = getEmptyTable().stream()
+                .map(resultSet -> resultSet.getObject(COL_THE_GEOM).toString())
+                .collect(Collectors.joining(" ; "));
         assertEquals("", str);
 
-        str = getLinkedTable().stream().map(resultSet -> {
-            try {
-                return resultSet.getObject(COL_THE_GEOM).toString();
-            } catch (SQLException throwables) {
-                throwables.printStackTrace();
-                return "";
-            }
-        }).collect(Collectors.joining(" ; "));
+        str = getLinkedTable().stream()
+                .map(resultSet -> resultSet.getObject(COL_THE_GEOM).toString())
+                .collect(Collectors.joining(" ; "));
         assertEquals("POINT (0 0) ; POINT (0 1)", str);
     }
 

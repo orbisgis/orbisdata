@@ -55,7 +55,7 @@ import java.util.stream.StreamSupport;
  * @author Erwan Bocher (CNRS)
  * @author Sylvain Palominos (Lab-STICC UBS 2019)
  */
-public interface IJdbcTable extends ITable<ResultSet, ResultSet>, ResultSet, IWhereBuilderOrOptionBuilder {
+public interface IJdbcTable<T> extends ITable<ResultSet, T>, ResultSet, IWhereBuilderOrOptionBuilder {
 
     /**
      * {@link String} location/name of the query built table
@@ -148,11 +148,6 @@ public interface IJdbcTable extends ITable<ResultSet, ResultSet>, ResultSet, IWh
     @Override
     @NotNull
     IJdbcTable columns(@NotNull List<String> columns);
-
-    @Override
-    default Stream<ResultSet> stream() {
-        return StreamSupport.stream(this.spliterator(), false);
-    }
 
     @Override
     IJdbcTable filter(String filter);

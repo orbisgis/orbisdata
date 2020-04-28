@@ -50,7 +50,6 @@ import java.net.URL;
 import java.sql.*;
 import java.util.Calendar;
 import java.util.Map;
-import java.util.Objects;
 
 /**
  * Wrapper of {@link ResultSet} used to simplified the usage of {@link ITable#stream()}, avoiding the usage of
@@ -69,7 +68,7 @@ public class StreamResultSet implements ResultSet {
     /**
      * Internal {@link ResultSet}.
      */
-    private ResultSet resultSet;
+    private final ResultSet resultSet;
     
     public StreamResultSet(@NotNull ResultSet resultSet){
         CheckUtils.checkNotNull(resultSet, "The given ResultSet should not be null.");
@@ -251,6 +250,7 @@ public class StreamResultSet implements ResultSet {
 
     @Override
     @Nullable
+    @Deprecated
     public InputStream getUnicodeStream(int i) {
         try {
             return resultSet.getUnicodeStream(i);
@@ -417,6 +417,7 @@ public class StreamResultSet implements ResultSet {
 
     @Override
     @Nullable
+    @Deprecated
     public InputStream getUnicodeStream(String s) {
         try {
             return resultSet.getUnicodeStream(s);

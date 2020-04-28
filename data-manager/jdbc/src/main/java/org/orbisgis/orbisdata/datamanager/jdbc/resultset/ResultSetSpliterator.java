@@ -34,14 +34,13 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.orbisdata.datamanager.jdbc;
+package org.orbisgis.orbisdata.datamanager.jdbc.resultset;
 
 import org.orbisgis.commons.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.Spliterator;
 import java.util.function.Consumer;
 
@@ -51,39 +50,30 @@ import java.util.function.Consumer;
  * @author Erwan Bocher (CNRS)
  * @author Sylvain PALOMINOS (UBS Lab-STICC 2020)
  */
-public class ResultSetSpliterator implements Spliterator<ResultSet> {
+public class ResultSetSpliterator implements Spliterator<StreamResultSet> {
     private static final Logger LOGGER = LoggerFactory.getLogger(ResultSetSpliterator.class);
 
     private final long size;
-    private ResultSet rs;
+    private StreamResultSet rs;
 
     public ResultSetSpliterator(long size, ResultSet rs){
         this.size = size;
-        this.rs = rs;
-        try {
-            this.rs.first();
-        } catch (SQLException throwables) {
-            LOGGER.error("Unable to move to ResultSet first row.");
-        }
+        this.rs = new StreamResultSet(rs);
+        this.rs.first();
     }
 
     @Override
-    public boolean tryAdvance(Consumer<? super ResultSet> consumer) {
+    public boolean tryAdvance(Consumer<? super StreamResultSet> consumer) {
         if(size == 0){
             return false;
         }
         consumer.accept(rs);
-        try {
-            return rs.next();
-        } catch (SQLException throwables) {
-            LOGGER.error("Unable to move to ResultSet next row.");
-            return false;
-        }
+        return rs.next();
     }
 
     @Override
     @Nullable
-    public Spliterator<ResultSet> trySplit() {
+    public Spliterator<StreamResultSet> trySplit() {
         return null;
     }
 

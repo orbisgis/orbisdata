@@ -47,6 +47,7 @@ import org.orbisgis.orbisdata.datamanager.api.dataset.DataBaseType;
 import org.orbisgis.orbisdata.datamanager.api.dataset.IJdbcSpatialTable;
 import org.orbisgis.orbisdata.datamanager.api.dataset.IRaster;
 import org.orbisgis.orbisdata.datamanager.jdbc.dsl.WhereBuilder;
+import org.orbisgis.orbisdata.datamanager.jdbc.resultset.StreamResultSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -62,7 +63,7 @@ import java.util.Map;
  * @author Erwan Bocher (CNRS)
  * @author Sylvain PALOMINOS (UBS 2019)
  */
-public abstract class JdbcSpatialTable extends JdbcTable implements IJdbcSpatialTable {
+public abstract class JdbcSpatialTable extends JdbcTable implements IJdbcSpatialTable<StreamResultSet> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(JdbcTable.class);
 

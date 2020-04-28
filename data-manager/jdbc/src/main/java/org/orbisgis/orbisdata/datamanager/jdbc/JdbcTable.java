@@ -58,6 +58,9 @@ import org.orbisgis.orbisdata.datamanager.api.dsl.IOptionBuilder;
 import org.orbisgis.orbisdata.datamanager.jdbc.dsl.OptionBuilder;
 import org.orbisgis.orbisdata.datamanager.jdbc.dsl.WhereBuilder;
 import org.orbisgis.orbisdata.datamanager.jdbc.io.IOMethods;
+import org.orbisgis.orbisdata.datamanager.jdbc.resultset.DefaultResultSet;
+import org.orbisgis.orbisdata.datamanager.jdbc.resultset.ResultSetSpliterator;
+import org.orbisgis.orbisdata.datamanager.jdbc.resultset.StreamResultSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -65,6 +68,7 @@ import java.sql.*;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 import static org.orbisgis.commons.printer.ICustomPrinter.CellPosition.*;
 
@@ -75,7 +79,7 @@ import static org.orbisgis.commons.printer.ICustomPrinter.CellPosition.*;
  *
  * @author Sylvain Palominos (Lab-STICC UBS 2019)
  */
-public abstract class JdbcTable extends DefaultResultSet implements IJdbcTable, GroovyObject {
+public abstract class JdbcTable extends DefaultResultSet implements IJdbcTable<StreamResultSet>, GroovyObject {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(JdbcTable.class);
 
@@ -806,8 +810,9 @@ public abstract class JdbcTable extends DefaultResultSet implements IJdbcTable, 
         return new JdbcTableSummary(getTableLocation(), getColumnCount(), getRowCount());
     }
 
-    public Stream<ResultSet> stream() {
-        Spliterator<ResultSet> spliterator = new ResultSetSpliterator(this.getRowCount(), getResultSet());
-        return java.util.stream.StreamSupport.stream(spliterator, true);
+    @Override
+    public Stream<StreamResultSet> stream() {
+        Spliterator<StreamResultSet> spliterator = new ResultSetSpliterator(this.getRowCount(), getResultSet());
+        return StreamSupport.stream(spliterator, true);
     }
 }

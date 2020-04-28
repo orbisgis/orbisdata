@@ -76,7 +76,7 @@ public interface IBuilderResult {
      * @return The {@link ITable} representing the result of the SQL query.
      */
     @Nullable
-    ITable<ResultSet, ResultSet> getTable();
+    ITable<?, ?> getTable();
 
     /**
      * Return the {@link ISpatialTable} representing the result of the SQL query.
@@ -84,7 +84,7 @@ public interface IBuilderResult {
      * @return The {@link ISpatialTable} representing the result of the SQL query.
      */
     @Nullable
-    ISpatialTable<ResultSet, ResultSet> getSpatialTable();
+    ISpatialTable<?, ?> getSpatialTable();
 
     @Override
     @NotNull

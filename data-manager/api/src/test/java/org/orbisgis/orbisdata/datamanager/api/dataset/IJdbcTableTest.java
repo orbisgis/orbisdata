@@ -51,6 +51,7 @@ import java.net.URL;
 import java.sql.Date;
 import java.sql.*;
 import java.util.*;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -215,7 +216,7 @@ public class IJdbcTableTest {
     /**
      * Simple implementation of the {@link IJdbcTable} interface.
      */
-    private static class DummyJdbcTable implements IJdbcTable {
+    private static class DummyJdbcTable implements IJdbcTable<ResultSet> {
 
         /**
          * Fake data location.
@@ -548,6 +549,24 @@ public class IJdbcTableTest {
 
         @Override
         public BigDecimal getBigDecimal(@NotNull String s) {
+            return null;
+        }
+
+        @Nullable
+        @Override
+        public <V> V getObject(int column, @NotNull Class<V> clazz) throws SQLException {
+            return null;
+        }
+
+        @Nullable
+        @Override
+        public <V> V getObject(@NotNull String column, @NotNull Class<V> clazz) throws SQLException {
+            return null;
+        }
+
+        @Nullable
+        @Override
+        public Stream<ResultSet> stream() {
             return null;
         }
 
@@ -1079,16 +1098,6 @@ public class IJdbcTableTest {
 
         @Override
         public void updateNClob(String s, Reader reader) {/*Does nothing*/}
-
-        @Override
-        public <T> T getObject(int i, @NotNull Class<T> aClass) {
-            return null;
-        }
-
-        @Override
-        public <T> T getObject(@NotNull String s, @NotNull Class<T> aClass) {
-            return null;
-        }
 
         @Override
         public <T> T unwrap(Class<T> aClass) {

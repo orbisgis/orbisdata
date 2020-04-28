@@ -821,7 +821,7 @@ public class DataFrame implements smile.data.DataFrame, ITable<BaseVector, Tuple
     }
 
     @NotNull
-    private static StructType getStructure(@NotNull IJdbcTable table) {
+    private static StructType getStructure(@NotNull IJdbcTable<?> table) {
         StructField[] fields = new StructField[table.getColumnCount()];
         int i = -1;
         for (Map.Entry<String, String> entry : table.getColumnsTypes().entrySet()) {

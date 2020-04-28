@@ -26,3 +26,6 @@ make it compatible with `smile` API)
 + Add `IDataSet<?> filter(String filter)` method to `IDataSet`.
 + Add `stream()` method to `IDataSet`.
 + Make `IDataSet` have two value parameter : one for the iterator, a second for the stream.
++ Improve `ResultSet` type detection.
++ Add `getColumnNames(String)` method to `IJdbcDataSource`.
++ Add `firstRow()` method to `ITable`

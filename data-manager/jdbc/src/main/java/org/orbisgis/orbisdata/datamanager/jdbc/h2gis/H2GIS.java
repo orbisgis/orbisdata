@@ -60,6 +60,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.sql.Connection;
+import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
@@ -216,7 +217,8 @@ public class H2GIS extends JdbcDataSource {
     @Override
     @Nullable
     public IJdbcTable getTable(@NotNull String tableName) {
-        String name = TableLocation.parse(tableName, getDataBaseType().equals(DataBaseType.H2GIS)).toString(getDataBaseType().equals(DataBaseType.H2GIS));
+        String name = TableLocation.parse(tableName, getDataBaseType().equals(DataBaseType.H2GIS))
+                .toString(getDataBaseType().equals(DataBaseType.H2GIS));
         try {
             if (!JDBCUtilities.tableExists(connectionWrapper, name)) {
                 return null;
@@ -227,7 +229,15 @@ public class H2GIS extends JdbcDataSource {
         }
         StatementWrapper statement;
         try {
-            statement = (StatementWrapper) connectionWrapper.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);
+            DatabaseMetaData dbdm = connectionWrapper.getMetaData();
+            int type = ResultSet.TYPE_FORWARD_ONLY;
+            if(dbdm.supportsResultSetType(ResultSet.TYPE_SCROLL_SENSITIVE)){
+                type = ResultSet.TYPE_SCROLL_SENSITIVE;
+            }
+            else if(dbdm.supportsResultSetType(ResultSet.TYPE_SCROLL_INSENSITIVE)){
+                type = ResultSet.TYPE_SCROLL_INSENSITIVE;
+            }
+            statement = (StatementWrapper) connectionWrapper.createStatement(type, ResultSet.CONCUR_UPDATABLE);
         } catch (SQLException e) {
             LOGGER.error("Unable to create Statement.\n" + e.getLocalizedMessage());
             return null;

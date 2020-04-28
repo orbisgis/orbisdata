@@ -104,6 +104,15 @@ public interface IJdbcDataSource extends IDataSource<ResultSet>, GroovyObject, D
      */
     boolean hasTable(@NotNull String tableName);
 
+    /**
+     * Returns the names of the column of the given table.
+     *
+     * @param location Location of the table with the pattern : [[catalog.]schema.]table
+     * @return The names of the column of the given table.
+     */
+    @Nullable
+    Collection<String> getColumnNames(String location);
+
 
     /* ********************** */
     /*      Load methods      */

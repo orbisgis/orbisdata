@@ -499,6 +499,12 @@ public class IJdbcDataSourceTest {
             return false;
         }
 
+        @Nullable
+        @Override
+        public Collection<String> getColumnNames(String location) {
+            return null;
+        }
+
         @Override
         public Connection getConnection() throws SQLException {
             return null;

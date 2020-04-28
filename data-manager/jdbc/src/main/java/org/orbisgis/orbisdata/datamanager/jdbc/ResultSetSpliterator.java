@@ -69,6 +69,9 @@ public class ResultSetSpliterator implements Spliterator<ResultSet> {
 
     @Override
     public boolean tryAdvance(Consumer<? super ResultSet> consumer) {
+        if(size == 0){
+            return false;
+        }
         consumer.accept(rs);
         try {
             return rs.next();

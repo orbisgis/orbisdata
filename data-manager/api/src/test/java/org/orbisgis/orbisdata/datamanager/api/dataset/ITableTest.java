@@ -564,6 +564,12 @@ public class ITableTest {
             return null;
         }
 
+        @NotNull
+        @Override
+        public Map<String, Object> firstRow() {
+            return null;
+        }
+
         @Override
         public String getLocation() {
             return null;

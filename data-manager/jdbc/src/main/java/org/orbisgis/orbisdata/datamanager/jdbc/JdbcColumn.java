@@ -41,6 +41,7 @@ import groovy.lang.MetaClass;
 import groovy.lang.MissingMethodException;
 import groovy.sql.GroovyRowResult;
 import org.codehaus.groovy.runtime.InvokerHelper;
+import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.TableLocation;
 import org.orbisgis.commons.annotations.Nullable;
 import org.orbisgis.orbisdata.datamanager.api.dataset.DataBaseType;
@@ -49,6 +50,7 @@ import org.orbisgis.orbisdata.datamanager.api.datasource.IJdbcDataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -204,6 +206,9 @@ public class JdbcColumn implements IJdbcColumn, GroovyObject {
 
     @Override
     public boolean createSpatialIndex() {
+        if(!isSpatial()){
+            return false;
+        }
         return createIndex();
     }
 
@@ -260,6 +265,41 @@ public class JdbcColumn implements IJdbcColumn, GroovyObject {
                 LOGGER.error("Unable to drop the index '" + index + "' on the column '" + name + "' in the table '" +
                         tableName + "'.\n" + e.getLocalizedMessage());
             }
+        }
+    }
+
+    @Override
+    public int getSrid() {
+        if (!isSpatial()) {
+            return -1;
+        }
+        try {
+            Connection con = dataSource.getConnection();
+            if(con == null){
+                LOGGER.error("Unable to get connection for the table SRID.");
+                return -1;
+            }
+            return SFSUtilities.getSRID(con, tableName);
+        } catch (SQLException e) {
+            LOGGER.error("Unable to get the table SRID.", e);
+        }
+        return -1;
+    }
+
+    @Override
+    public void setSrid(int srid) {
+        if (!isSpatial()) {
+            throw new UnsupportedOperationException();
+        }
+        try {
+            Connection con = dataSource.getConnection();
+            if(con == null){
+                LOGGER.error("Unable to set connection for the table SRID.");
+            }
+            con.createStatement().execute(
+                    "ALTER TABLE "+tableName.toString()+" ALTER COLUMN "+name+" TYPE geometry("+getType()+", "+srid+") USING ST_SetSRID("+name+","+srid+");");
+        } catch (SQLException e) {
+            LOGGER.error("Unable to set the table SRID.", e);
         }
     }
 

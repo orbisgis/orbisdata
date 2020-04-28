@@ -39,7 +39,9 @@ package org.orbisgis.orbisdata.datamanager.jdbc;
 import groovy.lang.MetaClass;
 import org.codehaus.groovy.runtime.InvokerHelper;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.orbisgis.orbisdata.datamanager.api.dataset.ISpatialTable;
 import org.orbisgis.orbisdata.datamanager.jdbc.h2gis.H2GIS;
 
 import java.sql.SQLException;
@@ -71,18 +73,22 @@ public class JdbcColumnTest {
     private static final String COL_THE_GEOM = "the_geom";
     private static final String COL_THE_GEOM2 = "the_geom2";
     private static final String COL_ID = "id";
-    private static final String COL_VALUE = "value";
+    private static final String COL_VALUE = "val";
     private static final String COL_MEANING = "meaning";
 
     private static final String COL_NO_COL = "COL_NO_COL";
     private static final String COL_NO_TAB = "COL_NO_TAB";
 
+    @BeforeAll
+    public static void beforeAll(){
+        dataSource = H2GIS.open(BASE_DATABASE);
+    }
+
     /**
      * Initialization of the database.
      */
-    @BeforeAll
-    public static void init() {
-        dataSource = H2GIS.open(BASE_DATABASE);
+    @BeforeEach
+    public void init() {
         try {
             dataSource.execute("DROP TABLE IF EXISTS " + TABLE_NAME + "," + LINKED_NAME + "," + TEMP_NAME + ","  + EMPTY_TABLE_NAME);
             dataSource.execute("CREATE TABLE " + TABLE_NAME + " (" + COL_THE_GEOM + " GEOMETRY, " + COL_THE_GEOM2 + " GEOMETRY(POINT Z)," +
@@ -246,7 +252,13 @@ public class JdbcColumnTest {
         assertFalse(getColumn(COL_NO_COL).isIndexed());
         assertFalse(getColumn(COL_NO_TAB).isIndexed());
 
-        testNoSpatialIndexes();
+        assertTrue(getColumn(COL_THE_GEOM).isSpatialIndexed());
+        assertTrue(getColumn(COL_THE_GEOM2).isSpatialIndexed());
+        assertFalse(getColumn(COL_ID).isSpatialIndexed());
+        assertFalse(getColumn(COL_VALUE).isSpatialIndexed());
+        assertFalse(getColumn(COL_MEANING).isSpatialIndexed());
+        assertFalse(getColumn(COL_NO_COL).isSpatialIndexed());
+        assertFalse(getColumn(COL_NO_TAB).isSpatialIndexed());
 
         dropIndexes();
         testNoSpatialIndexes();
@@ -287,6 +299,21 @@ public class JdbcColumnTest {
         assertTrue(getColumn(COL_MEANING).createIndex());
         assertFalse(getColumn(COL_NO_COL).createIndex());
         assertFalse(getColumn(COL_NO_TAB).createIndex());
+    }
+
+    /**
+     * Test the {@link JdbcColumn#getSrid()}, {@link JdbcColumn#setSrid(int)} methods.
+     */
+    @Test
+    public void testGetSrid() {
+        JdbcColumn column = getColumn(COL_THE_GEOM);
+        assertEquals(0, column.getSrid());
+        column.setSrid(2121);
+        assertEquals(2121, column.getSrid());
+
+        JdbcColumn column2 = getColumn(COL_ID);
+        assertEquals(-1, column2.getSrid());
+        assertThrows(UnsupportedOperationException.class, () -> column2.setSrid(2121));
     }
 
     /**

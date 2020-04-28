@@ -85,4 +85,17 @@ public interface IJdbcColumn extends IColumn {
      */
     void dropIndex();
 
+    /**
+     * Return the SRID code of the column if it is a spatial one, -1 otherwise.
+     *
+     * @return The SRID code of the column if it is a spatial one, -1 otherwise.
+     */
+    int getSrid();
+
+    /**
+     * Sets the SRID code of the column.
+     *
+     * @param srid The SRID code of the column.
+     */
+    void setSrid(int srid);
 }

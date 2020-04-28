@@ -28,4 +28,5 @@ make it compatible with `smile` API)
 + Make `IDataSet` have two value parameter : one for the iterator, a second for the stream.
 + Improve `ResultSet` type detection.
 + Add `getColumnNames(String)` method to `IJdbcDataSource`.
-+ Add `firstRow()` method to `ITable`
++ Add `firstRow()` method to `ITable`.
++ Add `setSrid(int)` method to `ISpatialTable` and to `IColumn`.

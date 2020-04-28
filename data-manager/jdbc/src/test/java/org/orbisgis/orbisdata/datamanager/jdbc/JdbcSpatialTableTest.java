@@ -209,11 +209,14 @@ public class JdbcSpatialTableTest {
     }
 
     /**
-     * Test the {@link JdbcSpatialTable#getSrid()} method.
+     * Test the {@link JdbcSpatialTable#getSrid()}, {@link JdbcSpatialTable#setSrid(int)} methods.
      */
     @Test
     public void testGetSrid() {
-        assertEquals(2020, dataSource.getSpatialTable(TABLE_NAME).getSrid());
+        ISpatialTable table = dataSource.getSpatialTable(TABLE_NAME);
+        assertEquals(2020, table.getSrid());
+        table.setSrid(2121);
+        assertEquals(2121, table.getSrid());
     }
 
     /**

@@ -275,6 +275,26 @@ public abstract class JdbcSpatialTable extends JdbcTable implements IJdbcSpatial
     }
 
     @Override
+    public void setSrid(int srid) {
+        List<String> geomColumns = getGeometricColumns();
+        if (getTableLocation() == null || geomColumns.isEmpty()) {
+            throw new UnsupportedOperationException();
+        }
+        try {
+            Connection con = getJdbcDataSource().getConnection();
+            if(con == null){
+                LOGGER.error("Unable to set connection for the table SRID.");
+            }
+            String geomColumn = getGeometricColumns().get(0);
+            String type = getColumnType(geomColumn);
+            con.createStatement().execute(
+                    "ALTER TABLE "+getLocation()+" ALTER COLUMN "+geomColumn+" TYPE geometry("+type+", "+srid+") USING ST_SetSRID("+geomColumn+","+srid+");");
+        } catch (SQLException e) {
+            LOGGER.error("Unable to set the table SRID.", e);
+        }
+    }
+
+    @Override
     public Map<String, String> getGeometryTypes() {
         if (getTableLocation() == null) {
             try {

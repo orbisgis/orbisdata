@@ -148,11 +148,18 @@ public interface ISpatialTable<T, U> extends ITable<T, U> {
     Geometry getEstimatedExtend();
 
     /**
-     * Return the SRID code of the first geometry column of the table.
+     * Return the SRID code of the first geometry column of the {@link ISpatialTable}.
      *
-     * @return The SRID code of the first geometry column of the table.
+     * @return The SRID code of the first geometry column of the {@link ISpatialTable}.
      */
     int getSrid();
+
+    /**
+     * Sets the SRID code of the first geometric column of the {@link ISpatialTable}.
+     *
+     * @param srid The SRID code of the first geometric column of the {@link ISpatialTable}.
+     */
+    void setSrid(int srid);
 
     /**
      * Returns a {@link Map} containing the field names as key and the SFS geometry type (well known name) as value.

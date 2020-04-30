@@ -42,7 +42,6 @@ import org.h2gis.functions.factory.H2GISFunctions;
 import org.h2gis.functions.io.utility.FileUtil;
 import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.SFSUtilities;
-import org.h2gis.utilities.wrapper.ConnectionWrapper;
 import org.h2gis.utilities.wrapper.StatementWrapper;
 import org.orbisgis.commons.annotations.NotNull;
 import org.orbisgis.commons.annotations.Nullable;
@@ -56,6 +55,7 @@ import org.orbisgis.orbisdata.datamanager.jdbc.TableLocation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.sql.DataSource;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -79,16 +79,22 @@ public class H2GIS extends JdbcDataSource {
     private static final OsgiDataSourceFactory dataSourceFactory = new OsgiDataSourceFactory(new Driver());
     private static final Logger LOGGER = LoggerFactory.getLogger(H2GIS.class);
 
-    private final ConnectionWrapper connectionWrapper;
-
     /**
-     * Private constructor to ensure the {@link #open(Map)} method.
+     * Private constructor.
      *
-     * @param connection Connection to the database.
+     * @param connection {@link Connection} to the database.
      */
     private H2GIS(@NotNull Connection connection) {
         super(connection, DataBaseType.H2GIS);
-        connectionWrapper = (ConnectionWrapper) connection;
+    }
+
+    /**
+     * Private constructor.
+     *
+     * @param dataSource {@link DataSource} to the database.
+     */
+    private H2GIS(@NotNull DataSource dataSource) {
+        super(dataSource, DataBaseType.H2GIS);
     }
 
     /**
@@ -128,49 +134,75 @@ public class H2GIS extends JdbcDataSource {
             LOGGER.error("Unable to create the DataSource.\n" + e.getLocalizedMessage());
             return null;
         }
-        return checkAndOpen(connection);
+        check(connection);
+        return new H2GIS(connection);
     }
 
     /**
      * Create an instance of {@link H2GIS} from a {@link Connection}
      *
-     * @param connection Properties for the opening of the DataBase.
+     * @param connection {@link Connection} of the DataBase.
      * @return {@link H2GIS} object if the DataBase has been successfully open, null otherwise.
      */
     @Nullable
     public static H2GIS open(@Nullable Connection connection) {
         if (connection != null) {
-            return checkAndOpen(connection);
+            check(connection);
+            return new H2GIS(connection);
         } else {
             return null;
         }
     }
 
+    /**
+     * Create an instance of {@link H2GIS} from a {@link DataSource}
+     *
+     * @param dataSource {@link DataSource} of the database.
+     * @return {@link H2GIS} object if the DataBase has been successfully open, null otherwise.
+     */
     @Nullable
-    private static H2GIS checkAndOpen(@NotNull Connection connection) {
+    public static H2GIS open(@Nullable DataSource dataSource) {
+        if (dataSource != null) {
+            Connection connection;
+            try {
+                connection = dataSource.getConnection();
+            } catch (SQLException e) {
+                LOGGER.error("Unable to get the connection from the datasource.", e);
+                return null;
+            }
+            if (connection != null) {
+                check(connection);
+                return new H2GIS(dataSource);
+            } else {
+                return null;
+            }
+        } else {
+            return null;
+        }
+    }
+
+    private static void check(@NotNull Connection connection) {
         boolean isH2;
         try {
             isH2 = JDBCUtilities.isH2DataBase(connection.getMetaData());
         } catch (SQLException e) {
             LOGGER.error("Unable to get DataBaseType metadata.\n" + e.getLocalizedMessage());
-            return null;
+            return;
         }
         boolean tableExists;
         try {
             tableExists = !JDBCUtilities.tableExists(connection, "PUBLIC.GEOMETRY_COLUMNS");
         } catch (SQLException e) {
             LOGGER.error("Unable to check if table 'PUBLIC.GEOMETRY_COLUMNS' exists.\n" + e.getLocalizedMessage());
-            return null;
+            return;
         }
         if (isH2 && tableExists) {
             try {
                 H2GISFunctions.load(connection);
             } catch (SQLException e) {
                 LOGGER.error("Unable to initialize H2GIS.\n" + e.getLocalizedMessage());
-                return null;
             }
         }
-        return new H2GIS(connection);
     }
 
     /**
@@ -217,10 +249,11 @@ public class H2GIS extends JdbcDataSource {
     @Override
     @Nullable
     public IJdbcTable getTable(@NotNull String tableName) {
+        Connection connection = getConnection();
         String name = TableLocation.parse(tableName, getDataBaseType().equals(DataBaseType.H2GIS))
                 .toString(getDataBaseType().equals(DataBaseType.H2GIS));
         try {
-            if (!JDBCUtilities.tableExists(connectionWrapper, name)) {
+            if (!JDBCUtilities.tableExists(connection, name)) {
                 return null;
             }
         } catch (SQLException e) {
@@ -229,7 +262,7 @@ public class H2GIS extends JdbcDataSource {
         }
         StatementWrapper statement;
         try {
-            DatabaseMetaData dbdm = connectionWrapper.getMetaData();
+            DatabaseMetaData dbdm = connection.getMetaData();
             int type = ResultSet.TYPE_FORWARD_ONLY;
             if(dbdm.supportsResultSetType(ResultSet.TYPE_SCROLL_SENSITIVE)){
                 type = ResultSet.TYPE_SCROLL_SENSITIVE;
@@ -237,7 +270,7 @@ public class H2GIS extends JdbcDataSource {
             else if(dbdm.supportsResultSetType(ResultSet.TYPE_SCROLL_INSENSITIVE)){
                 type = ResultSet.TYPE_SCROLL_INSENSITIVE;
             }
-            statement = (StatementWrapper) connectionWrapper.createStatement(type, ResultSet.CONCUR_UPDATABLE);
+            statement = (StatementWrapper) connection.createStatement(type, ResultSet.CONCUR_UPDATABLE);
         } catch (SQLException e) {
             LOGGER.error("Unable to create Statement.\n" + e.getLocalizedMessage());
             return null;
@@ -274,8 +307,9 @@ public class H2GIS extends JdbcDataSource {
 
     @Override
     public boolean hasTable(@NotNull String tableName) {
+        Connection connection = getConnection();
         try {
-            return JDBCUtilities.tableExists(connectionWrapper, TableLocation.parse(tableName, true).toString());
+            return JDBCUtilities.tableExists(connection, TableLocation.parse(tableName, true).toString());
         } catch (SQLException ex) {
             LOGGER.error("Cannot find the table '" + tableName + ".\n" +
                     ex.getLocalizedMessage());

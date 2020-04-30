@@ -30,3 +30,4 @@ make it compatible with `smile` API)
 + Add `getColumnNames(String)` method to `IJdbcDataSource`.
 + Add `firstRow()` method to `ITable`.
 + Add `setSrid(int)` method to `ISpatialTable` and to `IColumn`.
++ Add to `H2GIS` and `POSTGIS` an `open(java.sql.DataSource)` method.

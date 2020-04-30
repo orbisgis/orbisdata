@@ -13,10 +13,12 @@ import org.orbisgis.orbisdata.datamanager.api.dataset.IJdbcSpatialTable;
 import org.orbisgis.orbisdata.datamanager.api.dataset.IJdbcTable;
 import org.orbisgis.orbisdata.datamanager.jdbc.JdbcDataSource;
 import org.orbisgis.orbisdata.datamanager.jdbc.TableLocation;
+import org.orbisgis.orbisdata.datamanager.jdbc.h2gis.H2GIS;
 import org.osgi.service.jdbc.DataSourceFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.sql.DataSource;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -40,19 +42,54 @@ public class POSTGIS extends JdbcDataSource {
     private static final Logger LOGGER = LoggerFactory.getLogger(POSTGIS.class);
     private static final DataSourceFactory dataSourceFactory = new DataSourceFactoryImpl();
 
-    private final ConnectionWrapper connectionWrapper;
-
 
     /**
-     * Private constructor to ensure the {@link #open(Map)} method.
+     * Private constructor.
      *
-     * @param connection Connection to the database.
+     * @param connection {@link Connection} to the database.
      */
     private POSTGIS(Connection connection) {
         super(connection, DataBaseType.POSTGIS);
-        connectionWrapper = (ConnectionWrapper) connection;
     }
 
+    /**
+     * Private constructor.
+     *
+     * @param dataSource {@link DataSource} to the database.
+     */
+    private POSTGIS(DataSource dataSource) {
+        super(dataSource, DataBaseType.POSTGIS);
+    }
+
+    /**
+     * Create an instance of {@link POSTGIS} from a {@link Connection}
+     *
+     * @param connection {@link Connection} of the DataBase.
+     * @return {@link POSTGIS} object if the DataBase has been successfully open, null otherwise.
+     */
+    @Nullable
+    public static POSTGIS open(@Nullable Connection connection) {
+        if (connection != null) {
+            return new POSTGIS(connection);
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * Create an instance of {@link POSTGIS} from a {@link DataSource}
+     *
+     * @param dataSource {@link Connection} of the DataBase.
+     * @return {@link POSTGIS} object if the DataBase has been successfully open, null otherwise.
+     */
+    @Nullable
+    public static POSTGIS open(@Nullable DataSource dataSource) {
+        if (dataSource != null) {
+            return new POSTGIS(dataSource);
+        } else {
+            return null;
+        }
+    }
 
     /**
      * Create an instance of {@link POSTGIS} from file
@@ -140,8 +177,9 @@ public class POSTGIS extends JdbcDataSource {
 
     @Override
     public IJdbcTable getTable(@NotNull String tableName) {
+        Connection connection = getConnection();
         try {
-            if (!JDBCUtilities.tableExists(connectionWrapper,
+            if (!JDBCUtilities.tableExists(connection,
                     TableLocation.parse(tableName, getDataBaseType().equals(DataBaseType.H2GIS)).getTable())) {
                 return null;
             }
@@ -151,7 +189,7 @@ public class POSTGIS extends JdbcDataSource {
         }
         StatementWrapper statement;
         try {
-            DatabaseMetaData dbdm = connectionWrapper.getMetaData();
+            DatabaseMetaData dbdm = connection.getMetaData();
             int type = ResultSet.TYPE_FORWARD_ONLY;
             if(dbdm.supportsResultSetType(ResultSet.TYPE_SCROLL_SENSITIVE)){
                 type = ResultSet.TYPE_SCROLL_SENSITIVE;
@@ -159,7 +197,7 @@ public class POSTGIS extends JdbcDataSource {
             else if(dbdm.supportsResultSetType(ResultSet.TYPE_SCROLL_INSENSITIVE)){
                 type = ResultSet.TYPE_SCROLL_INSENSITIVE;
             }
-            statement = (StatementWrapper) connectionWrapper.createStatement(type, ResultSet.CONCUR_UPDATABLE);
+            statement = (StatementWrapper) connection.createStatement(type, ResultSet.CONCUR_UPDATABLE);
         } catch (SQLException e) {
             LOGGER.error("Unable to create Statement.\n" + e.getLocalizedMessage());
             return null;
@@ -180,8 +218,9 @@ public class POSTGIS extends JdbcDataSource {
 
     @Override
     public IJdbcSpatialTable getSpatialTable(@NotNull String tableName) {
+        Connection connection = getConnection();
         try {
-            if (!JDBCUtilities.tableExists(connectionWrapper,
+            if (!JDBCUtilities.tableExists(connection,
                     TableLocation.parse(tableName, getDataBaseType().equals(DataBaseType.H2GIS)).getTable())) {
                 return null;
             }
@@ -191,7 +230,7 @@ public class POSTGIS extends JdbcDataSource {
         }
         StatementWrapper statement;
         try {
-            DatabaseMetaData dbdm = connectionWrapper.getMetaData();
+            DatabaseMetaData dbdm = connection.getMetaData();
             int type = ResultSet.TYPE_FORWARD_ONLY;
             if(dbdm.supportsResultSetType(ResultSet.TYPE_SCROLL_SENSITIVE)){
                 type = ResultSet.TYPE_SCROLL_SENSITIVE;
@@ -199,7 +238,7 @@ public class POSTGIS extends JdbcDataSource {
             else if(dbdm.supportsResultSetType(ResultSet.TYPE_SCROLL_INSENSITIVE)){
                 type = ResultSet.TYPE_SCROLL_INSENSITIVE;
             }
-            statement = (StatementWrapper) connectionWrapper.createStatement(type, ResultSet.CONCUR_UPDATABLE);
+            statement = (StatementWrapper) connection.createStatement(type, ResultSet.CONCUR_UPDATABLE);
         } catch (SQLException e) {
             LOGGER.error("Unable to create Statement.\n" + e.getLocalizedMessage());
             return null;
@@ -222,7 +261,7 @@ public class POSTGIS extends JdbcDataSource {
     @Override
     public boolean hasTable(@NotNull String tableName) {
         try {
-            return JDBCUtilities.tableExists(connectionWrapper, TableLocation.parse(tableName, false).toString());
+            return JDBCUtilities.tableExists(getConnection(), TableLocation.parse(tableName, false).toString());
         } catch (SQLException ex) {
             LOGGER.error("Cannot find the table '" + tableName + ".\n" +
                     ex.getLocalizedMessage());

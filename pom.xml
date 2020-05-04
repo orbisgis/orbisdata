@@ -30,12 +30,6 @@
     <dependencyManagement>
         <dependencies>
             <dependency>
-                <groupId>org.orbisgis.orbisdata</groupId>
-                <artifactId>commons</artifactId>
-                <version>${project.version}</version>
-                <scope>compile</scope>
-            </dependency>
-            <dependency>
                 <groupId>org.orbisgis.orbisdata.datamanager</groupId>
                 <artifactId>api</artifactId>
                 <version>${project.version}</version>

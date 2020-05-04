@@ -37,6 +37,7 @@
 package org.orbisgis.orbisdata.datamanager.jdbc.h2gis;
 
 import groovy.lang.Closure;
+import org.apache.commons.dbcp.BasicDataSource;
 import org.junit.jupiter.api.Test;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.Point;
@@ -69,6 +70,15 @@ public class H2GISTests {
         assertNotNull(H2GIS.open("./target/openH2GIS1"));
         assertNotNull(H2GIS.open("./target/openH2GIS2", "sa", "sa"));
         assertNull(H2GIS.open(new File("file")));
+
+        BasicDataSource ds = new BasicDataSource();
+        ds.setDriverClassName("org.h2.Driver");
+        ds.setUrl("jdbc:h2:mem:" + new File("./target/openH2GIS3").getAbsolutePath());
+        ds.setUsername("sa");
+        ds.setPassword("");
+        assertNotNull(H2GIS.open(ds));
+        assertNotNull(H2GIS.open(ds).getDataSource());
+        assertFalse(H2GIS.open(ds).getTableNames().isEmpty());
     }
 
     @Test

@@ -37,38 +37,40 @@
 package org.orbisgis.orbisdata.processmanager.process.check;
 
 import groovy.lang.Closure;
+import org.junit.jupiter.api.Test;
 import org.orbisgis.commons.annotations.NotNull;
 import org.orbisgis.commons.annotations.Nullable;
-import org.orbisgis.orbisdata.processmanager.api.check.ICheckClosureBuilder;
-import org.orbisgis.orbisdata.processmanager.api.check.ICheckOptionBuilder;
+import org.orbisgis.orbisdata.processmanager.api.IProcess;
 import org.orbisgis.orbisdata.processmanager.api.check.IProcessCheck;
+import org.orbisgis.orbisdata.processmanager.api.inoutput.IInOutPut;
+
+import java.util.LinkedHashMap;
+import java.util.Optional;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
- * Implementation of the {@link ICheckClosureBuilder} interface.
+ * Test class dedicated to {@link CheckClosureBuilder} class.
  *
  * @author Erwan Bocher (CNRS)
- * @author Sylvain PALOMINOS (UBS 2019-2020)
+ * @author Sylvain PALOMINOS (UBS 2020)
  */
-public class CheckClosureBuilder implements ICheckClosureBuilder {
+public class CheckClosureBuilderTest {
 
     /**
-     * {@link IProcessCheck} being built
+     * Test the {@link CheckClosureBuilder#check(Closure)} method.
      */
-    private final IProcessCheck processCheck;
+    @Test
+    public void checkTest() {
+        DummyProcessCheck dummy = new DummyProcessCheck(null);
+        CheckClosureBuilder builder = new CheckClosureBuilder(dummy);
+        Closure<?> cl = new Closure<Object>(this) {};
+        assertNotNull(builder.check(cl));
+        assertEquals(cl, dummy.closure);
 
-    /**
-     * Default constructor.
-     *
-     * @param processCheck {@link IProcessCheck} to build.
-     */
-    protected CheckClosureBuilder(@NotNull IProcessCheck processCheck) {
-        this.processCheck = processCheck;
-    }
-
-    @Override
-    @NotNull
-    public ICheckOptionBuilder check(@Nullable Closure<?> cl) {
-        processCheck.setClosure(cl);
-        return new CheckOptionBuilder(processCheck);
+        dummy = new DummyProcessCheck(null);
+        builder = new CheckClosureBuilder(dummy);
+        assertNotNull(builder.check(null));
+        assertNull(dummy.closure);
     }
 }

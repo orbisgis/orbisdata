@@ -24,7 +24,7 @@
  * version.
  *
  * ProcessManager is distributed in the hope that it will be useful, but WITHOUT ANY
- * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+ * WARRANTY without even the implied warranty of MERCHANTABILITY or FITNESS FOR
  * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License along with
@@ -34,41 +34,43 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.orbisdata.processmanager.process.check;
+package org.orbisgis.orbisdata.processmanager.process.check
 
-import groovy.lang.Closure;
-import org.orbisgis.commons.annotations.NotNull;
-import org.orbisgis.commons.annotations.Nullable;
-import org.orbisgis.orbisdata.processmanager.api.check.ICheckClosureBuilder;
-import org.orbisgis.orbisdata.processmanager.api.check.ICheckOptionBuilder;
-import org.orbisgis.orbisdata.processmanager.api.check.IProcessCheck;
+import groovy.lang.Closure
+import org.junit.jupiter.api.Test
+import org.orbisgis.commons.annotations.NotNull
+import org.orbisgis.commons.annotations.Nullable
+import org.orbisgis.orbisdata.processmanager.api.IProcess
+import org.orbisgis.orbisdata.processmanager.api.check.IProcessCheck
+import org.orbisgis.orbisdata.processmanager.api.inoutput.IInOutPut
+
+import java.util.LinkedHashMap
+import java.util.Optional
+
+import static org.junit.jupiter.api.Assertions.*
 
 /**
- * Implementation of the {@link ICheckClosureBuilder} interface.
+ * Test class dedicated to {@link CheckClosureBuilder} class.
  *
  * @author Erwan Bocher (CNRS)
- * @author Sylvain PALOMINOS (UBS 2019-2020)
+ * @author Sylvain PALOMINOS (UBS 2020)
  */
-public class CheckClosureBuilder implements ICheckClosureBuilder {
+class TestCheckClosureBuilder {
 
     /**
-     * {@link IProcessCheck} being built
+     * Test the {@link CheckClosureBuilder#check(Closure)} method.
      */
-    private final IProcessCheck processCheck;
+    @Test
+    void checkTest() {
+        def dummy = new DummyProcessCheck()
+        def builder = new CheckClosureBuilder(dummy)
+        def cl = {}
+        assert builder.check(cl)
+        assert cl == dummy.closure.get()
 
-    /**
-     * Default constructor.
-     *
-     * @param processCheck {@link IProcessCheck} to build.
-     */
-    protected CheckClosureBuilder(@NotNull IProcessCheck processCheck) {
-        this.processCheck = processCheck;
-    }
-
-    @Override
-    @NotNull
-    public ICheckOptionBuilder check(@Nullable Closure<?> cl) {
-        processCheck.setClosure(cl);
-        return new CheckOptionBuilder(processCheck);
+        dummy = new DummyProcessCheck()
+        builder = new CheckClosureBuilder(dummy)
+        assert builder.check()
+        assert !dummy.closure.isPresent()
     }
 }

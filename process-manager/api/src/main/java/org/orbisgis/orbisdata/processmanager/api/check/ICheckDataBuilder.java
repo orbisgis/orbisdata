@@ -37,12 +37,17 @@
 package org.orbisgis.orbisdata.processmanager.api.check;
 
 import org.orbisgis.commons.annotations.NotNull;
+import org.orbisgis.commons.annotations.Nullable;
+import org.orbisgis.orbisdata.processmanager.api.IProcess;
+import org.orbisgis.orbisdata.processmanager.api.IProcessMapper;
+import org.orbisgis.orbisdata.processmanager.api.inoutput.IInOutPut;
 
 /**
- * Interface for the definition of which data are provided for the getProcess check execution.
+ * Interface for the definition of which data are provided for the Process check execution.
+ * Instance is get from the {@link IProcessMapper#after(IProcess)} and  {@link IProcessMapper#before(IProcess)}.
  *
  * @author Erwan Bocher (CNRS)
- * @author Sylvain PALOMINOS (UBS 2019)
+ * @author Sylvain PALOMINOS (UBS Lab-STICC 2019-2020)
  */
 public interface ICheckDataBuilder {
 
@@ -53,5 +58,5 @@ public interface ICheckDataBuilder {
      * @return A {@link ICheckClosureBuilder} to continue the check building.
      */
     @NotNull
-    ICheckClosureBuilder with(@NotNull Object... data);
+    ICheckClosureBuilder with(@Nullable IInOutPut... data);
 }

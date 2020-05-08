@@ -36,14 +36,16 @@
  */
 package org.orbisgis.orbisdata.processmanager.api.check;
 
+import groovy.lang.Closure;
 import org.orbisgis.commons.annotations.NotNull;
 import org.orbisgis.commons.annotations.Nullable;
 
 /**
  * Interface for the definition of the getProcess check execution options.
+ * Instance is get from the {@link ICheckClosureBuilder#check(Closure)}.
  *
  * @author Erwan Bocher (CNRS)
- * @author Sylvain PALOMINOS (UBS 2019)
+ * @author Sylvain PALOMINOS (UBS Lab-STICC 2019)
  */
 public interface ICheckOptionBuilder {
 
@@ -57,6 +59,14 @@ public interface ICheckOptionBuilder {
     ICheckOptionBuilder stopOnFail(@Nullable String message);
 
     /**
+     * Make the check stop the program on fail .
+     *
+     * @return A {@link ICheckOptionBuilder} to continue the check building.
+     */
+    @NotNull
+    ICheckOptionBuilder stopOnFail();
+
+    /**
      * Make the check log the given message and stop the program on success .
      *
      * @param message Message to log.
@@ -64,6 +74,14 @@ public interface ICheckOptionBuilder {
      */
     @NotNull
     ICheckOptionBuilder stopOnSuccess(@Nullable String message);
+
+    /**
+     * Make the check stop the program on success .
+     *
+     * @return A {@link ICheckOptionBuilder} to continue the check building.
+     */
+    @NotNull
+    ICheckOptionBuilder stopOnSuccess();
 
     /**
      * Make the check log the given message and continue the program on fail .
@@ -75,6 +93,14 @@ public interface ICheckOptionBuilder {
     ICheckOptionBuilder continueOnFail(@Nullable String message);
 
     /**
+     * Make the check continue the program on fail .
+     *
+     * @return A {@link ICheckOptionBuilder} to continue the check building.
+     */
+    @NotNull
+    ICheckOptionBuilder continueOnFail();
+
+    /**
      * Make the check log the given message and continue the program on success .
      *
      * @param message Message to log.
@@ -82,4 +108,12 @@ public interface ICheckOptionBuilder {
      */
     @NotNull
     ICheckOptionBuilder continueOnSuccess(@Nullable String message);
+
+    /**
+     * Make the check continue the program on success .
+     *
+     * @return A {@link ICheckOptionBuilder} to continue the check building.
+     */
+    @NotNull
+    ICheckOptionBuilder continueOnSuccess();
 }

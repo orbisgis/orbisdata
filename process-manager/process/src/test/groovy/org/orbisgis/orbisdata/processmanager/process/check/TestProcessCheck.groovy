@@ -36,7 +36,7 @@
  */
 package org.orbisgis.orbisdata.processmanager.process.check
 
-
+import org.codehaus.groovy.runtime.InvokerHelper
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
 import org.orbisgis.commons.annotations.Nullable
@@ -47,6 +47,28 @@ import org.orbisgis.orbisdata.processmanager.process.ProcessManager
 import org.orbisgis.orbisdata.processmanager.process.inoutput.Input
 import org.orbisgis.orbisdata.processmanager.process.inoutput.Output
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow
+import static org.junit.jupiter.api.Assertions.assertEquals
+import static org.junit.jupiter.api.Assertions.assertFalse
+import static org.junit.jupiter.api.Assertions.assertFalse
+import static org.junit.jupiter.api.Assertions.assertNotNull
+import static org.junit.jupiter.api.Assertions.assertNotNull
+import static org.junit.jupiter.api.Assertions.assertNotNull
+import static org.junit.jupiter.api.Assertions.assertNull
+import static org.junit.jupiter.api.Assertions.assertNull
+import static org.junit.jupiter.api.Assertions.assertNull
+import static org.junit.jupiter.api.Assertions.assertNull
+import static org.junit.jupiter.api.Assertions.assertNull
+import static org.junit.jupiter.api.Assertions.assertNull
+import static org.junit.jupiter.api.Assertions.assertNull
+import static org.junit.jupiter.api.Assertions.assertNull
+import static org.junit.jupiter.api.Assertions.assertNull
+import static org.junit.jupiter.api.Assertions.assertNull
+import static org.junit.jupiter.api.Assertions.assertNull
+import static org.junit.jupiter.api.Assertions.assertNull
+import static org.junit.jupiter.api.Assertions.assertTrue
+import static org.junit.jupiter.api.Assertions.assertTrue
+import static org.junit.jupiter.api.Assertions.assertTrue
 import static org.orbisgis.orbisdata.processmanager.api.check.IProcessCheck.Action.*
 /**
  * Test class dedicated to {@link ProcessCheck} class.
@@ -268,5 +290,53 @@ class TestProcessCheck {
         processCheck.closure = {out1 -> return out1 == 'abc'}
         processCheck.inOutPuts = [new Output(PROCESS, "out1")]
         assert !processCheck.run(mapInputs)
+    }
+
+    /**
+     * Test the {@link ProcessCheck#setProperty(String, Object)}, {@link ProcessCheck#getProperty(String)} methods.
+     */
+    @Test
+    void propertyTest() {
+        def processCheck = new ProcessCheck(PROCESS)
+
+        processCheck.inOutPuts == null
+        def obj = processCheck.inOutPuts
+        assert  obj !instanceof Optional
+        assert  obj instanceof LinkedList
+        assert  obj.isEmpty()
+
+        processCheck.inOutPuts = [new Input()]
+        obj = processCheck.inOutPuts
+        assert  obj !instanceof Optional
+        assert  obj instanceof LinkedList
+        assert 1 == obj.size()
+
+        obj = processCheck.inOutPuts
+        assert obj
+
+        processCheck.metaClass = InvokerHelper.getMetaClass(getClass())
+        obj = processCheck.metaClass
+        assert obj
+
+        processCheck.metaClass = null
+        processCheck.inOutPuts = null
+        obj = processCheck.inOutPuts
+        assert  !obj
+    }
+
+    /**
+     * Test the {@link ProcessCheck#invokeMethod(String, Object)} methods.
+     */
+    @Test
+    void invokeMethodTest() {
+        def processCheck = new ProcessCheck(PROCESS)
+
+        assert !processCheck.invokeMethod(null, "value")
+        assert !processCheck.invokeMethod(null, null)
+        assert !processCheck.invokeMethod("setClosure", null)
+        assert !processCheck.invokeMethod("getClosure", null)
+
+        assert !processCheck.invokeMethod("setClosure", {in1, in2, in3 -> return in1+in2+in3 == 'abc'})
+        assert processCheck.invokeMethod("getClosure", null)
     }
 }

@@ -355,20 +355,18 @@ public class ProcessMapper implements IProcessMapper {
             for (IProcess process : processes) {
                 LinkedHashMap<String, Object> processInData = getInputDataMap(process, dataMap);
                 //Do the before check
-                for (IProcessCheck check : beforeList) {
-                    if (check.getProcess().getIdentifier().equals(process.getIdentifier())) {
-                        check.run(processInData);
-                    }
-                }
+                beforeList.stream()
+                        .filter(check -> check.getProcess().isPresent())
+                        .filter(check -> check.getProcess().get().getIdentifier().equals(process.getIdentifier()))
+                        .forEach(check -> check.run(processInData));
                 //Execute the process
                 process.execute(processInData);
                 storeResults(process);
                 //Do the after check
-                for (IProcessCheck check : afterList) {
-                    if (check.getProcess().getIdentifier().equals(process.getIdentifier())) {
-                        check.run(processInData);
-                    }
-                }
+                afterList.stream()
+                        .filter(check -> check.getProcess().isPresent())
+                        .filter(check -> check.getProcess().get().getIdentifier().equals(process.getIdentifier()))
+                        .forEach(check -> check.run(processInData));
             }
         }
         return true;

@@ -133,21 +133,21 @@ public class ProcessCheck implements IProcessCheck, GroovyObject {
                     .map(input -> (IInput)input)
                     .collect(Collectors.toList());
             //Then check that the default values are the same as the data in the given map
-            result = inputs.stream().allMatch(in -> in.getName().isPresent() &&
-                    in.getDefaultValue().isPresent() &&
-                    data.containsKey(in.getName().get()) &&
-                    data.get(in.getName().get()).equals(in.getDefaultValue().get()));
+            result = inputs.stream().allMatch(in -> in.getName() != null &&
+                    in.getDefaultValue() != null &&
+                    data.containsKey(in.getName()) &&
+                    data.get(in.getName()).equals(in.getDefaultValue()));
         }
         else {
             LinkedList<Object> dataList = new LinkedList<>();
             //Gather all the data (process output or input data)
             for (IInOutPut inOutPut : inOutPuts) {
-                if (inOutPut.getProcess().isPresent() &&
-                        inOutPut.getProcess().get().getOutputs().stream()
+                if (inOutPut.getProcess() != null &&
+                        inOutPut.getProcess().getOutputs().stream()
                                 .anyMatch(output -> output.getName().equals(inOutPut.getName()))) {
-                    dataList.add(inOutPut.getProcess().get().getResults().get(inOutPut.getName().get()));
-                } else if (data != null && inOutPut.getName().isPresent()) {
-                    dataList.add(data.get(inOutPut.getName().get()));
+                    dataList.add(inOutPut.getProcess().getResults().get(inOutPut.getName()));
+                } else if (data != null && inOutPut.getName() != null) {
+                    dataList.add(data.get(inOutPut.getName()));
                 }
             }
             //Execute the Closure with the gathered data.

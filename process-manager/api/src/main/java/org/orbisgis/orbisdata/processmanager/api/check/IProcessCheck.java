@@ -44,7 +44,6 @@ import org.orbisgis.orbisdata.processmanager.api.inoutput.IInOutPut;
 
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Optional;
 
 /**
@@ -61,7 +60,7 @@ public interface IProcessCheck {
     enum Action{CONTINUE, STOP}
 
     /**
-     * Run the check with output data given with {@link #setInOutputs(IInOutPut...)} and the input data from the given
+     * Run the check with output data given with {@link #setInOutPuts(IInOutPut...)} and the input data from the given
      * {@link LinkedHashMap}. On fail, return false and apply the action set with {@link #onFail(Action, String)}.
      * On success, return true and apply the action set with {@link #onSuccess(Action, String)}.
      *

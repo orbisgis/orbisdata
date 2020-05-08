@@ -38,14 +38,6 @@ package org.orbisgis.orbisdata.processmanager.process.check;
 
 import groovy.lang.Closure;
 import org.junit.jupiter.api.Test;
-import org.orbisgis.commons.annotations.NotNull;
-import org.orbisgis.commons.annotations.Nullable;
-import org.orbisgis.orbisdata.processmanager.api.IProcess;
-import org.orbisgis.orbisdata.processmanager.api.check.IProcessCheck;
-import org.orbisgis.orbisdata.processmanager.api.inoutput.IInOutPut;
-
-import java.util.LinkedHashMap;
-import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 

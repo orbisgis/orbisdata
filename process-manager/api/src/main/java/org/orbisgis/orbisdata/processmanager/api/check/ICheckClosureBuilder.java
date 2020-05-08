@@ -40,12 +40,11 @@ package org.orbisgis.orbisdata.processmanager.api.check;
 import groovy.lang.Closure;
 import org.orbisgis.commons.annotations.NotNull;
 import org.orbisgis.commons.annotations.Nullable;
-import org.orbisgis.orbisdata.processmanager.api.IProcess;
-import org.orbisgis.orbisdata.processmanager.api.IProcessMapper;
+import org.orbisgis.orbisdata.processmanager.api.inoutput.IInOutPut;
 
 /**
  * Interface for the definition of which closure is provided for the Process check execution.
- * Instance is get from the {@link ICheckDataBuilder#with(Object...)}.
+ * Instance is get from the {@link ICheckDataBuilder#with(IInOutPut...)}.
  *
  * @author Erwan Bocher (CNRS)
  * @author Sylvain PALOMINOS (UBS Lab-STICC 2019-2020)

@@ -36,6 +36,9 @@
  */
 package org.orbisgis.orbisdata.processmanager.process.check
 
+import static org.orbisgis.orbisdata.processmanager.api.check.IProcessCheck.Action.CONTINUE
+import static org.orbisgis.orbisdata.processmanager.api.check.IProcessCheck.Action.STOP
+
 import org.codehaus.groovy.runtime.InvokerHelper
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
@@ -46,9 +49,6 @@ import org.orbisgis.orbisdata.processmanager.api.inoutput.IInOutPut
 import org.orbisgis.orbisdata.processmanager.process.ProcessManager
 import org.orbisgis.orbisdata.processmanager.process.inoutput.Input
 import org.orbisgis.orbisdata.processmanager.process.inoutput.Output
-
-import static org.orbisgis.orbisdata.processmanager.api.check.IProcessCheck.Action.CONTINUE
-import static org.orbisgis.orbisdata.processmanager.api.check.IProcessCheck.Action.STOP
 /**
  * Test class dedicated to {@link ProcessCheck} class.
  *

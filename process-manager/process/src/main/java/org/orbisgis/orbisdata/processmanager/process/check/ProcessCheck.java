@@ -118,6 +118,58 @@ public class ProcessCheck implements IProcessCheck, GroovyObject {
         this.process = process;
     }
 
+    /**
+     * Return true if the Inputs are equals to given data, false otherwise.
+     *
+     * @param data {@link LinkedHashMap} containing the input data for the {@link IProcess} execution.
+     * @return True if the process should continue, false otherwise.
+     */
+    private boolean runNoClosure(@NotNull LinkedHashMap<String, Object> data) {
+        //First gather only the inputs as outputs can't be checked before any execution.
+        List<IInput> inputs = inOutPuts.stream()
+                .filter(inOutPut -> inOutPut instanceof IInput)
+                .map(input -> (IInput)input)
+                .collect(Collectors.toList());
+        //Then check that the default values are the same as the data in the given map
+        return inputs.stream().allMatch(in -> in.getName() != null &&
+                in.getDefaultValue() != null &&
+                data.containsKey(in.getName()) &&
+                data.get(in.getName()).equals(in.getDefaultValue()));
+    }
+
+    /**
+     * Execute the given closure with the given data.
+     *
+     * @param data {@link LinkedHashMap} containing the input data for the {@link IProcess} execution.
+     * @param cl   {@link Closure} to execute for the check.
+     * @return The {@link Closure} result or false if it can't be executed.
+     */
+    @Nullable
+    private Object runWithClosure(@Nullable LinkedHashMap<String, Object> data, @NotNull Closure<?> cl) {
+        LinkedList<Object> dataList = new LinkedList<>();
+        //Gather all the data (process output or input data)
+        for (IInOutPut inOutPut : inOutPuts) {
+            if (inOutPut.getProcess() != null &&
+                    inOutPut.getProcess().getOutputs().stream()
+                            .anyMatch(output -> output.getName().equals(inOutPut.getName()))) {
+                dataList.add(inOutPut.getProcess().getResults().get(inOutPut.getName()));
+            } else if (data != null && inOutPut.getName() != null) {
+                dataList.add(data.get(inOutPut.getName()));
+            }
+        }
+        //Execute the Closure with the gathered data.
+        try {
+            return cl.call(dataList.toArray());
+        } catch (Exception e) {
+            String message = "";
+            if(data == null || cl.getMaximumNumberOfParameters() > data.size()) {
+                message = "\nIt can be an invalid number of data or closure input.";
+            }
+            LOGGER.error("Unable to run the process check with the given data." + message, e);
+        }
+        return false;
+    }
+
     @Override
     public boolean run(@Nullable LinkedHashMap<String, Object> data) {
         if (cl == null && (inOutPuts.isEmpty() || data == null || data.isEmpty())) {
@@ -125,41 +177,12 @@ public class ProcessCheck implements IProcessCheck, GroovyObject {
             return false;
         }
 
-        Object result = null;
+        Object result;
         if(cl == null){
-            //First gather only the inputs as outputs can't be checked before any execution.
-            List<IInput> inputs = inOutPuts.stream()
-                    .filter(inOutPut -> inOutPut instanceof IInput)
-                    .map(input -> (IInput)input)
-                    .collect(Collectors.toList());
-            //Then check that the default values are the same as the data in the given map
-            result = inputs.stream().allMatch(in -> in.getName() != null &&
-                    in.getDefaultValue() != null &&
-                    data.containsKey(in.getName()) &&
-                    data.get(in.getName()).equals(in.getDefaultValue()));
+            result = runNoClosure(data);
         }
         else {
-            LinkedList<Object> dataList = new LinkedList<>();
-            //Gather all the data (process output or input data)
-            for (IInOutPut inOutPut : inOutPuts) {
-                if (inOutPut.getProcess() != null &&
-                        inOutPut.getProcess().getOutputs().stream()
-                                .anyMatch(output -> output.getName().equals(inOutPut.getName()))) {
-                    dataList.add(inOutPut.getProcess().getResults().get(inOutPut.getName()));
-                } else if (data != null && inOutPut.getName() != null) {
-                    dataList.add(data.get(inOutPut.getName()));
-                }
-            }
-            //Execute the Closure with the gathered data.
-            try {
-                result = cl.call(dataList.toArray());
-            } catch (Exception e) {
-                String message = "";
-                if(data == null || cl.getMaximumNumberOfParameters() > data.size()) {
-                    message = "\nIt can be an invalid number of data or closure input.";
-                }
-                LOGGER.error("Unable to run the process check with the given data." + message, e);
-            }
+            result = runWithClosure(data, cl);
         }
         if (!(result instanceof Boolean)) {
             LOGGER.error("The result of the check closure should be a boolean.");

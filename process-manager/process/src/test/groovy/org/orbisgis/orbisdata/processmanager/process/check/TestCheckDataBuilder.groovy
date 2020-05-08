@@ -60,12 +60,12 @@ class TestCheckDataBuilder {
         def dummy = new DummyProcessCheck()
         def builder = new CheckDataBuilder(dummy)
         assert builder.with(in1, in2, out1, out2)
-        assert [in1, in2, out1, out2], dummy.inputOrOutput
+        assert [in1, in2, out1, out2] == dummy.inputOrOutput
 
         dummy = new DummyProcessCheck()
         builder = new CheckDataBuilder(dummy)
         assert builder.with(out2)
-        assert [out2], dummy.inputOrOutput
+        assert [out2] == dummy.inputOrOutput
 
         dummy = new DummyProcessCheck()
         builder = new CheckDataBuilder(dummy)

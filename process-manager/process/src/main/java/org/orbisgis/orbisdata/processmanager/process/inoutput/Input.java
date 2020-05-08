@@ -60,7 +60,7 @@ public class Input extends InOutPut implements IInput {
      * @param process {@link IProcess} of the input/output.
      * @param name    Name of the input/output.
      */
-    public Input(@Nullable IProcess process, @NotNull String name) {
+    public Input(@Nullable IProcess process, @Nullable String name) {
         super(process, name);
     }
 

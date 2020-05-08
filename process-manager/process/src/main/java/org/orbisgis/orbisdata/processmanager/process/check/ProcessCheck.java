@@ -46,10 +46,10 @@ import org.orbisgis.orbisdata.processmanager.api.IProcess;
 import org.orbisgis.orbisdata.processmanager.api.check.IProcessCheck;
 import org.orbisgis.orbisdata.processmanager.api.inoutput.IInOutPut;
 import org.orbisgis.orbisdata.processmanager.api.inoutput.IInput;
+import org.orbisgis.orbisdata.processmanager.api.inoutput.IOutput;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.swing.text.html.Option;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -205,17 +205,9 @@ public class ProcessCheck implements IProcessCheck, GroovyObject {
     }
 
     @Override
-    public void setInOutPuts(@Nullable List<IInOutPut> data) {
-        if(data != null) {
-            this.inOutPuts.clear();
-            this.inOutPuts.addAll(data);
-        }
-    }
-
-    @Override
     @NotNull
-    public Optional<LinkedList<IInOutPut>> getInOutPuts() {
-        return Optional.ofNullable(inOutPuts);
+    public LinkedList<IInOutPut> getInOutPuts() {
+        return inOutPuts;
     }
 
     @Override
@@ -313,5 +305,44 @@ public class ProcessCheck implements IProcessCheck, GroovyObject {
     @Override
     public void setMetaClass(@Nullable MetaClass metaClass) {
         this.metaClass = metaClass;
+    }
+
+    @Override
+    @NotNull
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        builder.append("ProcessCheck : \n");
+        if(!getClosure().isPresent() && getInOutPuts().isEmpty()){
+            return "No check can be run as there is no closure nor in/outputs set.";
+        }
+        if(getProcess().isPresent()) {
+            //If there is a process, get the name. If the name is null, use the process id.
+            String processName = getProcess().get().getTitle() != null ?
+                    getProcess().get().getTitle() :
+                    getProcess().get().getIdentifier();
+            builder.append("On process :")
+                    .append(processName)
+                    .append("\n");
+        }
+        if(!getInOutPuts().isEmpty()) {
+            builder.append("Check that inputs :\n");
+            inOutPuts.stream()
+                    .filter(inOutPut -> inOutPut instanceof IInput)
+                    .forEach(inOutPut -> builder.append("\t").append(inOutPut.getName()).append("\n"));
+
+            if (getProcess().isPresent()) {
+                builder.append("and output :\n");
+                inOutPuts.stream()
+                        .filter(inOutPut -> inOutPut instanceof IOutput)
+                        .forEach(inOutPut -> builder.append("\t").append(inOutPut.getName()).append("\n"));
+            }
+        }
+        if (getClosure().isPresent()) {
+            builder.append("Verifies a closure");
+        }
+        else {
+            builder.append("are equals to provided data.");
+        }
+        return builder.toString();
     }
 }

@@ -111,19 +111,12 @@ public interface IProcessCheck {
     void setInOutPuts(@Nullable IInOutPut... inputOrOutput);
 
     /**
-     * Sets the input and output to use inside the check.
-     *
-     * @param inputOrOutput Input or output list to use for the check.
-     */
-    void setInOutPuts(@Nullable List<IInOutPut> inputOrOutput);
-
-    /**
      * Returns the input and output to use inside the check.
      *
      * @return The input or output list to use for the check.
      */
     @NotNull
-    Optional<LinkedList<IInOutPut>> getInOutPuts();
+    LinkedList<IInOutPut> getInOutPuts();
 
     /**
      * Set the {@link Closure} to call to execute the check.

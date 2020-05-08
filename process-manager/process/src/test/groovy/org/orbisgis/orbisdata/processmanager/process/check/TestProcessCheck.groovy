@@ -47,29 +47,8 @@ import org.orbisgis.orbisdata.processmanager.process.ProcessManager
 import org.orbisgis.orbisdata.processmanager.process.inoutput.Input
 import org.orbisgis.orbisdata.processmanager.process.inoutput.Output
 
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow
-import static org.junit.jupiter.api.Assertions.assertEquals
-import static org.junit.jupiter.api.Assertions.assertFalse
-import static org.junit.jupiter.api.Assertions.assertFalse
-import static org.junit.jupiter.api.Assertions.assertNotNull
-import static org.junit.jupiter.api.Assertions.assertNotNull
-import static org.junit.jupiter.api.Assertions.assertNotNull
-import static org.junit.jupiter.api.Assertions.assertNull
-import static org.junit.jupiter.api.Assertions.assertNull
-import static org.junit.jupiter.api.Assertions.assertNull
-import static org.junit.jupiter.api.Assertions.assertNull
-import static org.junit.jupiter.api.Assertions.assertNull
-import static org.junit.jupiter.api.Assertions.assertNull
-import static org.junit.jupiter.api.Assertions.assertNull
-import static org.junit.jupiter.api.Assertions.assertNull
-import static org.junit.jupiter.api.Assertions.assertNull
-import static org.junit.jupiter.api.Assertions.assertNull
-import static org.junit.jupiter.api.Assertions.assertNull
-import static org.junit.jupiter.api.Assertions.assertNull
-import static org.junit.jupiter.api.Assertions.assertTrue
-import static org.junit.jupiter.api.Assertions.assertTrue
-import static org.junit.jupiter.api.Assertions.assertTrue
-import static org.orbisgis.orbisdata.processmanager.api.check.IProcessCheck.Action.*
+import static org.orbisgis.orbisdata.processmanager.api.check.IProcessCheck.Action.CONTINUE
+import static org.orbisgis.orbisdata.processmanager.api.check.IProcessCheck.Action.STOP
 /**
  * Test class dedicated to {@link ProcessCheck} class.
  *

@@ -50,7 +50,6 @@ import org.orbisgis.orbisdata.processmanager.process.ProcessManager;
 import org.orbisgis.orbisdata.processmanager.process.inoutput.Input;
 import org.orbisgis.orbisdata.processmanager.process.inoutput.Output;
 
-import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Optional;
@@ -179,8 +178,7 @@ public class ProcessCheckTest {
         processCheck.setClosure(null);
         assertFalse(processCheck.getClosure().isPresent());
         processCheck.setInOutPuts((IInOutPut[]) null);
-        assertTrue(processCheck.getInOutPuts().isPresent());
-        assertTrue(processCheck.getInOutPuts().get().isEmpty());
+        assertTrue(processCheck.getInOutPuts().isEmpty());
         assertFalse(processCheck.run(null));
         assertFalse(processCheck.run(new LinkedHashMap<>()));
         assertFalse(processCheck.run(map));
@@ -213,8 +211,7 @@ public class ProcessCheckTest {
         assertTrue(processCheck.getClosure().isPresent());
         assertEquals(cl, processCheck.getClosure().get());
         processCheck.setInOutPuts(inOutPuts);
-        assertTrue(processCheck.getInOutPuts().isPresent());
-        assertEquals(3, processCheck.getInOutPuts().get().size());
+        assertEquals(3, processCheck.getInOutPuts().size());
         assertTrue(processCheck.run(null));
         assertTrue(processCheck.run(new LinkedHashMap<>()));
         assertTrue(processCheck.run(map));
@@ -385,5 +382,146 @@ public class ProcessCheckTest {
         assertNull(processCheck.invokeMethod("getClosure", null));
         assertNull(processCheck.invokeMethod("setClosure", cl));
         assertNull(processCheck.invokeMethod("getClosure", null));
+    }
+
+    /**
+     * Test the {@link ProcessCheck#toString()} method.
+     */
+    @Test
+    public void toStringTest() {
+        String str = "{in1, in2, in3 -> return in1+in2+in3 == 'abc'}";
+        Closure<?> cl = (Closure<?>) new GroovyShell().evaluate(new GroovyCodeSource(str, "script", ""));
+
+        IInOutPut[] inOutPuts = new IInOutPut[]{
+                new Input(PROCESS, "in1").optional("a"),
+                new Input(PROCESS, "in2"),
+                new Input(PROCESS, "in3").optional("c"),
+                new Output(PROCESS, "out1")};
+
+        ProcessCheck processCheck = new ProcessCheck(null);
+        processCheck.setClosure(null);
+        processCheck.setInOutPuts((IInOutPut[]) null);
+        assertEquals("No check can be run as there is no closure nor in/outputs set.", processCheck.toString());
+
+        processCheck = new ProcessCheck(null);
+        processCheck.setClosure(null);
+        processCheck.setInOutPuts(inOutPuts);
+        assertEquals("ProcessCheck : \n" +
+                "Check that inputs :\n" +
+                "\tin1\n" +
+                "\tin2\n" +
+                "\tin3\n" +
+                "are equals to provided data.", processCheck.toString());
+
+        processCheck = new ProcessCheck(null);
+        processCheck.setClosure(cl);
+        processCheck.setInOutPuts((IInOutPut[]) null);
+        assertEquals("ProcessCheck : \n" +
+                "Verifies a closure"
+                , processCheck.toString());
+
+        processCheck = new ProcessCheck(null);
+        processCheck.setClosure(cl);
+        processCheck.setInOutPuts(inOutPuts);
+        assertEquals("ProcessCheck : \n" +
+                "Check that inputs :\n" +
+                "\tin1\n" +
+                "\tin2\n" +
+                "\tin3\n" +
+                "Verifies a closure", processCheck.toString());
+
+        processCheck = new ProcessCheck(PROCESS);
+        assertTrue(processCheck.getProcess().isPresent());
+        processCheck.setClosure(null);
+        processCheck.setInOutPuts((IInOutPut[]) null);
+        assertEquals("No check can be run as there is no closure nor in/outputs set.", processCheck.toString());
+
+        processCheck = new ProcessCheck(PROCESS);
+        processCheck.setClosure(null);
+        processCheck.setInOutPuts(inOutPuts);
+        assertEquals("ProcessCheck : \n" +
+                "On process :" + processCheck.getProcess().get().getIdentifier() + "\n" +
+                "Check that inputs :\n" +
+                "\tin1\n" +
+                "\tin2\n" +
+                "\tin3\n" +
+                "and output :\n" +
+                "\tout1\n" +
+                "are equals to provided data.", processCheck.toString());
+
+        processCheck = new ProcessCheck(PROCESS);
+        processCheck.setClosure(cl);
+        processCheck.setInOutPuts((IInOutPut[]) null);
+        assertEquals("ProcessCheck : \n" +
+                "On process :" + processCheck.getProcess().get().getIdentifier() + "\n" +
+                "Verifies a closure", processCheck.toString());
+
+        processCheck = new ProcessCheck(PROCESS);
+        processCheck.setClosure(cl);
+        processCheck.setInOutPuts(inOutPuts);
+        assertEquals("ProcessCheck : \n" +
+                "On process :" + processCheck.getProcess().get().getIdentifier() + "\n" +
+                "Check that inputs :\n" +
+                "\tin1\n" +
+                "\tin2\n" +
+                "\tin3\n" +
+                "and output :\n" +
+                "\tout1\n" +
+                "Verifies a closure", processCheck.toString());
+
+
+        LinkedHashMap<String, Object> outputs = new LinkedHashMap<>();
+        outputs.put("out1", new Output());
+
+        LinkedHashMap<String, Object> inputs = new LinkedHashMap<>();
+        inputs.put("in1", new Input());
+        inputs.put("in2", new Input());
+        inputs.put("in3", new Input());
+        IProcess namedProcess = ProcessManager.createFactory()
+                .create()
+                .title("namedProcess")
+                .outputs(outputs)
+                .inputs(inputs)
+                .run(cl)
+                .getProcess();
+
+        processCheck = new ProcessCheck(namedProcess);
+        assertTrue(processCheck.getProcess().isPresent());
+        processCheck.setClosure(null);
+        processCheck.setInOutPuts((IInOutPut[]) null);
+        assertEquals("No check can be run as there is no closure nor in/outputs set.", processCheck.toString());
+
+        processCheck = new ProcessCheck(namedProcess);
+        processCheck.setClosure(null);
+        processCheck.setInOutPuts(inOutPuts);
+        assertEquals("ProcessCheck : \n" +
+                "On process :namedProcess\n" +
+                "Check that inputs :\n" +
+                "\tin1\n" +
+                "\tin2\n" +
+                "\tin3\n" +
+                "and output :\n" +
+                "\tout1\n" +
+                "are equals to provided data.", processCheck.toString());
+
+        processCheck = new ProcessCheck(namedProcess);
+        processCheck.setClosure(cl);
+        processCheck.setInOutPuts((IInOutPut[]) null);
+        assertEquals("ProcessCheck : \n" +
+                "On process :namedProcess\n" +
+                "Verifies a closure", processCheck.toString());
+
+        processCheck = new ProcessCheck(namedProcess);
+        processCheck.setClosure(cl);
+        processCheck.setInOutPuts(inOutPuts);
+        assertEquals("ProcessCheck : \n" +
+                "On process :namedProcess\n" +
+                "Check that inputs :\n" +
+                "\tin1\n" +
+                "\tin2\n" +
+                "\tin3\n" +
+                "and output :\n" +
+                "\tout1\n" +
+                "Verifies a closure", processCheck.toString());
     }
 }

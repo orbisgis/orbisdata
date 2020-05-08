@@ -74,15 +74,10 @@ public class DummyProcessCheck implements IProcessCheck {
         this.inputOrOutput = inputOrOutput;
     }
 
-    @Override
-    public void setInOutPuts(@Nullable List<IInOutPut> inputOrOutput) {
-
-    }
-
     @NotNull
     @Override
-    public Optional<LinkedList<IInOutPut>> getInOutPuts() {
-        return Optional.empty();
+    public LinkedList<IInOutPut> getInOutPuts() {
+        return new LinkedList<>();
     }
 
     @Override

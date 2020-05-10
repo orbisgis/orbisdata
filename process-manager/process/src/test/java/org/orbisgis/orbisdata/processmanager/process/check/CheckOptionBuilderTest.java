@@ -36,18 +36,8 @@
  */
 package org.orbisgis.orbisdata.processmanager.process.check;
 
-import groovy.lang.Closure;
-import groovy.lang.GroovyShell;
 import org.junit.jupiter.api.Test;
-import org.orbisgis.orbisdata.processmanager.api.check.ICheckClosureBuilder;
-import org.orbisgis.orbisdata.processmanager.api.check.ICheckDataBuilder;
-import org.orbisgis.orbisdata.processmanager.api.check.ICheckOptionBuilder;
 import org.orbisgis.orbisdata.processmanager.api.check.IProcessCheck;
-import org.orbisgis.orbisdata.processmanager.process.Process;
-import org.orbisgis.orbisdata.processmanager.process.ProcessManager;
-import org.orbisgis.orbisdata.processmanager.process.ProcessMapper;
-
-import java.util.LinkedHashMap;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -55,115 +45,135 @@ import static org.junit.jupiter.api.Assertions.*;
  * Test class dedicated to {@link CheckOptionBuilder} class.
  *
  * @author Erwan Bocher (CNRS)
- * @author Sylvain PALOMINOS (UBS 2019)
+ * @author Sylvain PALOMINOS (UBS 2019-2020)
  */
 public class CheckOptionBuilderTest {
 
     /**
-     * Test the building of the check options.
+     * Test the {@link CheckOptionBuilder#stopOnFail()}, {@link CheckOptionBuilder#stopOnFail(String)},
+     * {@link CheckOptionBuilder#continueOnFail()}, {@link CheckOptionBuilder#continueOnFail(String)}methods.
      */
     @Test
-    public void buildingTest() {
-        ICheckDataBuilder dataBuilder = new ProcessMapper().after(null);
-        assertNotNull(dataBuilder);
+    public void onFailTest() {
+        String failMessage = "Fail Message";
+        String successMessage = "Success Message";
 
-        ICheckClosureBuilder closureBuilder = dataBuilder.with("toto", "tata");
-        assertNotNull(closureBuilder);
+        DummyProcessCheck dummy = new DummyProcessCheck(null);
+        CheckOptionBuilder builder = new CheckOptionBuilder(dummy);
+        assertNotNull(builder.stopOnFail());
+        assertEquals(IProcessCheck.Action.STOP, dummy.failAction);
+        assertNull(dummy.failMessage);
 
-        ICheckOptionBuilder optionBuilder = closureBuilder.check((Closure) new GroovyShell().evaluate("({true})"));
-        assertNotNull(optionBuilder);
+        dummy = new DummyProcessCheck(null);
+        builder = new CheckOptionBuilder(dummy);
+        assertNotNull(builder.stopOnFail(failMessage));
+        assertEquals(IProcessCheck.Action.STOP, dummy.failAction);
+        assertEquals(failMessage, dummy.failMessage);
 
-        optionBuilder = optionBuilder.continueOnFail("continue");
-        assertNotNull(optionBuilder);
+        dummy = new DummyProcessCheck(null);
+        builder = new CheckOptionBuilder(dummy);
+        assertNotNull(builder.stopOnFail());
+        assertEquals(IProcessCheck.Action.STOP, dummy.failAction);
+        assertNull(dummy.failMessage);
 
-        optionBuilder = optionBuilder.continueOnSuccess("continue");
-        assertNotNull(optionBuilder);
+        dummy = new DummyProcessCheck(null);
+        builder = new CheckOptionBuilder(dummy);
+        assertNotNull(builder.stopOnFail(null));
+        assertEquals(IProcessCheck.Action.STOP, dummy.failAction);
+        assertNull(dummy.failMessage);
 
-        optionBuilder = optionBuilder.stopOnFail("continue");
-        assertNotNull(optionBuilder);
+        dummy = new DummyProcessCheck(null);
+        builder = new CheckOptionBuilder(dummy);
+        assertNotNull(builder.stopOnFail());
+        assertEquals(IProcessCheck.Action.STOP, dummy.failAction);
+        assertNull(dummy.failMessage);
 
-        optionBuilder = optionBuilder.stopOnSuccess("continue");
-        assertNotNull(optionBuilder);
+        dummy = new DummyProcessCheck(null);
+        builder = new CheckOptionBuilder(dummy);
+        assertNotNull(builder.continueOnFail(successMessage));
+        assertEquals(IProcessCheck.Action.CONTINUE, dummy.failAction);
+        assertEquals(successMessage, dummy.failMessage);
+
+        dummy = new DummyProcessCheck(null);
+        builder = new CheckOptionBuilder(dummy);
+        assertNotNull(builder.continueOnFail());
+        assertEquals(IProcessCheck.Action.CONTINUE, dummy.failAction);
+        assertNull(dummy.failMessage);
+
+        dummy = new DummyProcessCheck(null);
+        builder = new CheckOptionBuilder(dummy);
+        assertNotNull(builder.continueOnFail(null));
+        assertEquals(IProcessCheck.Action.CONTINUE, dummy.failAction);
+        assertNull(dummy.failMessage);
+
+        dummy = new DummyProcessCheck(null);
+        builder = new CheckOptionBuilder(dummy);
+        assertNotNull(builder.continueOnFail());
+        assertEquals(IProcessCheck.Action.CONTINUE, dummy.failAction);
+        assertNull(dummy.failMessage);
     }
 
     /**
-     * Test the {@link ProcessCheck} class.
+     * Test the {@link CheckOptionBuilder#stopOnSuccess()}, {@link CheckOptionBuilder#stopOnSuccess(String)},
+     * {@link CheckOptionBuilder#continueOnSuccess()}, {@link CheckOptionBuilder#continueOnSuccess(String)}methods.
      */
     @Test
-    public void processCheckTest() {
-        ProcessCheck processCheck = new ProcessCheck(null);
-        assertNull(processCheck.getProcess());
+    public void onSuccessTest() {
+        String failMessage = "Fail Message";
+        String successMessage = "Success Message";
 
-        processCheck.setClosure(null);
-        ProcessCheck finalProcessCheck = processCheck;
-        assertThrows(IllegalStateException.class, () -> finalProcessCheck.run(null));
+        DummyProcessCheck dummy = new DummyProcessCheck(null);
+        CheckOptionBuilder builder = new CheckOptionBuilder(dummy);
+        assertNotNull(builder.stopOnSuccess());
+        assertEquals(IProcessCheck.Action.STOP, dummy.successAction);
+        assertNull(dummy.successMessage);
 
-        processCheck.setClosure((Closure) new GroovyShell().evaluate("({1+1})"));
-        ProcessCheck finalProcessCheck2 = processCheck;
-        assertThrows(IllegalStateException.class, () -> finalProcessCheck2.run(null));
+        dummy = new DummyProcessCheck(null);
+        builder = new CheckOptionBuilder(dummy);
+        assertNotNull(builder.stopOnSuccess(failMessage));
+        assertEquals(IProcessCheck.Action.STOP, dummy.successAction);
+        assertEquals(failMessage, dummy.successMessage);
 
-        LinkedHashMap<String, Object> inputs = new LinkedHashMap<>();
-        inputs.put("toto", String.class);
-        LinkedHashMap<String, Object> outputs = new LinkedHashMap<>();
-        outputs.put("tata", String.class);
-        LinkedHashMap<String, Object> data = new LinkedHashMap<>();
-        data.put("toto", "tata");
-        data.put("tata", "toto");
-        Process process = (Process) ProcessManager.createFactory().create().inputs(inputs).outputs(outputs).getProcess();
-        processCheck = new ProcessCheck(process);
-        assertEquals(process.getIdentifier(), processCheck.getProcess().getIdentifier());
+        dummy = new DummyProcessCheck(null);
+        builder = new CheckOptionBuilder(dummy);
+        assertNotNull(builder.stopOnSuccess());
+        assertEquals(IProcessCheck.Action.STOP, dummy.successAction);
+        assertNull(dummy.successMessage);
 
-        ProcessCheck finalProcessCheck1 = processCheck;
-        processCheck.onFail(IProcessCheck.CONTINUE, "continue fail");
-        processCheck.fail();
-        processCheck.onFail(IProcessCheck.STOP, "stop fail");
-        assertThrows(IllegalStateException.class, finalProcessCheck1::fail);
-        processCheck.onSuccess(IProcessCheck.STOP, "continue success");
-        assertThrows(IllegalStateException.class, finalProcessCheck1::success);
-        processCheck.onSuccess(IProcessCheck.CONTINUE, "continue success");
-        processCheck.success();
+        dummy = new DummyProcessCheck(null);
+        builder = new CheckOptionBuilder(dummy);
+        assertNotNull(builder.stopOnSuccess(null));
+        assertEquals(IProcessCheck.Action.STOP, dummy.successAction);
+        assertNull(dummy.successMessage);
 
-        processCheck.setInOutputs(process.getProperty("toto"), process.getProperty("tata"));
-        processCheck.setClosure((Closure) new GroovyShell().evaluate("({a, b ->b == 'tata'})"));
-        processCheck.run(data);
+        dummy = new DummyProcessCheck(null);
+        builder = new CheckOptionBuilder(dummy);
+        assertNotNull(builder.stopOnSuccess());
+        assertEquals(IProcessCheck.Action.STOP, dummy.successAction);
+        assertNull(dummy.successMessage);
 
-        processCheck = new ProcessCheck(process);
-        processCheck.onFail(IProcessCheck.STOP, "stop fail");
-        processCheck.onSuccess(IProcessCheck.CONTINUE, "continue success");
-        processCheck.setInOutputs(process.getProperty("toto"), process.getProperty("tata"));
-        processCheck.setClosure((Closure) new GroovyShell().evaluate("({a, b -> b != 'tata'})"));
-        ProcessCheck finalProcessCheck3 = processCheck;
-        assertThrows(IllegalStateException.class, () -> finalProcessCheck3.run(data));
-    }
+        dummy = new DummyProcessCheck(null);
+        builder = new CheckOptionBuilder(dummy);
+        assertNotNull(builder.continueOnSuccess(successMessage));
+        assertEquals(IProcessCheck.Action.CONTINUE, dummy.successAction);
+        assertEquals(successMessage, dummy.successMessage);
 
-    /**
-     * Test fail {@link ProcessCheck} class.
-     */
-    @Test
-    public void failProcessCheckTest() {
-        LinkedHashMap<String, Object> inputs = new LinkedHashMap<>();
-        inputs.put("toto", String.class);
-        LinkedHashMap<String, Object> outputs = new LinkedHashMap<>();
-        outputs.put("tata", String.class);
-        LinkedHashMap<String, Object> data = new LinkedHashMap<>();
-        data.put("toto", "tata");
-        data.put("tata", "toto");
-        Process process = (Process) ProcessManager.createFactory().create().inputs(inputs).outputs(outputs).getProcess();
-        ProcessCheck processCheck = new ProcessCheck(process);
-        assertEquals(process.getIdentifier(), processCheck.getProcess().getIdentifier());
+        dummy = new DummyProcessCheck(null);
+        builder = new CheckOptionBuilder(dummy);
+        assertNotNull(builder.continueOnSuccess());
+        assertEquals(IProcessCheck.Action.CONTINUE, dummy.successAction);
+        assertNull(dummy.successMessage);
 
-        processCheck.onFail(IProcessCheck.STOP, "stop fail");
-        processCheck.onSuccess(IProcessCheck.CONTINUE, "continue success");
-        processCheck.setInOutputs(process.getProperty("toto"), process.getProperty("tata"));
+        dummy = new DummyProcessCheck(null);
+        builder = new CheckOptionBuilder(dummy);
+        assertNotNull(builder.continueOnSuccess(null));
+        assertEquals(IProcessCheck.Action.CONTINUE, dummy.successAction);
+        assertNull(dummy.successMessage);
 
-
-        processCheck.setClosure(null);
-        assertThrows(IllegalStateException.class, () -> processCheck.run(data));
-
-        processCheck.setClosure((Closure) new GroovyShell().evaluate("({a, b -> 'tata'})"));
-        assertThrows(IllegalStateException.class, () -> processCheck.run(data));
-
-        processCheck.setClosure((Closure) new GroovyShell().evaluate("({a, b -> false})"));
-        assertThrows(IllegalStateException.class, () -> processCheck.run(data));
+        dummy = new DummyProcessCheck(null);
+        builder = new CheckOptionBuilder(dummy);
+        assertNotNull(builder.continueOnSuccess());
+        assertEquals(IProcessCheck.Action.CONTINUE, dummy.successAction);
+        assertNull(dummy.successMessage);
     }
 }

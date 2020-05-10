@@ -40,74 +40,113 @@ import groovy.lang.Closure;
 import org.orbisgis.commons.annotations.NotNull;
 import org.orbisgis.commons.annotations.Nullable;
 import org.orbisgis.orbisdata.processmanager.api.IProcess;
+import org.orbisgis.orbisdata.processmanager.api.inoutput.IInOutPut;
 
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.Optional;
 
 /**
  * Interface for the definition of getProcess check.
  *
  * @author Erwan Bocher (CNRS)
- * @author Sylvain PALOMINOS (UBS 2019)
+ * @author Sylvain PALOMINOS (UBS Lab-STICC 2019)
  */
 public interface IProcessCheck {
 
     /**
-     * Continue action.
+     * Enumeration of the action to do after a process check.
      */
-    String CONTINUE = "CONTINUE";
-    /**
-     * Stop action.
-     */
-    String STOP = "STOP";
+    enum Action{CONTINUE, STOP}
 
     /**
-     * Run the check with output data given with {@link #setInOutputs(Object...)} and the input data from the given
-     * {@link LinkedHashMap}. On fail, exit the programme or apply the action set with {@link #onFail(String, String)}.
-     * On success, continue the programme or apply the action set with {@link #onSuccess(String, String)}.
+     * Run the check with output data given with {@link #setInOutPuts(IInOutPut...)} and the input data from the given
+     * {@link LinkedHashMap}. On fail, return false and apply the action set with {@link #onFail(Action, String)}.
+     * On success, return true and apply the action set with {@link #onSuccess(Action, String)}.
+     *
+     * I not process have been provided, the default values of the mapper input are checked. The given map represents
+     * the inputs to check as key and there default value as value.
      *
      * @param processInData {@link LinkedHashMap} containing the input data for the {@link IProcess} execution.
+     * @return True if the process should continue, false otherwise
      */
-    void run(@NotNull LinkedHashMap<String, Object> processInData);
+    boolean run(@Nullable LinkedHashMap<String, Object> processInData);
 
     /**
-     * Set the action to do on check fail.
+     * Set the action to do on check fail. If action is null, use {@link Action#STOP} by default.
      *
      * @param action  Action to do on fail.
      * @param message Message to log.
      */
-    void onFail(@NotNull String action, @Nullable String message);
+    void onFail(@Nullable Action action, @Nullable String message);
 
     /**
-     * Set the action to do on check success.
+     * Set the message on check fail. By default use {@link Action#STOP}.
+     *
+     * @param message Message to log.
+     */
+    void onFail(@Nullable String message);
+
+    /**
+     * Set the action to do on check success. If action is null, use {@link Action#STOP} by default.
      *
      * @param action  Action to do on success.
      * @param message Message to log.
      */
-    void onSuccess(@NotNull String action, @Nullable String message);
+    void onSuccess(@Nullable Action action, @Nullable String message);
+
+    /**
+     * Set the message on check success. By default use {@link Action#CONTINUE}.
+     *
+     * @param message Message to log.
+     */
+    void onSuccess(@Nullable String message);
 
     /**
      * Sets the input and output to use inside the check.
      *
      * @param inputOrOutput Input or output list to use for the check.
      */
-    void setInOutputs(@NotNull Object... inputOrOutput);
+    void setInOutPuts(@Nullable IInOutPut... inputOrOutput);
+
+    /**
+     * Returns the input and output to use inside the check.
+     *
+     * @return The input or output list to use for the check.
+     */
+    @NotNull
+    LinkedList<IInOutPut> getInOutPuts();
 
     /**
      * Set the {@link Closure} to call to execute the check.
      *
      * @param cl {@link Closure} to call to execute the check.
      */
-    void setClosure(@NotNull Closure<?> cl);
+    void setClosure(@Nullable Closure<?> cl);
 
     /**
-     * Method executed on check fail.
+     * Returns the {@link Closure} to call to execute the check.
+     *
+     * @return The {@link Closure} to call to execute the check.
      */
-    void fail();
+    @NotNull
+    Optional<Closure<?>> getClosure();
 
     /**
-     * Method executed on check success.
+     * Method executed on check fail. If process should stop, returns true, false otherwise.
+     *
+     * @return False if the process should stop, true otherwise.
+     * @throws IllegalStateException Exception thrown when check should stop.
      */
-    void success();
+    boolean fail() throws IllegalStateException;
+
+    /**
+     * Method executed on check success. If process should stop, returns true, false otherwise.
+     *
+     * @return False if the process should stop, true otherwise.
+     * @throws IllegalStateException Exception thrown when check should stop.
+     */
+    boolean success() throws IllegalStateException;
 
     /**
      * Return the {@link IProcess} concerned by the check.
@@ -115,5 +154,5 @@ public interface IProcessCheck {
      * @return The {@link IProcess} concerned by the check.
      */
     @NotNull
-    IProcess getProcess();
+    Optional<IProcess> getProcess();
 }

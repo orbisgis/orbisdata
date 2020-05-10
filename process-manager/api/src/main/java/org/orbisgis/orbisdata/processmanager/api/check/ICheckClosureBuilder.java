@@ -39,21 +39,25 @@ package org.orbisgis.orbisdata.processmanager.api.check;
 
 import groovy.lang.Closure;
 import org.orbisgis.commons.annotations.NotNull;
+import org.orbisgis.commons.annotations.Nullable;
+import org.orbisgis.orbisdata.processmanager.api.inoutput.IInOutPut;
 
 /**
- * Interface for the definition of which closure is provided for the getProcess check execution.
+ * Interface for the definition of which closure is provided for the Process check execution.
+ * Instance is get from the {@link ICheckDataBuilder#with(IInOutPut...)}.
  *
  * @author Erwan Bocher (CNRS)
- * @author Sylvain PALOMINOS (UBS 2019)
+ * @author Sylvain PALOMINOS (UBS Lab-STICC 2019-2020)
  */
 public interface ICheckClosureBuilder {
 
     /**
      * Sets the {@link Closure} to execute to perform the check.
+     * If the {@link Closure} is null, just check equality of data.
      *
      * @param cl {@link Closure} to execute to perform the check.
      * @return A {@link ICheckClosureBuilder} to continue the check building.
      */
     @NotNull
-    ICheckOptionBuilder check(@NotNull Closure<?> cl);
+    ICheckOptionBuilder check(@Nullable Closure<?> cl);
 }

@@ -7,7 +7,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static java.lang.Math.round;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 /**
  * Test class dedicated to {@link ProgressMonitor} class.

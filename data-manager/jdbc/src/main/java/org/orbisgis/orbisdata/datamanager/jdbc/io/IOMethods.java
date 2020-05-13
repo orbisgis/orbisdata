@@ -98,7 +98,7 @@ public class IOMethods {
         String enc = encoding;
         boolean isH2 = false;
         try {
-            isH2 = JDBCUtilities.isH2DataBase(connection.getMetaData());
+            isH2 = JDBCUtilities.isH2DataBase(connection);
         } catch (SQLException e) {
             LOGGER.error("Unable to get the DataBase metadata.\n" + e.getLocalizedMessage());
         }

@@ -534,10 +534,10 @@ class JdbcTableTest {
         });
 
         JdbcTable t = getBuiltTable();
-        assertTrue(t.hasColumn(COL_THE_GEOM.toUpperCase(), Point.class));
-        assertTrue(t.hasColumn(COL_THE_GEOM.toLowerCase(), Point.class));
-        assertFalse(t.hasColumn(COL_THE_GEOM2, Geometry.class));
-        assertTrue(t.hasColumn(COL_THE_GEOM2, Point.class));
+        assertTrue(t.hasColumn(COL_THE_GEOM.toUpperCase(), Geometry.class));
+        assertTrue(t.hasColumn(COL_THE_GEOM.toLowerCase(), Geometry.class));
+        assertTrue(t.hasColumn(COL_THE_GEOM2, Geometry.class));
+        assertFalse(t.hasColumn(COL_THE_GEOM2, Point.class));
         assertTrue(t.hasColumn(COL_ID, Integer.class));
         assertFalse(t.hasColumn(COL_ID, Long.class));
         assertTrue(t.hasColumn(COL_VALUE, Float.class));
@@ -739,7 +739,7 @@ class JdbcTableTest {
         JdbcTable table = getBuiltTable();
         Map<String, String> map = table.getColumnsTypes();
         String[] keys = {COL_THE_GEOM, COL_THE_GEOM2.toUpperCase(), COL_ID, COL_VALUE, COL_MEANING};
-        String[] values = {"POINT", "POINT", "INTEGER", "DOUBLE", "VARCHAR"};
+        String[] values = {"GEOMETRY", "GEOMETRY", "INTEGER", "DOUBLE", "VARCHAR"};
         assertArrayEquals(keys, map.keySet().toArray());
         assertArrayEquals(values, map.values().toArray());
 
@@ -941,7 +941,7 @@ class JdbcTableTest {
         public IJdbcSpatialTable getSpatialTable(@NotNull String tableName) {
             try {
                 if (!JDBCUtilities.tableExists(connection,
-                        TableLocation.parse(tableName, getDataBaseType().equals(DataBaseType.H2GIS)).getTable())) {
+                        TableLocation.parse(tableName, getDataBaseType().equals(DataBaseType.H2GIS)))) {
                     return null;
                 }
             } catch (SQLException e) {
@@ -962,7 +962,7 @@ class JdbcTableTest {
         @Override
         public Collection<String> getTableNames() {
             try {
-                return JDBCUtilities.getTableNames(connection.getMetaData(), null, null, null, null);
+                return JDBCUtilities.getTableNames(connection, null, null, null, null);
             } catch (SQLException e) {
 
             }
@@ -983,7 +983,7 @@ class JdbcTableTest {
         @Override
         public boolean hasTable(@NotNull String tableName) {
             try {
-                return JDBCUtilities.tableExists(connection, tableName);
+                return JDBCUtilities.tableExists(connection, org.h2gis.utilities.TableLocation.parse(tableName, true));
             } catch (SQLException ex) {
                 return false;
             }
@@ -1058,7 +1058,7 @@ class JdbcTableTest {
         @NotNull
         @Override
         public JdbcTable columns(@NotNull String... cols) {
-            return (JdbcTable) super.columns(cols);
+            return super.columns(cols);
         }
 
         @NotNull

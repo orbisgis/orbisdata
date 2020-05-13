@@ -39,7 +39,7 @@ package org.orbisgis.orbisdata.datamanager.jdbc.postgis;
 import org.h2gis.postgis_jts.ResultSetMetaDataWrapper;
 import org.h2gis.postgis_jts.ResultSetWrapper;
 import org.h2gis.postgis_jts.StatementWrapper;
-import org.h2gis.utilities.SFSUtilities;
+import org.h2gis.utilities.GeometryTableUtilities;
 import org.h2gis.utilities.SpatialResultSet;
 import org.h2gis.utilities.SpatialResultSetMetaData;
 import org.h2gis.utilities.TableLocation;
@@ -147,9 +147,14 @@ public class SpatialResultSetWrapper extends ResultSetWrapper implements Spatial
         }
 
         public int getGeometryType(int column) throws SQLException {
-            return SFSUtilities.getGeometryType(this.statement.getConnection(),
-                    new TableLocation(this.getCatalogName(column), this.getSchemaName(column),
-                            this.getTableName(column)), this.getColumnName(column));
+
+            return GeometryTableUtilities.getMetaData(
+                    this.statement.getConnection(),
+                    new TableLocation(
+                            this.getCatalogName(column),
+                            this.getSchemaName(column),
+                            this.getTableName(column)),
+                    this.getColumnName(column)).geometryTypeCode;
         }
 
         public <T> T unwrap(Class<T> iface) throws SQLException {

@@ -36,10 +36,10 @@
  */
 package org.orbisgis.orbisdata.processmanager.process.check
 
+import org.junit.jupiter.api.Test
+
 import static org.orbisgis.orbisdata.processmanager.api.check.IProcessCheck.Action.CONTINUE
 import static org.orbisgis.orbisdata.processmanager.api.check.IProcessCheck.Action.STOP
-
-import org.junit.jupiter.api.Test
 
 /**
  * Test class dedicated to {@link CheckOptionBuilder} class.

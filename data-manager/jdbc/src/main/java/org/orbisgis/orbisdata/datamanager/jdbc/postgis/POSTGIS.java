@@ -1,11 +1,10 @@
 package org.orbisgis.orbisdata.datamanager.jdbc.postgis;
 
 import org.h2gis.functions.io.utility.FileUtil;
-import org.h2gis.postgis_jts.ConnectionWrapper;
 import org.h2gis.postgis_jts.StatementWrapper;
 import org.h2gis.postgis_jts_osgi.DataSourceFactoryImpl;
+import org.h2gis.utilities.GeometryTableUtilities;
 import org.h2gis.utilities.JDBCUtilities;
-import org.h2gis.utilities.SFSUtilities;
 import org.orbisgis.commons.annotations.NotNull;
 import org.orbisgis.commons.annotations.Nullable;
 import org.orbisgis.orbisdata.datamanager.api.dataset.DataBaseType;
@@ -13,7 +12,6 @@ import org.orbisgis.orbisdata.datamanager.api.dataset.IJdbcSpatialTable;
 import org.orbisgis.orbisdata.datamanager.api.dataset.IJdbcTable;
 import org.orbisgis.orbisdata.datamanager.jdbc.JdbcDataSource;
 import org.orbisgis.orbisdata.datamanager.jdbc.TableLocation;
-import org.orbisgis.orbisdata.datamanager.jdbc.h2gis.H2GIS;
 import org.osgi.service.jdbc.DataSourceFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -180,7 +178,7 @@ public class POSTGIS extends JdbcDataSource {
         Connection connection = getConnection();
         try {
             if (!JDBCUtilities.tableExists(connection,
-                    TableLocation.parse(tableName, getDataBaseType().equals(DataBaseType.H2GIS)).getTable())) {
+                    TableLocation.parse(tableName, getDataBaseType().equals(DataBaseType.H2GIS)))) {
                 return null;
             }
         } catch (SQLException e) {
@@ -206,7 +204,7 @@ public class POSTGIS extends JdbcDataSource {
         try {
             TableLocation location = new TableLocation(Objects.requireNonNull(getLocation()).toString(), tableName);
             Connection con = getConnection();
-            if(con != null && !SFSUtilities.getGeometryFields(con, location).isEmpty()) {
+            if(con != null && !GeometryTableUtilities.getGeometryColumnNamesAndIndexes(con, location).isEmpty()) {
                 return new PostgisSpatialTable(new TableLocation(getLocation().toString(), tableName), query, statement, this);
             }
         } catch (SQLException e) {
@@ -221,7 +219,7 @@ public class POSTGIS extends JdbcDataSource {
         Connection connection = getConnection();
         try {
             if (!JDBCUtilities.tableExists(connection,
-                    TableLocation.parse(tableName, getDataBaseType().equals(DataBaseType.H2GIS)).getTable())) {
+                    TableLocation.parse(tableName, getDataBaseType().equals(DataBaseType.H2GIS)))) {
                 return null;
             }
         } catch (SQLException e) {
@@ -247,7 +245,9 @@ public class POSTGIS extends JdbcDataSource {
         try {
             TableLocation location = new TableLocation(Objects.requireNonNull(getLocation()).toString(), tableName);
             Connection con = getConnection();
-            if(con != null && !SFSUtilities.getGeometryFields(con, new TableLocation(location.toString(), tableName)).isEmpty()) {
+            if(con != null &&
+                    !GeometryTableUtilities.getGeometryColumnNamesAndIndexes(
+                            con, new TableLocation(location.toString(), tableName)).isEmpty()) {
                 return new PostgisSpatialTable(new TableLocation(this.getLocation().toString(), tableName), query, statement, this);
             }
         } catch (SQLException e) {
@@ -261,7 +261,7 @@ public class POSTGIS extends JdbcDataSource {
     @Override
     public boolean hasTable(@NotNull String tableName) {
         try {
-            return JDBCUtilities.tableExists(getConnection(), TableLocation.parse(tableName, false).toString());
+            return JDBCUtilities.tableExists(getConnection(), TableLocation.parse(tableName, false));
         } catch (SQLException ex) {
             LOGGER.error("Cannot find the table '" + tableName + ".\n" +
                     ex.getLocalizedMessage());

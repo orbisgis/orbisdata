@@ -41,8 +41,9 @@ import groovy.lang.MetaClass;
 import groovy.lang.MissingMethodException;
 import org.codehaus.groovy.runtime.InvokerHelper;
 import org.h2.value.DataType;
+import org.h2gis.utilities.GeometryMetaData;
+import org.h2gis.utilities.GeometryTableUtilities;
 import org.h2gis.utilities.JDBCUtilities;
-import org.h2gis.utilities.SFSUtilities;
 import org.locationtech.jts.geom.Geometry;
 import org.orbisgis.commons.annotations.NotNull;
 import org.orbisgis.commons.annotations.Nullable;
@@ -300,7 +301,7 @@ public abstract class JdbcTable extends DefaultResultSet implements IJdbcTable<S
                 return null;
             }
             return JDBCUtilities
-                    .getFieldNames(rs.getMetaData())
+                    .getColumnNames(rs.getMetaData())
                     .stream()
                     .map(this::formatColumnName)
                     .collect(Collectors.toCollection(ArrayList::new));
@@ -391,34 +392,29 @@ public abstract class JdbcTable extends DefaultResultSet implements IJdbcTable<S
                     LOGGER.error("Unable to get the connection.");
                     return null;
                 }
-                return SFSUtilities.getGeometryTypeNameFromCode(
-                        SFSUtilities.getGeometryType(con, tableLocation, columnName));
+                return GeometryTableUtilities.getMetaData(con,
+                        TableLocation.parse(tableLocation.getTable()),
+                        TableLocation.capsIdentifier(columnName, dataBaseType.equals(DataBaseType.H2GIS))
+                ).getGeometryType();
             } catch (SQLException e) {
                 LOGGER.error("Unable to get the geometric type of the column '" + columnName + "'\n" +
                         e.getLocalizedMessage());
             }
         } else {
-            Object obj;
             try {
                 ResultSet rs = getResultSet();
                 if (rs == null) {
                     LOGGER.error("Unable to get the resultset.");
                     return null;
                 }
-                rs.beforeFirst();
-                if (!rs.next()) {
-                    LOGGER.error("No value in the resultset.");
+                Map<String, GeometryMetaData> map = GeometryTableUtilities.getMetaData(rs);
+                if(!map.containsKey(columnName)) {
+                    LOGGER.error("Unable to get data from the column '" + columnName + "'.");
                     return null;
                 }
-                obj = rs.getObject(columnName);
+                return map.get(columnName).getGeometryType();
             } catch (SQLException e) {
                 LOGGER.error("Unable to get data from the resultset.", e);
-                return null;
-            }
-            if (obj instanceof Geometry) {
-                return SFSUtilities.getGeometryTypeNameFromCode(SFSUtilities.getGeometryTypeFromGeometry((Geometry) obj));
-            } else {
-                LOGGER.error("The get geometry is null.");
                 return null;
             }
         }
@@ -433,17 +429,18 @@ public abstract class JdbcTable extends DefaultResultSet implements IJdbcTable<S
 
     @Override
     public boolean hasColumn(@NotNull String columnName, @NotNull Class<?> clazz) {
-        if (!hasColumn(columnName)) {
+        String name = TableLocation.capsIdentifier(columnName, dataBaseType.equals(DataBaseType.H2GIS));
+        if (!hasColumn(name)) {
             return false;
         }
         if (Geometry.class.isAssignableFrom(clazz)) {
-            String str = getGeometricType(columnName);
+            String str = getGeometricType(name);
             return clazz.getSimpleName().equalsIgnoreCase(str) ||
                     (clazz.getSimpleName() + "Z").equalsIgnoreCase(str) ||
                     (clazz.getSimpleName() + "M").equalsIgnoreCase(str) ||
                     (clazz.getSimpleName() + "ZM").equalsIgnoreCase(str);
         } else {
-            DataType dataType = getColumnDataType(columnName);
+            DataType dataType = getColumnDataType(name);
             if (dataType == null) {
                 return false;
             }

@@ -36,7 +36,7 @@
  */
 package org.orbisgis.orbisdata.datamanager.jdbc;
 
-import org.h2gis.utilities.SFSUtilities;
+import org.h2gis.utilities.GeometryTableUtilities;
 import org.h2gis.utilities.SpatialResultSet;
 import org.h2gis.utilities.SpatialResultSetMetaData;
 import org.locationtech.jts.geom.Envelope;
@@ -51,7 +51,10 @@ import org.orbisgis.orbisdata.datamanager.jdbc.resultset.StreamResultSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -163,7 +166,7 @@ public abstract class JdbcSpatialTable extends JdbcTable implements IJdbcSpatial
             try {
                 ResultSet rs = getResultSet();
                 if(rs != null) {
-                    return SFSUtilities.getGeometryFields(rs);
+                    return new ArrayList<>(GeometryTableUtilities.getGeometryColumnNames(rs.getMetaData()));
                 }
             } catch (SQLException e) {
                 LOGGER.error("Unable to get the geometric columns on ResultSet.", e);
@@ -175,7 +178,7 @@ public abstract class JdbcSpatialTable extends JdbcTable implements IJdbcSpatial
                     LOGGER.error("Unable to get connection for the geometric columns.");
                     return null;
                 }
-                return SFSUtilities.getGeometryFields(con, getTableLocation());
+                return new ArrayList<>(GeometryTableUtilities.getGeometryColumnNames(con, getTableLocation()));
             } catch (SQLException e) {
                 LOGGER.error("Unable to get the geometric columns.", e);
             }
@@ -197,7 +200,7 @@ public abstract class JdbcSpatialTable extends JdbcTable implements IJdbcSpatial
                     LOGGER.error("Unable to get the ResultSet.");
                     return null;
                 }
-                List<String> names = SFSUtilities.getGeometryFields(rs0);
+                List<String> names = new ArrayList<>(GeometryTableUtilities.getGeometryColumnNames(rs0.getMetaData()));
                 if (names.isEmpty()) {
                     LOGGER.error("There is no geometric field.");
                     return null;
@@ -220,12 +223,12 @@ public abstract class JdbcSpatialTable extends JdbcTable implements IJdbcSpatial
                     LOGGER.error("Unable to get connection for the geometric field.");
                     return null;
                 }
-                List<String> names = SFSUtilities.getGeometryFields(con, getTableLocation());
+                List<String> names = new ArrayList<>(GeometryTableUtilities.getGeometryColumnNames(con, getTableLocation()));
                 if (names.isEmpty()) {
                     LOGGER.error("There is no geometric field.");
                     return null;
                 }
-                return SFSUtilities.getTableEnvelope(con, getTableLocation(), names.get(0));
+                return GeometryTableUtilities.getEnvelope(con, getTableLocation(), names.get(0));
             } catch (SQLException e) {
                 LOGGER.error("Unable to get the table estimated extend.", e);
             }
@@ -244,12 +247,12 @@ public abstract class JdbcSpatialTable extends JdbcTable implements IJdbcSpatial
                 LOGGER.error("Unable to get connection for the geometric field.");
                 return null;
             }
-            List<String> names = SFSUtilities.getGeometryFields(con, getTableLocation());
+            List<String> names = new ArrayList<>(GeometryTableUtilities.getGeometryColumnNames(con, getTableLocation()));
             if (names.isEmpty()) {
                 LOGGER.error("There is no geometric field.");
                 return null;
             }
-            return SFSUtilities.getEstimatedExtent(con, getTableLocation(), names.get(0));
+            return GeometryTableUtilities.getEstimatedExtent(con, getTableLocation(), names.get(0));
         } catch (SQLException e) {
             LOGGER.error("Unable to get the table estimated extend.", e);
         }
@@ -267,7 +270,7 @@ public abstract class JdbcSpatialTable extends JdbcTable implements IJdbcSpatial
                 LOGGER.error("Unable to get connection for the table SRID.");
                 return -1;
             }
-            return SFSUtilities.getSRID(con, getTableLocation());
+            return GeometryTableUtilities.getSRID(con, getTableLocation());
         } catch (SQLException e) {
             LOGGER.error("Unable to get the table SRID.", e);
         }
@@ -298,23 +301,14 @@ public abstract class JdbcSpatialTable extends JdbcTable implements IJdbcSpatial
     public Map<String, String> getGeometryTypes() {
         if (getTableLocation() == null) {
             try {
-                boolean isH2 = getDbType() == DataBaseType.H2GIS;
                 Map<String, String> map = new HashMap<>();
                 ResultSet rs = getResultSet();
                 if(rs == null){
                     LOGGER.error("Unable to get the ResultSet.");
                     return null;
                 }
-                ResultSetMetaData metaData = getResultSet().getMetaData();
-                for (int i = 0; i < metaData.getColumnCount(); i++) {
-                    String type;
-                    if (isH2) {
-                        type = SFSUtilities.getGeometryTypeNameFromCode(metaData.getColumnType(i));
-                    } else {
-                        type = metaData.getColumnTypeName(i).toLowerCase();
-                    }
-                    map.put(metaData.getColumnName(i), type);
-                }
+                GeometryTableUtilities.getMetaData(getResultSet())
+                        .forEach((key, value) -> map.put(key, value.getGeometryType()));
                 return map;
             } catch (SQLException e) {
                 LOGGER.error("Unable to get the metadata of the query.", e);
@@ -327,20 +321,8 @@ public abstract class JdbcSpatialTable extends JdbcTable implements IJdbcSpatial
                 LOGGER.error("Unable to get connection for the geometry types.");
                 return null;
             }
-            PreparedStatement geomStatement = SFSUtilities.prepareInformationSchemaStatement(con, getTableLocation().getCatalog(), getTableLocation().getSchema(),
-                    getTableLocation().getTable(), "geometry_columns", "");
-            ResultSet geomResultSet = geomStatement.executeQuery();
-            boolean isH2 = getDbType() == DataBaseType.H2GIS;
-            while (geomResultSet.next()) {
-                String fieldName = geomResultSet.getString("F_GEOMETRY_COLUMN");
-                String type;
-                if (isH2) {
-                    type = SFSUtilities.getGeometryTypeNameFromCode(geomResultSet.getInt("GEOMETRY_TYPE"));
-                } else {
-                    type = geomResultSet.getString("type").toLowerCase();
-                }
-                map.put(fieldName, type);
-            }
+            GeometryTableUtilities.getMetaData(con, getTableLocation())
+                    .forEach((s, meta) -> map.put(s, meta.getGeometryType()));
             return map;
         } catch (SQLException e) {
             LOGGER.error("Unable to get the geometry types.", e);

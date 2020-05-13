@@ -48,8 +48,10 @@ import groovy.transform.stc.SimpleType;
 import org.codehaus.groovy.runtime.InvokerHelper;
 import org.h2.util.ScriptReader;
 import org.h2gis.functions.io.utility.FileUtil;
-import org.h2gis.utilities.*;
+import org.h2gis.utilities.GeometryTableUtilities;
+import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.TableLocation;
+import org.h2gis.utilities.URIUtilities;
 import org.orbisgis.commons.annotations.NotNull;
 import org.orbisgis.commons.annotations.Nullable;
 import org.orbisgis.orbisdata.datamanager.api.dataset.DataBaseType;
@@ -77,7 +79,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 /**
  * Abstract class used to implements the request builder methods (select, from ...) in order to give a base to all the

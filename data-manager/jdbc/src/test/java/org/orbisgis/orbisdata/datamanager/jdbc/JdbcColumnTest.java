@@ -41,7 +41,6 @@ import org.codehaus.groovy.runtime.InvokerHelper;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.orbisgis.orbisdata.datamanager.api.dataset.ISpatialTable;
 import org.orbisgis.orbisdata.datamanager.jdbc.h2gis.H2GIS;
 
 import java.sql.SQLException;

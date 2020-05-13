@@ -67,7 +67,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Properties;
-import java.util.stream.Collectors;
 
 /**
  * Implementation of the {@link JdbcDataSource} interface dedicated to the usage of an H2/H2GIS database.

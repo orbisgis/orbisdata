@@ -43,8 +43,6 @@ import org.orbisgis.commons.annotations.Nullable;
 import org.orbisgis.orbisdata.datamanager.api.dataset.ISpatialTable;
 import org.orbisgis.orbisdata.datamanager.api.dataset.ITable;
 
-import java.sql.ResultSet;
-
 /**
  * Define the methods use to get the result of a SQL request built throw the {@link org.orbisgis.orbisdata.datamanager.api.dsl}
  * package interfaces.

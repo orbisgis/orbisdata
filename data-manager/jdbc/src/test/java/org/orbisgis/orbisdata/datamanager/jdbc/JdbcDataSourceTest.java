@@ -802,23 +802,11 @@ class JdbcDataSourceTest {
         assertTrue(names.contains("TEXT"));
 
         names = ds2.getColumnNames("JDBCDATASOURCETEST.PUBLIC.TEST");
-        assertNotNull(names);
-        assertEquals(3, names.size());
-        assertTrue(names.contains("ID"));
-        assertTrue(names.contains("THE_GEOM"));
-        assertTrue(names.contains("TEXT"));
+        assertNull(names);
         names = ds2.getColumnNames("PUBLIC.TEST");
-        assertNotNull(names);
-        assertEquals(3, names.size());
-        assertTrue(names.contains("ID"));
-        assertTrue(names.contains("THE_GEOM"));
-        assertTrue(names.contains("TEXT"));
+        assertNull(names);
         names = ds2.getColumnNames("TEST");
-        assertNotNull(names);
-        assertEquals(3, names.size());
-        assertTrue(names.contains("ID"));
-        assertTrue(names.contains("THE_GEOM"));
-        assertTrue(names.contains("TEXT"));
+        assertNull(names);
     }
 
     /**
@@ -872,7 +860,7 @@ class JdbcDataSourceTest {
         public IJdbcTable getTable(@NotNull String s) {
             ConnectionWrapper connectionWrapper = new ConnectionWrapper(this.getConnection());
             try {
-                if (!JDBCUtilities.tableExists(connectionWrapper, s)) {
+                if (!JDBCUtilities.tableExists(connectionWrapper, org.h2gis.utilities.TableLocation.parse(s, true))) {
                     return null;
                 }
             } catch (SQLException e) {
@@ -895,7 +883,7 @@ class JdbcDataSourceTest {
         public IJdbcSpatialTable getSpatialTable(@NotNull String s) {
             ConnectionWrapper connectionWrapper = new ConnectionWrapper(this.getConnection());
             try {
-                if (!JDBCUtilities.tableExists(connectionWrapper, s)) {
+                if (!JDBCUtilities.tableExists(connectionWrapper, org.h2gis.utilities.TableLocation.parse(s, true))) {
                     return null;
                 }
             } catch (SQLException e) {
@@ -918,7 +906,7 @@ class JdbcDataSourceTest {
         public boolean hasTable(@NotNull String tableName) {
             try {
                 ConnectionWrapper connectionWrapper = new ConnectionWrapper(this.getConnection());
-                return JDBCUtilities.tableExists(connectionWrapper, tableName);
+                return JDBCUtilities.tableExists(connectionWrapper, org.h2gis.utilities.TableLocation.parse(tableName, true));
             } catch (SQLException ex) {
                 return false;
             }

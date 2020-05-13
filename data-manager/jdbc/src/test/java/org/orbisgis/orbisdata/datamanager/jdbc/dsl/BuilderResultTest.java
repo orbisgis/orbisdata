@@ -39,7 +39,6 @@ package org.orbisgis.orbisdata.datamanager.jdbc.dsl;
 import groovy.sql.Sql;
 import org.h2gis.functions.factory.H2GISDBFactory;
 import org.h2gis.utilities.JDBCUtilities;
-import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.wrapper.SpatialResultSetImpl;
 import org.h2gis.utilities.wrapper.StatementWrapper;
 import org.junit.jupiter.api.Test;
@@ -103,7 +102,7 @@ public class BuilderResultTest {
             super();
             this.query = query;
             try {
-                connection = SFSUtilities.wrapConnection(H2GISDBFactory.createSpatialDataBase(BuilderResultTest.class.getSimpleName()));
+                connection = JDBCUtilities.wrapConnection(H2GISDBFactory.createSpatialDataBase(BuilderResultTest.class.getSimpleName()));
             } catch (SQLException | ClassNotFoundException e) {
                 fail(e);
             }
@@ -193,7 +192,7 @@ public class BuilderResultTest {
         public IJdbcSpatialTable getSpatialTable(@NotNull String tableName) {
             String name = TableLocation.parse(tableName, getDataBaseType().equals(DataBaseType.H2GIS)).toString(getDataBaseType().equals(DataBaseType.H2GIS));
             try {
-                if (!JDBCUtilities.tableExists(connection, name)) {
+                if (!JDBCUtilities.tableExists(connection, org.h2gis.utilities.TableLocation.parse(name, true))) {
                     return null;
                 }
             } catch (SQLException e) {
@@ -213,7 +212,7 @@ public class BuilderResultTest {
         @Override
         public Collection<String> getTableNames() {
             try {
-                return JDBCUtilities.getTableNames(connection.getMetaData(), null, null, null, null);
+                return JDBCUtilities.getTableNames(connection, null, null, null, null);
             } catch (SQLException ignored) {
             }
             return null;
@@ -233,7 +232,7 @@ public class BuilderResultTest {
         @Override
         public boolean hasTable(@NotNull String tableName) {
             try {
-                return JDBCUtilities.tableExists(connection, tableName);
+                return JDBCUtilities.tableExists(connection, org.h2gis.utilities.TableLocation.parse(tableName, true));
             } catch (SQLException ex) {
                 return false;
             }

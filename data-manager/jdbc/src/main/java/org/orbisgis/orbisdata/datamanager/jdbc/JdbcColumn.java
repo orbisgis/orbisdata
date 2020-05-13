@@ -41,7 +41,7 @@ import groovy.lang.MetaClass;
 import groovy.lang.MissingMethodException;
 import groovy.sql.GroovyRowResult;
 import org.codehaus.groovy.runtime.InvokerHelper;
-import org.h2gis.utilities.SFSUtilities;
+import org.h2gis.utilities.GeometryTableUtilities;
 import org.h2gis.utilities.TableLocation;
 import org.orbisgis.commons.annotations.Nullable;
 import org.orbisgis.orbisdata.datamanager.api.dataset.DataBaseType;
@@ -279,7 +279,7 @@ public class JdbcColumn implements IJdbcColumn, GroovyObject {
                 LOGGER.error("Unable to get connection for the table SRID.");
                 return -1;
             }
-            return SFSUtilities.getSRID(con, tableName);
+            return GeometryTableUtilities.getSRID(con, tableName);
         } catch (SQLException e) {
             LOGGER.error("Unable to get the table SRID.", e);
         }

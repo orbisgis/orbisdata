@@ -40,8 +40,8 @@ import org.h2.Driver;
 import org.h2.util.OsgiDataSourceFactory;
 import org.h2gis.functions.factory.H2GISFunctions;
 import org.h2gis.functions.io.utility.FileUtil;
+import org.h2gis.utilities.GeometryTableUtilities;
 import org.h2gis.utilities.JDBCUtilities;
-import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.wrapper.StatementWrapper;
 import org.orbisgis.commons.annotations.NotNull;
 import org.orbisgis.commons.annotations.Nullable;
@@ -67,6 +67,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Properties;
+import java.util.stream.Collectors;
 
 /**
  * Implementation of the {@link JdbcDataSource} interface dedicated to the usage of an H2/H2GIS database.
@@ -129,7 +130,7 @@ public class H2GIS extends JdbcDataSource {
         Connection connection;
         // Init spatial
         try {
-            connection = SFSUtilities.wrapConnection(dataSourceFactory.createDataSource(properties).getConnection());
+            connection = JDBCUtilities.wrapConnection(dataSourceFactory.createDataSource(properties).getConnection());
         } catch (SQLException e) {
             LOGGER.error("Unable to create the DataSource.\n" + e.getLocalizedMessage());
             return null;
@@ -184,19 +185,19 @@ public class H2GIS extends JdbcDataSource {
     private static void check(@NotNull Connection connection) {
         boolean isH2;
         try {
-            isH2 = JDBCUtilities.isH2DataBase(connection.getMetaData());
+            isH2 = JDBCUtilities.isH2DataBase(connection);
         } catch (SQLException e) {
             LOGGER.error("Unable to get DataBaseType metadata.\n" + e.getLocalizedMessage());
             return;
         }
         boolean tableExists;
         try {
-            tableExists = !JDBCUtilities.tableExists(connection, "PUBLIC.GEOMETRY_COLUMNS");
+            tableExists = JDBCUtilities.tableExists(connection, TableLocation.parse("PUBLIC.GEOMETRY_COLUMNS", isH2));
         } catch (SQLException e) {
             LOGGER.error("Unable to check if table 'PUBLIC.GEOMETRY_COLUMNS' exists.\n" + e.getLocalizedMessage());
             return;
         }
-        if (isH2 && tableExists) {
+        if (isH2 && !tableExists) {
             try {
                 H2GISFunctions.load(connection);
             } catch (SQLException e) {
@@ -250,10 +251,10 @@ public class H2GIS extends JdbcDataSource {
     @Nullable
     public IJdbcTable getTable(@NotNull String tableName) {
         Connection connection = getConnection();
-        String name = TableLocation.parse(tableName, getDataBaseType().equals(DataBaseType.H2GIS))
+        String name = org.h2gis.utilities.TableLocation.parse(tableName, getDataBaseType().equals(DataBaseType.H2GIS))
                 .toString(getDataBaseType().equals(DataBaseType.H2GIS));
         try {
-            if (!JDBCUtilities.tableExists(connection, name)) {
+            if (!JDBCUtilities.tableExists(connection, org.h2gis.utilities.TableLocation.parse(name, true))) {
                 return null;
             }
         } catch (SQLException e) {
@@ -277,9 +278,9 @@ public class H2GIS extends JdbcDataSource {
         }
         String query = String.format("SELECT * FROM %s", name);
         try {
-            TableLocation location = new TableLocation(Objects.requireNonNull(getLocation()).toString(), tableName);
+            TableLocation location = new TableLocation(Objects.requireNonNull(getLocation()).toString(), name);
             Connection con = getConnection();
-            if(con != null && !SFSUtilities.getGeometryFields(con, location).isEmpty()) {
+            if(con != null && !GeometryTableUtilities.getGeometryColumnNamesAndIndexes(con, location).isEmpty()) {
                 return new H2gisSpatialTable(new TableLocation(this.getLocation().toString(), name), query, statement, this);
             }
         } catch (SQLException e) {
@@ -309,7 +310,7 @@ public class H2GIS extends JdbcDataSource {
     public boolean hasTable(@NotNull String tableName) {
         Connection connection = getConnection();
         try {
-            return JDBCUtilities.tableExists(connection, TableLocation.parse(tableName, true).toString());
+            return JDBCUtilities.tableExists(connection, TableLocation.parse(tableName, true));
         } catch (SQLException ex) {
             LOGGER.error("Cannot find the table '" + tableName + ".\n" +
                     ex.getLocalizedMessage());

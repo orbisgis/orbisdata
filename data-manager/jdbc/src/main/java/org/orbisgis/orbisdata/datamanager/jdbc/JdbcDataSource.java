@@ -48,10 +48,8 @@ import groovy.transform.stc.SimpleType;
 import org.codehaus.groovy.runtime.InvokerHelper;
 import org.h2.util.ScriptReader;
 import org.h2gis.functions.io.utility.FileUtil;
-import org.h2gis.utilities.JDBCUtilities;
-import org.h2gis.utilities.SFSUtilities;
+import org.h2gis.utilities.*;
 import org.h2gis.utilities.TableLocation;
-import org.h2gis.utilities.URIUtilities;
 import org.orbisgis.commons.annotations.NotNull;
 import org.orbisgis.commons.annotations.Nullable;
 import org.orbisgis.orbisdata.datamanager.api.dataset.DataBaseType;
@@ -79,6 +77,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  * Abstract class used to implements the request builder methods (select, from ...) in order to give a base to all the
@@ -700,7 +699,7 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, ISe
                 LOGGER.error("Unable to get the connection.");
                 return new ArrayList<>();
             }
-            return JDBCUtilities.getTableNames(con.getMetaData(), null, null, null, null);
+            return JDBCUtilities.getTableNames(con, null, null, null, null);
         } catch (SQLException e) {
             LOGGER.error("Unable to get the database metadata.\n" + e.getLocalizedMessage());
             return new ArrayList<>();
@@ -711,7 +710,7 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, ISe
     @Nullable
     public Collection<String> getColumnNames(String location){
         try {
-            return JDBCUtilities.getFieldNames(getConnection().getMetaData(), location);
+            return JDBCUtilities.getColumnNames(getConnection(), TableLocation.parse(location, databaseType.equals(DataBaseType.H2GIS)));
         } catch (SQLException e) {
             LOGGER.error("Unable to get the column names of the table " + location + ".", e);
             return null;
@@ -727,7 +726,7 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, ISe
                 LOGGER.error("Unable to get the connection.");
                 return getTable(dataSetName);
             }
-            geomFields = SFSUtilities.getGeometryFields(con, new TableLocation(dataSetName));
+            geomFields = new ArrayList<>(GeometryTableUtilities.getGeometryColumnNames(con, new TableLocation(dataSetName)));
         } catch (SQLException e) {
             LOGGER.error("Unable to get the geometric fields.\n" + e.getLocalizedMessage());
             return getTable(dataSetName);

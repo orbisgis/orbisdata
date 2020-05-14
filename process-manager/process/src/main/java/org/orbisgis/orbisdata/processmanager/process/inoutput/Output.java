@@ -36,67 +36,66 @@
  */
 package org.orbisgis.orbisdata.processmanager.process.inoutput;
 
+import org.codehaus.groovy.runtime.InvokerHelper;
 import org.orbisgis.commons.annotations.NotNull;
 import org.orbisgis.commons.annotations.Nullable;
 import org.orbisgis.orbisdata.processmanager.api.IProcess;
 import org.orbisgis.orbisdata.processmanager.api.inoutput.IOutput;
 
-import java.util.UUID;
-
 /**
  * Implementation of the {@link IOutput} interface.
  *
  * @author Erwan Bocher (CNRS)
- * @author Sylvain PALOMINOS (UBS 2019-2020)
+ * @author Sylvain PALOMINOS (UBS Lab-STICC 2019-2020)
  */
 public class Output extends InOutPut implements IOutput {
-    /**
-     * Main constructor.
-     *
-     * @param process {@link IProcess} of the input/output.
-     * @param name    Name of the input/output.
-     */
-    public Output(@Nullable IProcess process, @NotNull String name) {
-        super(process, name);
-    }
 
     /**
-     * Empty constructor.
+     * Default constructor.
      */
     public Output() {
-        super(null, "output_" + UUID.randomUUID().toString());
-    }
-
-    @NotNull
-    public static Output call() {
-        return new Output();
+        this.metaClass = InvokerHelper.getMetaClass(Output.class);
     }
 
     @Override
     @NotNull
-    public Output setTitle(String title) {
+    public Output title(String title) {
         super.setTitle(title);
         return this;
     }
 
     @Override
     @NotNull
-    public Output setDescription(String description) {
+    public Output description(String description) {
         super.setDescription(description);
         return this;
     }
 
     @Override
     @NotNull
-    public Output setKeywords(String[] keywords) {
+    public Output keywords(String[] keywords) {
         super.setKeywords(keywords);
         return this;
     }
 
     @Override
     @NotNull
-    public Output setType(@Nullable Class<?> type) {
+    public Output type(@Nullable Class<?> type) {
         super.setType(type);
+        return this;
+    }
+
+    @Override
+    @NotNull
+    public Output name(@Nullable String name) {
+        super.setName(name);
+        return this;
+    }
+
+    @Override
+    @NotNull
+    public Output process(@Nullable IProcess process) {
+        super.setProcess(process);
         return this;
     }
 }

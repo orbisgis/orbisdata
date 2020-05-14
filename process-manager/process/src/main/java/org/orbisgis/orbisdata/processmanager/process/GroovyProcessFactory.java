@@ -49,7 +49,7 @@ import org.orbisgis.orbisdata.processmanager.api.IProcessFactory;
  * Implementation of the {@link IProcessFactory} class dedicated to Groovy.
  *
  * @author Erwan Bocher (CNRS)
- * @author Sylvain PALOMINOS (UBS 2019-2020)
+ * @author Sylvain PALOMINOS (UBS Lab-STICC 2019-2020)
  */
 public abstract class GroovyProcessFactory extends Script implements IProcessFactory {
     private final ProcessFactory factory = new ProcessFactory();

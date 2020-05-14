@@ -54,7 +54,7 @@ import java.util.Map;
  * Implementation of IProcessManager as a singleton.
  *
  * @author Erwan Bocher (CNRS)
- * @author Sylvain PALOMINOS (UBS 2019-2020)
+ * @author Sylvain PALOMINOS (UBS Lab-STICC 2019-2020)
  */
 public class ProcessManager implements IProcessManager {
 

@@ -138,9 +138,9 @@ class TestProcessCheck {
 
         def emptyInOutPuts = []
         def inOutPuts = [
-                new Input(PROCESS, "in1").optional("a"),
-                new Input(PROCESS, "in2"),
-                new Input(PROCESS, "in3").optional("c")]
+                new Input().process(PROCESS).name("in1").optional("a"),
+                new Input().process(PROCESS).name("in2"),
+                new Input().process(PROCESS).name("in3").optional("c")]
 
         def processCheck = new ProcessCheck(PROCESS)
 
@@ -187,15 +187,15 @@ class TestProcessCheck {
 
         //Test that check without closure fail when required
         def inOutPutsOpt = [
-                new Input(PROCESS, "in1").optional("a"),
-                new Input(PROCESS, "in2").optional("b"),
-                new Input(PROCESS, "in3").optional("c"),
-                new Output(PROCESS, "out1")]
+                new Input().process(PROCESS).name("in1").optional("a"),
+                new Input().process(PROCESS).name("in2").optional("b"),
+                new Input().process(PROCESS).name("in3").optional("c"),
+                new Output().process(PROCESS).name("out1")]
         def noNameInOutPuts = [
-                new Input(PROCESS, "in1").optional("a"),
-                new Input(PROCESS, null).optional("b"),
-                new Input(PROCESS, null).optional("c"),
-                new Output(PROCESS, "out1")]
+                new Input().process(PROCESS).name("in1").optional("a"),
+                new Input().process(PROCESS).optional("b"),
+                new Input().process(PROCESS).optional("c"),
+                new Output().process(PROCESS).name("out1")]
 
         def mapMissingInputs = [in1: "a"]
         def mapInvalidInputs = [in1: "a", in2: "a", in3: "a"]
@@ -223,10 +223,10 @@ class TestProcessCheck {
 
         //Test that check with closure fail when required
         def inOutPutsNullProcess = [
-                new Input(PROCESS, "in1").optional("a"),
-                new Input(null, "in2").optional("b"),
-                new Input(PROCESS, "in3").optional("c"),
-                new Output(PROCESS, "out1")]
+                new Input().process(PROCESS).name("in1").optional("a"),
+                new Input().name("in2").optional("b"),
+                new Input().process(PROCESS).name("in3").optional("c"),
+                new Output().process(PROCESS).name("out1")]
 
         processCheck.closure = cl
         processCheck.inOutPuts = inOutPutsNullProcess
@@ -254,21 +254,21 @@ class TestProcessCheck {
 
         processCheck.closure = null
         processCheck.inOutPuts = [
-                new Input(PROCESS, "in1").optional("a"),
-                new Input(PROCESS, "in2").optional("b"),
-                new Input(PROCESS, "in3").optional("c")]
+                new Input().process(PROCESS).name("in1").optional("a"),
+                new Input().process(PROCESS).name("in2").optional("b"),
+                new Input().process(PROCESS).name("in3").optional("c")]
         assert !processCheck.run(mapInputs)
 
         processCheck.closure = cl
         processCheck.inOutPuts = [
-                new Input(PROCESS, "in1"),
-                new Input(PROCESS, "in2"),
-                new Input(PROCESS, "in3")]
+                new Input().process(PROCESS).name("in1"),
+                new Input().process(PROCESS).name("in2"),
+                new Input().process(PROCESS).name("in3")]
         assert !processCheck.run(mapInputs)
 
         assert PROCESS.execute(mapInputs)
         processCheck.closure = {out1 -> return out1 == 'abc'}
-        processCheck.inOutPuts = [new Output(PROCESS, "out1")]
+        processCheck.inOutPuts = [new Output().process(PROCESS).name("out1")]
         assert !processCheck.run(mapInputs)
     }
 

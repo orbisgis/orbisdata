@@ -224,17 +224,17 @@ public class ProcessMapperTest {
         assertTrue(mapper.call(dataMap));
 
         assertEquals(5, mapper.getInputs().size());
-        assertTrue(mapper.getInputs().stream().anyMatch(input -> input.getName().equals("inA1")));
-        assertTrue(mapper.getInputs().stream().anyMatch(input -> input.getName().equals("inA2")));
-        assertTrue(mapper.getInputs().stream().anyMatch(input -> input.getName().equals("inputD")));
-        assertTrue(mapper.getInputs().stream().anyMatch(input -> input.getName().equals("inputK")));
-        assertTrue(mapper.getInputs().stream().anyMatch(input -> input.getName().equals("commonInput")));
+        assertTrue(mapper.getInputs().stream().anyMatch(input -> input.getName().get().equals("inA1")));
+        assertTrue(mapper.getInputs().stream().anyMatch(input -> input.getName().get().equals("inA2")));
+        assertTrue(mapper.getInputs().stream().anyMatch(input -> input.getName().get().equals("inputD")));
+        assertTrue(mapper.getInputs().stream().anyMatch(input -> input.getName().get().equals("inputK")));
+        assertTrue(mapper.getInputs().stream().anyMatch(input -> input.getName().get().equals("commonInput")));
 
         assertEquals(4, mapper.getOutputs().size());
-        assertTrue(mapper.getOutputs().stream().anyMatch(output -> output.getName().equals("interPA2OutA1")));
-        assertTrue(mapper.getOutputs().stream().anyMatch(output -> output.getName().equals("interPA1OutA1")));
-        assertTrue(mapper.getOutputs().stream().anyMatch(output -> output.getName().equals("outD")));
-        assertTrue(mapper.getOutputs().stream().anyMatch(output -> output.getName().equals("outK")));
+        assertTrue(mapper.getOutputs().stream().anyMatch(output -> output.getName().get().equals("interPA2OutA1")));
+        assertTrue(mapper.getOutputs().stream().anyMatch(output -> output.getName().get().equals("interPA1OutA1")));
+        assertTrue(mapper.getOutputs().stream().anyMatch(output -> output.getName().get().equals("outD")));
+        assertTrue(mapper.getOutputs().stream().anyMatch(output -> output.getName().get().equals("outK")));
 
         assertFalse(mapper.getResults().containsKey("outB1"));
         assertEquals("commonD or commonK", mapper.getResults().get("outD"));
@@ -286,12 +286,12 @@ public class ProcessMapperTest {
         assertTrue(mapper.call(dataMap));
 
         assertEquals(2, mapper.getInputs().size());
-        assertTrue(mapper.getInputs().stream().anyMatch(input -> input.getName().equals("inC1")));
-        assertTrue(mapper.getInputs().stream().anyMatch(input -> input.getName().equals("inC2")));
+        assertTrue(mapper.getInputs().stream().anyMatch(input -> input.getName().get().equals("inC1")));
+        assertTrue(mapper.getInputs().stream().anyMatch(input -> input.getName().get().equals("inC2")));
 
         assertEquals(2, mapper.getOutputs().size());
-        assertTrue(mapper.getOutputs().stream().anyMatch(output -> output.getName().equals("out")));
-        assertTrue(mapper.getOutputs().stream().anyMatch(output -> output.getName().equals("outC2")));
+        assertTrue(mapper.getOutputs().stream().anyMatch(output -> output.getName().get().equals("out")));
+        assertTrue(mapper.getOutputs().stream().anyMatch(output -> output.getName().get().equals("outC2")));
 
         assertEquals(2, mapper.getResults().size());
         assertFalse(mapper.getResults().containsKey("outC1"));

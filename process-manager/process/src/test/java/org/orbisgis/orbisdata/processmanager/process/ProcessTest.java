@@ -71,7 +71,7 @@ public class ProcessTest {
         Closure cl1 = new Closure(null) {
             @Override
             public Object call() {
-                return "minimalProcess";
+                return null;
             }
         };
 
@@ -82,9 +82,9 @@ public class ProcessTest {
                 "                return [out1:o1, out2:o2, out3:\"toto\"]}";
         Closure cl2 = (Closure) new GroovyShell().evaluate(new GroovyCodeSource(str, "script", ""));
 
-        Input in3 = Input.call().setTitle("in title").setDescription("in description")
-                .setKeywords(new String[]{"key1", "key2"}).setType(String[].class).mandatory();
-        Input in4 = Input.call().setType(Double.class).optional(3.56D);
+        Input in3 = new Input().title("in title").description("in description")
+                .keywords(new String[]{"key1", "key2"}).type(String[].class).mandatory();
+        Input in4 = new Input().type(Double.class).optional(3.56D);
 
         LinkedHashMap<String, Object> inputs = new LinkedHashMap<>();
         inputs.put("in1", 5698);
@@ -92,9 +92,9 @@ public class ProcessTest {
         inputs.put("in3", in3);
         inputs.put("in4", in4);
 
-        Output out1 = Output.call().setTitle("out title").setDescription("out description")
-                .setKeywords(new String[]{"key1", "key2"}).setType(String[].class);
-        Output out2 = Output.call().setType(int.class);
+        Output out1 = new Output().title("out title").description("out description")
+                .keywords(new String[]{"key1", "key2"}).type(String[].class);
+        Output out2 = new Output().type(int.class);
 
         LinkedHashMap<String, Object> outputs = new LinkedHashMap<>();
         outputs.put("out1", out1);
@@ -117,7 +117,7 @@ public class ProcessTest {
         };
 
         LinkedHashMap<String, Object> outputs = new LinkedHashMap<>();
-        outputs.put("out1", Output.call().setType(int.class));
+        outputs.put("out1", new Output().type(int.class));
 
         assertFalse(new Process("title", "description", new String[]{"test", "process"}, new LinkedHashMap<>(),
                 outputs, "1.0.0", cl).execute(new LinkedHashMap<>()));
@@ -144,40 +144,40 @@ public class ProcessTest {
         assertNotNull(fullProcess.getInputs());
         assertEquals(4, fullProcess.getInputs().size());
 
-        assertEquals(5698, fullProcess.getInputs().get(0).getDefaultValue());
-        assertEquals("in1", fullProcess.getInputs().get(0).getName());
-        assertEquals(Integer.class, fullProcess.getInputs().get(0).getType());
-        assertEquals(fullProcess.getIdentifier(), fullProcess.getInputs().get(0).getProcess().getIdentifier());
+        assertEquals(5698, fullProcess.getInputs().get(0).getDefaultValue().get());
+        assertEquals("in1", fullProcess.getInputs().get(0).getName().get());
+        assertEquals(Integer.class, fullProcess.getInputs().get(0).getType().get());
+        assertEquals(fullProcess.getIdentifier(), fullProcess.getInputs().get(0).getProcess().get().getIdentifier());
 
-        assertNull(fullProcess.getInputs().get(1).getDefaultValue());
-        assertEquals("in2", fullProcess.getInputs().get(1).getName());
-        assertEquals(String.class, fullProcess.getInputs().get(1).getType());
-        assertEquals(fullProcess.getIdentifier(), fullProcess.getInputs().get(1).getProcess().getIdentifier());
+        assertFalse(fullProcess.getInputs().get(1).getDefaultValue().isPresent());
+        assertEquals("in2", fullProcess.getInputs().get(1).getName().get());
+        assertEquals(String.class, fullProcess.getInputs().get(1).getType().get());
+        assertEquals(fullProcess.getIdentifier(), fullProcess.getInputs().get(1).getProcess().get().getIdentifier());
 
-        assertNull(fullProcess.getInputs().get(2).getDefaultValue());
-        assertEquals("in3", fullProcess.getInputs().get(2).getName());
-        assertEquals(String[].class, fullProcess.getInputs().get(2).getType());
-        assertEquals(fullProcess.getIdentifier(), fullProcess.getInputs().get(2).getProcess().getIdentifier());
+        assertFalse(fullProcess.getInputs().get(2).getDefaultValue().isPresent());
+        assertEquals("in3", fullProcess.getInputs().get(2).getName().get());
+        assertEquals(String[].class, fullProcess.getInputs().get(2).getType().get());
+        assertEquals(fullProcess.getIdentifier(), fullProcess.getInputs().get(2).getProcess().get().getIdentifier());
 
-        assertEquals(3.56D, fullProcess.getInputs().get(3).getDefaultValue());
-        assertEquals("in4", fullProcess.getInputs().get(3).getName());
-        assertEquals(Double.class, fullProcess.getInputs().get(3).getType());
-        assertEquals(fullProcess.getIdentifier(), fullProcess.getInputs().get(3).getProcess().getIdentifier());
+        assertEquals(3.56D, fullProcess.getInputs().get(3).getDefaultValue().get());
+        assertEquals("in4", fullProcess.getInputs().get(3).getName().get());
+        assertEquals(Double.class, fullProcess.getInputs().get(3).getType().get());
+        assertEquals(fullProcess.getIdentifier(), fullProcess.getInputs().get(3).getProcess().get().getIdentifier());
 
         assertNotNull(fullProcess.getOutputs());
         assertEquals(3, fullProcess.getOutputs().size());
 
-        assertEquals("out1", fullProcess.getOutputs().get(0).getName());
-        assertEquals(String[].class, fullProcess.getOutputs().get(0).getType());
-        assertEquals(fullProcess.getIdentifier(), fullProcess.getOutputs().get(0).getProcess().getIdentifier());
+        assertEquals("out1", fullProcess.getOutputs().get(0).getName().get());
+        assertEquals(String[].class, fullProcess.getOutputs().get(0).getType().get());
+        assertEquals(fullProcess.getIdentifier(), fullProcess.getOutputs().get(0).getProcess().get().getIdentifier());
 
-        assertEquals("out2", fullProcess.getOutputs().get(1).getName());
-        assertEquals(int.class, fullProcess.getOutputs().get(1).getType());
-        assertEquals(fullProcess.getIdentifier(), fullProcess.getOutputs().get(1).getProcess().getIdentifier());
+        assertEquals("out2", fullProcess.getOutputs().get(1).getName().get());
+        assertEquals(int.class, fullProcess.getOutputs().get(1).getType().get());
+        assertEquals(fullProcess.getIdentifier(), fullProcess.getOutputs().get(1).getProcess().get().getIdentifier());
 
-        assertEquals("out3", fullProcess.getOutputs().get(2).getName());
-        assertEquals(String.class, fullProcess.getOutputs().get(2).getType());
-        assertEquals(fullProcess.getIdentifier(), fullProcess.getOutputs().get(2).getProcess().getIdentifier());
+        assertEquals("out3", fullProcess.getOutputs().get(2).getName().get());
+        assertEquals(String.class, fullProcess.getOutputs().get(2).getType().get());
+        assertEquals(fullProcess.getIdentifier(), fullProcess.getOutputs().get(2).getProcess().get().getIdentifier());
 
         assertEquals("1.0.0", fullProcess.getVersion());
 
@@ -196,33 +196,33 @@ public class ProcessTest {
         assertNotNull(mapper.getInputs());
         assertEquals(4, mapper.getInputs().size());
 
-        assertEquals(5698, mapper.getInputs().get(0).getDefaultValue());
-        assertEquals("in1", mapper.getInputs().get(0).getName());
-        assertEquals(Integer.class, mapper.getInputs().get(0).getType());
+        assertEquals(5698, mapper.getInputs().get(0).getDefaultValue().get());
+        assertEquals("in1", mapper.getInputs().get(0).getName().get());
+        assertEquals(Integer.class, mapper.getInputs().get(0).getType().get());
 
-        assertNull(mapper.getInputs().get(1).getDefaultValue());
-        assertEquals("in2", mapper.getInputs().get(1).getName());
-        assertEquals(String.class, mapper.getInputs().get(1).getType());
+        assertFalse(mapper.getInputs().get(1).getDefaultValue().isPresent());
+        assertEquals("in2", mapper.getInputs().get(1).getName().get());
+        assertEquals(String.class, mapper.getInputs().get(1).getType().get());
 
-        assertNull(mapper.getInputs().get(2).getDefaultValue());
-        assertEquals("in3", mapper.getInputs().get(2).getName());
-        assertEquals(String[].class, mapper.getInputs().get(2).getType());
+        assertFalse(mapper.getInputs().get(2).getDefaultValue().isPresent());
+        assertEquals("in3", mapper.getInputs().get(2).getName().get());
+        assertEquals(String[].class, mapper.getInputs().get(2).getType().get());
 
-        assertEquals(3.56D, mapper.getInputs().get(3).getDefaultValue());
-        assertEquals("in4", mapper.getInputs().get(3).getName());
-        assertEquals(Double.class, mapper.getInputs().get(3).getType());
+        assertEquals(3.56D, mapper.getInputs().get(3).getDefaultValue().get());
+        assertEquals("in4", mapper.getInputs().get(3).getName().get());
+        assertEquals(Double.class, mapper.getInputs().get(3).getType().get());
 
         assertNotNull(mapper.getOutputs());
         assertEquals(3, mapper.getOutputs().size());
 
-        assertEquals("out1", mapper.getOutputs().get(0).getName());
-        assertEquals(String[].class, mapper.getOutputs().get(0).getType());
+        assertEquals("out1", mapper.getOutputs().get(0).getName().get());
+        assertEquals(String[].class, mapper.getOutputs().get(0).getType().get());
 
-        assertEquals("out2", mapper.getOutputs().get(1).getName());
-        assertEquals(int.class, mapper.getOutputs().get(1).getType());
+        assertEquals("out2", mapper.getOutputs().get(1).getName().get());
+        assertEquals(int.class, mapper.getOutputs().get(1).getType().get());
 
-        assertEquals("out3", mapper.getOutputs().get(2).getName());
-        assertEquals(String.class, mapper.getOutputs().get(2).getType());
+        assertEquals("out3", mapper.getOutputs().get(2).getName().get());
+        assertEquals(String.class, mapper.getOutputs().get(2).getType().get());
 
         assertEquals(3, mapper.getResults().size());
         assertEquals("5698toto[t, a, t, a]3.56", mapper.getResults().get("out1").toString());

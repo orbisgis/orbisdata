@@ -40,11 +40,13 @@ import org.orbisgis.commons.annotations.NotNull;
 import org.orbisgis.commons.annotations.Nullable;
 import org.orbisgis.orbisdata.processmanager.api.IProcess;
 
+import java.util.Optional;
+
 /**
  * This interface defines the methods dedicated the wrapping of input/output.
  *
  * @author Erwan Bocher (CNRS)
- * @author Sylvain PALOMINOS (UBS 2019)
+ * @author Sylvain PALOMINOS (UBS Lab-STICC 2019-2020)
  */
 public interface IInOutPut {
 
@@ -54,100 +56,141 @@ public interface IInOutPut {
      * @return The input/output name.
      */
     @NotNull
-    String getName();
+    Optional<String> getName();
 
     /**
      * Sets the name of the input/output.
      *
      * @param name Name of the input/output.
      */
-    void setName(@NotNull String name);
+    void setName(@Nullable String name);
+
+    /**
+     * Sets the name of the input/output.
+     *
+     * @param name Name of the input/output.
+     * @return Itself.
+     */
+    @NotNull
+    IInOutPut name(@Nullable String name);
 
     /**
      * Return the {@link IProcess} of the input/output.
      *
      * @return The {@link IProcess} of the input/output.
      */
-    @Nullable
-    IProcess getProcess();
+    @NotNull
+    Optional<IProcess> getProcess();
 
     /**
      * Sets the {@link IProcess} of the input/output.
      *
      * @param process The {@link IProcess} of the input/output.
      */
-    void setProcess(@NotNull IProcess process);
+    void setProcess(@Nullable IProcess process);
 
     /**
-     * Sets the type of the input/output.
+     * Sets the {@link IProcess} of the input/output.
      *
-     * @param type The type of the input/output.
+     * @param process The {@link IProcess} of the input/output.
+     * @return Itself.
      */
     @NotNull
-    IInOutPut setType(@Nullable Class<?> type);
+    IInOutPut process(@Nullable IProcess process);
 
     /**
      * Return the type of the input/output.
      *
      * @return The type of the input/output.
      */
-    @Nullable
-    Class<?> getType();
+    @NotNull
+    Optional<Class<?>> getType();
 
     /**
-     * Sets the title of the input/output.
+     * Sets the type of the input/output.
      *
-     * @param title The title of the input/output.
+     * @param type The type of the input/output.
+     */
+    void setType(@Nullable Class<?> type);
+
+    /**
+     * Sets the type of the input/output.
+     *
+     * @param type The type of the input/output.
+     * @return Itself.
      */
     @NotNull
-    IInOutPut setTitle(@Nullable String title);
+    IInOutPut type(@Nullable Class<?> type);
 
     /**
      * Return the title or the input/output.
      *
      * @return The title of the input/output.
      */
-    @Nullable
-    String getTitle();
+    @NotNull
+    Optional<String> getTitle();
 
     /**
-     * Sets the description of the input/output.
+     * Sets the title of the input/output.
      *
-     * @param description The description of the input/output.
+     * @param title The title of the input/output.
+     */
+    void setTitle(@Nullable String title);
+
+    /**
+     * Sets the title of the input/output.
+     *
+     * @param title The title of the input/output.
+     * @return Itself.
      */
     @NotNull
-    IInOutPut setDescription(@Nullable String description);
+    IInOutPut title(@Nullable String title);
 
     /**
      * Return the description of the input/output.
      *
      * @return The description of the input/output.
      */
-    @Nullable
-    String getDescription();
+    @NotNull
+    Optional<String> getDescription();
 
     /**
-     * Sets the keywords of the input/output.
+     * Sets the description of the input/output.
      *
-     * @param keywords The keywords of the input/output.
+     * @param description The description of the input/output.
+     */
+    void setDescription(@Nullable String description);
+
+    /**
+     * Sets the description of the input/output.
+     *
+     * @param description The description of the input/output.
+     * @return Itself.
      */
     @NotNull
-    IInOutPut setKeywords(@Nullable String[] keywords);
+    IInOutPut description(@Nullable String description);
 
     /**
      * Return the keywords of the input/output.
      *
      * @return The keywords of the input/output.
      */
-    @Nullable
-    String[] getKeywords();
+    @NotNull
+    Optional<String[]> getKeywords();
 
     /**
-     * Methods used by groovy to simplify the syntax.
+     * Sets the keywords of the input/output.
      *
-     * @param name Name of the methods.
-     * @param args Object array of the method argument.
-     * @return Method result.
+     * @param keywords The keywords of the input/output.
      */
-    Object methodMissing(String name, Object args);
+    void setKeywords(@Nullable String[] keywords);
+
+    /**
+     * Sets the keywords of the input/output.
+     *
+     * @param keywords The keywords of the input/output.
+     * @return Itself.
+     */
+    @NotNull
+    IInOutPut keywords(@Nullable String[] keywords);
 }

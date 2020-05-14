@@ -52,15 +52,15 @@ import java.util.Optional;
  */
 public class Input extends InOutPut implements IInput {
 
+    @Nullable
+    private Object dfltValue;
+
     /**
      * Default constructor.
      */
     public Input() {
         this.metaClass = InvokerHelper.getMetaClass(Input.class);
     }
-
-    @Nullable
-    private Object dfltValue;
 
     @Override
     @NotNull

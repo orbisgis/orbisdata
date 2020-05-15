@@ -45,7 +45,6 @@ import org.orbisgis.orbisdata.processmanager.api.IProcessBuilder;
 import org.orbisgis.orbisdata.processmanager.api.IProcessFactory;
 
 import java.util.LinkedHashMap;
-import java.util.List;
 
 /**
  * Implementation of the interface {@link IProcessBuilder}.

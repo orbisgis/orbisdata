@@ -39,6 +39,7 @@ package org.orbisgis.orbisdata.processmanager.process;
 import groovy.lang.Closure;
 import org.orbisgis.commons.annotations.NotNull;
 import org.orbisgis.commons.annotations.Nullable;
+import org.orbisgis.commons.utilities.CheckUtils;
 import org.orbisgis.orbisdata.processmanager.api.IProcess;
 import org.orbisgis.orbisdata.processmanager.api.IProcessBuilder;
 import org.orbisgis.orbisdata.processmanager.api.IProcessFactory;
@@ -64,6 +65,7 @@ public class ProcessBuilder implements IProcessBuilder {
     /**
      * Title of the process.
      */
+    @Nullable
     private String title;
     /**
      * Human readable description of the process.
@@ -103,13 +105,15 @@ public class ProcessBuilder implements IProcessBuilder {
      * @param delegate Delegate for the closure.
      */
     public ProcessBuilder(@NotNull IProcessFactory factory, @NotNull Object delegate) {
+        CheckUtils.checkNotNull(factory, "The ProcessFactory should not be null.");
+        CheckUtils.checkNotNull(delegate, "The Closure delegate object should not be null.");
         this.factory = factory;
         this.delegate = delegate;
     }
 
     @Override
     @NotNull
-    public IProcessBuilder title(@NotNull String title) {
+    public IProcessBuilder title(@Nullable String title) {
         this.title = title;
         return this;
     }

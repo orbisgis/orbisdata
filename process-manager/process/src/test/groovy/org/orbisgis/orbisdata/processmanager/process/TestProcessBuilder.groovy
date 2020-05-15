@@ -52,6 +52,9 @@ class TestProcessBuilder {
     private static final Object delegate = ""
     private static final IProcessFactory factory = new ProcessFactory()
 
+    /**
+     * Test the {@link ProcessBuilder#ProcessBuilder(IProcessFactory, Object)} method.
+     */
     @Test
     void constructorTest() {
         assertDoesNotThrow() {new ProcessBuilder(factory, delegate)}
@@ -60,6 +63,9 @@ class TestProcessBuilder {
         assertThrows(IllegalArgumentException) {new ProcessBuilder(factory, null)}
     }
 
+    /**
+     * Test the {@link ProcessBuilder#title(String)} method.
+     */
     @Test
     void titleTest() {
         def processBuilder = new ProcessBuilder(factory, delegate)
@@ -69,6 +75,9 @@ class TestProcessBuilder {
         assert processBuilder == processBuilder.title(null)
     }
 
+    /**
+     * Test the {@link ProcessBuilder#description(String)} method.
+     */
     @Test
     void descriptionTest() {
         def processBuilder = new ProcessBuilder(factory, delegate)
@@ -78,6 +87,9 @@ class TestProcessBuilder {
         assert processBuilder == processBuilder.description(null)
     }
 
+    /**
+     * Test the {@link ProcessBuilder#keywords(String[])} method.
+     */
     @Test
     void keywordsTest() {
         def processBuilder = new ProcessBuilder(factory, delegate)
@@ -87,6 +99,9 @@ class TestProcessBuilder {
         assert processBuilder == processBuilder.keywords(null)
     }
 
+    /**
+     * Test the {@link ProcessBuilder#inputs(LinkedHashMap)} method.
+     */
     @Test
     void inputsTest() {
         def inputs = [in1: String, in2: String, in3: String]
@@ -98,6 +113,9 @@ class TestProcessBuilder {
         assert processBuilder == processBuilder.inputs(null)
     }
 
+    /**
+     * Test the {@link ProcessBuilder#outputs(LinkedHashMap)} method.
+     */
     @Test
     void outputsTest() {
         def outputs = [out1: String, out2: String]
@@ -109,6 +127,9 @@ class TestProcessBuilder {
         assert processBuilder == processBuilder.outputs(null)
     }
 
+    /**
+     * Test the {@link ProcessBuilder#version(String)} method.
+     */
     @Test
     void versionTest() {
         def processBuilder = new ProcessBuilder(factory, delegate)
@@ -117,6 +138,9 @@ class TestProcessBuilder {
         assert processBuilder == processBuilder.version(null)
     }
 
+    /**
+     * Test the {@link ProcessBuilder#run(Closure)} method.
+     */
     @Test
     void runTest() {
         def processBuilder = new ProcessBuilder(factory, delegate)
@@ -127,6 +151,9 @@ class TestProcessBuilder {
         assert processBuilder == processBuilder.run(cl)
     }
 
+    /**
+     * Teste the whole building chain.
+     */
     @Test
     void testProcessBuilder() {
         def inputs = [in1: String, in2: String, in3: String]

@@ -58,6 +58,9 @@ public class ProcessBuilderTest {
     private static final Object delegate = "";
     private static final IProcessFactory factory = new ProcessFactory();
 
+    /**
+     * Test the {@link ProcessBuilder#ProcessBuilder(IProcessFactory, Object)} method.
+     */
     @Test
     void constructorTest() {
         assertDoesNotThrow(() -> new ProcessBuilder(factory, delegate));
@@ -66,6 +69,9 @@ public class ProcessBuilderTest {
         assertThrows(IllegalArgumentException.class, () -> new ProcessBuilder(factory, null));
     }
 
+    /**
+     * Test the {@link ProcessBuilder#title(String)} method.
+     */
     @Test
     void titleTest() {
         ProcessBuilder processBuilder = new ProcessBuilder(factory, delegate);
@@ -75,6 +81,9 @@ public class ProcessBuilderTest {
         assertEquals(processBuilder, processBuilder.title(null));
     }
 
+    /**
+     * Test the {@link ProcessBuilder#description(String)} method.
+     */
     @Test
     void descriptionTest() {
         ProcessBuilder processBuilder = new ProcessBuilder(factory, delegate);
@@ -84,6 +93,9 @@ public class ProcessBuilderTest {
         assertEquals(processBuilder, processBuilder.description(null));
     }
 
+    /**
+     * Test the {@link ProcessBuilder#keywords(String[])} method.
+     */
     @Test
     void keywordsTest() {
         ProcessBuilder processBuilder = new ProcessBuilder(factory, delegate);
@@ -93,6 +105,9 @@ public class ProcessBuilderTest {
         assertEquals(processBuilder, processBuilder.keywords(null));
     }
 
+    /**
+     * Test the {@link ProcessBuilder#inputs(LinkedHashMap)} method.
+     */
     @Test
     void inputsTest() {
         LinkedHashMap<String, Object> inputs = new LinkedHashMap<>();
@@ -107,6 +122,9 @@ public class ProcessBuilderTest {
         assertEquals(processBuilder, processBuilder.inputs(null));
     }
 
+    /**
+     * Test the {@link ProcessBuilder#outputs(LinkedHashMap)} method.
+     */
     @Test
     void outputsTest() {
         LinkedHashMap<String, Object> outputs = new LinkedHashMap<>();
@@ -120,6 +138,9 @@ public class ProcessBuilderTest {
         assertEquals(processBuilder, processBuilder.outputs(null));
     }
 
+    /**
+     * Test the {@link ProcessBuilder#version(String)} method.
+     */
     @Test
     void versionTest() {
         ProcessBuilder processBuilder = new ProcessBuilder(factory, delegate);
@@ -128,6 +149,9 @@ public class ProcessBuilderTest {
         assertEquals(processBuilder, processBuilder.version(null));
     }
 
+    /**
+     * Test the {@link ProcessBuilder#run(Closure)} method.
+     */
     @Test
     void runTest() {
         ProcessBuilder processBuilder = new ProcessBuilder(factory, delegate);
@@ -139,6 +163,9 @@ public class ProcessBuilderTest {
         assertEquals(processBuilder, processBuilder.run(cl));
     }
 
+    /**
+     * Teste the whole building chain.
+     */
     @Test
     void testProcessBuilder() {
         LinkedHashMap<String, Object> inputs = new LinkedHashMap<>();

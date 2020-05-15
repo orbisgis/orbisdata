@@ -45,7 +45,7 @@ import org.orbisgis.commons.annotations.Nullable;
  * Instance is get from the {@link ICheckClosureBuilder#check(Closure)}.
  *
  * @author Erwan Bocher (CNRS)
- * @author Sylvain PALOMINOS (UBS Lab-STICC 2019)
+ * @author Sylvain PALOMINOS (UBS Lab-STICC 2019-2020)
  */
 public interface ICheckOptionBuilder {
 

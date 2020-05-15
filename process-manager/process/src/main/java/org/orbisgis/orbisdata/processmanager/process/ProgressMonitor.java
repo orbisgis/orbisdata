@@ -50,7 +50,7 @@ import java.util.UUID;
  * Implementation of the {@link IProgressMonitor} interface.
  *
  * @author Erwan Bocher (CNRS)
- * @author Sylvain PALOMINOS (Lab-STICC UBS 2020)
+ * @author Sylvain PALOMINOS (UBS Lab-STICC 2020)
  */
 public class ProgressMonitor implements IProgressMonitor {
 

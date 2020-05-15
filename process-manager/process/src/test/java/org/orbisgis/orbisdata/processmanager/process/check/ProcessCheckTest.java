@@ -165,9 +165,9 @@ public class ProcessCheckTest {
 
         IInOutPut[] emptyInOutPuts = new IInOutPut[]{};
         IInOutPut[] inOutPuts = new IInOutPut[]{
-                new Input(PROCESS, "in1").optional("a"),
-                new Input(PROCESS, "in2"),
-                new Input(PROCESS, "in3").optional("c")};
+                new Input().process(PROCESS).name("in1").optional("a"),
+                new Input().process(PROCESS).name("in2"),
+                new Input().process(PROCESS).name("in3").optional("c")};
 
         ProcessCheck processCheck = new ProcessCheck(PROCESS);
 
@@ -219,15 +219,15 @@ public class ProcessCheckTest {
 
         //Test that check without closure fail when required
         IInOutPut[] inOutPutsOpt = new IInOutPut[]{
-                new Input(PROCESS, "in1").optional("a"),
-                new Input(PROCESS, "in2").optional("b"),
-                new Input(PROCESS, "in3").optional("c"),
-                new Output(PROCESS, "out1")};
+                new Input().process(PROCESS).name("in1").optional("a"),
+                new Input().process(PROCESS).name("in2").optional("b"),
+                new Input().process(PROCESS).name("in3").optional("c"),
+                new Output().process(PROCESS).name("out1")};
         IInOutPut[] noNameInOutPuts = new IInOutPut[]{
-                new Input(PROCESS, "in1").optional("a"),
-                new Input(PROCESS, null).optional("b"),
-                new Input(PROCESS, null).optional("c"),
-                new Output(PROCESS, "out1")};
+                new Input().process(PROCESS).name("in1").optional("a"),
+                new Input().process(PROCESS).optional("b"),
+                new Input().process(PROCESS).optional("c"),
+                new Output().process(PROCESS).name("out1")};
 
         LinkedHashMap<String, Object> mapMissingInputs = new LinkedHashMap<>();
         mapMissingInputs.put("in1", "a");
@@ -264,10 +264,10 @@ public class ProcessCheckTest {
 
         //Test that check with closure fail when required
         IInOutPut[] inOutPutsNullProcess = new IInOutPut[]{
-                new Input(PROCESS, "in1").optional("a"),
-                new Input(null, "in2").optional("b"),
-                new Input(PROCESS, "in3").optional("c"),
-                new Output(PROCESS, "out1")};
+                new Input().process(PROCESS).name("in1").optional("a"),
+                new Input().name("in2").optional("b"),
+                new Input().process(PROCESS).name("in3").optional("c"),
+                new Output().process(PROCESS).name("out1")};
 
         processCheck.setClosure(cl);
         processCheck.setInOutPuts(inOutPutsNullProcess);
@@ -301,16 +301,16 @@ public class ProcessCheckTest {
 
         processCheck.setClosure(null);
         processCheck.setInOutPuts(
-                new Input(PROCESS, "in1").optional("a"),
-                new Input(PROCESS, "in2").optional("b"),
-                new Input(PROCESS, "in3").optional("c"));
+                new Input().process(PROCESS).name("in1").optional("a"),
+                new Input().process(PROCESS).name("in2").optional("b"),
+                new Input().process(PROCESS).name("in3").optional("c"));
         assertFalse(processCheck.run(mapInputs));
 
         processCheck.setClosure(cl);
         processCheck.setInOutPuts(
-                new Input(PROCESS, "in1"),
-                new Input(PROCESS, "in2"),
-                new Input(PROCESS, "in3"));
+                new Input().process(PROCESS).name("in1"),
+                new Input().process(PROCESS).name("in2"),
+                new Input().process(PROCESS).name("in3"));
         assertFalse(processCheck.run(mapInputs));
 
         String str4 = "{out1 -> return out1== 'abc'}";
@@ -318,7 +318,7 @@ public class ProcessCheckTest {
 
         assertTrue(PROCESS.execute(mapInputs));
         processCheck.setClosure(outCl);
-        processCheck.setInOutPuts(new Output(PROCESS, "out1"));
+        processCheck.setInOutPuts(new Output().process(PROCESS).name("out1"));
         assertFalse(processCheck.run(mapInputs));
     }
 
@@ -393,10 +393,10 @@ public class ProcessCheckTest {
         Closure<?> cl = (Closure<?>) new GroovyShell().evaluate(new GroovyCodeSource(str, "script", ""));
 
         IInOutPut[] inOutPuts = new IInOutPut[]{
-                new Input(PROCESS, "in1").optional("a"),
-                new Input(PROCESS, "in2"),
-                new Input(PROCESS, "in3").optional("c"),
-                new Output(PROCESS, "out1")};
+                new Input().process(PROCESS).name("in1").optional("a"),
+                new Input().process(PROCESS).name("in2"),
+                new Input().process(PROCESS).name("in3").optional("c"),
+                new Output().process(PROCESS).name("out1")};
 
         ProcessCheck processCheck = new ProcessCheck(null);
         processCheck.setClosure(null);

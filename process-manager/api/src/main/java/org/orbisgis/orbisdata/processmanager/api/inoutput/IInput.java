@@ -39,11 +39,13 @@ package org.orbisgis.orbisdata.processmanager.api.inoutput;
 import org.orbisgis.commons.annotations.NotNull;
 import org.orbisgis.commons.annotations.Nullable;
 
+import java.util.Optional;
+
 /**
  * This interface defines the methods dedicated the wrapping of input.
  *
  * @author Erwan Bocher (CNRS)
- * @author Sylvain PALOMINOS (UBS 2019)
+ * @author Sylvain PALOMINOS (UBS Lab-STICC 2019-2020)
  */
 public interface IInput extends IInOutPut {
 
@@ -83,6 +85,6 @@ public interface IInput extends IInOutPut {
      *
      * @return The default value of the input.
      */
-    @Nullable
-    Object getDefaultValue();
+    @NotNull
+    Optional<Object> getDefaultValue();
 }

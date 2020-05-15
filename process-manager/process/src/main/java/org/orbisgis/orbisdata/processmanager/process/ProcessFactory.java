@@ -51,7 +51,7 @@ import java.util.List;
  * Implementation of the {@link IProcessFactory}.
  *
  * @author Erwan Bocher (CNRS)
- * @author Sylvain PALOMINOS (UBS 2019-2020)
+ * @author Sylvain PALOMINOS (UBS Lab-STICC 2019-2020)
  */
 public class ProcessFactory implements IProcessFactory {
 

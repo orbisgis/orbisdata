@@ -50,7 +50,7 @@ import java.util.Optional;
  * Interface for the definition of getProcess check.
  *
  * @author Erwan Bocher (CNRS)
- * @author Sylvain PALOMINOS (UBS Lab-STICC 2019)
+ * @author Sylvain PALOMINOS (UBS Lab-STICC 2019-2020)
  */
 public interface IProcessCheck {
 

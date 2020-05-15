@@ -36,21 +36,29 @@
  */
 package org.orbisgis.orbisdata.processmanager.process.inoutput;
 
-import groovy.lang.MissingMethodException;
+import groovy.lang.GroovyObject;
+import groovy.lang.MetaClass;
+import org.codehaus.groovy.runtime.InvokerHelper;
 import org.orbisgis.commons.annotations.NotNull;
 import org.orbisgis.commons.annotations.Nullable;
 import org.orbisgis.orbisdata.processmanager.api.IProcess;
 import org.orbisgis.orbisdata.processmanager.api.inoutput.IInOutPut;
 
-import java.util.Arrays;
+import java.util.Optional;
 
 /**
  * Implementation of the {@link IInOutPut} interface.
  *
  * @author Erwan Bocher (CNRS)
- * @author Sylvain PALOMINOS (UBS 2019-2020)
+ * @author Sylvain PALOMINOS (UBS Lab-STICC 2019-2020)
  */
-public abstract class InOutPut implements IInOutPut {
+public abstract class InOutPut implements IInOutPut, GroovyObject {
+
+    /**
+     * Groovy {@link MetaClass}.
+     */
+    @Nullable
+    protected MetaClass metaClass = InvokerHelper.getMetaClass(InOutPut.class);
     /**
      * {@link IProcess} of the input/output.
      */
@@ -59,6 +67,7 @@ public abstract class InOutPut implements IInOutPut {
     /**
      * Name of the input/output.
      */
+    @Nullable
     private String name;
     /**
      * Type of the input/output.
@@ -68,131 +77,181 @@ public abstract class InOutPut implements IInOutPut {
     /**
      * Title of the input/output.
      */
+    @Nullable
     private String title;
     /**
      * Description of the input/output.
      */
+    @Nullable
     private String description;
     /**
      * Keywords of the input/output.
      */
+    @Nullable
     private String[] keywords;
 
-    /**
-     * Main constructor.
-     *
-     * @param process {@link IProcess} of the input/output.
-     * @param name    Name of the input/output.
-     */
-    public InOutPut(@Nullable IProcess process, @NotNull String name) {
-        this.process = process;
+    @NotNull
+    public Optional<String> getName() {
+        return Optional.ofNullable(name);
+    }
+
+    @Override
+    public void setName(@Nullable String name) {
         this.name = name;
+    }
+
+    @Override
+    @NotNull
+    public IInOutPut name(@Nullable String name) {
+        this.name = name;
+        return this;
     }
 
     @NotNull
-    public String getName() {
-        return name;
+    public Optional<IProcess> getProcess() {
+        return Optional.ofNullable(process);
     }
 
     @Override
-    public void setName(@NotNull String name) {
-        this.name = name;
-    }
-
-    @Nullable
-    public IProcess getProcess() {
-        return process;
-    }
-
-    @Override
-    public void setProcess(@NotNull IProcess process) {
+    public void setProcess(@Nullable IProcess process) {
         this.process = process;
     }
 
     @Override
     @NotNull
-    public IInOutPut setTitle(String title) {
+    public IInOutPut process(@Nullable IProcess process) {
+        this.process = process;
+        return this;
+    }
+
+    @Override
+    @NotNull
+    public Optional<String> getTitle() {
+        return Optional.ofNullable(title);
+    }
+
+    @Override
+    public void setTitle(@Nullable String title) {
+        this.title = title;
+    }
+
+    @Override
+    @NotNull
+    public IInOutPut title(@Nullable String title) {
         this.title = title;
         return this;
     }
 
     @Override
-    public String getTitle() {
-        return title;
+    @NotNull
+    public Optional<String> getDescription() {
+        return Optional.ofNullable(description);
+    }
+
+    @Override
+    public void setDescription(@Nullable String description) {
+        this.description = description;
     }
 
     @Override
     @NotNull
-    public IInOutPut setDescription(String description) {
+    public IInOutPut description(@Nullable String description) {
         this.description = description;
         return this;
     }
 
     @Override
-    public String getDescription() {
-        return description;
+    @NotNull
+    public Optional<String[]> getKeywords() {
+        return Optional.ofNullable(keywords);
+    }
+
+    @Override
+    public void setKeywords(@Nullable String[] keywords) {
+        this.keywords = keywords;
     }
 
     @NotNull
     @Override
-    public IInOutPut setKeywords(String[] keywords) {
+    public IInOutPut keywords(@Nullable String[] keywords) {
         this.keywords = keywords;
         return this;
     }
 
     @Override
-    public String[] getKeywords() {
-        return keywords;
+    @NotNull
+    public Optional<Class<?>> getType() {
+        return Optional.ofNullable(type);
+    }
+
+    @Override
+    public void setType(@Nullable Class<?> type) {
+        this.type = type;
     }
 
     @Override
     @NotNull
-    public IInOutPut setType(@Nullable Class<?> type) {
+    public IInOutPut type(@Nullable Class<?> type) {
         this.type = type;
         return this;
     }
 
     @Override
-    @Nullable
-    public Class<?> getType() {
-        return type;
-    }
-
-    @Override
     public String toString() {
         String pId = process != null ? ":" + process.getIdentifier() : "";
-        return name + pId;
+        String str = name != null ? name : "";
+        return str + pId;
     }
 
     @Override
-    public Object methodMissing(String name, Object args) {
-        if (args == null) {
-            throw new MissingMethodException(name, this.getClass(), (Object[]) args);
+    public void setProperty(@Nullable String propertyName, @Nullable Object newValue) {
+        if(propertyName != null && metaClass != null) {
+            this.metaClass.setProperty(this, propertyName, newValue);
         }
-        Object[] objs = (Object[]) args;
-        if (objs.length > 0) {
-            switch (name) {
-                case "type":
-                    if (objs[0] instanceof Class) {
-                        return setType((Class<?>) objs[0]);
-                    }
-                case "keywords":
-                    if (Arrays.stream(objs).allMatch(String.class::isInstance)) {
-                        String[] array = Arrays.stream(objs).toArray(String[]::new);
-                        return setKeywords(array);
-                    }
-                case "description":
-                    if (objs[0] instanceof String) {
-                        return setDescription((String) objs[0]);
-                    }
-                case "title":
-                    if (objs[0] instanceof String) {
-                        return setTitle((String) objs[0]);
-                    }
-                default:
-                    throw new MissingMethodException(name, this.getClass(), (Object[]) args);
+    }
+
+    @Nullable
+    @Override
+    public Object getProperty(@Nullable String propertyName){
+        if(metaClass != null && propertyName != null) {
+            Object obj = this.metaClass.getProperty(this, propertyName);
+            if(obj instanceof Optional){
+                return ((Optional<?>)obj).orElse(null);
+            }
+            else {
+                return obj;
             }
         }
-        throw new MissingMethodException(name, this.getClass(), (Object[]) args);
+        else {
+            return null;
+        }
+    }
+
+    @Nullable
+    @Override
+    public Object invokeMethod(@Nullable String name, @Nullable Object args) {
+        if(name != null && metaClass != null) {
+            Object obj = this.metaClass.invokeMethod(this, name, args);
+            if(obj instanceof Optional){
+                return ((Optional<?>)obj).orElse(null);
+            }
+            else {
+                return obj;
+            }
+        }
+        else {
+            return null;
+        }
+    }
+
+    @Override
+    @Nullable
+    public MetaClass getMetaClass() {
+        return metaClass;
+    }
+
+    @Override
+    public void setMetaClass(@Nullable MetaClass metaClass) {
+        this.metaClass = metaClass;
     }
 }

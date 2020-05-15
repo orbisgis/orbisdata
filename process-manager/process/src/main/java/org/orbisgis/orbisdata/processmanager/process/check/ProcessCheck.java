@@ -131,10 +131,10 @@ public class ProcessCheck implements IProcessCheck, GroovyObject {
                 .map(input -> (IInput)input)
                 .collect(Collectors.toList());
         //Then check that the default values are the same as the data in the given map
-        return inputs.stream().allMatch(in -> in.getName() != null &&
-                in.getDefaultValue() != null &&
-                data.containsKey(in.getName()) &&
-                data.get(in.getName()).equals(in.getDefaultValue()));
+        return inputs.stream().allMatch(in -> in.getName().isPresent() &&
+                in.getDefaultValue().isPresent() &&
+                data.containsKey(in.getName().get()) &&
+                data.get(in.getName().get()).equals(in.getDefaultValue().get()));
     }
 
     /**
@@ -149,12 +149,12 @@ public class ProcessCheck implements IProcessCheck, GroovyObject {
         LinkedList<Object> dataList = new LinkedList<>();
         //Gather all the data (process output or input data)
         for (IInOutPut inOutPut : inOutPuts) {
-            if (inOutPut.getProcess() != null &&
-                    inOutPut.getProcess().getOutputs().stream()
+            if (inOutPut.getProcess().isPresent() &&
+                    inOutPut.getProcess().get().getOutputs().stream()
                             .anyMatch(output -> output.getName().equals(inOutPut.getName()))) {
-                dataList.add(inOutPut.getProcess().getResults().get(inOutPut.getName()));
-            } else if (data != null && inOutPut.getName() != null) {
-                dataList.add(data.get(inOutPut.getName()));
+                dataList.add(inOutPut.getProcess().get().getResults().get(inOutPut.getName().get()));
+            } else if (data != null && inOutPut.getName().isPresent()) {
+                dataList.add(data.get(inOutPut.getName().get()));
             }
         }
         //Execute the Closure with the gathered data.
@@ -351,13 +351,14 @@ public class ProcessCheck implements IProcessCheck, GroovyObject {
             builder.append("Check that inputs :\n");
             inOutPuts.stream()
                     .filter(inOutPut -> inOutPut instanceof IInput)
-                    .forEach(inOutPut -> builder.append("\t").append(inOutPut.getName()).append("\n"));
+                    .filter(inOutPut -> inOutPut.getName().isPresent())
+                    .forEach(inOutPut -> builder.append("\t").append(inOutPut.getName().get()).append("\n"));
 
             if (getProcess().isPresent()) {
                 builder.append("and output :\n");
                 inOutPuts.stream()
                         .filter(inOutPut -> inOutPut instanceof IOutput)
-                        .forEach(inOutPut -> builder.append("\t").append(inOutPut.getName()).append("\n"));
+                        .forEach(inOutPut -> builder.append("\t").append(inOutPut.getName().get()).append("\n"));
             }
         }
         if (getClosure().isPresent()) {

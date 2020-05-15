@@ -58,7 +58,7 @@ import java.util.*;
  * WPS process for now).
  *
  * @author Erwan Bocher (CNRS)
- * @author Sylvain PALOMINOS (UBS 2019-2020)
+ * @author Sylvain PALOMINOS (UBS Lab-STICC 2019-2020)
  */
 public class Process implements IProcess, GroovyObject {
 
@@ -144,40 +144,35 @@ public class Process implements IProcess, GroovyObject {
         this.defaultValues = new HashMap<>();
         if (inputs != null) {
             for (Map.Entry<String, Object> entry : inputs.entrySet()) {
+                Input input;
                 if (entry.getValue() instanceof Class) {
-                    Input input = new Input(this, entry.getKey());
-                    input.setType((Class<?>) entry.getValue());
-                    this.inputs.add(input);
+                    input = new Input().type((Class<?>) entry.getValue());
                 } else if (entry.getValue() instanceof Input) {
-                    Input input = (Input) entry.getValue();
-                    input.setProcess(this);
-                    input.setName(entry.getKey());
-                    this.inputs.add(input);
+                    input = (Input) entry.getValue();
                     if (input.isOptional()) {
-                        this.defaultValues.put(entry.getKey(), input.getDefaultValue());
+                        this.defaultValues.put(entry.getKey(), input.getDefaultValue().orElse(null));
                     }
                 } else {
-                    Input input = new Input(this, entry.getKey());
-                    input.setType(entry.getValue().getClass());
-                    input.optional(entry.getValue());
-                    this.inputs.add(input);
+                    input = new Input()
+                            .type(entry.getValue().getClass())
+                            .optional(entry.getValue());
                     this.defaultValues.put(entry.getKey(), entry.getValue());
                 }
+                input.process(this).name(entry.getKey());
+                this.inputs.add(input);
             }
         }
         this.outputs = new LinkedList<>();
         if (outputs != null) {
             for (Map.Entry<String, Object> entry : outputs.entrySet()) {
+                Output output;
                 if (entry.getValue() instanceof Class) {
-                    Output output = new Output(this, entry.getKey());
-                    output.setType((Class<?>) entry.getValue());
-                    this.outputs.add(output);
+                    output = new Output().type((Class<?>) entry.getValue());
                 } else {
-                    Output output = (Output) entry.getValue();
-                    output.setProcess(this);
-                    output.setName(entry.getKey());
-                    this.outputs.add(output);
+                    output = ((Output) entry.getValue());
                 }
+                output.process(this).name(entry.getKey());
+                this.outputs.add(output);
             }
         }
         this.closure = closure;
@@ -207,14 +202,19 @@ public class Process implements IProcess, GroovyObject {
     @Nullable
     private Closure<?> getClosureWithCurry(@NotNull LinkedHashMap<String, Object> inputDataMap) {
         Closure<?> cl = closure;
+        if(closure == null){
+            LOGGER.error("The closure should not be null.");
+            return null;
+        }
         int curryIndex = 0;
         for (IInput input : inputs) {
-            if (!inputDataMap.containsKey(input.getName())) {
-                if (defaultValues.get(input.getName()) == null) {
+            if (input.getName().isPresent() &&
+                    !inputDataMap.containsKey(input.getName().get())) {
+                if (defaultValues.get(input.getName().get()) == null) {
                     LOGGER.error("The parameter " + input.getName() + " has no default value.");
                     return null;
                 }
-                cl = cl.ncurry(curryIndex, defaultValues.get(input.getName()));
+                cl = cl.ncurry(curryIndex, defaultValues.get(input.getName().get()));
                 curryIndex--;
             }
             curryIndex++;
@@ -233,6 +233,8 @@ public class Process implements IProcess, GroovyObject {
         return inputs
                 .stream()
                 .map(IInOutPut::getName)
+                .filter(Optional::isPresent)
+                .map(Optional::get)
                 .filter(inputDataMap::containsKey)
                 .map(inputDataMap::get)
                 .toArray();
@@ -264,10 +266,14 @@ public class Process implements IProcess, GroovyObject {
                 result = closure.call();
             }
         } catch (Exception e) {
-            LOGGER.error("Error while executing the process.\n" + e.getLocalizedMessage());
+            LOGGER.error("Error while executing the process.", e);
             return false;
         }
-        if (result == null && outputs.size() != 0) {
+        if (outputs.size() == 0) {
+            resultMap = new HashMap<>();
+            resultMap.put("result", result);
+            return true;
+        } else if (result == null) {
             return false;
         } else {
             return checkResults(result);
@@ -288,12 +294,14 @@ public class Process implements IProcess, GroovyObject {
         } else {
             map = (Map<String, Object>) result;
         }
-        boolean isResultValid = true;
-        for (IOutput output : outputs) {
-            isResultValid = map.containsKey(output.getName());
-        }
+        boolean isResultValid = outputs.stream()
+                .map(IInOutPut::getName)
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .anyMatch(map::containsKey);
         LOGGER.debug("End of the execution of '" + this.getTitle() + "'.");
         if (!isResultValid) {
+            LOGGER.debug("The output of the execution are not compatible with process output.");
             return false;
         } else {
             map.forEach((key, value) -> resultMap.put(key, value));
@@ -356,12 +364,24 @@ public class Process implements IProcess, GroovyObject {
     }
 
     @Override
+    @Nullable
     public Object getProperty(String propertyName) {
-        if (inputs.stream().anyMatch(iInput -> iInput.getName().equals(propertyName))) {
-            return new Input(this, propertyName);
+        if(propertyName == null){
+            return null;
         }
-        if (outputs.stream().anyMatch(iOutput -> iOutput.getName().equals(propertyName))) {
-            return new Output(this, propertyName);
+        if (inputs.stream()
+                .map(IInOutPut::getName)
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .anyMatch(propertyName::equals)) {
+            return new Input().process(this).name(propertyName);
+        }
+        if (outputs.stream()
+                .map(IInOutPut::getName)
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .anyMatch(propertyName::equals)) {
+            return new Output().process(this).name(propertyName);
         }
         return metaClass.getProperty(this, propertyName);
     }

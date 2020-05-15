@@ -36,18 +36,19 @@
  */
 package org.orbisgis.orbisdata.processmanager.process.inoutput;
 
+import org.codehaus.groovy.runtime.InvokerHelper;
 import org.orbisgis.commons.annotations.NotNull;
 import org.orbisgis.commons.annotations.Nullable;
 import org.orbisgis.orbisdata.processmanager.api.IProcess;
 import org.orbisgis.orbisdata.processmanager.api.inoutput.IInput;
 
-import java.util.UUID;
+import java.util.Optional;
 
 /**
  * Implementation of the {@link IInput} interface.
  *
  * @author Erwan Bocher (CNRS)
- * @author Sylvain PALOMINOS (UBS 2019-2020)
+ * @author Sylvain PALOMINOS (UBS Lab-STICC 2019-2020)
  */
 public class Input extends InOutPut implements IInput {
 
@@ -55,25 +56,10 @@ public class Input extends InOutPut implements IInput {
     private Object dfltValue;
 
     /**
-     * Main constructor.
-     *
-     * @param process {@link IProcess} of the input/output.
-     * @param name    Name of the input/output.
-     */
-    public Input(@Nullable IProcess process, @Nullable String name) {
-        super(process, name);
-    }
-
-    /**
-     * Empty constructor.
+     * Default constructor.
      */
     public Input() {
-        super(null, "input_" + UUID.randomUUID().toString());
-    }
-
-    @NotNull
-    public static Input call() {
-        return new Input();
+        this.metaClass = InvokerHelper.getMetaClass(Input.class);
     }
 
     @Override
@@ -89,8 +75,9 @@ public class Input extends InOutPut implements IInput {
     }
 
     @Override
-    public Object getDefaultValue() {
-        return dfltValue;
+    @NotNull
+    public Optional<Object> getDefaultValue() {
+        return Optional.ofNullable(dfltValue);
     }
 
     @Override
@@ -107,29 +94,43 @@ public class Input extends InOutPut implements IInput {
 
     @Override
     @NotNull
-    public Input setTitle(String title) {
+    public Input title(@Nullable String title) {
         super.setTitle(title);
         return this;
     }
 
     @Override
     @NotNull
-    public Input setDescription(String description) {
+    public Input description(@Nullable String description) {
         super.setDescription(description);
         return this;
     }
 
     @Override
     @NotNull
-    public Input setKeywords(String[] keywords) {
+    public Input keywords(@Nullable String[] keywords) {
         super.setKeywords(keywords);
         return this;
     }
 
     @Override
     @NotNull
-    public Input setType(Class<?> type) {
+    public Input type(@Nullable Class<?> type) {
         super.setType(type);
+        return this;
+    }
+
+    @Override
+    @NotNull
+    public Input name(@Nullable String name) {
+        super.setName(name);
+        return this;
+    }
+
+    @Override
+    @NotNull
+    public Input process(@Nullable IProcess process) {
+        super.setProcess(process);
         return this;
     }
 }

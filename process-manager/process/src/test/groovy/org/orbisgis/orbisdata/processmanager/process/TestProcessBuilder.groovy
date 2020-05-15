@@ -37,6 +37,7 @@
 package org.orbisgis.orbisdata.processmanager.process
 
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.function.Executable
 import org.orbisgis.orbisdata.processmanager.api.IProcessFactory
 
 import static org.junit.jupiter.api.Assertions.*
@@ -57,7 +58,7 @@ class TestProcessBuilder {
      */
     @Test
     void constructorTest() {
-        assertDoesNotThrow() {new ProcessBuilder(factory, delegate)}
+        assertDoesNotThrow((Executable){new ProcessBuilder(factory, delegate)})
         assertThrows(IllegalArgumentException) {new ProcessBuilder(null, delegate)}
         assertThrows(IllegalArgumentException) {new ProcessBuilder(null, null)}
         assertThrows(IllegalArgumentException) {new ProcessBuilder(factory, null)}

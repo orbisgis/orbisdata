@@ -41,7 +41,6 @@ import org.orbisgis.commons.annotations.NotNull;
 import org.orbisgis.commons.annotations.Nullable;
 
 import java.util.LinkedHashMap;
-import java.util.List;
 
 /**
  * Interface declaring all the methods for the building of a {@link IProcess}.

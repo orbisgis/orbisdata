@@ -37,6 +37,7 @@
 package org.orbisgis.orbisdata.processmanager.process.check;
 
 import groovy.lang.Closure;
+import groovy.lang.GroovyInterceptable;
 import groovy.lang.GroovyObject;
 import groovy.lang.MetaClass;
 import org.codehaus.groovy.runtime.InvokerHelper;
@@ -62,7 +63,7 @@ import static org.orbisgis.orbisdata.processmanager.api.check.IProcessCheck.Acti
  * @author Erwan Bocher (CNRS)
  * @author Sylvain PALOMINOS (UBS 2019-2020)
  */
-public class ProcessCheck implements IProcessCheck, GroovyObject {
+public class ProcessCheck implements IProcessCheck, GroovyObject, GroovyInterceptable {
 
     /**
      * Logger

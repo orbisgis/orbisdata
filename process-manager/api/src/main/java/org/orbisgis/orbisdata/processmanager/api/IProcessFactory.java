@@ -78,7 +78,7 @@ public interface IProcessFactory {
      * @param processId Identifier of the process to get.
      * @return The process with the given identifier.
      */
-    @Nullable
+    @NotNull
     Optional<IProcess> getProcess(@Nullable String processId);
 
     /**

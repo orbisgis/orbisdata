@@ -58,7 +58,7 @@ public abstract class InOutPut implements IInOutPut, GroovyObject, GroovyInterce
     /**
      * Groovy {@link MetaClass}.
      */
-    @Nullable
+    @NotNull
     protected MetaClass metaClass = InvokerHelper.getMetaClass(InOutPut.class);
     /**
      * {@link IProcess} of the input/output.
@@ -206,7 +206,7 @@ public abstract class InOutPut implements IInOutPut, GroovyObject, GroovyInterce
 
     @Override
     public void setProperty(@Nullable String propertyName, @Nullable Object newValue) {
-        if(propertyName != null && metaClass != null) {
+        if(propertyName != null) {
             this.metaClass.setProperty(this, propertyName, newValue);
         }
     }
@@ -214,7 +214,7 @@ public abstract class InOutPut implements IInOutPut, GroovyObject, GroovyInterce
     @Nullable
     @Override
     public Object getProperty(@Nullable String propertyName){
-        if(metaClass != null && propertyName != null) {
+        if(propertyName != null) {
             Object obj = this.metaClass.getProperty(this, propertyName);
             if(obj instanceof Optional){
                 return ((Optional<?>)obj).orElse(null);
@@ -231,7 +231,7 @@ public abstract class InOutPut implements IInOutPut, GroovyObject, GroovyInterce
     @Nullable
     @Override
     public Object invokeMethod(@Nullable String name, @Nullable Object args) {
-        if(name != null && metaClass != null) {
+        if(name != null) {
             Object obj = this.metaClass.invokeMethod(this, name, args);
             if(obj instanceof Optional){
                 return ((Optional<?>)obj).orElse(null);
@@ -246,13 +246,13 @@ public abstract class InOutPut implements IInOutPut, GroovyObject, GroovyInterce
     }
 
     @Override
-    @Nullable
+    @NotNull
     public MetaClass getMetaClass() {
         return metaClass;
     }
 
     @Override
     public void setMetaClass(@Nullable MetaClass metaClass) {
-        this.metaClass = metaClass;
+        this.metaClass = metaClass == null ? InvokerHelper.getMetaClass(this.getClass()) : metaClass;
     }
 }

@@ -38,9 +38,13 @@ package org.orbisgis.orbisdata.processmanager.process;
 
 import groovy.lang.Closure;
 import groovy.lang.GroovyShell;
+import groovy.lang.MetaClass;
+import org.codehaus.groovy.runtime.InvokerHelper;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.orbisgis.orbisdata.processmanager.api.IProcess;
+
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -48,7 +52,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * Test class dedicated to {@link ProcessFactory} class.
  *
  * @author Erwan Bocher (CNRS)
- * @author Sylvain PALOMINOS (UBS 2019)
+ * @author Sylvain PALOMINOS (UBS Lab-STICC 2019-2020)
  */
 public class ProcessManagerTest {
 
@@ -69,24 +73,25 @@ public class ProcessManagerTest {
     }
 
     /**
+     * Test the {@link ProcessManager#getProcessManager()} method
+     */
+    @Test
+    void getProcessManagerTest() {
+        assertNotNull(ProcessManager.getProcessManager());
+    }
+
+    /**
      * Test the {@link ProcessManager#create()} and {@link ProcessManager#create(Closure)} methods.
      */
     @Test
     void testCreate() {
         ProcessManager pm = ProcessManager.getProcessManager();
         assertNotNull(pm.create());
+        assertNotNull(pm.create().getProcess());
 
-        String string = "({\n" +
-                "            title \"simple process\"\n" +
-                "            description \"description\"\n" +
-                "            keywords \"key1\", \"key2\"\n" +
-                "            inputs inputA: String, inputB: String\n" +
-                "            outputs outputA: String\n" +
-                "            version \"version\"\n" +
-                "            run { inputA, inputB -> [outputA: inputA + inputB] }\n" +
-                "        })";
-        Closure cl = (Closure) new GroovyShell().evaluate(string);
-        IProcess process = pm.create(cl);
+        Optional<IProcess> opt = pm.create(cl);
+        assertTrue(opt.isPresent());
+        IProcess process = opt.get();
 
         assertNotNull(process);
         assertEquals("simple process", process.getTitle());
@@ -95,6 +100,9 @@ public class ProcessManagerTest {
         assertArrayEquals(new String[]{"key1", "key2"}, process.getKeywords());
         assertEquals(2, process.getInputs().size());
         assertEquals(1, process.getOutputs().size());
+
+        opt = pm.create(null);
+        assertFalse(opt.isPresent());
     }
 
     /**
@@ -107,14 +115,18 @@ public class ProcessManagerTest {
         ProcessManager pm = ProcessManager.getProcessManager();
         assertNotNull(ProcessManager.createFactory());
         assertNotNull(ProcessManager.createFactory("Mayor_DeFacto_Ry"));
+        assertNotNull(ProcessManager.createFactory(null));
+        assertNotNull(ProcessManager.createFactory(""));
 
         assertNotNull(pm.factory());
-        assertNotNull(pm.factory("orbisgis"));
+        assertEquals(pm.factory(), pm.factory(null));
+        assertEquals(pm.factory(), pm.factory("Default"));
         assertNotNull(pm.factory("Mayor_DeFacto_Ry"));
+        assertNotNull(pm.factory("Factorio"));
 
-        assertTrue(pm.factoryIds().contains("orbisgis"));
+        assertTrue(pm.factoryIds().contains("Default"));
         assertTrue(pm.factoryIds().contains("Mayor_DeFacto_Ry"));
-
+        assertTrue(pm.factoryIds().contains("Factorio"));
     }
 
     /**
@@ -124,13 +136,51 @@ public class ProcessManagerTest {
     void testProcess() {
         ProcessManager pm = ProcessManager.getProcessManager();
         assertNotNull(ProcessManager.createFactory("Mayor_DeFacto_Ry"));
-        String id1 = pm.factory().create(cl).get().getIdentifier();
-        String id2 = pm.factory("Mayor_DeFacto_Ry").create(cl).get().getIdentifier();
 
-        assertNull(pm.process(id2));
-        assertNotNull(pm.process(id1));
+        Optional<IProcess> opt1 = pm.factory().create(cl);
+        assertTrue(opt1.isPresent());
+        String id1 = opt1.get().getIdentifier();
 
-        assertNull(pm.process(id1, "Mayor_DeFacto_Ry"));
-        assertNotNull(pm.process(id2, "Mayor_DeFacto_Ry"));
+        Optional<IProcess> opt2 = pm.factory("Mayor_DeFacto_Ry").create(cl);
+        assertTrue(opt2.isPresent());
+        String id2 = opt2.get().getIdentifier();
+
+        assertTrue(pm.process(id1).isPresent());
+        assertFalse(pm.process(id2).isPresent());
+
+        assertFalse(pm.process(id1, "Mayor_DeFacto_Ry").isPresent());
+        assertTrue(pm.process(id2, "Mayor_DeFacto_Ry").isPresent());
+
+        assertFalse(pm.process(null).isPresent());
+        assertFalse(pm.process(null, "Mayor_DeFacto_Ry").isPresent());
+        assertFalse(pm.process(id2, null).isPresent());
+        assertFalse(pm.process(null, null).isPresent());
+    }
+
+    /**
+     * Test the {@link ProcessManager#setMetaClass(MetaClass)} and {@link ProcessManager#getMetaClass()} methods.
+     */
+    @Test
+    void metaClassTest() {
+        ProcessManager pm = ProcessManager.getProcessManager();
+        assertEquals(InvokerHelper.getMetaClass(ProcessManager.class), pm.getMetaClass());
+        pm.setMetaClass(null);
+        assertNotNull(pm.getMetaClass());
+        pm.setMetaClass(InvokerHelper.getMetaClass(this.getClass()));
+        assertEquals(InvokerHelper.getMetaClass(this.getClass()), pm.getMetaClass());
+        pm.setMetaClass(InvokerHelper.getMetaClass(ProcessManager.class));
+    }
+
+    /**
+     * Test the {@link ProcessManager#invokeMethod(String, Object)} method.
+     */
+    @Test
+    void invokeMethodTest() {
+        ProcessManager pm = ProcessManager.getProcessManager();
+        assertNotNull(pm.invokeMethod("create", cl));
+        assertTrue(pm.invokeMethod("create", cl) instanceof IProcess);
+        assertNull(pm.invokeMethod("process", "null"));
+        assertNotNull(pm.invokeMethod("factory", null));
+        assertNull(pm.invokeMethod(null, null));
     }
 }

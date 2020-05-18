@@ -70,7 +70,7 @@ public abstract class GroovyProcessFactory extends Script implements IProcessFac
     }
 
     @Override
-    @Nullable
+    @NotNull
     public Optional<IProcess> getProcess(@Nullable String processId) {
         return factory.getProcess(processId);
     }

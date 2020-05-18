@@ -168,6 +168,7 @@ public class ProcessManagerTest {
         assertNotNull(pm.getMetaClass());
         pm.setMetaClass(InvokerHelper.getMetaClass(this.getClass()));
         assertEquals(InvokerHelper.getMetaClass(this.getClass()), pm.getMetaClass());
+        pm.setMetaClass(InvokerHelper.getMetaClass(ProcessManager.class));
     }
 
     /**

@@ -76,7 +76,7 @@ public class ProcessManager implements IProcessManager, GroovyObject, GroovyInte
      * MetaClass use for groovy methods/properties binding
      */
     @NotNull
-    private MetaClass metaClass = InvokerHelper.getMetaClass(getClass());
+    private MetaClass metaClass = InvokerHelper.getMetaClass(ProcessManager.class);
 
     /**
      * Private constructor in order to make it unique.

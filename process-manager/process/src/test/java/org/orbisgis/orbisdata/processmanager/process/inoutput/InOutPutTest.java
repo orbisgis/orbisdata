@@ -4,7 +4,6 @@ import groovy.lang.MetaClass;
 import org.codehaus.groovy.runtime.InvokerHelper;
 import org.junit.jupiter.api.Test;
 import org.orbisgis.orbisdata.processmanager.api.IProcess;
-import org.orbisgis.orbisdata.processmanager.process.ProcessBuilder;
 import org.orbisgis.orbisdata.processmanager.process.ProcessManager;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -129,7 +128,7 @@ public class InOutPutTest {
         DummyInOutPut dummyInOutPut = new DummyInOutPut();
         assertEquals(InvokerHelper.getMetaClass(InOutPut.class), dummyInOutPut.getMetaClass());
         dummyInOutPut.setMetaClass(null);
-        assertNull(dummyInOutPut.getMetaClass());
+        assertNotNull(dummyInOutPut.getMetaClass());
         dummyInOutPut.setMetaClass(InvokerHelper.getMetaClass(this.getClass()));
         assertEquals(InvokerHelper.getMetaClass(this.getClass()), dummyInOutPut.getMetaClass());
     }

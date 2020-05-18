@@ -107,7 +107,7 @@ public class ProcessCheck implements IProcessCheck, GroovyObject, GroovyIntercep
     /**
      * MetaClass use for groovy methods/properties binding
      */
-    @Nullable
+    @NotNull
     private MetaClass metaClass = InvokerHelper.getMetaClass(getClass());
 
     /**
@@ -281,7 +281,7 @@ public class ProcessCheck implements IProcessCheck, GroovyObject, GroovyIntercep
 
     @Override
     public void setProperty(@Nullable String propertyName, @Nullable Object newValue) {
-        if(propertyName != null && metaClass != null) {
+        if(propertyName != null) {
             this.metaClass.setProperty(this, propertyName, newValue);
         }
     }
@@ -289,24 +289,19 @@ public class ProcessCheck implements IProcessCheck, GroovyObject, GroovyIntercep
     @Nullable
     @Override
     public Object getProperty(@Nullable String propertyName){
-        if(metaClass != null) {
-            Object obj = this.metaClass.getProperty(this, propertyName);
-            if(obj instanceof Optional){
-                return ((Optional<?>)obj).orElse(null);
-            }
-            else {
-                return obj;
-            }
+        Object obj = this.metaClass.getProperty(this, propertyName);
+        if(obj instanceof Optional){
+            return ((Optional<?>)obj).orElse(null);
         }
         else {
-            return null;
+            return obj;
         }
     }
 
     @Nullable
     @Override
     public Object invokeMethod(@Nullable String name, @Nullable Object args) {
-        if(name != null && metaClass != null) {
+        if(name != null) {
             Object obj = this.metaClass.invokeMethod(this, name, args);
             if(obj instanceof Optional){
                 return ((Optional<?>)obj).orElse(null);
@@ -328,7 +323,7 @@ public class ProcessCheck implements IProcessCheck, GroovyObject, GroovyIntercep
 
     @Override
     public void setMetaClass(@Nullable MetaClass metaClass) {
-        this.metaClass = metaClass;
+        this.metaClass = metaClass == null ? InvokerHelper.getMetaClass(this.getClass()) : metaClass;
     }
 
     @Override

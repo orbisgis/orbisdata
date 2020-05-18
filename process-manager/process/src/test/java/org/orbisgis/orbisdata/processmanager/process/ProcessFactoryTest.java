@@ -42,8 +42,6 @@ import groovy.lang.MetaClass;
 import org.codehaus.groovy.runtime.InvokerHelper;
 import org.junit.jupiter.api.Test;
 import org.orbisgis.orbisdata.processmanager.api.IProcess;
-import org.orbisgis.orbisdata.processmanager.process.inoutput.InOutPut;
-import org.orbisgis.orbisdata.processmanager.process.inoutput.Output;
 
 import java.util.Optional;
 

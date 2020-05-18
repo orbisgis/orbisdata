@@ -36,6 +36,7 @@
  */
 package org.orbisgis.orbisdata.processmanager.process.inoutput;
 
+import groovy.lang.MetaClass;
 import org.codehaus.groovy.runtime.InvokerHelper;
 import org.orbisgis.commons.annotations.NotNull;
 import org.orbisgis.commons.annotations.Nullable;
@@ -132,5 +133,10 @@ public class Input extends InOutPut implements IInput {
     public Input process(@Nullable IProcess process) {
         super.setProcess(process);
         return this;
+    }
+
+    @Override
+    public void setMetaClass(@Nullable MetaClass metaClass) {
+        this.metaClass = metaClass == null ? InvokerHelper.getMetaClass(this.getClass()) : metaClass;
     }
 }

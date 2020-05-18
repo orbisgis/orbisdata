@@ -36,8 +36,8 @@
  */
 package org.orbisgis.orbisdata.processmanager.process;
 
-import groovy.lang.Closure;
-import groovy.lang.DelegatesTo;
+import groovy.lang.*;
+import org.codehaus.groovy.runtime.InvokerHelper;
 import org.orbisgis.commons.annotations.NotNull;
 import org.orbisgis.commons.annotations.Nullable;
 import org.orbisgis.orbisdata.processmanager.api.IProcess;
@@ -45,10 +45,7 @@ import org.orbisgis.orbisdata.processmanager.api.IProcessBuilder;
 import org.orbisgis.orbisdata.processmanager.api.IProcessFactory;
 import org.orbisgis.orbisdata.processmanager.api.IProcessManager;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Implementation of IProcessManager as a singleton.
@@ -56,27 +53,38 @@ import java.util.Map;
  * @author Erwan Bocher (CNRS)
  * @author Sylvain PALOMINOS (UBS Lab-STICC 2019-2020)
  */
-public class ProcessManager implements IProcessManager {
+public class ProcessManager implements IProcessManager, GroovyObject, GroovyInterceptable {
+    
+    /**
+     * Default factory name
+     */
+    private static final String DEFAULT_FACTORY_NAME = "Default";
+    /**
+     * Unique ProcessManager instance.
+     */
+    private static ProcessManager instance = null;
 
     /**
      * Map of the process factory and their identifier.
      */
     private final Map<String, IProcessFactory> processFactoryMap;
     /**
-     * Unique ProcessManager instance.
+     * Default factory
      */
-    private static ProcessManager instance = null;
+    private final IProcessFactory defaultFactory;
     /**
-     * Default factory name
+     * MetaClass use for groovy methods/properties binding
      */
-    private static final String DEFAULT_FACTORY_NAME = "orbisgis";
+    @NotNull
+    private MetaClass metaClass = InvokerHelper.getMetaClass(getClass());
 
     /**
      * Private constructor in order to make it unique.
      */
     private ProcessManager() {
+        defaultFactory = new ProcessFactory(false, true);
         processFactoryMap = new HashMap<>();
-        processFactoryMap.put(DEFAULT_FACTORY_NAME, new ProcessFactory(false, true));
+        processFactoryMap.put(DEFAULT_FACTORY_NAME, defaultFactory);
     }
 
     /**
@@ -92,68 +100,97 @@ public class ProcessManager implements IProcessManager {
         return instance;
     }
 
-    @NotNull
     @Override
+    @NotNull
     public IProcessBuilder create() {
-        return new ProcessBuilder(processFactoryMap.get(DEFAULT_FACTORY_NAME), processFactoryMap.get(DEFAULT_FACTORY_NAME));
+        return new ProcessBuilder(defaultFactory, defaultFactory);
     }
 
-    @NotNull
     @Override
-    public IProcess create(@NotNull @DelegatesTo(IProcessBuilder.class) Closure<?> cl) {
-        IProcessBuilder builder = new ProcessBuilder(processFactoryMap.get(DEFAULT_FACTORY_NAME), processFactoryMap.get(DEFAULT_FACTORY_NAME));
+    @NotNull
+    public Optional<IProcess> create(@Nullable @DelegatesTo(IProcessBuilder.class) Closure<?> cl) {
+        if(cl == null) {
+            return Optional.empty();
+        }
+        IProcessBuilder builder = new ProcessBuilder(defaultFactory, defaultFactory);
         Closure<?> code = cl.rehydrate(builder, this, this);
         code.setResolveStrategy(Closure.DELEGATE_FIRST);
         code.call();
-        return builder.getProcess();
+        return Optional.of(builder.getProcess());
     }
 
-    @NotNull
     @Override
+    @NotNull
     public List<String> factoryIds() {
         return new ArrayList<>(processFactoryMap.keySet());
     }
 
     @Override
-    public IProcessFactory factory(@NotNull String identifier) {
+    @NotNull
+    public IProcessFactory factory(@Nullable String identifier) {
+        if(identifier == null) {
+            return factory();
+        }
         if (!processFactoryMap.containsKey(identifier)) {
             processFactoryMap.put(identifier, new ProcessFactory());
         }
         return processFactoryMap.get(identifier);
     }
 
-    @Nullable
-    public static IProcessFactory createFactory(@NotNull String identifier) {
-        return getProcessManager().factory(identifier);
+    @NotNull
+    public static IProcessFactory createFactory(@Nullable String identifier) {
+        return getProcessManager().factory(
+                identifier != null && !identifier.isEmpty() ? identifier : "factory_"+UUID.randomUUID().toString());
     }
 
     @Override
-    @Nullable
+    @NotNull
     public IProcessFactory factory() {
-        return processFactoryMap
-                .values()
-                .stream()
-                .filter(IProcessFactory::isDefault)
-                .findFirst()
-                .orElse(null);
+        return defaultFactory;
     }
 
-    @Nullable
+    @NotNull
     public static IProcessFactory createFactory() {
         return getProcessManager().factory();
     }
 
     @Override
-    @Nullable
-    public IProcess process(@NotNull String processId) {
-        IProcessFactory processFactory = factory();
-        return processFactory == null ? null : processFactory.getProcess(processId).orElse(null);
+    @NotNull
+    public Optional<IProcess> process(@Nullable String processId) {
+        return factory().getProcess(processId);
     }
 
     @Override
+    @NotNull
+    public Optional<IProcess> process(@Nullable String processId, @Nullable String factoryId) {
+        return factory(factoryId).getProcess(processId);
+    }
+
     @Nullable
-    public IProcess process(@NotNull String processId, String factoryId) {
-        IProcessFactory processFactory = factory(factoryId);
-        return processFactory == null ? null : processFactory.getProcess(processId).orElse(null);
+    @Override
+    public Object invokeMethod(@Nullable String name, @Nullable Object args) {
+        if(name != null) {
+            Object obj = getMetaClass().invokeMethod(this, name, args);
+            if(obj instanceof Optional){
+                return ((Optional<?>)obj).orElse(null);
+            }
+            else {
+                return obj;
+            }
+        }
+        else {
+            return null;
+        }
+    }
+
+    @Override
+    @NotNull
+    public MetaClass getMetaClass() {
+        return metaClass;
+    }
+
+    @Override
+    public void setMetaClass(@Nullable MetaClass metaClass) {
+        this.metaClass = metaClass == null ? InvokerHelper.getMetaClass(this.getClass()) : metaClass;
     }
 }

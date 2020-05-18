@@ -39,7 +39,10 @@ package org.orbisgis.orbisdata.processmanager.process;
 import groovy.lang.Closure;
 import groovy.lang.GroovyShell;
 import org.junit.jupiter.api.Test;
+import org.orbisgis.commons.annotations.Nullable;
 import org.orbisgis.orbisdata.processmanager.api.IProcess;
+
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -47,30 +50,31 @@ import static org.junit.jupiter.api.Assertions.*;
  * Test class dedicated to {@link GroovyProcessFactory} class.
  *
  * @author Erwan Bocher (CNRS)
- * @author Sylvain PALOMINOS (UBS 2019)
+ * @author Sylvain PALOMINOS (UBS Lab-STICC 2019- 2020)
  */
 public class GroovyProcessFactoryTest {
 
     /**
-     * Test the {@link GroovyProcessFactory#isDefault()} and {@link GroovyProcessFactory#isLocked()} methods.
+     * Test the {@link ProcessFactory#ProcessFactory(boolean, boolean)}, {@link ProcessFactory#ProcessFactory()},
+     * {@link ProcessFactory#isDefault()} and {@link ProcessFactory#isLocked()} methods.
      */
     @Test
     void testAttributes() {
-        GroovyProcessFactory pf1 = new DummyFactory();
-        assertFalse(pf1.isDefault());
-        assertFalse(pf1.isLocked());
+        GroovyProcessFactory pf = new DummyFactory();
+        assertFalse(pf.isDefault());
+        assertFalse(pf.isLocked());
     }
 
     /**
-     * Test the {@link GroovyProcessFactory#registerProcess(IProcess)} method.
+     * Test the {@link ProcessFactory#registerProcess(IProcess)} and {@link ProcessFactory#getProcess(String)} methods.
      */
     @Test
     void testRegister() {
         IProcess process = new Process(null, null, null, null, null, null, null);
 
-        GroovyProcessFactory pf1 = new DummyFactory();
-        pf1.registerProcess(process);
-        assertNotNull(pf1.getProcess(process.getIdentifier()));
+        DummyFactory pf = new DummyFactory();
+        pf.registerProcess(process);
+        assertTrue(pf.getProcess(process.getIdentifier()).isPresent());
     }
 
     /**
@@ -90,10 +94,11 @@ public class GroovyProcessFactoryTest {
                 "            version \"version\"\n" +
                 "            run { inputA, inputB -> [outputA: inputA + inputB] }\n" +
                 "        })";
-        Closure cl = (Closure) new GroovyShell().evaluate(string);
-        IProcess process = pf1.create(cl);
+        Closure<?> cl = (Closure<?>) new GroovyShell().evaluate(string);
+        Optional<IProcess> opt = pf1.create(cl);
+        assertTrue(opt.isPresent());
 
-        assertNotNull(process);
+        IProcess process = opt.get();
         assertEquals("simple process", process.getTitle());
         assertEquals("description", process.getDescription());
         assertEquals("version", process.getVersion());
@@ -102,9 +107,24 @@ public class GroovyProcessFactoryTest {
         assertEquals(1, process.getOutputs().size());
     }
 
-    private class DummyFactory extends GroovyProcessFactory {
+    /**
+     * Test the {@link ProcessFactory#invokeMethod(String, Object)} method.
+     */
+    @Test
+    void propertyTest() {
+        DummyFactory factory = new DummyFactory();
+        assertNull(factory.invokeMethod(null, null));
+        assertEquals(false, factory.invokeMethod("isLocked", null));
+        assertNull(factory.invokeMethod("getProcess", null));
+        factory.setMetaClass(null);
+        assertNull(factory.invokeMethod(null, null));
+        assertEquals(false, factory.invokeMethod("isLocked", null));
+        assertNull(factory.invokeMethod("getProcess", null));
+    }
 
+    private static class DummyFactory extends GroovyProcessFactory {
         @Override
+        @Nullable
         public Object run() {
             return null;
         }

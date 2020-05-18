@@ -36,6 +36,7 @@
  */
 package org.orbisgis.orbisdata.processmanager.process.inoutput;
 
+import groovy.lang.GroovyInterceptable;
 import groovy.lang.GroovyObject;
 import groovy.lang.MetaClass;
 import org.codehaus.groovy.runtime.InvokerHelper;
@@ -52,7 +53,7 @@ import java.util.Optional;
  * @author Erwan Bocher (CNRS)
  * @author Sylvain PALOMINOS (UBS Lab-STICC 2019-2020)
  */
-public abstract class InOutPut implements IInOutPut, GroovyObject {
+public abstract class InOutPut implements IInOutPut, GroovyObject, GroovyInterceptable {
 
     /**
      * Groovy {@link MetaClass}.

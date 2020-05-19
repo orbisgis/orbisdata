@@ -36,14 +36,14 @@
  */
 package org.orbisgis.orbisdata.processmanager.process;
 
-import groovy.lang.*;
+import groovy.lang.Closure;
+import groovy.lang.DelegatesTo;
+import groovy.lang.Script;
 import org.orbisgis.commons.annotations.NotNull;
 import org.orbisgis.commons.annotations.Nullable;
 import org.orbisgis.orbisdata.processmanager.api.IProcess;
 import org.orbisgis.orbisdata.processmanager.api.IProcessBuilder;
 import org.orbisgis.orbisdata.processmanager.api.IProcessFactory;
-
-import java.util.Optional;
 
 /**
  * Implementation of the {@link IProcessFactory} class dedicated to Groovy.
@@ -51,11 +51,11 @@ import java.util.Optional;
  * @author Erwan Bocher (CNRS)
  * @author Sylvain PALOMINOS (UBS Lab-STICC 2019-2020)
  */
-public abstract class GroovyProcessFactory extends Script implements IProcessFactory, GroovyObject, GroovyInterceptable {
+public abstract class GroovyProcessFactory extends Script implements IProcessFactory {
     private final ProcessFactory factory = new ProcessFactory();
 
     @Override
-    public void registerProcess(@Nullable IProcess process) {
+    public void registerProcess(@NotNull IProcess process) {
         factory.registerProcess(process);
     }
 
@@ -71,36 +71,22 @@ public abstract class GroovyProcessFactory extends Script implements IProcessFac
 
     @Override
     @Nullable
-    public Optional<IProcess> getProcess(@Nullable String processId) {
+    public IProcess getProcess(@NotNull String processId) {
         return factory.getProcess(processId);
     }
 
     @Override
     @NotNull
     public IProcessBuilder create() {
-        return factory.create();
+        return new ProcessBuilder(factory, this);
     }
 
     @Override
     @NotNull
-    public Optional<IProcess> create(@Nullable @DelegatesTo(IProcessBuilder.class) Closure<?> cl) {
-        return factory.create(cl);
-    }
-
-    @Nullable
-    @Override
-    public Object invokeMethod(@Nullable String name, @Nullable Object args) {
-        if(name != null) {
-            Object obj = getMetaClass().invokeMethod(this, name, args);
-            if(obj instanceof Optional){
-                return ((Optional<?>)obj).orElse(null);
-            }
-            else {
-                return obj;
-            }
-        }
-        else {
-            return null;
-        }
+    public IProcess create(@NotNull @DelegatesTo(IProcessBuilder.class) Closure<?> cl) {
+        IProcessBuilder builder = new ProcessBuilder(factory, this);
+        Closure<?> code = cl.rehydrate(builder, this, this);
+        code.setResolveStrategy(Closure.DELEGATE_FIRST);
+        return ((IProcessBuilder) code.call()).getProcess();
     }
 }

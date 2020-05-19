@@ -147,13 +147,13 @@ public class ProcessManager implements IProcessManager {
     @Nullable
     public IProcess process(@NotNull String processId) {
         IProcessFactory processFactory = factory();
-        return processFactory == null ? null : processFactory.getProcess(processId).orElse(null);
+        return processFactory == null ? null : processFactory.getProcess(processId);
     }
 
     @Override
     @Nullable
     public IProcess process(@NotNull String processId, String factoryId) {
         IProcessFactory processFactory = factory(factoryId);
-        return processFactory == null ? null : processFactory.getProcess(processId).orElse(null);
+        return processFactory == null ? null : processFactory.getProcess(processId);
     }
 }

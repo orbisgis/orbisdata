@@ -42,7 +42,6 @@ import org.orbisgis.commons.annotations.NotNull;
 import org.orbisgis.commons.annotations.Nullable;
 
 import java.util.List;
-import java.util.Optional;
 
 /**
  * This interface defines the methods dedicated to the process and process factory managing.
@@ -69,7 +68,7 @@ public interface IProcessManager {
      * @return A {@link IProcess}.
      */
     @NotNull
-    Optional<IProcess> create(@Nullable @DelegatesTo(IProcessBuilder.class) Closure<?> cl);
+    IProcess create(@NotNull @DelegatesTo(IProcessBuilder.class) Closure<?> cl);
 
     /**
      * Return the list of the factory identifiers.
@@ -85,15 +84,15 @@ public interface IProcessManager {
      * @param identifier Identifier of the factory.
      * @return The process factory with the given identifier.
      */
-    @NotNull
-    IProcessFactory factory(@Nullable String identifier);
+    @Nullable
+    IProcessFactory factory(@NotNull String identifier);
 
     /**
      * Returns the default process factory.
      *
      * @return The default process factory.
      */
-    @NotNull
+    @Nullable
     IProcessFactory factory();
 
     /**
@@ -102,8 +101,8 @@ public interface IProcessManager {
      * @param processId Identifier of the process to get.
      * @return The process with the given identifier from the default factory.
      */
-    @NotNull
-    Optional<IProcess> process(@Nullable String processId);
+    @Nullable
+    IProcess process(@NotNull String processId);
 
     /**
      * Returns the process with the given identifier from the factory with the given identifier.
@@ -112,6 +111,6 @@ public interface IProcessManager {
      * @param factoryId Identifier of the factory.
      * @return The process with the given identifier from the factory with the given identifier.
      */
-    @NotNull
-    Optional<IProcess> process(@Nullable String processId, @Nullable String factoryId);
+    @Nullable
+    IProcess process(@NotNull String processId, @Nullable String factoryId);
 }

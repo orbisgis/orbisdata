@@ -301,7 +301,7 @@ class TestProcessCheck {
         processCheck.metaClass = null
         processCheck.inOutPuts = null
         obj = processCheck.inOutPuts
-        assert obj
+        assert  !obj
     }
 
     /**

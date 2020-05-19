@@ -124,8 +124,8 @@ public class ProcessManagerTest {
     void testProcess() {
         ProcessManager pm = ProcessManager.getProcessManager();
         assertNotNull(ProcessManager.createFactory("Mayor_DeFacto_Ry"));
-        String id1 = pm.factory().create(cl).get().getIdentifier();
-        String id2 = pm.factory("Mayor_DeFacto_Ry").create(cl).get().getIdentifier();
+        String id1 = pm.factory().create(cl).getIdentifier();
+        String id2 = pm.factory("Mayor_DeFacto_Ry").create(cl).getIdentifier();
 
         assertNull(pm.process(id2));
         assertNotNull(pm.process(id1));

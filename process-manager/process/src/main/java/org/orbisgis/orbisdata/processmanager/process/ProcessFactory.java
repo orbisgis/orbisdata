@@ -36,8 +36,8 @@
  */
 package org.orbisgis.orbisdata.processmanager.process;
 
-import groovy.lang.*;
-import org.codehaus.groovy.runtime.InvokerHelper;
+import groovy.lang.Closure;
+import groovy.lang.DelegatesTo;
 import org.orbisgis.commons.annotations.NotNull;
 import org.orbisgis.commons.annotations.Nullable;
 import org.orbisgis.orbisdata.processmanager.api.IProcess;
@@ -46,7 +46,6 @@ import org.orbisgis.orbisdata.processmanager.api.IProcessFactory;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * Implementation of the {@link IProcessFactory}.
@@ -54,7 +53,7 @@ import java.util.Optional;
  * @author Erwan Bocher (CNRS)
  * @author Sylvain PALOMINOS (UBS Lab-STICC 2019-2020)
  */
-public class ProcessFactory implements IProcessFactory, GroovyObject, GroovyInterceptable {
+public class ProcessFactory implements IProcessFactory {
 
     /**
      * Indicated if the process creation is allowed.
@@ -68,10 +67,6 @@ public class ProcessFactory implements IProcessFactory, GroovyObject, GroovyInte
      * List of the processes created with this factory.
      */
     private final List<IProcess> processList;
-    /**
-     * {@link MetaClass}
-     */
-    private MetaClass metaClass = InvokerHelper.getMetaClass(ProcessFactory.class);
 
     /**
      * Default empty constructor.
@@ -93,8 +88,8 @@ public class ProcessFactory implements IProcessFactory, GroovyObject, GroovyInte
     }
 
     @Override
-    public void registerProcess(@Nullable IProcess process) {
-        if (!isLock && process != null) {
+    public void registerProcess(@NotNull IProcess process) {
+        if (!isLock) {
             processList.add(process);
         }
     }
@@ -110,13 +105,15 @@ public class ProcessFactory implements IProcessFactory, GroovyObject, GroovyInte
     }
 
     @Override
-    @NotNull
-    public Optional<IProcess> getProcess(@Nullable String processId) {
-        return processList
+    @Nullable
+    public IProcess getProcess(@NotNull String processId) {
+        IProcess process = processList
                 .stream()
-                .filter(iProcess -> iProcess.getIdentifier().equals(processId))
+                .filter(iProcess ->
+                        iProcess.getIdentifier().equals(processId))
                 .findFirst()
-                .map(IProcess::newInstance);
+                .orElse(null);
+        return process == null ? null : process.newInstance();
     }
 
     @Override
@@ -127,43 +124,10 @@ public class ProcessFactory implements IProcessFactory, GroovyObject, GroovyInte
 
     @Override
     @NotNull
-    public Optional<IProcess> create(@Nullable @DelegatesTo(IProcessBuilder.class) Closure<?> cl) {
-        if(cl == null) {
-            return Optional.empty();
-        }
-        else {
-            IProcessBuilder builder = new ProcessBuilder(this, this);
-            Closure<?> code = cl.rehydrate(builder, this, this);
-            code.setResolveStrategy(Closure.DELEGATE_FIRST);
-            return Optional.of(((IProcessBuilder) code.call()).getProcess());
-        }
-    }
-
-    @Nullable
-    @Override
-    public Object invokeMethod(@Nullable String name, @Nullable Object args) {
-        if(name != null) {
-            Object obj = this.metaClass.invokeMethod(this, name, args);
-            if(obj instanceof Optional){
-                return ((Optional<?>)obj).orElse(null);
-            }
-            else {
-                return obj;
-            }
-        }
-        else {
-            return null;
-        }
-    }
-
-    @Override
-    @NotNull
-    public MetaClass getMetaClass() {
-        return metaClass;
-    }
-
-    @Override
-    public void setMetaClass(@Nullable MetaClass metaClass) {
-        this.metaClass = metaClass == null ? InvokerHelper.getMetaClass(this.getClass()) : metaClass;
+    public IProcess create(@NotNull @DelegatesTo(IProcessBuilder.class) Closure<?> cl) {
+        IProcessBuilder builder = new ProcessBuilder(this, this);
+        Closure<?> code = cl.rehydrate(builder, this, this);
+        code.setResolveStrategy(Closure.DELEGATE_FIRST);
+        return ((IProcessBuilder) code.call()).getProcess();
     }
 }

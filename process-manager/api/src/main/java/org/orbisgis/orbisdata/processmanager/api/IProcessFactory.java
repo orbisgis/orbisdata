@@ -41,13 +41,11 @@ import groovy.lang.DelegatesTo;
 import org.orbisgis.commons.annotations.NotNull;
 import org.orbisgis.commons.annotations.Nullable;
 
-import java.util.Optional;
-
 /**
  * This interface defines the methods dedicated to the process creation and managing.
  *
  * @author Erwan Bocher (CNRS)
- * @author Sylvain PALOMINOS (UBS Lab-STICC 2019-2020)
+ * @author Sylvain PALOMINOS (UBS 2019)
  */
 public interface IProcessFactory {
 
@@ -56,7 +54,7 @@ public interface IProcessFactory {
      *
      * @param process {@link IProcess} to register.
      */
-    void registerProcess(@Nullable IProcess process);
+    void registerProcess(@NotNull IProcess process);
 
     /**
      * Return true if the process creation is locked, false otherwise.
@@ -79,7 +77,7 @@ public interface IProcessFactory {
      * @return The process with the given identifier.
      */
     @Nullable
-    Optional<IProcess> getProcess(@Nullable String processId);
+    IProcess getProcess(@NotNull String processId);
 
     /**
      * Return a {@link IProcessBuilder} to create a {@link IProcess}. Once the process created, it will be register
@@ -98,5 +96,5 @@ public interface IProcessFactory {
      * @return A {@link IProcess}.
      */
     @NotNull
-    Optional<IProcess> create(@Nullable @DelegatesTo(IProcessBuilder.class) Closure<?> cl);
+    IProcess create(@NotNull @DelegatesTo(IProcessBuilder.class) Closure<?> cl);
 }

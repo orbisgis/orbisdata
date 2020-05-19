@@ -128,7 +128,7 @@ public class OutputTest {
         Output output = new Output();
         assertEquals(InvokerHelper.getMetaClass(Output.class), output.getMetaClass());
         output.setMetaClass(null);
-        assertNotNull(output.getMetaClass());
+        assertNull(output.getMetaClass());
         output.setMetaClass(InvokerHelper.getMetaClass(this.getClass()));
         assertEquals(InvokerHelper.getMetaClass(this.getClass()), output.getMetaClass());
     }

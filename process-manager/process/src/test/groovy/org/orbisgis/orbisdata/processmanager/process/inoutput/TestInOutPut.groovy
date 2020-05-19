@@ -2,7 +2,9 @@ package org.orbisgis.orbisdata.processmanager.process.inoutput
 
 import org.junit.jupiter.api.Test
 import org.orbisgis.orbisdata.processmanager.api.IProcess
+import org.orbisgis.orbisdata.processmanager.process.ProcessManager
 
+import static org.junit.jupiter.api.Assertions.*
 import static org.orbisgis.orbisdata.processmanager.process.ProcessManager.createFactory as factory
 
 /**

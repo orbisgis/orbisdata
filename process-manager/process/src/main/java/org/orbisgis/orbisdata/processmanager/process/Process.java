@@ -37,6 +37,7 @@
 package org.orbisgis.orbisdata.processmanager.process;
 
 import groovy.lang.Closure;
+import groovy.lang.GroovyInterceptable;
 import groovy.lang.GroovyObject;
 import groovy.lang.MetaClass;
 import org.codehaus.groovy.runtime.InvokerHelper;
@@ -52,6 +53,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Implementation of the {@link IProcess} interface dedicated to the local creation and execution of process (no link with
@@ -60,7 +62,7 @@ import java.util.*;
  * @author Erwan Bocher (CNRS)
  * @author Sylvain PALOMINOS (UBS Lab-STICC 2019-2020)
  */
-public class Process implements IProcess, GroovyObject {
+public class Process implements IProcess, GroovyObject, GroovyInterceptable {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Process.class);
 
@@ -186,8 +188,10 @@ public class Process implements IProcess, GroovyObject {
     public IProcess newInstance() {
         Process process = new Process(title, description, keywords, null, null,
                 version, closure);
-        process.inputs = this.inputs;
-        process.outputs = this.outputs;
+        process.inputs = this.inputs.stream().map(IInput::copy).collect(Collectors.toCollection(LinkedList::new));
+        process.inputs.forEach(in -> in.setProcess(process));
+        process.outputs = this.outputs.stream().map(IOutput::copy).collect(Collectors.toCollection(LinkedList::new));
+        process.outputs.forEach(out -> out.setProcess(process));
         process.defaultValues = this.defaultValues;
         return process;
     }
@@ -197,24 +201,20 @@ public class Process implements IProcess, GroovyObject {
      *
      * @param inputDataMap Map containing the data for the execution of the closure. This map may not contains several
      *                     inputs.
+     * @param cl Closure to curry.
      * @return The closure if the missing inputs are all optional, false otherwise.
      */
     @Nullable
-    private Closure<?> getClosureWithCurry(@NotNull LinkedHashMap<String, Object> inputDataMap) {
-        Closure<?> cl = closure;
-        if(closure == null){
-            LOGGER.error("The closure should not be null.");
-            return null;
-        }
+    private Closure<?> getClosureWithCurry(@NotNull LinkedHashMap<String, Object> inputDataMap, @NotNull Closure<?> cl) {
         int curryIndex = 0;
-        for (IInput input : inputs) {
-            if (input.getName().isPresent() &&
-                    !inputDataMap.containsKey(input.getName().get())) {
-                if (defaultValues.get(input.getName().get()) == null) {
-                    LOGGER.error("The parameter " + input.getName() + " has no default value.");
+        List<String> names = inputs.stream().map(IInOutPut::getName).map(Optional::get).collect(Collectors.toCollection(LinkedList::new));
+        for (String name : names) {
+            if (!inputDataMap.containsKey(name)) {
+                if (defaultValues.get(name) == null) {
+                    LOGGER.error("The parameter " + name + " has no default value.");
                     return null;
                 }
-                cl = cl.ncurry(curryIndex, defaultValues.get(input.getName().get()));
+                cl = cl.ncurry(curryIndex, defaultValues.get(name));
                 curryIndex--;
             }
             curryIndex++;
@@ -257,7 +257,7 @@ public class Process implements IProcess, GroovyObject {
         Object result;
         try {
             if (inputs.size() != 0) {
-                Closure<?> cl = getClosureWithCurry(map);
+                Closure<?> cl = getClosureWithCurry(map, closure);
                 if (cl == null) {
                     return false;
                 }
@@ -273,6 +273,20 @@ public class Process implements IProcess, GroovyObject {
             resultMap = new HashMap<>();
             resultMap.put("result", result);
             return true;
+        }
+        else if (outputs.size() == 1) {
+            if(result == null){
+                return false;
+            }
+            if(result instanceof Map){
+                resultMap.putAll(((Map<String, Object>) result));
+                return true;
+            }
+            else {
+                resultMap = new HashMap<>();
+                resultMap.put("result", result);
+                return true;
+            }
         } else if (result == null) {
             return false;
         } else {
@@ -281,7 +295,7 @@ public class Process implements IProcess, GroovyObject {
     }
 
     /**
-     * Check and store the results of the process execution.
+     * Check that the process result contains all the process outputs and store the results of the process execution.
      *
      * @param result Result of the process execution.
      * @return True if the execution hes been successful, false otherwise.
@@ -289,8 +303,7 @@ public class Process implements IProcess, GroovyObject {
     private boolean checkResults(@Nullable Object result) {
         Map<String, Object> map;
         if (!(result instanceof Map)) {
-            map = new HashMap<>();
-            map.put("result", result);
+            return false;
         } else {
             map = (Map<String, Object>) result;
         }
@@ -298,7 +311,7 @@ public class Process implements IProcess, GroovyObject {
                 .map(IInOutPut::getName)
                 .filter(Optional::isPresent)
                 .map(Optional::get)
-                .anyMatch(map::containsKey);
+                .allMatch(map::containsKey);
         LOGGER.debug("End of the execution of '" + this.getTitle() + "'.");
         if (!isResultValid) {
             LOGGER.debug("The output of the execution are not compatible with process output.");
@@ -310,27 +323,27 @@ public class Process implements IProcess, GroovyObject {
     }
 
     @Override
-    @Nullable
-    public String getTitle() {
-        return title;
+    @NotNull
+    public Optional<String> getTitle() {
+        return Optional.ofNullable(title);
     }
 
     @Override
-    @Nullable
-    public String getVersion() {
-        return version;
+    @NotNull
+    public Optional<String> getVersion() {
+        return Optional.ofNullable(version);
     }
 
     @Override
-    @Nullable
-    public String getDescription() {
-        return description;
+    @NotNull
+    public Optional<String> getDescription() {
+        return Optional.ofNullable(description);
     }
 
     @Override
-    @Nullable
-    public String[] getKeywords() {
-        return keywords;
+    @NotNull
+    public Optional<String[]> getKeywords() {
+        return Optional.ofNullable(keywords);
     }
 
     @Override
@@ -359,8 +372,18 @@ public class Process implements IProcess, GroovyObject {
 
     //Groovy object methods
     @Override
-    public Object invokeMethod(String name, Object args) {
-        return metaClass.invokeMethod(this, name, args);
+    @Nullable
+    public Object invokeMethod(@Nullable String name, @Nullable Object args) {
+        if(name == null) {
+            return null;
+        }
+        Object obj =  metaClass.invokeMethod(this, name, args);
+        if(obj instanceof Optional) {
+            return ((Optional<?>)obj).orElse(null);
+        }
+        else {
+            return obj;
+        }
     }
 
     @Override
@@ -383,12 +406,13 @@ public class Process implements IProcess, GroovyObject {
                 .anyMatch(propertyName::equals)) {
             return new Output().process(this).name(propertyName);
         }
-        return metaClass.getProperty(this, propertyName);
-    }
-
-    @Override
-    public void setProperty(String propertyName, Object newValue) {
-        this.metaClass.setProperty(this, propertyName, newValue);
+        Object obj = metaClass.getProperty(this, propertyName);
+        if(obj instanceof Optional) {
+            return ((Optional<?>)obj).orElse(null);
+        }
+        else {
+            return obj;
+        }
     }
 
     @Override
@@ -397,12 +421,21 @@ public class Process implements IProcess, GroovyObject {
     }
 
     @Override
-    public void setMetaClass(MetaClass metaClass) {
-        this.metaClass = metaClass;
+    public void setMetaClass(@Nullable MetaClass metaClass) {
+        this.metaClass = metaClass == null ? InvokerHelper.getMetaClass(this.getClass()) : metaClass;
     }
 
     @Override
-    public boolean call(LinkedHashMap<String, Object> inputDataMap) {
+    public boolean call(@Nullable LinkedHashMap<String, Object> inputDataMap) {
         return execute(inputDataMap);
+    }
+
+    @Override
+    public boolean equals(Object obj){
+        if(! (obj instanceof Process)){
+            return false;
+        }
+        Process p = (Process)obj;
+        return Objects.equals(this.getIdentifier(), p.getIdentifier());
     }
 }

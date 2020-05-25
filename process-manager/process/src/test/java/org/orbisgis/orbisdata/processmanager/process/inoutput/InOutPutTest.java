@@ -126,7 +126,7 @@ public class InOutPutTest {
     @Test
     void metaClassTest() {
         DummyInOutPut dummyInOutPut = new DummyInOutPut();
-        assertEquals(InvokerHelper.getMetaClass(InOutPut.class), dummyInOutPut.getMetaClass());
+        assertEquals(InvokerHelper.getMetaClass(DummyInOutPut.class), dummyInOutPut.getMetaClass());
         dummyInOutPut.setMetaClass(null);
         assertNotNull(dummyInOutPut.getMetaClass());
         dummyInOutPut.setMetaClass(InvokerHelper.getMetaClass(this.getClass()));
@@ -157,5 +157,19 @@ public class InOutPutTest {
         dummyInOutPut.setMetaClass(null);
         dummyInOutPut.setProperty("name", "tata");
         assertNull(dummyInOutPut.getProperty(null));
+    }
+
+    /**
+     * Test the {@link InOutPut#invokeMethod(String, Object)} method.
+     */
+    @Test
+    void invokeMethodTest() {
+        DummyInOutPut dummyInOutPut = new DummyInOutPut();
+        dummyInOutPut.setName("name");
+
+        assertNull(dummyInOutPut.invokeMethod(null, null));
+        assertEquals("name", dummyInOutPut.invokeMethod("getName", null));
+        dummyInOutPut.setNotOptional("toto");
+        assertEquals("toto", dummyInOutPut.invokeMethod("getNotOptional", null));
     }
 }

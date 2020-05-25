@@ -125,10 +125,14 @@ public class ProcessFactoryTest {
 
         IProcess process = opt.get();
         assertNotNull(process);
-        assertEquals("simple process", process.getTitle());
-        assertEquals("description", process.getDescription());
-        assertEquals("version", process.getVersion());
-        assertArrayEquals(new String[]{"key1", "key2"}, process.getKeywords());
+        assertTrue(process.getTitle().isPresent());
+        assertEquals("simple process", process.getTitle().get());
+        assertTrue(process.getDescription().isPresent());
+        assertEquals("description", process.getDescription().get());
+        assertTrue(process.getVersion().isPresent());
+        assertEquals("version", process.getVersion().get());
+        assertTrue(process.getKeywords().isPresent());
+        assertArrayEquals(new String[]{"key1", "key2"}, process.getKeywords().get());
         assertEquals(2, process.getInputs().size());
         assertEquals(1, process.getOutputs().size());
     }

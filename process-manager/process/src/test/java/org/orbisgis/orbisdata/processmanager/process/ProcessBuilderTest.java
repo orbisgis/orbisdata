@@ -190,10 +190,14 @@ public class ProcessBuilderTest {
                 .version("version")
                 .getProcess();
 
-        assertEquals("title", process.getTitle());
-        assertEquals("description", process.getDescription());
-        assertEquals("version", process.getVersion());
-        assertArrayEquals(new String[]{"key1", "key2"}, process.getKeywords());
+        assertTrue(process.getTitle().isPresent());
+        assertEquals("title", process.getTitle().get());
+        assertTrue(process.getDescription().isPresent());
+        assertEquals("description", process.getDescription().get());
+        assertTrue(process.getVersion().isPresent());
+        assertEquals("version", process.getVersion().get());
+        assertTrue(process.getKeywords().isPresent());
+        assertArrayEquals(new String[]{"key1", "key2"}, process.getKeywords().get());
         assertEquals(3, process.getInputs().size());
         assertEquals(2, process.getOutputs().size());
 
@@ -207,10 +211,10 @@ public class ProcessBuilderTest {
                 .version(null)
                 .getProcess();
 
-        assertNull(process.getTitle());
-        assertNull(process.getDescription());
-        assertNull(process.getVersion());
-        assertNull(process.getKeywords());
+        assertFalse(process.getTitle().isPresent());
+        assertFalse(process.getDescription().isPresent());
+        assertFalse(process.getVersion().isPresent());
+        assertFalse(process.getKeywords().isPresent());
         assertTrue(process.getInputs().isEmpty());
         assertTrue(process.getOutputs().isEmpty());
     }

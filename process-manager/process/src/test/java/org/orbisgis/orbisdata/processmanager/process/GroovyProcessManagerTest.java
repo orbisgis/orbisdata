@@ -43,7 +43,6 @@ import org.codehaus.groovy.runtime.InvokerHelper;
 import org.codehaus.groovy.runtime.metaclass.MissingPropertyExceptionNoStack;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.function.Executable;
 import org.orbisgis.orbisdata.processmanager.api.IProcess;
 import org.orbisgis.orbisdata.processmanager.api.IProcessFactory;
 import org.slf4j.Logger;

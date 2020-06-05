@@ -45,7 +45,9 @@ import org.junit.jupiter.api.Test;
 import org.orbisgis.orbisdata.processmanager.api.IProcess;
 import org.orbisgis.orbisdata.processmanager.api.IProcessFactory;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 

@@ -4,7 +4,6 @@ import groovy.lang.MetaClass;
 import org.codehaus.groovy.runtime.InvokerHelper;
 import org.junit.jupiter.api.Test;
 import org.orbisgis.orbisdata.processmanager.api.IProcess;
-import org.orbisgis.orbisdata.processmanager.process.ProcessBuilder;
 import org.orbisgis.orbisdata.processmanager.process.ProcessManager;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -160,8 +159,65 @@ public class InputTest {
         Input input = new Input();
         assertEquals(InvokerHelper.getMetaClass(Input.class), input.getMetaClass());
         input.setMetaClass(null);
-        assertNull(input.getMetaClass());
+        assertNotNull(input.getMetaClass());
         input.setMetaClass(InvokerHelper.getMetaClass(this.getClass()));
         assertEquals(InvokerHelper.getMetaClass(this.getClass()), input.getMetaClass());
+    }
+
+    /**
+     * Test the {@link Input#equals(Object)} method.
+     */
+    @Test
+    void equalsTest() {
+        IProcess p1 = ProcessManager.createFactory().create().getProcess();
+        IProcess p2 = ProcessManager.createFactory().create().getProcess();
+        Input in1 = new Input().name("toto").process(p1);
+        Input in2 = new Input().name("toto").process(p1);
+        Input in3 = new Input().name("toto").process(p2);
+        Input in4 = new Input().name("toto");
+        Input in5 = new Input().name("tata").process(p1);
+        Input in6 = new Input();
+
+        assertEquals(in1, in2);
+
+        assertNotEquals(in1, in3);
+        assertNotEquals(in1, in4);
+        assertNotEquals(in1, in5);
+        assertNotEquals(in1, in6);
+        assertNotEquals(in1, "in3");
+        assertNotEquals(in1, null);
+    }
+
+    /**
+     * Test the {@link Input#copy()} method.
+     */
+    @Test
+    void copyTest() {
+        IProcess p1 = ProcessManager.createFactory().create().getProcess();
+        IProcess p2 = ProcessManager.createFactory().create().getProcess();
+        Input in1 = new Input().name("toto").process(p1);
+        Input in2 = new Input().name("toto").process(p1);
+        Input in3 = new Input().name("toto").process(p2);
+        Input in4 = new Input().name("toto");
+        Input in5 = new Input().name("tata").process(p1);
+        Input in6 = new Input();
+
+        assertEquals(in1, in1.copy());
+        assertNotSame(in1, in1.copy());
+
+        assertEquals(in2, in2.copy());
+        assertNotSame(in2, in2.copy());
+
+        assertEquals(in3, in3.copy());
+        assertNotSame(in3, in3.copy());
+
+        assertEquals(in4, in4.copy());
+        assertNotSame(in4, in4.copy());
+
+        assertEquals(in5, in5.copy());
+        assertNotSame(in5, in5.copy());
+
+        assertEquals(in6, in6.copy());
+        assertNotSame(in6, in6.copy());
     }
 }

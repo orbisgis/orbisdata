@@ -37,6 +37,7 @@
 package org.orbisgis.orbisdata.processmanager.process.check;
 
 import groovy.lang.Closure;
+import groovy.lang.GroovyInterceptable;
 import groovy.lang.GroovyObject;
 import groovy.lang.MetaClass;
 import org.codehaus.groovy.runtime.InvokerHelper;
@@ -62,7 +63,7 @@ import static org.orbisgis.orbisdata.processmanager.api.check.IProcessCheck.Acti
  * @author Erwan Bocher (CNRS)
  * @author Sylvain PALOMINOS (UBS 2019-2020)
  */
-public class ProcessCheck implements IProcessCheck, GroovyObject {
+public class ProcessCheck implements IProcessCheck, GroovyObject, GroovyInterceptable {
 
     /**
      * Logger
@@ -106,7 +107,7 @@ public class ProcessCheck implements IProcessCheck, GroovyObject {
     /**
      * MetaClass use for groovy methods/properties binding
      */
-    @Nullable
+    @NotNull
     private MetaClass metaClass = InvokerHelper.getMetaClass(getClass());
 
     /**
@@ -280,7 +281,7 @@ public class ProcessCheck implements IProcessCheck, GroovyObject {
 
     @Override
     public void setProperty(@Nullable String propertyName, @Nullable Object newValue) {
-        if(propertyName != null && metaClass != null) {
+        if(propertyName != null) {
             this.metaClass.setProperty(this, propertyName, newValue);
         }
     }
@@ -288,24 +289,19 @@ public class ProcessCheck implements IProcessCheck, GroovyObject {
     @Nullable
     @Override
     public Object getProperty(@Nullable String propertyName){
-        if(metaClass != null) {
-            Object obj = this.metaClass.getProperty(this, propertyName);
-            if(obj instanceof Optional){
-                return ((Optional<?>)obj).orElse(null);
-            }
-            else {
-                return obj;
-            }
+        Object obj = this.metaClass.getProperty(this, propertyName);
+        if(obj instanceof Optional){
+            return ((Optional<?>)obj).orElse(null);
         }
         else {
-            return null;
+            return obj;
         }
     }
 
     @Nullable
     @Override
     public Object invokeMethod(@Nullable String name, @Nullable Object args) {
-        if(name != null && metaClass != null) {
+        if(name != null) {
             Object obj = this.metaClass.invokeMethod(this, name, args);
             if(obj instanceof Optional){
                 return ((Optional<?>)obj).orElse(null);
@@ -327,7 +323,7 @@ public class ProcessCheck implements IProcessCheck, GroovyObject {
 
     @Override
     public void setMetaClass(@Nullable MetaClass metaClass) {
-        this.metaClass = metaClass;
+        this.metaClass = metaClass == null ? InvokerHelper.getMetaClass(this.getClass()) : metaClass;
     }
 
     @Override
@@ -340,8 +336,8 @@ public class ProcessCheck implements IProcessCheck, GroovyObject {
         }
         if(getProcess().isPresent()) {
             //If there is a process, get the name. If the name is null, use the process id.
-            String processName = getProcess().get().getTitle() != null ?
-                    getProcess().get().getTitle() :
+            String processName = getProcess().get().getTitle().isPresent() ?
+                    getProcess().get().getTitle().get() :
                     getProcess().get().getIdentifier();
             builder.append("On process :")
                     .append(processName)

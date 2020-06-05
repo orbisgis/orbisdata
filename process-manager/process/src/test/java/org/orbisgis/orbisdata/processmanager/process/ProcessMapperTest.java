@@ -38,6 +38,7 @@ package org.orbisgis.orbisdata.processmanager.process;
 
 import groovy.lang.Closure;
 import groovy.lang.GroovyShell;
+import org.codehaus.groovy.runtime.InvokerHelper;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.orbisgis.orbisdata.processmanager.api.IProcess;
@@ -49,6 +50,7 @@ import org.orbisgis.orbisdata.processmanager.process.inoutput.InOutPut;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -76,7 +78,7 @@ public class ProcessMapperTest {
         LinkedHashMap<String, Object> pAOutputMap = new LinkedHashMap<>();
         pAOutputMap.put("outA1", String.class);
         pA1 = (Process) processManager.factory("map5").create().title("pA").inputs(pAInputMap).outputs(pAOutputMap)
-                .run(new Closure(null) {
+                .run(new Closure<Object>(null) {
                     public int getMaximumNumberOfParameters() {
                         return 2;
                     }
@@ -98,7 +100,7 @@ public class ProcessMapperTest {
         LinkedHashMap<String, Object> pBOutputMap = new LinkedHashMap<>();
         pBOutputMap.put("outB1", String.class);
         pB1 = (Process) processManager.factory("map5").create().title("pB").inputs(pBInputMap).outputs(pBOutputMap)
-                .run(new Closure(null) {
+                .run(new Closure<Object>(null) {
                     public int getMaximumNumberOfParameters() {
                         return 2;
                     }
@@ -115,14 +117,14 @@ public class ProcessMapperTest {
 
 
         LinkedHashMap<String, Object> pCInputMap = new LinkedHashMap<>();
-        pCInputMap.put("inC1", String.class);
+        pCInputMap.put("inC1", "D");
         pCInputMap.put("inC2", String.class);
         LinkedHashMap<String, Object> pCOutputMap = new LinkedHashMap<>();
         pCOutputMap.put("outC1", String.class);
         pCOutputMap.put("outC2", String.class);
 
         pC = (Process) processManager.factory("map2").create().title("pC").inputs(pCInputMap).outputs(pCOutputMap)
-                .run(new Closure(null) {
+                .run(new Closure<Object>(null) {
                     public int getMaximumNumberOfParameters() {
                         return 2;
                     }
@@ -138,25 +140,24 @@ public class ProcessMapperTest {
     }
 
     /**
-     * --> ----
-     * | pB | -----> ---- -->
+     *  --> ----
+     *     | pB | -----> ---- -->
      * |--> ----        | pC |
      * |            |--> ---- -->
      * |------------|
-     * |
+     *              |
      * --> ----     |
-     * | pA | ---|
-     * ----
+     *    | pA | ---|
+     *     ----
      */
     @Test
-    public void testMapping1() {
-
+    public void mapping1Test() {
         LinkedHashMap<String, Object> pAInputMap = new LinkedHashMap<>();
         pAInputMap.put("inA1", String.class);
         LinkedHashMap<String, Object> pAOutputMap = new LinkedHashMap<>();
         pAOutputMap.put("outA1", String.class);
         Process pA = (Process) processManager.factory("map2").create().title("pA").inputs(pAInputMap)
-                .outputs(pAOutputMap).run(new Closure(this) {
+                .outputs(pAOutputMap).run(new Closure<Object>(this) {
                     public int getMaximumNumberOfParameters() {
                         return 1;
                     }
@@ -174,7 +175,7 @@ public class ProcessMapperTest {
         mapper.link((IInOutPut) pB1.getProperty("outB1")).to((IInOutPut) pC.getProperty("inC2"));
         mapper.link((IInOutPut) pA.getProperty("outA1")).to((IInOutPut) pC.getProperty("inC1"));
 
-        Closure cl = (Closure) new GroovyShell().evaluate("({1+1 == 2})");
+        Closure<?> cl = (Closure<?>) new GroovyShell().evaluate("({1+1 == 2})");
 
         mapper.after(pA).with().check(cl);
         mapper.before(pA).with().check(cl);
@@ -190,16 +191,16 @@ public class ProcessMapperTest {
 
 
     /**
-     * --> -----  |--> ----
-     * |  pA |-|   | pB |--->
-     * --> -----  |\ /> ----
-     * X
-     * --> -----  |/ \> ----
-     * |  pA |-|   | pB |--->
-     * --> -----  |--> ----
+     * --> -----  |-----> ----
+     *    |  pA |-|      | pB |--->
+     * --> -----  |-\ /-> ----
+     *               X
+     * --> -----  |-/ \-> ----
+     *    |  pA |-|      | pB |--->
+     * --> -----  |-----> ----
      */
     @Test
-    public void testMapping2() {
+    public void mapping2Test() {
 
         IProcessMapper mapper = new ProcessMapper();
 
@@ -223,18 +224,16 @@ public class ProcessMapperTest {
         dataMap.put("commonInput", "common");
         assertTrue(mapper.call(dataMap));
 
-        assertEquals(5, mapper.getInputs().size());
-        assertTrue(mapper.getInputs().stream().anyMatch(input -> input.getName().get().equals("inA1")));
-        assertTrue(mapper.getInputs().stream().anyMatch(input -> input.getName().get().equals("inA2")));
-        assertTrue(mapper.getInputs().stream().anyMatch(input -> input.getName().get().equals("inputD")));
-        assertTrue(mapper.getInputs().stream().anyMatch(input -> input.getName().get().equals("inputK")));
-        assertTrue(mapper.getInputs().stream().anyMatch(input -> input.getName().get().equals("commonInput")));
+        assertEquals(3, mapper.getInputs().size());
+        assertTrue(mapper.getInputs().stream().map(IInOutPut::getName).filter(Optional::isPresent).map(Optional::get).anyMatch(input -> input.equals("inputD")));
+        assertTrue(mapper.getInputs().stream().map(IInOutPut::getName).filter(Optional::isPresent).map(Optional::get).anyMatch(input -> input.equals("inputK")));
+        assertTrue(mapper.getInputs().stream().map(IInOutPut::getName).filter(Optional::isPresent).map(Optional::get).anyMatch(input -> input.equals("commonInput")));
 
         assertEquals(4, mapper.getOutputs().size());
-        assertTrue(mapper.getOutputs().stream().anyMatch(output -> output.getName().get().equals("interPA2OutA1")));
-        assertTrue(mapper.getOutputs().stream().anyMatch(output -> output.getName().get().equals("interPA1OutA1")));
-        assertTrue(mapper.getOutputs().stream().anyMatch(output -> output.getName().get().equals("outD")));
-        assertTrue(mapper.getOutputs().stream().anyMatch(output -> output.getName().get().equals("outK")));
+        assertTrue(mapper.getOutputs().stream().map(IInOutPut::getName).filter(Optional::isPresent).map(Optional::get).anyMatch(output -> output.equals("interPA2OutA1")));
+        assertTrue(mapper.getOutputs().stream().map(IInOutPut::getName).filter(Optional::isPresent).map(Optional::get).anyMatch(output -> output.equals("interPA1OutA1")));
+        assertTrue(mapper.getOutputs().stream().map(IInOutPut::getName).filter(Optional::isPresent).map(Optional::get).anyMatch(output -> output.equals("outD")));
+        assertTrue(mapper.getOutputs().stream().map(IInOutPut::getName).filter(Optional::isPresent).map(Optional::get).anyMatch(output -> output.equals("outK")));
 
         assertFalse(mapper.getResults().containsKey("outB1"));
         assertEquals("commonD or commonK", mapper.getResults().get("outD"));
@@ -254,7 +253,7 @@ public class ProcessMapperTest {
      * --> -----
      */
     @Test
-    public void testMapping4() {
+    public void mapping4Test() {
 
         IProcessMapper mapper = new ProcessMapper();
 
@@ -274,24 +273,23 @@ public class ProcessMapperTest {
      *
      */
     @Test
-    public void testMapping3() {
-
+    public void mapping3Test() {
         IProcessMapper mapper = new ProcessMapper();
 
         mapper.link((IInOutPut) pC.getProperty("outC1")).to("out");
 
         LinkedHashMap<String, Object> dataMap = new LinkedHashMap<>();
-        dataMap.put("inC1", "D");
+        dataMap.put("inC1", null);
         dataMap.put("inC2", "K");
         assertTrue(mapper.call(dataMap));
 
         assertEquals(2, mapper.getInputs().size());
-        assertTrue(mapper.getInputs().stream().anyMatch(input -> input.getName().get().equals("inC1")));
-        assertTrue(mapper.getInputs().stream().anyMatch(input -> input.getName().get().equals("inC2")));
+        assertTrue(mapper.getInputs().stream().map(IInOutPut::getName).filter(Optional::isPresent).map(Optional::get).anyMatch(input -> input.equals("inC1")));
+        assertTrue(mapper.getInputs().stream().map(IInOutPut::getName).filter(Optional::isPresent).map(Optional::get).anyMatch(input -> input.equals("inC2")));
 
         assertEquals(2, mapper.getOutputs().size());
-        assertTrue(mapper.getOutputs().stream().anyMatch(output -> output.getName().get().equals("out")));
-        assertTrue(mapper.getOutputs().stream().anyMatch(output -> output.getName().get().equals("outC2")));
+        assertTrue(mapper.getOutputs().stream().map(IInOutPut::getName).filter(Optional::isPresent).map(Optional::get).anyMatch(output -> output.equals("out")));
+        assertTrue(mapper.getOutputs().stream().map(IInOutPut::getName).filter(Optional::isPresent).map(Optional::get).anyMatch(output -> output.equals("outC2")));
 
         assertEquals(2, mapper.getResults().size());
         assertFalse(mapper.getResults().containsKey("outC1"));
@@ -299,12 +297,11 @@ public class ProcessMapperTest {
         assertEquals("KD", mapper.getResults().get("outC2"));
     }
 
-
     /**
-     *
+     * Test a mapper which processes can't be linked.
      */
     @Test
-    public void testNoLinkeable() {
+    public void noLinkeableTest() {
 
         IProcessMapper mapper = new ProcessMapper();
 
@@ -322,7 +319,7 @@ public class ProcessMapperTest {
      * {@link org.orbisgis.orbisdata.processmanager.api.ILinker#to(IInOutPut...)} methods in case of bad linking.
      */
     @Test
-    public void testBadMapping() {
+    public void badMappingTest() {
         IProcessMapper mapper = new ProcessMapper();
         mapper.link((IInOutPut) pA1.getProperty("outA1")).to((IInOutPut) pB2.getProperty("outB1"));
         assertTrue(mapper.getInputs().isEmpty());
@@ -359,25 +356,25 @@ public class ProcessMapperTest {
      * {@link ProcessMapper#getKeywords()}, {@link ProcessMapper#getVersion()} methods.
      */
     @Test
-    public void getAttributes() {
+    public void getAttributesTest() {
         IProcessMapper mapper = new ProcessMapper();
-        assertNotNull(mapper.getTitle());
-        assertNull(mapper.getDescription());
-        assertNull(mapper.getKeywords());
-        assertNull(mapper.getVersion());
+        assertTrue(mapper.getTitle().isPresent());
+        assertFalse(mapper.getDescription().isPresent());
+        assertFalse(mapper.getKeywords().isPresent());
+        assertFalse(mapper.getVersion().isPresent());
 
         mapper = new ProcessMapper("title");
-        assertEquals("title", mapper.getTitle());
-        assertNull(mapper.getDescription());
-        assertNull(mapper.getKeywords());
-        assertNull(mapper.getVersion());
+        assertEquals("title", mapper.getTitle().get());
+        assertFalse(mapper.getDescription().isPresent());
+        assertFalse(mapper.getKeywords().isPresent());
+        assertFalse(mapper.getVersion().isPresent());
     }
 
     /**
      * Test the methods {@link ProcessMapper#after(IProcess)}, {@link ProcessMapper#before(IProcess)}  methods.
      */
     @Test
-    public void getChecker() {
+    public void getCheckerTest() {
         IProcessMapper mapper = new ProcessMapper();
         assertNotNull(mapper.after(null));
         assertNotNull(mapper.before(null));
@@ -387,7 +384,7 @@ public class ProcessMapperTest {
      * Test the methods {@link ProcessMapper#newInstance()} method.
      */
     @Test
-    void testNewInstance() {
+    void newInstanceTest() {
         IProcessMapper mapper = new ProcessMapper();
         mapper.link((InOutPut) pA1.getProperty("inA1")).to("in");
         mapper.link((InOutPut) pA1.getProperty("outA1")).to("out");
@@ -400,5 +397,62 @@ public class ProcessMapperTest {
         assertEquals(mapper.getOutputs(), mapper2.getOutputs());
         assertEquals(mapper.getVersion(), mapper2.getVersion());
         assertNotEquals(mapper.getIdentifier(), mapper2.getIdentifier());
+    }
+
+    /**
+     * Test the methods {@link ProcessMapper#copy()} method.
+     */
+    @Test
+    void copyTest() {
+        IProcessMapper mapper = new ProcessMapper();
+        mapper.link((InOutPut) pA1.getProperty("inA1")).to("in");
+        mapper.link((InOutPut) pA1.getProperty("outA1")).to("out");
+        mapper.execute(null);
+        IProcessMapper mapper2 = mapper.copy();
+        assertNotEquals(mapper.getTitle(), mapper2.getTitle());
+        assertEquals(mapper.getDescription(), mapper2.getDescription());
+        assertEquals(mapper.getKeywords(), mapper2.getKeywords());
+        assertEquals(mapper.getInputs(), mapper2.getInputs());
+        assertEquals(mapper.getOutputs(), mapper2.getOutputs());
+        assertEquals(mapper.getVersion(), mapper2.getVersion());
+        assertNotEquals(mapper.getIdentifier(), mapper2.getIdentifier());
+    }
+
+    /**
+     * Test the {@link Process#invokeMethod(String, Object)} method.
+     */
+    @Test
+    void invokeMethodTest() {
+        ProcessMapper mapper = new ProcessMapper("title");
+        assertEquals("title", mapper.invokeMethod("getTitle", null));
+
+        assertNull(mapper.invokeMethod(null, null));
+        assertNotNull(mapper.invokeMethod("getIdentifier", null));
+    }
+
+    /**
+     * Test the {@link Process#getProperty(String)} method.
+     */
+    @Test
+    void getPropertyTest() {
+        ProcessMapper mapper = new ProcessMapper("title");
+        assertEquals("title", mapper.getProperty("title"));
+
+        assertNull(mapper.getProperty(null));
+        assertNotNull(mapper.getProperty("identifier"));
+    }
+
+    /**
+     * Test the {@link Process#getMetaClass()} method.
+     */
+    @Test
+    void metaClassTest() {
+        ProcessMapper mapper = new ProcessMapper();
+        assertEquals(InvokerHelper.getMetaClass(ProcessMapper.class), mapper.getMetaClass());
+        mapper.setMetaClass(InvokerHelper.getMetaClass(ProcessMapperTest.class));
+        assertEquals(InvokerHelper.getMetaClass(ProcessMapperTest.class), mapper.getMetaClass());
+        mapper.setMetaClass(null);
+        assertEquals(InvokerHelper.getMetaClass(ProcessMapper.class), mapper.getMetaClass());
+        mapper.setMetaClass(InvokerHelper.getMetaClass(ProcessMapper.class));
     }
 }

@@ -36,16 +36,18 @@
  */
 package org.orbisgis.orbisdata.processmanager.process;
 
-import groovy.lang.Closure;
-import groovy.lang.DelegatesTo;
+import groovy.lang.*;
+import org.codehaus.groovy.runtime.InvokerHelper;
 import org.orbisgis.commons.annotations.NotNull;
 import org.orbisgis.commons.annotations.Nullable;
 import org.orbisgis.orbisdata.processmanager.api.IProcess;
 import org.orbisgis.orbisdata.processmanager.api.IProcessBuilder;
 import org.orbisgis.orbisdata.processmanager.api.IProcessFactory;
+import org.orbisgis.orbisdata.processmanager.api.IProcessManager;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Implementation of the {@link IProcessFactory}.
@@ -53,7 +55,7 @@ import java.util.List;
  * @author Erwan Bocher (CNRS)
  * @author Sylvain PALOMINOS (UBS Lab-STICC 2019-2020)
  */
-public class ProcessFactory implements IProcessFactory {
+public class ProcessFactory implements IProcessFactory, GroovyObject, GroovyInterceptable {
 
     /**
      * Indicated if the process creation is allowed.
@@ -67,6 +69,12 @@ public class ProcessFactory implements IProcessFactory {
      * List of the processes created with this factory.
      */
     private final List<IProcess> processList;
+    @Nullable
+    private IProcessManager processManager;
+    /**
+     * {@link MetaClass}
+     */
+    private MetaClass metaClass = InvokerHelper.getMetaClass(ProcessFactory.class);
 
     /**
      * Default empty constructor.
@@ -88,8 +96,15 @@ public class ProcessFactory implements IProcessFactory {
     }
 
     @Override
-    public void registerProcess(@NotNull IProcess process) {
-        if (!isLock) {
+    public void registerProcess(@Nullable IProcess process) {
+        if (!isLock && process != null) {
+            List<IProcess> list = new ArrayList<>();
+            for (IProcess p : processList) {
+                if (p.getIdentifier().equals(process.getIdentifier())) {
+                    list.add(p);
+                }
+            }
+            processList.removeAll(list);
             processList.add(process);
         }
     }
@@ -105,15 +120,13 @@ public class ProcessFactory implements IProcessFactory {
     }
 
     @Override
-    @Nullable
-    public IProcess getProcess(@NotNull String processId) {
-        IProcess process = processList
+    @NotNull
+    public Optional<IProcess> getProcess(@Nullable String processId) {
+        return processList
                 .stream()
-                .filter(iProcess ->
-                        iProcess.getIdentifier().equals(processId))
+                .filter(iProcess -> iProcess.getIdentifier().equals(processId))
                 .findFirst()
-                .orElse(null);
-        return process == null ? null : process.newInstance();
+                .map(IProcess::newInstance);
     }
 
     @Override
@@ -124,10 +137,54 @@ public class ProcessFactory implements IProcessFactory {
 
     @Override
     @NotNull
-    public IProcess create(@NotNull @DelegatesTo(IProcessBuilder.class) Closure<?> cl) {
-        IProcessBuilder builder = new ProcessBuilder(this, this);
-        Closure<?> code = cl.rehydrate(builder, this, this);
-        code.setResolveStrategy(Closure.DELEGATE_FIRST);
-        return ((IProcessBuilder) code.call()).getProcess();
+    public Optional<IProcess> create(@Nullable @DelegatesTo(IProcessBuilder.class) Closure<?> cl) {
+        if(cl == null) {
+            return Optional.empty();
+        }
+        else {
+            IProcessBuilder builder = new ProcessBuilder(this, this);
+            Closure<?> code = cl.rehydrate(builder, this, this);
+            code.setResolveStrategy(Closure.DELEGATE_FIRST);
+            return Optional.of(((IProcessBuilder) code.call()).getProcess());
+        }
+    }
+
+    @NotNull
+    @Override
+    public Optional<IProcessManager> getProcessManager() {
+        return Optional.ofNullable(processManager);
+    }
+
+    @Override
+    public void setProcessManager(@Nullable IProcessManager processManager) {
+        this.processManager = processManager;
+    }
+
+    @Nullable
+    @Override
+    public Object invokeMethod(@Nullable String name, @Nullable Object args) {
+        if(name != null) {
+            Object obj = this.metaClass.invokeMethod(this, name, args);
+            if(obj instanceof Optional){
+                return ((Optional<?>)obj).orElse(null);
+            }
+            else {
+                return obj;
+            }
+        }
+        else {
+            return null;
+        }
+    }
+
+    @Override
+    @NotNull
+    public MetaClass getMetaClass() {
+        return metaClass;
+    }
+
+    @Override
+    public void setMetaClass(@Nullable MetaClass metaClass) {
+        this.metaClass = metaClass == null ? InvokerHelper.getMetaClass(this.getClass()) : metaClass;
     }
 }

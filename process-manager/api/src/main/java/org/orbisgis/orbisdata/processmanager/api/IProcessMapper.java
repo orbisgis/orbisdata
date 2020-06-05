@@ -41,6 +41,7 @@ import org.orbisgis.orbisdata.processmanager.api.check.ICheckDataBuilder;
 import org.orbisgis.orbisdata.processmanager.api.check.IProcessCheck;
 import org.orbisgis.orbisdata.processmanager.api.inoutput.IInOutPut;
 
+import java.util.Optional;
 import java.util.UUID;
 
 /**
@@ -51,13 +52,13 @@ import java.util.UUID;
  */
 public interface IProcessMapper extends IProcess {
 
-    /**
-     * Return a new instance of the process.
-     *
-     * @return A process new instance.
-     */
+    @Override
     @NotNull
     IProcessMapper newInstance();
+
+    @Override
+    @NotNull
+    IProcessMapper copy();
 
     /**
      * Start to link the given inputs/outputs.
@@ -88,18 +89,21 @@ public interface IProcessMapper extends IProcess {
     ICheckDataBuilder after(@NotNull IProcess process);
 
     @Override
-    default String getVersion() {
-        return null;
+    @NotNull
+    default Optional<String> getVersion() {
+        return Optional.empty();
     }
 
     @Override
-    default String getDescription() {
-        return null;
+    @NotNull
+    default Optional<String> getDescription() {
+        return Optional.empty();
     }
 
     @Override
-    default String[] getKeywords() {
-        return null;
+    @NotNull
+    default Optional<String[]> getKeywords() {
+        return Optional.empty();
     }
 
     @Override

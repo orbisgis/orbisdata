@@ -193,4 +193,12 @@ public interface IInOutPut {
      */
     @NotNull
     IInOutPut keywords(@Nullable String[] keywords);
+
+    /**
+     * Returns a copy the the current object.
+     *
+     * @return A copy of the current object.
+     */
+    @Nullable
+    IInOutPut copy();
 }

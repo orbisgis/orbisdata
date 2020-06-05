@@ -36,7 +36,7 @@
  */
 package org.orbisgis.orbisdata.processmanager.process
 
-import org.junit.jupiter.api.Test
+
 import org.locationtech.jts.geom.Geometry
 import org.locationtech.jts.io.WKTReader
 import org.orbisgis.orbisdata.datamanager.api.dataset.ITable
@@ -51,7 +51,6 @@ class TestProcess {
 
     private static final IProcessManager processManager = ProcessManager.processManager
 
-    @Test
     void testProcessCreation() {
 
         assertFalse processManager.create({}).execute()
@@ -115,7 +114,6 @@ class TestProcess {
         assertEquals "version", process.version
     }
 
-    @Test
     void testNullResult() {
         def process = processManager.create()
                 .title("simple process")
@@ -125,7 +123,6 @@ class TestProcess {
         assertTrue process.getResults().keySet().contains("result")
     }
 
-    @Test
     void testSimpleProcess() {
         def process = processManager.create()
                 .title("simple process")
@@ -137,7 +134,6 @@ class TestProcess {
         assertEquals "tatatoto", process.getResults().outputA
     }
 
-    @Test
     void testSimpleProcess2() {
         def p = processManager.create({
             title "OrbisGIS"
@@ -150,7 +146,6 @@ class TestProcess {
         assertTrue(p.results.outputA.equals("Bretagne is nice"))
     }
 
-    @Test
     void testSimpleProcess3() {
         def h2GIS = H2GIS.open([databaseName: './target/loadH2GIS'])
         h2GIS("""
@@ -171,7 +166,6 @@ class TestProcess {
         assertTrue(p.results.outputA.equals(["ID", "THE_GEOM"]))
     }
 
-    @Test
     void testSimpleProcess4() {
 
         def p = processManager.create({
@@ -197,7 +191,6 @@ class TestProcess {
                 "4.826834323650862, 10.807852804032311 2.9509032201612437, 11 1))").equalsExact((Geometry) p.results.outputA, 1e-6)
     }
 
-    @Test
     void testSimpleProcess5() {
 
         def p = processManager.create({
@@ -212,7 +205,6 @@ class TestProcess {
         assertEquals "B", p.getResults().outputA
     }
 
-    @Test
     void testProcessWithDefaultValue1() {
 
         def p = processManager.create({
@@ -226,7 +218,6 @@ class TestProcess {
         assertEquals "tatatoto", p.getResults().outputA
     }
 
-    @Test
     void testProcessWithDefaultValue2() {
         def process = processManager.factory("test").create({
             title "simple process"
@@ -238,7 +229,6 @@ class TestProcess {
         assertEquals "tatatoti", process.getResults().outputA
     }
 
-    @Test
     void testProcessWithDefaultValue3() {
         def process = processManager.factory("test").create({
             title "simple process"
@@ -263,7 +253,6 @@ class TestProcess {
      *     |  pA | -> | pB |-->
      *  --> -----      ----
      */
-    @Test
     void testMapping() {
         def pA = processManager.factory("map1").create({
             title "pA"
@@ -295,7 +284,6 @@ class TestProcess {
      *     | pA | ---|
      *      ----
      */
-    @Test
     void testMapping2() {
         def pA = processManager.factory("map2").create({
             title "pA"
@@ -335,7 +323,6 @@ class TestProcess {
      *             | pB |
      *          --> ----
      */
-    @Test
     void testMapping3() {
         def pA = processManager.factory("map3").create({
             title "process"
@@ -376,7 +363,6 @@ class TestProcess {
      *     |  pA |-|   | pA |-|   | pA |-->
      *  --> -----  |--> ----  |--> ----
      */
-    @Test
     void testMapping4() {
         def pA1 = processManager.factory("map4").create({
             title "pA"
@@ -405,7 +391,6 @@ class TestProcess {
      *     |  pA |-|   | pB |--->
      *  --> -----  |--> ----
      */
-    @Test
     void testMapping5() {
         def pA1 = processManager.factory("map5").create({
             title "pA"
@@ -453,7 +438,6 @@ class TestProcess {
      *
      *  with test after and before pB and pA
      */
-    @Test
     void testMapping6() {
         def pA = processManager.factory("map1").create({
             title "pA"
@@ -481,7 +465,6 @@ class TestProcess {
         assertEquals "tata", mapper.getResults().outB1
     }
 
-    @Test
     void testOnlyOneOptionalInput() {
         String[] arr = ["key1", "key2"]
         def process = processManager.create()
@@ -499,7 +482,6 @@ class TestProcess {
         assertEquals arr.join(""), process.results.outputA.join("")
     }
 
-    @Test
     void testBadTypeInput() {
         String[] arr = ["key1", "key2"]
         def process = processManager.create()

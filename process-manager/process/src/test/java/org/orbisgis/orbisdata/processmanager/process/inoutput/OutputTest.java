@@ -128,8 +128,65 @@ public class OutputTest {
         Output output = new Output();
         assertEquals(InvokerHelper.getMetaClass(Output.class), output.getMetaClass());
         output.setMetaClass(null);
-        assertNull(output.getMetaClass());
+        assertNotNull(output.getMetaClass());
         output.setMetaClass(InvokerHelper.getMetaClass(this.getClass()));
         assertEquals(InvokerHelper.getMetaClass(this.getClass()), output.getMetaClass());
+    }
+
+    /**
+     * Test the {@link Output#equals(Object)} method.
+     */
+    @Test
+    void equalsTest() {
+        IProcess p1 = ProcessManager.createFactory().create().getProcess();
+        IProcess p2 = ProcessManager.createFactory().create().getProcess();
+        Output out1 = new Output().name("toto").process(p1);
+        Output out2 = new Output().name("toto").process(p1);
+        Output out3 = new Output().name("toto").process(p2);
+        Output out4 = new Output().name("toto");
+        Output out5 = new Output().name("tata").process(p1);
+        Output out6 = new Output();
+
+        assertEquals(out1, out2);
+
+        assertNotEquals(out1, out3);
+        assertNotEquals(out1, out4);
+        assertNotEquals(out1, out5);
+        assertNotEquals(out1, out6);
+        assertNotEquals(out1, "out3");
+        assertNotEquals(out1, null);
+    }
+
+    /**
+     * Test the {@link Output#copy()} method.
+     */
+    @Test
+    void copyTest() {
+        IProcess p1 = ProcessManager.createFactory().create().getProcess();
+        IProcess p2 = ProcessManager.createFactory().create().getProcess();
+        Output out1 = new Output().name("toto").process(p1);
+        Output out2 = new Output().name("toto").process(p1);
+        Output out3 = new Output().name("toto").process(p2);
+        Output out4 = new Output().name("toto");
+        Output out5 = new Output().name("tata").process(p1);
+        Output out6 = new Output();
+
+        assertEquals(out1, out1.copy());
+        assertNotSame(out1, out1.copy());
+
+        assertEquals(out2, out2.copy());
+        assertNotSame(out2, out2.copy());
+
+        assertEquals(out3, out3.copy());
+        assertNotSame(out3, out3.copy());
+
+        assertEquals(out4, out4.copy());
+        assertNotSame(out4, out4.copy());
+
+        assertEquals(out5, out5.copy());
+        assertNotSame(out5, out5.copy());
+
+        assertEquals(out6, out6.copy());
+        assertNotSame(out6, out6.copy());
     }
 }

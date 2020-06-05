@@ -116,4 +116,61 @@ class TestOutput {
         output.name = null
         assert ":" + process.getIdentifier() == output.toString()
     }
+
+    /**
+     * Test the {@link Output#equals(Object)} method.
+     */
+    @Test
+    void equalsTest() {
+        def p1 = createFactory().create().process
+        def p2 = createFactory().create().process
+        def out1 = new Output().name("toto").process(p1)
+        def out2 = new Output().name("toto").process(p1)
+        def out3 = new Output().name("toto").process(p2)
+        def out4 = new Output().name("toto")
+        def out5 = new Output().name("tata").process(p1)
+        def out6 = new Output()
+
+        assert out1 == out2
+
+        assert out1 != out3
+        assert out1 != out4
+        assert out1 != out5
+        assert out1 != out6
+        assert out1 != "out3"
+        assert out1 != null
+    }
+
+    /**
+     * Test the {@link Output#copy()} method.
+     */
+    @Test
+    void copyTest() {
+        def p1 = createFactory().create().process
+        def p2 = createFactory().create().process
+        def out1 = new Output().name("toto").process(p1)
+        def out2 = new Output().name("toto").process(p1)
+        def out3 = new Output().name("toto").process(p2)
+        def out4 = new Output().name("toto")
+        def out5 = new Output().name("tata").process(p1)
+        def out6 = new Output()
+
+        assert out1 == out1.copy()
+        assert out1 !== out1.copy()
+
+        assert out2 == out2.copy()
+        assert out2 !== out2.copy()
+
+        assert out3 == out3.copy()
+        assert out3 !== out3.copy()
+
+        assert out4 == out4.copy()
+        assert out4 !== out4.copy()
+
+        assert out5 == out5.copy()
+        assert out5 !== out5.copy()
+
+        assert out6 == out6.copy()
+        assert out6 !== out6.copy()
+    }
 }

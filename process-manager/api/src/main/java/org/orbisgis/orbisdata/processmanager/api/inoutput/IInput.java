@@ -87,4 +87,12 @@ public interface IInput extends IInOutPut {
      */
     @NotNull
     Optional<Object> getDefaultValue();
+
+    /**
+     * Returns a copy the the current object.
+     *
+     * @return A copy of the current object.
+     */
+    @Nullable
+    IInput copy();
 }

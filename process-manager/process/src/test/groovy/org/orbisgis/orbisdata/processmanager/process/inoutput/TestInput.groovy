@@ -147,4 +147,61 @@ class TestInput {
         assert !input.optional
         assert input.mandatory
     }
+
+    /**
+     * Test the {@link Input#equals(Object)} method.
+     */
+    @Test
+    void equalsTest() {
+        def p1 = createFactory().create().process
+        def p2 = createFactory().create().process
+        def in1 = new Input().name("toto").process(p1)
+        def in2 = new Input().name("toto").process(p1)
+        def in3 = new Input().name("toto").process(p2)
+        def in4 = new Input().name("toto")
+        def in5 = new Input().name("tata").process(p1)
+        def in6 = new Input()
+
+        assert in1 == in2
+
+        assert in1 != in3
+        assert in1 != in4
+        assert in1 != in5
+        assert in1 != in6
+        assert in1 != "in3"
+        assert in1 != null
+    }
+
+    /**
+     * Test the {@link Input#copy()} method.
+     */
+    @Test
+    void copyTest() {
+        def p1 = createFactory().create().process
+        def p2 = createFactory().create().process
+        def in1 = new Input().name("toto").process(p1)
+        def in2 = new Input().name("toto").process(p1)
+        def in3 = new Input().name("toto").process(p2)
+        def in4 = new Input().name("toto")
+        def in5 = new Input().name("tata").process(p1)
+        def in6 = new Input()
+
+        assert in1 == in1.copy()
+        assert in1 !== in1.copy()
+
+        assert in2 == in2.copy()
+        assert in2 !== in2.copy()
+
+        assert in3 == in3.copy()
+        assert in3 !== in3.copy()
+
+        assert in4 == in4.copy()
+        assert in4 !== in4.copy()
+
+        assert in5 == in5.copy()
+        assert in5 !== in5.copy()
+
+        assert in6 == in6.copy()
+        assert in6 !== in6.copy()
+    }
 }

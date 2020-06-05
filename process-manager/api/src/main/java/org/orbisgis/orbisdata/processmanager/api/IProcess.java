@@ -141,4 +141,12 @@ public interface IProcess {
      * @return True if the execution is successful, false otherwise.
      */
     boolean call(@Nullable LinkedHashMap<String, Object> inputDataMap);
+
+    /**
+     * Create an exact copy of this {@link IProcess}.
+     *
+     * @return Exact copy of this {@link IProcess}
+     */
+    @NotNull
+    IProcess copy();
 }

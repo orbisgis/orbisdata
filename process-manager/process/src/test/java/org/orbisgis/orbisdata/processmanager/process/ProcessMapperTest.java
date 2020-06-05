@@ -152,7 +152,6 @@ public class ProcessMapperTest {
      */
     @Test
     public void mapping1Test() {
-
         LinkedHashMap<String, Object> pAInputMap = new LinkedHashMap<>();
         pAInputMap.put("inA1", String.class);
         LinkedHashMap<String, Object> pAOutputMap = new LinkedHashMap<>();
@@ -391,6 +390,25 @@ public class ProcessMapperTest {
         mapper.link((InOutPut) pA1.getProperty("outA1")).to("out");
         mapper.execute(null);
         IProcessMapper mapper2 = mapper.newInstance();
+        assertNotEquals(mapper.getTitle(), mapper2.getTitle());
+        assertEquals(mapper.getDescription(), mapper2.getDescription());
+        assertEquals(mapper.getKeywords(), mapper2.getKeywords());
+        assertEquals(mapper.getInputs(), mapper2.getInputs());
+        assertEquals(mapper.getOutputs(), mapper2.getOutputs());
+        assertEquals(mapper.getVersion(), mapper2.getVersion());
+        assertNotEquals(mapper.getIdentifier(), mapper2.getIdentifier());
+    }
+
+    /**
+     * Test the methods {@link ProcessMapper#copy()} method.
+     */
+    @Test
+    void copyTest() {
+        IProcessMapper mapper = new ProcessMapper();
+        mapper.link((InOutPut) pA1.getProperty("inA1")).to("in");
+        mapper.link((InOutPut) pA1.getProperty("outA1")).to("out");
+        mapper.execute(null);
+        IProcessMapper mapper2 = mapper.copy();
         assertNotEquals(mapper.getTitle(), mapper2.getTitle());
         assertEquals(mapper.getDescription(), mapper2.getDescription());
         assertEquals(mapper.getKeywords(), mapper2.getKeywords());

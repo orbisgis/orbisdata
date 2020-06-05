@@ -134,6 +134,28 @@ public class Process implements IProcess, GroovyObject, GroovyInterceptable {
      */
     Process(@Nullable String title, @Nullable String description, @Nullable String[] keywords, @Nullable LinkedHashMap<String, Object> inputs,
             @Nullable LinkedHashMap<String, Object> outputs, @Nullable String version, @Nullable Closure<?> closure) {
+        this(null, title, description, keywords, inputs, outputs, version, closure);
+    }
+
+    /**
+     * Create a new Process with its title, description, keyword array, input map, output map, version
+     * and the closure containing the code to execute on the process execution. The Closure will receive all the input
+     * as parameter in the same order as the order of the input map. So the list of parameter of the closure, the
+     * array of input and the map of input given on the execution should have the same size and meaning.
+     *
+     * @param id          Identifier of the process.
+     * @param title       Title of the process.
+     * @param description Human readable description of the process.
+     * @param keywords    List of simple keyword (one word) of the process.
+     * @param inputs      Map of inputs with the name as key and the input class as value. The names will be used  to link
+     *                    the closure parameters with the execution input data map.
+     * @param outputs     Map of outputs with the name as key and the output class as value. Those names will be used to
+     *                    generate the Map of the getResults Method.
+     * @param version     Process version.
+     * @param closure     Closure containing the code to execute on the process execution.
+     */
+    Process(@Nullable String id, @Nullable String title, @Nullable String description, @Nullable String[] keywords, @Nullable LinkedHashMap<String, Object> inputs,
+            @Nullable LinkedHashMap<String, Object> outputs, @Nullable String version, @Nullable Closure<?> closure) {
         if (inputs != null && closure != null && closure.getMaximumNumberOfParameters() != inputs.size()) {
             LOGGER.error("The number of the closure parameters and the number of process input names are different.");
             return;
@@ -179,7 +201,7 @@ public class Process implements IProcess, GroovyObject, GroovyInterceptable {
         }
         this.closure = closure;
         this.resultMap = new HashMap<>();
-        this.identifier = UUID.randomUUID().toString();
+        this.identifier = id == null ? UUID.randomUUID().toString() : id;
         this.metaClass = InvokerHelper.getMetaClass(getClass());
     }
 
@@ -193,6 +215,20 @@ public class Process implements IProcess, GroovyObject, GroovyInterceptable {
         process.outputs = this.outputs.stream().map(IOutput::copy).collect(Collectors.toCollection(LinkedList::new));
         process.outputs.forEach(out -> out.setProcess(process));
         process.defaultValues = this.defaultValues;
+        return process;
+    }
+
+    @Override
+    @NotNull
+    public IProcess copy() {
+        Process process = new Process(title, description, keywords, null, null,
+                version, closure);
+        process.inputs = this.inputs.stream().map(IInput::copy).collect(Collectors.toCollection(LinkedList::new));
+        process.inputs.forEach(in -> in.setProcess(process));
+        process.outputs = this.outputs.stream().map(IOutput::copy).collect(Collectors.toCollection(LinkedList::new));
+        process.outputs.forEach(out -> out.setProcess(process));
+        process.defaultValues = this.defaultValues;
+        process.identifier = this.identifier;
         return process;
     }
 

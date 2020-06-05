@@ -359,6 +359,23 @@ public class ProcessTest {
     }
 
     /**
+     * Test the {@link Process#copy()} method.
+     */
+    @Test
+    void copyTest() {
+        IProcess p = fullProcess.copy();
+        assertEquals(fullProcess.getTitle(), p.getTitle());
+        assertEquals(fullProcess.getDescription(), p.getDescription());
+        assertEquals(fullProcess.getKeywords(), p.getKeywords());
+        assertTrue(fullProcess.getInputs().stream().map(IInOutPut::getName)
+                .allMatch(in -> p.getInputs().stream().map(IInOutPut::getName).anyMatch(in::equals)));
+        assertTrue(fullProcess.getOutputs().stream().map(IInOutPut::getName)
+                .allMatch(in -> p.getOutputs().stream().map(IInOutPut::getName).anyMatch(in::equals)));
+        assertEquals(fullProcess.getVersion(), p.getVersion());
+        assertEquals(fullProcess.getIdentifier(), p.getIdentifier());
+    }
+
+    /**
      * Test the {@link Process#invokeMethod(String, Object)} method.
      */
     @Test

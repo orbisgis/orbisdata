@@ -38,9 +38,13 @@ package org.orbisgis.orbisdata.processmanager.process;
 
 import groovy.lang.Closure;
 import groovy.lang.GroovyShell;
+import org.codehaus.groovy.runtime.metaclass.MissingPropertyExceptionNoStack;
 import org.junit.jupiter.api.Test;
 import org.orbisgis.commons.annotations.Nullable;
 import org.orbisgis.orbisdata.processmanager.api.IProcess;
+import org.orbisgis.orbisdata.processmanager.api.IProcessManager;
+import org.slf4j.Logger;
+import org.slf4j.Marker;
 
 import java.util.Optional;
 
@@ -55,8 +59,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class GroovyProcessFactoryTest {
 
     /**
-     * Test the {@link ProcessFactory#ProcessFactory(boolean, boolean)}, {@link ProcessFactory#ProcessFactory()},
-     * {@link ProcessFactory#isDefault()} and {@link ProcessFactory#isLocked()} methods.
+     * Test the {@link GroovyProcessFactory#isDefault()} and {@link GroovyProcessFactory#isLocked()} methods.
      */
     @Test
     void testAttributes() {
@@ -66,7 +69,7 @@ public class GroovyProcessFactoryTest {
     }
 
     /**
-     * Test the {@link ProcessFactory#registerProcess(IProcess)} and {@link ProcessFactory#getProcess(String)} methods.
+     * Test the {@link GroovyProcessFactory#registerProcess(IProcess)} and {@link GroovyProcessFactory#getProcess(String)} methods.
      */
     @Test
     void testRegister() {
@@ -84,6 +87,8 @@ public class GroovyProcessFactoryTest {
     void testCreate() {
         GroovyProcessFactory pf1 = new DummyFactory();
         assertNotNull(pf1.create());
+        Optional<IProcess> opt = pf1.create(null);
+        assertFalse(opt.isPresent());
 
         String string = "({\n" +
                 "            title \"simple process\"\n" +
@@ -95,7 +100,7 @@ public class GroovyProcessFactoryTest {
                 "            run { inputA, inputB -> [outputA: inputA + inputB] }\n" +
                 "        })";
         Closure<?> cl = (Closure<?>) new GroovyShell().evaluate(string);
-        Optional<IProcess> opt = pf1.create(cl);
+        opt = pf1.create(cl);
         assertTrue(opt.isPresent());
 
         IProcess process = opt.get();
@@ -112,10 +117,10 @@ public class GroovyProcessFactoryTest {
     }
 
     /**
-     * Test the {@link ProcessFactory#invokeMethod(String, Object)} method.
+     * Test the {@link GroovyProcessFactory#invokeMethod(String, Object)} method.
      */
     @Test
-    void propertyTest() {
+    void invokeMethodTest() {
         DummyFactory factory = new DummyFactory();
         assertNull(factory.invokeMethod(null, null));
         assertEquals(false, factory.invokeMethod("isLocked", null));
@@ -124,6 +129,114 @@ public class GroovyProcessFactoryTest {
         assertNull(factory.invokeMethod(null, null));
         assertEquals(false, factory.invokeMethod("isLocked", null));
         assertNull(factory.invokeMethod("getProcess", null));
+        assertNull(factory.invokeMethod("create", new Object[]{null}));
+    }
+
+    /**
+     * Test the {@link GroovyProcessFactory#getProcessManager()} and {@link GroovyProcessFactory#setProcessManager(IProcessManager)} method.
+     */
+    @Test
+    void getProcessManagerTest() {
+        DummyFactory factory = new DummyFactory();
+        assertFalse(factory.getProcessManager().isPresent());
+        ProcessManager pm = new ProcessManager();
+        factory.setProcessManager(pm);
+        assertTrue(factory.getProcessManager().isPresent());
+        assertEquals(pm, factory.getProcessManager().get());
+        factory.setProcessManager(null);
+        assertFalse(factory.getProcessManager().isPresent());
+    }
+
+    /**
+     * Test the {@link GroovyProcessFactory#prefix(String)}, {@link GroovyProcessFactory#prefix(String, String)},
+     * {@link GroovyProcessFactory#postfix(String)}, {@link GroovyProcessFactory#postfix(String, String)} methods.
+     */
+    @Test
+    void prePostFixTest() {
+        assertEquals("tata_toto", GroovyProcessFactory.prefix("tata", "toto"));
+        assertEquals("tata_null", GroovyProcessFactory.prefix("tata", null));
+        assertEquals("toto", GroovyProcessFactory.prefix(null, "toto"));
+        assertEquals("toto", GroovyProcessFactory.prefix("", "toto"));
+        assertEquals("tata_toto", GroovyProcessFactory.postfix("tata", "toto"));
+        assertEquals("null_toto", GroovyProcessFactory.postfix(null, "toto"));
+        assertEquals("tata", GroovyProcessFactory.postfix("tata", null));
+        assertEquals("tata", GroovyProcessFactory.postfix("tata", ""));
+        assertTrue(GroovyProcessFactory.prefix("toto").endsWith("toto"));
+        assertTrue(GroovyProcessFactory.postfix("toto").startsWith("toto"));
+    }
+
+    /**
+     * Test the {@link GroovyProcessFactory#info(Object)}, {@link GroovyProcessFactory#info(Object, Exception)},
+     * {@link GroovyProcessFactory#debug(Object)}, {@link GroovyProcessFactory#debug(Object, Exception)},
+     * {@link GroovyProcessFactory#warn(Object)}, {@link GroovyProcessFactory#warn(Object, Exception)},
+     * {@link GroovyProcessFactory#error(Object)}, {@link GroovyProcessFactory#error(Object, Exception)} and
+     * {@link GroovyProcessFactory#setLogger(Logger)} methods.
+     */
+    @Test
+    void loggerTest() {
+        DummyFactory factory = new DummyFactory();
+        String s = "toto";
+        Exception e = new UnsupportedOperationException();
+        assertDoesNotThrow(() -> factory.info(s));
+        assertDoesNotThrow(() -> factory.info(s, e));
+        assertDoesNotThrow(() -> factory.debug(s));
+        assertDoesNotThrow(() -> factory.debug(s, e));
+        assertDoesNotThrow(() -> factory.warn(s));
+        assertDoesNotThrow(() -> factory.warn(s, e));
+        assertDoesNotThrow(() -> factory.error(s));
+        assertDoesNotThrow(() -> factory.error(s, e));
+
+        factory.setLogger(null);
+        assertThrows(NullPointerException.class, () -> factory.info(s));
+        assertThrows(NullPointerException.class, () -> factory.info(s, e));
+        assertThrows(NullPointerException.class, () -> factory.debug(s));
+        assertThrows(NullPointerException.class, () -> factory.debug(s, e));
+        assertThrows(NullPointerException.class, () -> factory.warn(s));
+        assertThrows(NullPointerException.class, () -> factory.warn(s, e));
+        assertThrows(NullPointerException.class, () -> factory.error(s));
+        assertThrows(NullPointerException.class, () -> factory.error(s, e));
+
+
+        DummyLogger dummyLogger = new DummyLogger();
+        factory.setLogger(dummyLogger);
+
+        factory.info(s);
+        assertEquals(s, dummyLogger.infoS);
+        factory.info(s, e);
+        assertEquals(s, dummyLogger.infoS);
+        assertTrue(dummyLogger.infoE instanceof UnsupportedOperationException);
+
+        factory.debug(s);
+        assertEquals(s, dummyLogger.debugS);
+        factory.debug(s, e);
+        assertEquals(s, dummyLogger.debugS);
+        assertTrue(dummyLogger.debugE instanceof UnsupportedOperationException);
+
+        factory.warn(s);
+        assertEquals(s, dummyLogger.warnS);
+        factory.warn(s, e);
+        assertEquals(s, dummyLogger.warnS);
+        assertTrue(dummyLogger.warnE instanceof UnsupportedOperationException);
+
+        factory.error(s);
+        assertEquals(s, dummyLogger.errorS);
+        factory.error(s, e);
+        assertEquals(s, dummyLogger.errorS);
+        assertTrue(dummyLogger.errorE instanceof UnsupportedOperationException);
+    }
+
+    /**
+     * Test the {@link GroovyProcessFactory#getProperty(String)} method.
+     */
+    @Test
+    void getPropertyTest() {
+        DummyFactory factory = new DummyFactory();
+        factory.registerProcess(new Process("toto", null, null, null, null, null, null, null));
+        assertNotNull(factory.getProperty("toto"));
+        assertNull(factory.getProperty(null));
+        assertNull(factory.getProperty("processManager"));
+        assertNotNull(factory.getProperty("metaClass"));
+        assertThrows(MissingPropertyExceptionNoStack.class, () -> factory.getProperty("pm"));
     }
 
     private static class DummyFactory extends GroovyProcessFactory {
@@ -131,6 +244,326 @@ public class GroovyProcessFactoryTest {
         @Nullable
         public Object run() {
             return null;
+        }
+    }
+
+    private static class DummyLogger implements Logger {
+
+        public String infoS;
+        public Throwable infoE;
+        public String debugS;
+        public Throwable debugE;
+        public String warnS;
+        public Throwable warnE;
+        public String errorS;
+        public Throwable errorE;
+
+        @Override
+        public String getName() {
+            return null;
+        }
+
+        @Override
+        public boolean isTraceEnabled() {
+            return false;
+        }
+
+        @Override
+        public void trace(String s) {
+
+        }
+
+        @Override
+        public void trace(String s, Object o) {
+
+        }
+
+        @Override
+        public void trace(String s, Object o, Object o1) {
+
+        }
+
+        @Override
+        public void trace(String s, Object... objects) {
+
+        }
+
+        @Override
+        public void trace(String s, Throwable throwable) {
+
+        }
+
+        @Override
+        public boolean isTraceEnabled(Marker marker) {
+            return false;
+        }
+
+        @Override
+        public void trace(Marker marker, String s) {
+
+        }
+
+        @Override
+        public void trace(Marker marker, String s, Object o) {
+
+        }
+
+        @Override
+        public void trace(Marker marker, String s, Object o, Object o1) {
+
+        }
+
+        @Override
+        public void trace(Marker marker, String s, Object... objects) {
+
+        }
+
+        @Override
+        public void trace(Marker marker, String s, Throwable throwable) {
+
+        }
+
+        @Override
+        public boolean isDebugEnabled() {
+            return false;
+        }
+
+        @Override
+        public void debug(String s) {
+            debugS = s;
+        }
+
+        @Override
+        public void debug(String s, Object o) {
+        }
+
+        @Override
+        public void debug(String s, Object o, Object o1) {
+
+        }
+
+        @Override
+        public void debug(String s, Object... objects) {
+
+        }
+
+        @Override
+        public void debug(String s, Throwable throwable) {
+            debugS = s;
+            debugE = throwable;
+        }
+
+        @Override
+        public boolean isDebugEnabled(Marker marker) {
+            return false;
+        }
+
+        @Override
+        public void debug(Marker marker, String s) {
+
+        }
+
+        @Override
+        public void debug(Marker marker, String s, Object o) {
+
+        }
+
+        @Override
+        public void debug(Marker marker, String s, Object o, Object o1) {
+
+        }
+
+        @Override
+        public void debug(Marker marker, String s, Object... objects) {
+
+        }
+
+        @Override
+        public void debug(Marker marker, String s, Throwable throwable) {
+
+        }
+
+        @Override
+        public boolean isInfoEnabled() {
+            return false;
+        }
+
+        @Override
+        public void info(String s) {
+            infoS = s;
+        }
+
+        @Override
+        public void info(String s, Object o) {
+
+        }
+
+        @Override
+        public void info(String s, Object o, Object o1) {
+
+        }
+
+        @Override
+        public void info(String s, Object... objects) {
+
+        }
+
+        @Override
+        public void info(String s, Throwable throwable) {
+            infoS = s;
+            infoE = throwable;
+        }
+
+        @Override
+        public boolean isInfoEnabled(Marker marker) {
+            return false;
+        }
+
+        @Override
+        public void info(Marker marker, String s) {
+
+        }
+
+        @Override
+        public void info(Marker marker, String s, Object o) {
+
+        }
+
+        @Override
+        public void info(Marker marker, String s, Object o, Object o1) {
+
+        }
+
+        @Override
+        public void info(Marker marker, String s, Object... objects) {
+
+        }
+
+        @Override
+        public void info(Marker marker, String s, Throwable throwable) {
+
+        }
+
+        @Override
+        public boolean isWarnEnabled() {
+            return false;
+        }
+
+        @Override
+        public void warn(String s) {
+            warnS = s;
+        }
+
+        @Override
+        public void warn(String s, Object o) {
+
+        }
+
+        @Override
+        public void warn(String s, Object... objects) {
+
+        }
+
+        @Override
+        public void warn(String s, Object o, Object o1) {
+
+        }
+
+        @Override
+        public void warn(String s, Throwable throwable) {
+            warnS = s;
+            warnE = throwable;
+        }
+
+        @Override
+        public boolean isWarnEnabled(Marker marker) {
+            return false;
+        }
+
+        @Override
+        public void warn(Marker marker, String s) {
+
+        }
+
+        @Override
+        public void warn(Marker marker, String s, Object o) {
+
+        }
+
+        @Override
+        public void warn(Marker marker, String s, Object o, Object o1) {
+
+        }
+
+        @Override
+        public void warn(Marker marker, String s, Object... objects) {
+
+        }
+
+        @Override
+        public void warn(Marker marker, String s, Throwable throwable) {
+
+        }
+
+        @Override
+        public boolean isErrorEnabled() {
+            return false;
+        }
+
+        @Override
+        public void error(String s) {
+            errorS = s;
+        }
+
+        @Override
+        public void error(String s, Object o) {
+
+        }
+
+        @Override
+        public void error(String s, Object o, Object o1) {
+
+        }
+
+        @Override
+        public void error(String s, Object... objects) {
+
+        }
+
+        @Override
+        public void error(String s, Throwable throwable) {
+            errorS = s;
+            errorE = throwable;
+        }
+
+        @Override
+        public boolean isErrorEnabled(Marker marker) {
+            return false;
+        }
+
+        @Override
+        public void error(Marker marker, String s) {
+
+        }
+
+        @Override
+        public void error(Marker marker, String s, Object o) {
+
+        }
+
+        @Override
+        public void error(Marker marker, String s, Object o, Object o1) {
+
+        }
+
+        @Override
+        public void error(Marker marker, String s, Object... objects) {
+
+        }
+
+        @Override
+        public void error(Marker marker, String s, Throwable throwable) {
+
         }
     }
 }

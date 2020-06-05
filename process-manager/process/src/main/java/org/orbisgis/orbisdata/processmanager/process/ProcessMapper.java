@@ -304,6 +304,18 @@ public class ProcessMapper implements IProcessMapper, GroovyObject, GroovyInterc
         return mapper;
     }
 
+    @NotNull
+    @Override
+    public IProcessMapper copy() {
+        ProcessMapper mapper = new ProcessMapper();
+        mapper.processList = new ArrayList<>(processList);
+        mapper.executionTree = new ArrayList<>(executionTree);
+        mapper.linkerList = new ArrayList<>(linkerList);
+        mapper.inputs = this.inputs.stream().map(IInput::copy).collect(Collectors.toCollection(LinkedList::new));
+        mapper.outputs = this.outputs.stream().map(IOutput::copy).collect(Collectors.toCollection(LinkedList::new));
+        return mapper;
+    }
+
     /**
      * Return a {@link LinkedHashMap} with the input data for the given {@link IProcess} execution.
      *

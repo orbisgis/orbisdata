@@ -99,4 +99,19 @@ public interface IProcessFactory {
      */
     @NotNull
     Optional<IProcess> create(@Nullable @DelegatesTo(IProcessBuilder.class) Closure<?> cl);
+
+    /**
+     * Return the {@link IProcessManager} containing the factory.
+     *
+     * @return The {@link IProcessManager} containing the factory.
+     */
+    @NotNull
+    Optional<IProcessManager> getProcessManager();
+
+    /**
+     * Set the {@link IProcessManager} containing the factory.
+     *
+     * @param processManager The {@link IProcessManager} containing the factory.
+     */
+    void setProcessManager(@Nullable IProcessManager processManager);
 }

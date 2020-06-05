@@ -157,5 +157,11 @@ public class IProcessMapperTest {
         public boolean call(LinkedHashMap<String, Object> inputDataMap) {
             return false;
         }
+
+        @NotNull
+        @Override
+        public IProcessMapper copy() {
+            return null;
+        }
     }
 }

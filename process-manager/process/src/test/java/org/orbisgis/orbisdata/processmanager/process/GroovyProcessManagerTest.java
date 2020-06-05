@@ -40,10 +40,14 @@ import groovy.lang.Closure;
 import groovy.lang.GroovyShell;
 import groovy.lang.MetaClass;
 import org.codehaus.groovy.runtime.InvokerHelper;
+import org.codehaus.groovy.runtime.metaclass.MissingPropertyExceptionNoStack;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.function.Executable;
 import org.orbisgis.orbisdata.processmanager.api.IProcess;
 import org.orbisgis.orbisdata.processmanager.api.IProcessFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
@@ -55,7 +59,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * @author Erwan Bocher (CNRS)
  * @author Sylvain PALOMINOS (UBS Lab-STICC 2019-2020)
  */
-public class ProcessManagerTest {
+public class GroovyProcessManagerTest {
 
     public static Closure<?> cl;
 
@@ -74,19 +78,11 @@ public class ProcessManagerTest {
     }
 
     /**
-     * Test the {@link ProcessManager#getProcessManager()} method
-     */
-    @Test
-    void getProcessManagerTest() {
-        assertNotNull(ProcessManager.getProcessManager());
-    }
-
-    /**
-     * Test the {@link ProcessManager#create()} and {@link ProcessManager#create(Closure)} methods.
+     * Test the {@link GroovyProcessManager#create()} and {@link GroovyProcessManager#create(Closure)} methods.
      */
     @Test
     void testCreate() {
-        ProcessManager pm = ProcessManager.getProcessManager();
+        GroovyProcessManager pm = new DummyGPM();
         assertNotNull(pm.create());
         assertNotNull(pm.create().getProcess());
 
@@ -111,17 +107,12 @@ public class ProcessManagerTest {
     }
 
     /**
-     * Test the {@link ProcessManager#factoryIds()},
-     * {@link ProcessManager#factory(String)}, {@link ProcessManager#factory()},
-     * {@link ProcessManager#createFactory(String)}, {@link ProcessManager#createFactory()} methods.
+     * Test the {@link GroovyProcessManager#factoryIds()},
+     * {@link GroovyProcessManager#factory(String)}, {@link GroovyProcessManager#factory()},
      */
     @Test
     void testFactories() {
-        ProcessManager pm = ProcessManager.getProcessManager();
-        assertNotNull(ProcessManager.createFactory());
-        assertNotNull(ProcessManager.createFactory("Mayor_DeFacto_Ry"));
-        assertNotNull(ProcessManager.createFactory(null));
-        assertNotNull(ProcessManager.createFactory(""));
+        GroovyProcessManager pm = new DummyGPM();
 
         assertNotNull(pm.factory());
         assertEquals(pm.factory(), pm.factory(null));
@@ -135,11 +126,11 @@ public class ProcessManagerTest {
     }
 
     /**
-     * Test the {@link ProcessManager#process(String)} and {@link ProcessManager#process(String, String)} methods.
+     * Test the {@link GroovyProcessManager#process(String)} and {@link GroovyProcessManager#process(String, String)} methods.
      */
     @Test
     void testProcess() {
-        ProcessManager pm = ProcessManager.getProcessManager();
+        GroovyProcessManager pm = new DummyGPM();
         assertNotNull(ProcessManager.createFactory("Mayor_DeFacto_Ry"));
 
         Optional<IProcess> opt1 = pm.factory().create(cl);
@@ -163,25 +154,25 @@ public class ProcessManagerTest {
     }
 
     /**
-     * Test the {@link ProcessManager#setMetaClass(MetaClass)} and {@link ProcessManager#getMetaClass()} methods.
+     * Test the {@link GroovyProcessManager#setMetaClass(MetaClass)} and {@link GroovyProcessManager#getMetaClass()} methods.
      */
     @Test
     void metaClassTest() {
-        ProcessManager pm = ProcessManager.getProcessManager();
-        assertEquals(InvokerHelper.getMetaClass(ProcessManager.class), pm.getMetaClass());
+        GroovyProcessManager pm = new DummyGPM();
+        assertEquals(InvokerHelper.getMetaClass(GroovyProcessManager.class), pm.getMetaClass());
         pm.setMetaClass(null);
         assertNotNull(pm.getMetaClass());
         pm.setMetaClass(InvokerHelper.getMetaClass(this.getClass()));
         assertEquals(InvokerHelper.getMetaClass(this.getClass()), pm.getMetaClass());
-        pm.setMetaClass(InvokerHelper.getMetaClass(ProcessManager.class));
+        pm.setMetaClass(InvokerHelper.getMetaClass(GroovyProcessManager.class));
     }
 
     /**
-     * Test the {@link ProcessManager#invokeMethod(String, Object)} method.
+     * Test the {@link GroovyProcessManager#invokeMethod(String, Object)} method.
      */
     @Test
     void invokeMethodTest() {
-        ProcessManager pm = ProcessManager.getProcessManager();
+        GroovyProcessManager pm = new DummyGPM();
         assertNotNull(pm.invokeMethod("create", cl));
         assertTrue(pm.invokeMethod("create", cl) instanceof IProcess);
         assertNull(pm.invokeMethod("process", "null"));
@@ -190,12 +181,12 @@ public class ProcessManagerTest {
     }
 
     /**
-     * Test the {@link ProcessManager#register(Map)}, {
-     * @link GroovyProcessManager#registerFactory(String, IProcessFactory) methods.
+     * Test the {@link GroovyProcessManager#register(Map)}, {@link GroovyProcessManager#registerFactory(String, IProcessFactory)}
+     * and {@link GroovyProcessManager#register(List)} methods.
      */
     @Test
     void registerTest() {
-        ProcessManager pm = new ProcessManager();
+        GroovyProcessManager pm = new DummyGPM();
         assertEquals(1, pm.factoryIds().size());
 
         assertTrue(pm.registerFactory("toto1", new ProcessFactory()));
@@ -212,11 +203,83 @@ public class ProcessManagerTest {
         assertTrue(pm.factoryIds().contains("toto2"));
         assertTrue(pm.factoryIds().contains("toto3"));
 
-        assertFalse(pm.registerFactory(null, new ProcessFactory()));
-        assertFalse(pm.registerFactory("toto1", new ProcessFactory()));
-        assertFalse(pm.registerFactory("", new ProcessFactory()));
-        assertFalse(pm.registerFactory("id", null));
+        List<Class<? extends GroovyProcessFactory>> list = new ArrayList<>();
+        list.add(DummyGPF.class);
+        list.add(DummyGPF.class);
+        try {
+            pm.register(list);
+        } catch (IllegalAccessException | InstantiationException e) {
+            fail(e);
+        }
+        assertEquals(5, pm.factoryIds().size());
+        assertTrue(pm.factoryIds().contains("DummyGPF"));
 
-        assertDoesNotThrow(() -> pm.register(null));
+        try {
+            pm.register((List<Class<? extends GroovyProcessFactory>>)null);
+        } catch (IllegalAccessException | InstantiationException e) {
+            fail(e);
+        }
+        assertEquals(5, pm.factoryIds().size());
+        assertTrue(pm.factoryIds().contains("DummyGPF"));
+    }
+
+    /**
+     * Test the {@link GroovyProcessFactory#getProperty(String)} method.
+     */
+    @Test
+    void propertyTest() {
+        GroovyProcessManager pm = new DummyGPM();
+        assertNull(pm.getProperty(null));
+        assertTrue(pm.getProperty("pm") instanceof ProcessManager);
+
+        pm.registerFactory("toto1", new ProcessFactory());
+        assertTrue(pm.getProperty("toto1") instanceof ProcessFactory);
+
+        assertThrows(MissingPropertyExceptionNoStack.class, () -> pm.getProperty("not a property"));
+    }
+
+    /**
+     * Test the {@link GroovyProcessFactory#setLogger(Logger)} method.
+     */
+    @Test
+    void setLoggerTest() {
+        GroovyProcessManager pm = new DummyGPM();
+        pm.registerFactory("toto1", new ProcessFactory());
+        pm.registerFactory("toto2", new ProcessFactory());
+        List<Class<?extends GroovyProcessFactory>> list = new ArrayList<>();
+        list.add(DummyGPF.class);
+        try {
+            pm.register(list);
+        } catch (IllegalAccessException | InstantiationException e) {
+            fail(e);
+        }
+        assertDoesNotThrow(() -> pm.setLogger(LoggerFactory.getLogger(GroovyProcessManagerTest.class)));
+    }
+
+    /**
+     * Test the {@link GroovyProcessManager#load(Class)} method.
+     */
+    @Test
+    public void loadTest() {
+        try {
+            assertNotNull(GroovyProcessManager.load(DummyGPM.class));
+        } catch (IllegalAccessException | InstantiationException e) {
+            fail(e);
+        }
+    }
+
+    public static class DummyGPM extends GroovyProcessManager {
+
+        @Override
+        public Object run() {
+            return null;
+        }
+    }
+    public static class DummyGPF extends GroovyProcessFactory {
+
+        @Override
+        public Object run() {
+            return this;
+        }
     }
 }

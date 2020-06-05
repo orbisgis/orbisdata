@@ -228,7 +228,7 @@ public abstract class JdbcSpatialTable extends JdbcTable implements IJdbcSpatial
                     LOGGER.error("There is no geometric field.");
                     return null;
                 }
-                return GeometryTableUtilities.getEnvelope(con, getTableLocation(), names.get(0));
+                return GeometryTableUtilities.getEnvelope(con, getTableLocation(), names.get(0)).getEnvelopeInternal();
             } catch (SQLException e) {
                 LOGGER.error("Unable to get the table estimated extend.", e);
             }

@@ -84,10 +84,22 @@ public class ProcessFactoryTest {
     @Test
     void testRegister() {
         IProcess process = new Process(null, null, null, null, null, null, null);
+        IProcess newInst = process.newInstance();
+        IProcess copy = process.copy();
 
         ProcessFactory pf = new ProcessFactory(false, false);
         pf.registerProcess(process);
         assertTrue(pf.getProcess(process.getIdentifier()).isPresent());
+
+        pf.registerProcess(newInst);
+        assertTrue(pf.getProcess(newInst.getIdentifier()).isPresent());
+        assertTrue(pf.getProcess(process.getIdentifier()).isPresent());
+
+        pf.registerProcess(copy);
+        assertTrue(pf.getProcess(newInst.getIdentifier()).isPresent());
+        assertTrue(pf.getProcess(copy.getIdentifier()).isPresent());
+        assertTrue(pf.getProcess(process.getIdentifier()).isPresent());
+
         pf = new ProcessFactory(false, false);
         pf.registerProcess(null);
         assertFalse(pf.getProcess(process.getIdentifier()).isPresent());
@@ -155,7 +167,7 @@ public class ProcessFactoryTest {
      * Test the {@link ProcessFactory#invokeMethod(String, Object)} method.
      */
     @Test
-    void propertyTest() {
+    void invokeMethodTest() {
         ProcessFactory factory = new ProcessFactory(false, true);
         assertNull(factory.invokeMethod(null, null));
         assertEquals(false, factory.invokeMethod("isLocked", null));
@@ -164,5 +176,20 @@ public class ProcessFactoryTest {
         assertNull(factory.invokeMethod(null, null));
         assertEquals(false, factory.invokeMethod("isLocked", null));
         assertNull(factory.invokeMethod("getProcess", null));
+    }
+
+    /**
+     * Test the {@link ProcessFactory#getProcessManager()} and {@link ProcessFactory#setProcessManager(org.orbisgis.orbisdata.processmanager.api.IProcessManager)} method.
+     */
+    @Test
+    void getProcessManagerTest() {
+        ProcessFactory factory = new ProcessFactory(false, true);
+        assertFalse(factory.getProcessManager().isPresent());
+        ProcessManager pm = new ProcessManager();
+        factory.setProcessManager(pm);
+        assertTrue(factory.getProcessManager().isPresent());
+        assertEquals(pm, factory.getProcessManager().get());
+        factory.setProcessManager(null);
+        assertFalse(factory.getProcessManager().isPresent());
     }
 }

@@ -44,147 +44,110 @@ import org.orbisgis.orbisdata.processmanager.api.IProcess;
 import org.orbisgis.orbisdata.processmanager.api.IProcessBuilder;
 import org.orbisgis.orbisdata.processmanager.api.IProcessFactory;
 import org.orbisgis.orbisdata.processmanager.api.IProcessManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 /**
- * Implementation of IProcessManager as a singleton.
+ * Implementation of the {@link IProcessManager} class dedicated to Groovy.
  *
  * @author Erwan Bocher (CNRS)
- * @author Sylvain PALOMINOS (UBS Lab-STICC 2019-2020)
+ * @author Sylvain PALOMINOS (UBS Lab-STICC 2020)
  */
-public class ProcessManager implements IProcessManager, GroovyObject, GroovyInterceptable {
-    
-    /**
-     * Default factory name
-     */
-    private static final String DEFAULT_FACTORY_NAME = "Default";
-    /**
-     * Unique ProcessManager instance.
-     */
-    private static ProcessManager instance = null;
+public abstract class GroovyProcessManager extends Script implements IProcessManager, GroovyObject, GroovyInterceptable {
 
     /**
-     * Map of the process factory and their identifier.
+     * Internal ProcessManager.
      */
-    private final Map<String, IProcessFactory> processFactoryMap;
-    /**
-     * Default factory
-     */
-    private final IProcessFactory defaultFactory;
+    private IProcessManager pm = new ProcessManager();
     /**
      * MetaClass use for groovy methods/properties binding
      */
     @NotNull
-    protected MetaClass metaClass = InvokerHelper.getMetaClass(ProcessManager.class);
+    protected MetaClass metaClass = InvokerHelper.getMetaClass(GroovyProcessManager.class);
 
-    /**
-     * Private constructor in order to make it unique.
-     */
-    protected ProcessManager() {
-        defaultFactory = new ProcessFactory(false, true);
-        defaultFactory.setProcessManager(this);
-        processFactoryMap = new HashMap<>();
-        processFactoryMap.put(DEFAULT_FACTORY_NAME, defaultFactory);
-    }
-
-    /**
-     * Return the unique instance of the ProcessManager.
-     *
-     * @return The unique instance of the ProcessManager.
-     */
     @NotNull
-    public static ProcessManager getProcessManager() {
-        if (instance == null) {
-            instance = new ProcessManager();
-        }
-        return instance;
-    }
-
     @Override
-    @NotNull
     public IProcessBuilder create() {
-        return new ProcessBuilder(defaultFactory, defaultFactory);
+        return pm.create();
     }
 
-    @Override
     @NotNull
-    public Optional<IProcess> create(@Nullable @DelegatesTo(IProcessBuilder.class) Closure<?> cl) {
-        if(cl == null) {
-            return Optional.empty();
-        }
-        IProcessBuilder builder = new ProcessBuilder(defaultFactory, defaultFactory);
-        Closure<?> code = cl.rehydrate(builder, this, this);
-        code.setResolveStrategy(Closure.DELEGATE_FIRST);
-        code.call();
-        Process p = (Process)builder.getProcess();
-        return Optional.of(p);
+    @Override
+    public Optional<IProcess> create(@Nullable Closure<?> cl) {
+        return pm.create(cl);
     }
 
-    @Override
     @NotNull
+    @Override
     public List<String> factoryIds() {
-        return new ArrayList<>(processFactoryMap.keySet());
+        return pm.factoryIds();
     }
 
-    @Override
     @NotNull
+    @Override
     public IProcessFactory factory(@Nullable String identifier) {
-        if(identifier == null) {
-            return factory();
-        }
-        if (!processFactoryMap.containsKey(identifier)) {
-            IProcessFactory factory = new ProcessFactory();
-            factory.setProcessManager(this);
-            processFactoryMap.put(identifier, factory);
-        }
-        return processFactoryMap.get(identifier);
+        return pm.factory(identifier);
     }
 
     @NotNull
-    public static IProcessFactory createFactory(@Nullable String identifier) {
-        return getProcessManager().factory(
-                identifier != null && !identifier.isEmpty() ? identifier : "factory_"+UUID.randomUUID().toString());
-    }
-
     @Override
-    @NotNull
     public IProcessFactory factory() {
-        return defaultFactory;
+        return pm.factory();
     }
 
     @NotNull
-    public static IProcessFactory createFactory() {
-        return getProcessManager().factory();
-    }
-
     @Override
-    @NotNull
     public Optional<IProcess> process(@Nullable String processId) {
-        return factory().getProcess(processId);
+        return pm.process(processId);
     }
 
-    @Override
     @NotNull
+    @Override
     public Optional<IProcess> process(@Nullable String processId, @Nullable String factoryId) {
-        return factory(factoryId).getProcess(processId);
+        return pm.process(processId, factoryId);
     }
 
     @Override
     public boolean registerFactory(@Nullable String id, @Nullable IProcessFactory factory) {
-        if(factory == null || id == null || id.isEmpty() || processFactoryMap.containsKey(id)) {
-            return false;
-        }
-        processFactoryMap.put(id, factory);
+        boolean ret = pm.registerFactory(id, factory);
         factory.setProcessManager(this);
-        return true;
+        return ret;
     }
 
     @Override
     public void register(@Nullable Map<String, IProcessFactory> map) {
-        if(map != null) {
-            map.forEach(this::registerFactory);
+        pm.register(map);
+        map.values().forEach(factory -> factory.setProcessManager(this));
+    }
+
+    public void register(@Nullable List<Class<? extends GroovyProcessFactory>> list) throws IllegalAccessException, InstantiationException {
+        if(list != null) {
+            for (Class<? extends GroovyProcessFactory> clazz : list) {
+                GroovyProcessFactory gpf = clazz.newInstance();
+                gpf.run();
+                gpf.setLogger(LoggerFactory.getLogger(clazz));
+                registerFactory(clazz.getSimpleName(), gpf);
+                gpf.setProcessManager(this);
+            }
         }
+    }
+
+    public static GroovyProcessManager load(Class<? extends GroovyProcessManager> clazz) throws IllegalAccessException, InstantiationException {
+        GroovyProcessManager gpm = clazz.newInstance();
+        gpm.run();
+        return gpm;
+    }
+
+    public void setLogger(Logger logger) {
+        factoryIds().stream()
+                .map(this::factory)
+                .filter(pf -> pf instanceof GroovyProcessFactory)
+                .map(pf -> (GroovyProcessFactory)pf)
+                .forEach(f -> f.setLogger(logger));
     }
 
     @Nullable
@@ -201,6 +164,20 @@ public class ProcessManager implements IProcessManager, GroovyObject, GroovyInte
         }
         else {
             return null;
+        }
+    }
+
+    @Nullable
+    @Override
+    public Object getProperty(@Nullable String name) {
+        if(name == null) {
+            return null;
+        }
+        if(factoryIds().contains(name)){
+            return factory(name);
+        }
+        else{
+            return getMetaClass().getProperty(this, name);
         }
     }
 

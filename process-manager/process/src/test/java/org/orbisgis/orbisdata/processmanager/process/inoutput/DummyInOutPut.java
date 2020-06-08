@@ -36,6 +36,10 @@
  */
 package org.orbisgis.orbisdata.processmanager.process.inoutput;
 
+import org.codehaus.groovy.runtime.InvokerHelper;
+import org.orbisgis.commons.annotations.Nullable;
+import org.orbisgis.orbisdata.processmanager.api.inoutput.IInOutPut;
+
 /**
  * Extension of the {@link InOutPut} class.
  *
@@ -43,4 +47,24 @@ package org.orbisgis.orbisdata.processmanager.process.inoutput;
  * @author Sylvain PALOMINOS (UBS Lab-STICC 2019-2020)
  */
 public class DummyInOutPut extends InOutPut {
+
+    private String notOptional;
+
+    public DummyInOutPut() {
+        setMetaClass(InvokerHelper.getMetaClass(DummyInOutPut.class));
+    }
+
+    void setNotOptional(String s) {
+        notOptional = s;
+    }
+
+    String getNotOptional() {
+        return notOptional;
+    }
+
+    @Nullable
+    @Override
+    public IInOutPut copy() {
+        return null;
+    }
 }

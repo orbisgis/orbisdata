@@ -42,6 +42,7 @@ import org.orbisgis.commons.annotations.NotNull;
 import org.orbisgis.commons.annotations.Nullable;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -114,4 +115,19 @@ public interface IProcessManager {
      */
     @NotNull
     Optional<IProcess> process(@Nullable String processId, @Nullable String factoryId);
+
+    /**
+     * Register the given factory with the given id.
+     *
+     * @param id      Identifier of the factory to register.
+     * @param factory Factory to register.
+     */
+    boolean registerFactory(@Nullable String id, @Nullable IProcessFactory factory);
+
+    /**
+     * Register a map of factories with the id as key and the factory as value.
+     *
+     * @param map Map of the factories.
+     */
+    void register(@Nullable Map<String, IProcessFactory> map);
 }

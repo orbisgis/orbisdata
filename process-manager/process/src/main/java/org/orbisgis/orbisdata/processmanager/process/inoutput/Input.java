@@ -43,6 +43,7 @@ import org.orbisgis.commons.annotations.Nullable;
 import org.orbisgis.orbisdata.processmanager.api.IProcess;
 import org.orbisgis.orbisdata.processmanager.api.inoutput.IInput;
 
+import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -138,5 +139,29 @@ public class Input extends InOutPut implements IInput {
     @Override
     public void setMetaClass(@Nullable MetaClass metaClass) {
         this.metaClass = metaClass == null ? InvokerHelper.getMetaClass(this.getClass()) : metaClass;
+    }
+
+    @Override
+    public boolean equals(Object obj){
+        if(! (obj instanceof Input)){
+            return false;
+        }
+        Input in = (Input)obj;
+        return Objects.equals(this.getProcess(), in.getProcess()) &&
+                Objects.equals(this.getName(), in.getName());
+    }
+
+    @Nullable
+    @Override
+    public Input copy() {
+        Input copy = new Input();
+        copy.dfltValue = this.dfltValue;
+        copy.setProcess(this.getProcess().orElse(null));
+        copy.setName(this.getName().orElse(null));
+        copy.setType(this.getType().orElse(null));
+        copy.setTitle(this.getTitle().orElse(null));
+        copy.setDescription(this.getDescription().orElse(null));
+        copy.setKeywords(this.getKeywords().orElse(null));
+        return copy;
     }
 }

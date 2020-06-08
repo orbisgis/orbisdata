@@ -43,6 +43,7 @@ import org.orbisgis.commons.annotations.Nullable;
 import org.orbisgis.orbisdata.processmanager.api.IProcess;
 import org.orbisgis.orbisdata.processmanager.api.IProcessBuilder;
 import org.orbisgis.orbisdata.processmanager.api.IProcessFactory;
+import org.orbisgis.orbisdata.processmanager.api.IProcessManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -68,6 +69,8 @@ public class ProcessFactory implements IProcessFactory, GroovyObject, GroovyInte
      * List of the processes created with this factory.
      */
     private final List<IProcess> processList;
+    @Nullable
+    private IProcessManager processManager;
     /**
      * {@link MetaClass}
      */
@@ -95,6 +98,13 @@ public class ProcessFactory implements IProcessFactory, GroovyObject, GroovyInte
     @Override
     public void registerProcess(@Nullable IProcess process) {
         if (!isLock && process != null) {
+            List<IProcess> list = new ArrayList<>();
+            for (IProcess p : processList) {
+                if (p.getIdentifier().equals(process.getIdentifier())) {
+                    list.add(p);
+                }
+            }
+            processList.removeAll(list);
             processList.add(process);
         }
     }
@@ -137,6 +147,17 @@ public class ProcessFactory implements IProcessFactory, GroovyObject, GroovyInte
             code.setResolveStrategy(Closure.DELEGATE_FIRST);
             return Optional.of(((IProcessBuilder) code.call()).getProcess());
         }
+    }
+
+    @NotNull
+    @Override
+    public Optional<IProcessManager> getProcessManager() {
+        return Optional.ofNullable(processManager);
+    }
+
+    @Override
+    public void setProcessManager(@Nullable IProcessManager processManager) {
+        this.processManager = processManager;
     }
 
     @Nullable

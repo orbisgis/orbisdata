@@ -51,13 +51,22 @@ import java.util.LinkedHashMap;
 public interface IProcessBuilder {
 
     /**
+     * Set the identifier of the process.
+     *
+     * @param id Identifier of the process.
+     * @return A {@link IProcessBuilder} to continue the building.
+     */
+    @NotNull
+    IProcessBuilder id(@Nullable String id);
+
+    /**
      * Set the title of the process.
      *
      * @param title Title of the process.
      * @return A {@link IProcessBuilder} to continue the building.
      */
     @NotNull
-    IProcessBuilder title(@NotNull String title);
+    IProcessBuilder title(@Nullable String title);
 
     /**
      * Set the description of the process.

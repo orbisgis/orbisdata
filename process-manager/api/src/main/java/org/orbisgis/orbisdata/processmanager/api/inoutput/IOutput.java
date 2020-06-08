@@ -36,6 +36,8 @@
  */
 package org.orbisgis.orbisdata.processmanager.api.inoutput;
 
+import org.orbisgis.commons.annotations.Nullable;
+
 /**
  * This interface defines the methods dedicated the wrapping of output.
  *
@@ -43,4 +45,12 @@ package org.orbisgis.orbisdata.processmanager.api.inoutput;
  * @author Sylvain PALOMINOS (UBS Lab-STICC 2019-2020)
  */
 public interface IOutput extends IInOutPut {
+
+    /**
+     * Returns a copy the the current object.
+     *
+     * @return A copy of the current object.
+     */
+    @Nullable
+    IOutput copy();
 }

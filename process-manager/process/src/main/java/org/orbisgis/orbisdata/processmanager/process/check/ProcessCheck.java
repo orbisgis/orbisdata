@@ -336,8 +336,8 @@ public class ProcessCheck implements IProcessCheck, GroovyObject, GroovyIntercep
         }
         if(getProcess().isPresent()) {
             //If there is a process, get the name. If the name is null, use the process id.
-            String processName = getProcess().get().getTitle() != null ?
-                    getProcess().get().getTitle() :
+            String processName = getProcess().get().getTitle().isPresent() ?
+                    getProcess().get().getTitle().get() :
                     getProcess().get().getIdentifier();
             builder.append("On process :")
                     .append(processName)

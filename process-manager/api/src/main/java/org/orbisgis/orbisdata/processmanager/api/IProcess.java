@@ -44,6 +44,7 @@ import org.orbisgis.orbisdata.processmanager.api.inoutput.IOutput;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Interface defining the main methods of a process.
@@ -74,32 +75,32 @@ public interface IProcess {
      *
      * @return The title of the process.
      */
-    @Nullable
-    String getTitle();
+    @NotNull
+    Optional<String> getTitle();
 
     /**
      * Return the process version.
      *
      * @return The process version.
      */
-    @Nullable
-    String getVersion();
+    @NotNull
+    Optional<String> getVersion();
 
     /**
      * Return the human readable description of the process.
      *
      * @return The description of the process.
      */
-    @Nullable
-    String getDescription();
+    @NotNull
+    Optional<String> getDescription();
 
     /**
      * Return the array of the process keywords.
      *
      * @return The array of the process keywords.
      */
-    @Nullable
-    String[] getKeywords();
+    @NotNull
+    Optional<String[]> getKeywords();
 
     /**
      * Return the results of the process.
@@ -140,4 +141,12 @@ public interface IProcess {
      * @return True if the execution is successful, false otherwise.
      */
     boolean call(@Nullable LinkedHashMap<String, Object> inputDataMap);
+
+    /**
+     * Create an exact copy of this {@link IProcess}.
+     *
+     * @return Exact copy of this {@link IProcess}
+     */
+    @NotNull
+    IProcess copy();
 }

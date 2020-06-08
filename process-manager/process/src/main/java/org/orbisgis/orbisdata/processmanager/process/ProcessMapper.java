@@ -36,6 +36,10 @@
  */
 package org.orbisgis.orbisdata.processmanager.process;
 
+import groovy.lang.GroovyInterceptable;
+import groovy.lang.GroovyObject;
+import groovy.lang.MetaClass;
+import org.codehaus.groovy.runtime.InvokerHelper;
 import org.orbisgis.commons.annotations.NotNull;
 import org.orbisgis.commons.annotations.Nullable;
 import org.orbisgis.orbisdata.processmanager.api.ILinker;
@@ -49,7 +53,6 @@ import org.orbisgis.orbisdata.processmanager.api.inoutput.IOutput;
 import org.orbisgis.orbisdata.processmanager.process.check.CheckDataBuilder;
 import org.orbisgis.orbisdata.processmanager.process.check.ProcessCheck;
 import org.orbisgis.orbisdata.processmanager.process.inoutput.Input;
-import org.orbisgis.orbisdata.processmanager.process.inoutput.Output;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -63,26 +66,18 @@ import java.util.stream.Collectors;
  * @author Erwan Bocher (CNRS)
  * @author Sylvain PALOMINOS (UBS Lab-STICC 2019-2020)
  */
-public class ProcessMapper implements IProcessMapper {
+public class ProcessMapper implements IProcessMapper, GroovyObject, GroovyInterceptable {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ProcessMapper.class);
 
-    private LinkedList<IInput> inputs = new LinkedList<>();
-    private LinkedList<IOutput> outputs = new LinkedList<>();
+    private LinkedList<IInput> inputs;
+    private LinkedList<IOutput> outputs;
     private List<List<IProcess>> executionTree;
     private Map<String, Object> results;
-    /**
-     * Map with the input as key and the output as value.
-     */
-    private Map<IInOutPut, IInOutPut> inputOutputMap;
     /**
      * List of all the processes used in this mapper.
      */
     private List<IProcess> processList;
-    /**
-     * Map of the aliases as key and the list of input/output as value.
-     */
-    private Map<String, List<IInOutPut>> aliases;
     /**
      * List of check to do before process execution
      */
@@ -92,9 +87,27 @@ public class ProcessMapper implements IProcessMapper {
      */
     private final List<IProcessCheck> afterList;
     /**
+     * List of linker used to rebuild the execution.
+     */
+    private List<Linker> linkerList;
+    /**
+     * Map with the input as key and the output as value.
+     */
+    private final Map<IInOutPut, IInOutPut> inputOutputMap;
+    /**
+     * Map of the aliases as key and the list of input/output as value.
+     */
+    private final Map<String, List<IInOutPut>> aliases;
+    /**
      * Title of the mapper.
      */
     private final String title;
+
+    /**
+     * Groovy {@link MetaClass}.
+     */
+    @NotNull
+    protected MetaClass metaClass = InvokerHelper.getMetaClass(ProcessMapper.class);
 
     /**
      * Main empty constructor.
@@ -108,10 +121,13 @@ public class ProcessMapper implements IProcessMapper {
      */
     public ProcessMapper(@NotNull String title) {
         this.title = title;
-        inputOutputMap = new HashMap<>();
-        aliases = new HashMap<>();
         beforeList = new ArrayList<>();
         afterList = new ArrayList<>();
+        linkerList = new ArrayList<>();
+        inputs = new LinkedList<>();
+        outputs = new LinkedList<>();
+        aliases = new HashMap<>();
+        inputOutputMap = new HashMap<>();
     }
 
     /**
@@ -123,78 +139,55 @@ public class ProcessMapper implements IProcessMapper {
      */
     @Nullable
     private String getAlias(@Nullable String name, @NotNull IProcess process) {
-        for (Map.Entry<String, List<IInOutPut>> list : aliases.entrySet()) {
-            for (IInOutPut inOutPut : list.getValue()) {
-                if (inOutPut.getName().isPresent() &&
-                        inOutPut.getName().get().equals(name) &&
-                        inOutPut.getProcess().isPresent() &&
-                        inOutPut.getProcess().get().getIdentifier().equals(process.getIdentifier())) {
-                    return list.getKey();
-                }
-            }
-        }
-        return null;
+        return aliases.entrySet()
+                .stream()
+                .filter(entry ->
+                        entry.getValue().stream().map(IInOutPut::getName).map(Optional::get).anyMatch(n -> n.equals(name)) &&
+                        entry.getValue().stream().map(IInOutPut::getProcess).map(Optional::get).anyMatch(p -> p.equals(process)))
+                .findFirst()
+                .orElse(new AbstractMap.SimpleEntry<>(null, null))
+                .getKey();
     }
 
     /**
      * Fill the process list.
      */
     private void fillProcessList() {
-        inputOutputMap.forEach((input, output) -> {
-            if (input.getProcess().isPresent() &&
-                    !processList.contains(input.getProcess().get())) {
-                processList.add(input.getProcess().get());
-            }
-            if (output.getProcess().isPresent() &&
-                    !processList.contains(output.getProcess().get())) {
-                processList.add(output.getProcess().get());
-            }
-        });
-        aliases.forEach((alias, iInOutPuts) -> iInOutPuts.forEach(iInOutPut -> {
-            if (iInOutPut.getProcess().isPresent() &&
-                    !processList.contains(iInOutPut.getProcess().get())) {
-                processList.add(iInOutPut.getProcess().get());
-            }
-        }));
+        processList.addAll(
+                inputOutputMap.keySet().stream()
+                        .map(IInOutPut::getProcess)
+                        .filter(Optional::isPresent)
+                        .map(Optional::get)
+                        .collect(Collectors.toList()));
+        processList.addAll(
+                inputOutputMap.values().stream()
+                        .map(IInOutPut::getProcess)
+                        .filter(Optional::isPresent)
+                        .map(Optional::get)
+                        .collect(Collectors.toList()));
+        processList.addAll(
+                aliases.values().stream()
+                        .flatMap(Collection::stream)
+                        .map(IInOutPut::getProcess)
+                        .map(Optional::get)
+                        .collect(Collectors.toList()));
+        //Keep distinct processes
+        processList = processList.stream().distinct().collect(Collectors.toList());
     }
 
     private Collection<IInOutPut> collectInput(@NotNull IInput input, @NotNull IProcess process) {
         Collection<IInOutPut> collection = new ArrayList<>();
-        boolean isBetween = false;
-        for (Map.Entry<IInOutPut, IInOutPut> entry : inputOutputMap.entrySet()) {
-            if (entry.getKey().getName().equals(input.getName()) &&
-                    entry.getKey().getProcess().isPresent() &&
-                    entry.getKey().getProcess().get().getIdentifier().equals(process.getIdentifier())) {
-                isBetween = true;
-            }
-        }
-        if (!isBetween) {
-            if (inputs.stream().noneMatch(iInput -> iInput.getName().equals(input.getName()) &&
-                    iInput.getProcess().isPresent() &&
-                    input.getProcess().isPresent() &&
-                    iInput.getProcess().get().getIdentifier().equals(input.getProcess().get().getIdentifier()))) {
+        if (inputOutputMap.keySet().stream().noneMatch(in -> in.equals(input))) {
+            if (getAlias(input.getName().orElse(null), process) == null) {
                 inputs.add(input);
             }
-            collection.add(
-                    new Input().process(process).name(input.getName().orElse(null)));
+            collection.add(new Input().process(process).name(input.getName().orElse(null)));
         }
         return collection;
     }
 
     private void collectOutput(IOutput output, IProcess process) {
-        boolean isBetween = false;
-        for (Map.Entry<IInOutPut, IInOutPut> entry : inputOutputMap.entrySet()) {
-            if (entry.getValue().getName().equals(output.getName()) &&
-                    entry.getValue().getProcess().isPresent() &&
-                    entry.getValue().getProcess().get().getIdentifier().equals(process.getIdentifier())) {
-                isBetween = true;
-            }
-        }
-        if (!isBetween &&
-                outputs.stream().noneMatch(iOutput -> iOutput.getName().equals(output.getName()) &&
-                        iOutput.getProcess().isPresent() &&
-                        output.getProcess().isPresent() &&
-                        iOutput.getProcess().get().getIdentifier().equals(output.getProcess().get().getIdentifier())) &&
+        if (inputOutputMap.values().stream().noneMatch(out -> out.equals(output)) &&
                 getAlias(output.getName().orElse(null), process) == null) {
             outputs.add(output);
         }
@@ -222,9 +215,7 @@ public class ProcessMapper implements IProcessMapper {
             for (IInput input : process.getInputs()) {
                 boolean isInputAvailable = false;
                 for (IInOutPut processInput : availableIn) {
-                    if (processInput.getName().equals(input.getName()) &&
-                            processInput.getProcess().isPresent() &&
-                            processInput.getProcess().get().getIdentifier().equals(process.getIdentifier())) {
+                    if (processInput.equals(input)) {
                         isInputAvailable = true;
                         break;
                     }
@@ -236,11 +227,9 @@ public class ProcessMapper implements IProcessMapper {
             }
             if (isAllInput) {
                 executionTree.get(i).add(process);
-                for (IOutput name : process.getOutputs()) {
+                for (IOutput output : process.getOutputs()) {
                     for (Map.Entry<IInOutPut, IInOutPut> entry : inputOutputMap.entrySet()) {
-                        if (entry.getValue().getName().equals(name.getName()) &&
-                                entry.getValue().getProcess().isPresent() &&
-                                entry.getValue().getProcess().get().getIdentifier().equals(process.getIdentifier())) {
+                        if (entry.getValue().equals(output)) {
                             newIn.add(entry.getKey());
                         }
                     }
@@ -257,6 +246,11 @@ public class ProcessMapper implements IProcessMapper {
         executionTree = new ArrayList<>();
         results = new HashMap<>();
         processList = new ArrayList<>();
+
+        linkerList.stream().map(Linker::getAliases).forEach(aliases::putAll);
+        linkerList.stream().map(Linker::getInputOutputMap).forEach(inputOutputMap::putAll);
+        linkerList.stream().map(Linker::getInputs).forEach(inputs::addAll);
+        linkerList.stream().map(Linker::getOutputs).forEach(outputs::addAll);
 
         fillProcessList();
 
@@ -276,7 +270,11 @@ public class ProcessMapper implements IProcessMapper {
 
         if (!iterableProcessList.isEmpty()) {
             LOGGER.error("Unable to link the processes '" +
-                    iterableProcessList.stream().map(IProcess::getTitle).collect(Collectors.joining(",")) + "'");
+                    iterableProcessList.stream()
+                            .map(IProcess::getTitle)
+                            .filter(Optional::isPresent)
+                            .map(Optional::get)
+                            .collect(Collectors.joining(",")) + "'");
             return false;
         }
         return true;
@@ -298,12 +296,23 @@ public class ProcessMapper implements IProcessMapper {
     @Override
     public IProcessMapper newInstance() {
         ProcessMapper mapper = new ProcessMapper();
-        mapper.aliases = aliases;
         mapper.processList = new ArrayList<>(processList);
-        mapper.inputOutputMap = new HashMap<>(inputOutputMap);
         mapper.executionTree = new ArrayList<>(executionTree);
-        mapper.inputs = new LinkedList<>(inputs);
-        mapper.outputs = new LinkedList<>(outputs);
+        mapper.linkerList = new ArrayList<>(linkerList);
+        mapper.inputs = this.inputs.stream().map(IInput::copy).collect(Collectors.toCollection(LinkedList::new));
+        mapper.outputs = this.outputs.stream().map(IOutput::copy).collect(Collectors.toCollection(LinkedList::new));
+        return mapper;
+    }
+
+    @NotNull
+    @Override
+    public IProcessMapper copy() {
+        ProcessMapper mapper = new ProcessMapper();
+        mapper.processList = new ArrayList<>(processList);
+        mapper.executionTree = new ArrayList<>(executionTree);
+        mapper.linkerList = new ArrayList<>(linkerList);
+        mapper.inputs = this.inputs.stream().map(IInput::copy).collect(Collectors.toCollection(LinkedList::new));
+        mapper.outputs = this.outputs.stream().map(IOutput::copy).collect(Collectors.toCollection(LinkedList::new));
         return mapper;
     }
 
@@ -327,13 +336,11 @@ public class ProcessMapper implements IProcessMapper {
             }
             //Get the link between the input 'in' and a process output if exists
             inputOutputMap.forEach((input, output) -> {
-                if (input.getProcess().isPresent() &&
-                        process.getIdentifier().equals(input.getProcess().get().getIdentifier()) &&
+                if (process.equals(input.getProcess().orElse(null)) &&
                         input.getName().equals(in.getName())) {
                     //get the process with the output linked to 'in'
                     for (IProcess p : processList) {
-                        if (output.getProcess().isPresent() &&
-                                p.getIdentifier().equals(output.getProcess().get().getIdentifier())) {
+                        if (p.equals(output.getProcess().orElse(null))) {
                             data[0] = p.getResults().get(output.getName().orElse(null));
                         }
                     }
@@ -384,15 +391,9 @@ public class ProcessMapper implements IProcessMapper {
      */
     private void storeResults(IProcess process) {
         for (String key : process.getResults().keySet()) {
-            boolean isBetween = false;
-            for (Map.Entry<IInOutPut, IInOutPut> entry : inputOutputMap.entrySet()) {
-                if (entry.getValue().getName().isPresent() &&
-                        entry.getValue().getName().get().equals(key) &&
-                        entry.getValue().getProcess().isPresent() &&
-                        entry.getValue().getProcess().get().getIdentifier().equals(process.getIdentifier())) {
-                    isBetween = true;
-                }
-            }
+            boolean isBetween = inputOutputMap.values().stream()
+                    .anyMatch(value -> key.equals(value.getName().orElse(null)) &&
+                            process.equals(value.getProcess().orElse(null)));
             String alias = getAlias(key, process);
             if (alias != null) {
                 results.put(alias, process.getResults().get(key));
@@ -406,8 +407,8 @@ public class ProcessMapper implements IProcessMapper {
 
     @NotNull
     @Override
-    public String getTitle() {
-        return title;
+    public Optional<String> getTitle() {
+        return Optional.ofNullable(title);
     }
 
     @NotNull
@@ -419,7 +420,9 @@ public class ProcessMapper implements IProcessMapper {
     @NotNull
     @Override
     public ILinker link(@NotNull IInOutPut... inOutPuts) {
-        return new Linker(inOutPuts);
+        Linker linker = new Linker(inOutPuts);
+        linkerList.add(linker);
+        return linker;
     }
 
     @NotNull
@@ -438,106 +441,53 @@ public class ProcessMapper implements IProcessMapper {
         return new CheckDataBuilder(processCheck);
     }
 
-    /**
-     * This class manage the link between inputs, outputs and aliases.
-     */
-    private class Linker implements ILinker {
-        /**
-         * Array of inputs
-         */
-        private final List<IInOutPut> inputList = new ArrayList<>();
-        /**
-         * Array of outputs
-         */
-        private final List<IInOutPut> outputList = new ArrayList<>();
+    @Override
+    public boolean call(LinkedHashMap<String, Object> inputDataMap) {
+        return execute(inputDataMap);
+    }
 
-        /**
-         * Main constructor.
-         *
-         * @param inOutPuts Inputs or outputs to link.
-         */
-        private Linker(IInOutPut... inOutPuts) {
-            if (inOutPuts.length == 0) {
-                LOGGER.error("The input/output list should not be empty.");
+    @Nullable
+    @Override
+    public Object getProperty(@Nullable String propertyName){
+        if(propertyName != null) {
+            Object obj = this.metaClass.getProperty(this, propertyName);
+            if(obj instanceof Optional){
+                return ((Optional<?>)obj).orElse(null);
             }
-            boolean allInputs = true;
-            boolean allOutputs = true;
-            for (IInOutPut inOutPut : inOutPuts) {
-                if (inOutPut.getProcess().isPresent() &&
-                        inOutPut.getProcess().get().getInputs().stream().noneMatch(input -> input.getName().equals(inOutPut.getName()))) {
-                    allInputs = false;
-                }
-                if (inOutPut.getProcess().get().getOutputs().stream().noneMatch(output -> output.getName().equals(inOutPut.getName()))) {
-                    allOutputs = false;
-                }
-            }
-            if (!allInputs && !allOutputs) {
-                LOGGER.error("Input and outputs should not be mixed.");
-            } else if (allInputs) {
-                inputList.addAll(Arrays.asList(inOutPuts));
-            } else {
-                outputList.addAll(Arrays.asList(inOutPuts));
+            else {
+                return obj;
             }
         }
+        else {
+            return null;
+        }
+    }
 
-        @Override
-        public void to(@NotNull IInOutPut... inOutPuts) {
-            if (inOutPuts.length == 0) {
-                LOGGER.error("The input/output list should not be empty.");
-                return;
+    @Nullable
+    @Override
+    public Object invokeMethod(@Nullable String name, @Nullable Object args) {
+        if(name != null) {
+            Object obj = this.metaClass.invokeMethod(this, name, args);
+            if(obj instanceof Optional){
+                return ((Optional<?>)obj).orElse(null);
             }
-            if (Arrays.stream(inOutPuts).anyMatch(iInOutPut -> iInOutPut instanceof IInput) &&
-                    Arrays.stream(inOutPuts).anyMatch(iInOutPut -> iInOutPut instanceof IOutput)) {
-                LOGGER.error("Input and outputs should not be mixed.");
-                return;
-            }
-            if (!inputList.isEmpty()) {
-                if (Arrays.stream(inOutPuts).noneMatch(iInOutPut -> iInOutPut instanceof IOutput)) {
-                    LOGGER.error("Inputs should be link to outputs.");
-                    return;
-                }
-                outputList.addAll(Arrays.asList(inOutPuts));
-            } else if (!outputList.isEmpty()) {
-                if (Arrays.stream(inOutPuts).noneMatch(iInOutPut -> iInOutPut instanceof IInput)) {
-                    LOGGER.error("Outputs should be link to inputs.");
-                    return;
-                }
-                inputList.addAll(Arrays.asList(inOutPuts));
-            }
-            for (IInOutPut input : inputList) {
-                for (IInOutPut output : outputList) {
-                    inputOutputMap.put(input, output);
-                }
+            else {
+                return obj;
             }
         }
-
-        @Override
-        public void to(@NotNull String alias) {
-            List<IInOutPut> inOutPuts = new ArrayList<>();
-            inOutPuts.addAll(inputList);
-            inOutPuts.addAll(outputList);
-            for (IInOutPut inOutPut : inOutPuts) {
-                if (aliases.get(alias) != null) {
-                    aliases.get(alias).add(inOutPut);
-                } else {
-                    aliases.put(alias, new ArrayList<>(inOutPuts));
-                }
-            }
-            if (!inputList.isEmpty() &&
-                    inputList.stream().noneMatch(iInOutPut ->
-                            iInOutPut.getName().isPresent() && iInOutPut.getName().get().equals(alias))) {
-                inputs.add(new Input().name(alias));
-            }
-            if (!outputList.isEmpty() &&
-                    outputList.stream().noneMatch(iInOutPut ->
-                            iInOutPut.getName().isPresent() && iInOutPut.getName().get().equals(alias))) {
-                outputs.add(new Output().name(alias));
-            }
+        else {
+            return null;
         }
     }
 
     @Override
-    public boolean call(LinkedHashMap<String, Object> inputDataMap) {
-        return execute(inputDataMap);
+    @NotNull
+    public MetaClass getMetaClass() {
+        return metaClass;
+    }
+
+    @Override
+    public void setMetaClass(@Nullable MetaClass metaClass) {
+        this.metaClass = metaClass == null ? InvokerHelper.getMetaClass(this.getClass()) : metaClass;
     }
 }

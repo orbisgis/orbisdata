@@ -38,7 +38,6 @@ package org.orbisgis.orbisdata.datamanager.jdbc.resultset;
 
 import org.orbisgis.commons.annotations.NotNull;
 import org.orbisgis.commons.annotations.Nullable;
-import org.orbisgis.orbisdata.datamanager.api.dataset.IJdbcTable;
 import org.orbisgis.orbisdata.datamanager.api.dataset.IJdbcTable.RSConcurrency;
 import org.orbisgis.orbisdata.datamanager.api.dataset.IJdbcTable.RSHoldability;
 import org.orbisgis.orbisdata.datamanager.api.dataset.IJdbcTable.RSType;

@@ -36,7 +36,6 @@
  */
 package org.orbisgis.orbisdata.datamanager.jdbc.postgis;
 
-import org.h2gis.postgis_jts.StatementWrapper;
 import org.orbisgis.commons.annotations.NotNull;
 import org.orbisgis.commons.annotations.Nullable;
 import org.orbisgis.orbisdata.datamanager.api.dataset.DataBaseType;

@@ -87,8 +87,8 @@ public class H2GISTests {
     public void getTableTest() throws SQLException {
         H2GIS h2gis = H2GIS.open(
                 "./target/openH2GIS2_"+ UUID.randomUUID().toString().replaceAll("-", "_"), "sa", "sa");
-        h2gis.execute("DROP TABLE IF EXISTS h2gis; CREATE TABLE h2gis (id int, the_geom geometry(point));" +
-                "insert into h2gis values (1, 'POINT(10 10)'::GEOMETRY), (2, 'POINT(1 1)'::GEOMETRY);");
+        h2gis.execute("DROP TABLE IF EXISTS h2gis; CREATE TABLE h2gis (id int, the_geom geometry(point), str VARCHAR);" +
+                "insert into h2gis values (1, 'POINT(10 10)'::GEOMETRY, 'toto'), (2, 'POINT(1 1)'::GEOMETRY, 'tata');");
 
         IJdbcTable.RSType[] types = {TYPE_FORWARD_ONLY, TYPE_SCROLL_INSENSITIVE, TYPE_SCROLL_SENSITIVE};
         IJdbcTable.RSConcurrency[] concurs = {CONCUR_READ_ONLY, CONCUR_UPDATABLE};
@@ -108,6 +108,28 @@ public class H2GISTests {
                     assertEquals(2, values.size());
                     assertEquals("POINT (10 10)", values.get(0));
                     assertEquals("POINT (1 1)", values.get(1));
+                }
+            }
+        }
+
+        for(IJdbcTable.RSType type : types) {
+            for (IJdbcTable.RSConcurrency concur : concurs) {
+                for (IJdbcTable.RSHoldability hold : holds) {
+                    values.clear();
+                    h2gis.getSpatialTable("h2gis", type, concur, hold).eachRow(new Closure(null) {
+                        @Override
+                        public Object call(Object argument) {
+                            try {
+                                values.add(((ITable)argument).getString("str").toString());
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                            return argument;
+                        }
+                    });
+                    assertEquals(2, values.size());
+                    assertEquals("toto", values.get(0));
+                    assertEquals("tata", values.get(1));
                 }
             }
         }

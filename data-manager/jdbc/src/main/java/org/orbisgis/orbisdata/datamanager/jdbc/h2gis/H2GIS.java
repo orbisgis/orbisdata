@@ -42,7 +42,6 @@ import org.h2gis.functions.factory.H2GISFunctions;
 import org.h2gis.functions.io.utility.FileUtil;
 import org.h2gis.utilities.GeometryTableUtilities;
 import org.h2gis.utilities.JDBCUtilities;
-import org.h2gis.utilities.wrapper.StatementWrapper;
 import org.orbisgis.commons.annotations.NotNull;
 import org.orbisgis.commons.annotations.Nullable;
 import org.orbisgis.orbisdata.datamanager.api.dataset.DataBaseType;

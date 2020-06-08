@@ -36,7 +36,6 @@
  */
 package org.orbisgis.orbisdata.datamanager.jdbc.h2gis;
 
-import org.h2gis.utilities.wrapper.StatementWrapper;
 import org.orbisgis.commons.annotations.NotNull;
 import org.orbisgis.commons.annotations.Nullable;
 import org.orbisgis.orbisdata.datamanager.api.dataset.DataBaseType;

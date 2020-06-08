@@ -249,8 +249,7 @@ class GroovyPostGISTest {
         postGIS.load("target/postgis_imported.csv")
         def concat = ""
         postGIS.getTable "postgis_imported" eachRow { row -> concat += "$row.id $row.the_geom\n" }
-        assertEquals("1 POINT (10 10) POINT (10 10)\n2 POINT (1 1) POINT (1 1)\n", concat)
-        println(concat)
+        assertEquals("1 POINT (10 10)\n2 POINT (1 1)\n", concat)
     }
 
     @Test
@@ -279,14 +278,13 @@ class GroovyPostGISTest {
         def concat = ""
         postGIS.getSpatialTable "postgis_saved" eachRow { row -> concat += "$row.id $row.the_geom $row.geometry\n" }
         assertEquals("1 POINT (10 10) POINT (10 10)\n2 POINT (1 1) POINT (1 1)\n", concat)
-        println(concat)
     }
 
     @Test
     @EnabledIfSystemProperty(named = "test.postgis", matches = "true")
     void testReproject() {
         def postGIS = POSTGIS.open(dbProperties)
-        new File("target/reprojected_table.shp").delete()
+        new File("target/reprojected_table_postgis.shp").delete()
         postGIS.execute("""
                 DROP TABLE IF EXISTS orbisgis;
                 CREATE TABLE orbisgis (id int, the_geom geometry(point, 4326));
@@ -297,10 +295,11 @@ class GroovyPostGISTest {
         def spr = sp.reproject(2154)
         assertNotNull(spr)
         assertThrows(UnsupportedOperationException.class, spr::getSrid);
-        assertTrue(spr.save("target/reprojected_table.shp"))
-        def reprojectedTable = postGIS.load("target/reprojected_table.shp", true).spatialTable
+        assertTrue(spr.save("target/reprojected_table_postgis.shp"))
+        def reprojectedTable = postGIS.load("target/reprojected_table_postgis.shp", true).spatialTable
         assertNotNull(reprojectedTable)
-        assertEquals(2154, reprojectedTable.srid)
+        reprojectedTable.next();
+        assertEquals(2154, reprojectedTable.getGeometry(2).getSRID())
     }
 
     @Test
@@ -315,9 +314,9 @@ class GroovyPostGISTest {
         """)
         def sp = postGIS.select("ST_BUFFER(THE_GEOM, 10) AS THE_GEOM").from("orbisgis").spatialTable
         sp.save("target/query_table_postgis.shp")
-        def queryTable = postGIS.load("target/query_table_postgis.shp")
+        def queryTable = postGIS.load("target/query_table_postgis.shp", true)
         assertEquals 2, queryTable.rowCount
-        assertEquals 4326, queryTable.srid
+        assertEquals 0, queryTable.srid
         assertTrue queryTable.getFirstRow()[1] instanceof MultiPolygon
     }
 

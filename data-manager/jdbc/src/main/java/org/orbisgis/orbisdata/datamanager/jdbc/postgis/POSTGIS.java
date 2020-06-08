@@ -1,7 +1,6 @@
 package org.orbisgis.orbisdata.datamanager.jdbc.postgis;
 
 import org.h2gis.functions.io.utility.FileUtil;
-import org.h2gis.postgis_jts.StatementWrapper;
 import org.h2gis.postgis_jts_osgi.DataSourceFactoryImpl;
 import org.h2gis.utilities.GeometryTableUtilities;
 import org.h2gis.utilities.JDBCUtilities;
@@ -10,7 +9,9 @@ import org.orbisgis.commons.annotations.Nullable;
 import org.orbisgis.orbisdata.datamanager.api.dataset.DataBaseType;
 import org.orbisgis.orbisdata.datamanager.api.dataset.IJdbcSpatialTable;
 import org.orbisgis.orbisdata.datamanager.api.dataset.IJdbcTable;
+import org.orbisgis.orbisdata.datamanager.api.dataset.ISpatialTable;
 import org.orbisgis.orbisdata.datamanager.jdbc.JdbcDataSource;
+import org.orbisgis.orbisdata.datamanager.jdbc.JdbcSpatialTable;
 import org.orbisgis.orbisdata.datamanager.jdbc.TableLocation;
 import org.osgi.service.jdbc.DataSourceFactory;
 import org.slf4j.Logger;
@@ -20,10 +21,7 @@ import javax.sql.DataSource;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.DatabaseMetaData;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -174,88 +172,145 @@ public class POSTGIS extends JdbcDataSource {
     }
 
     @Override
+    @Nullable
     public IJdbcTable getTable(@NotNull String tableName) {
-        Connection connection = getConnection();
-        try {
-            if (!JDBCUtilities.tableExists(connection,
-                    TableLocation.parse(tableName, getDataBaseType().equals(DataBaseType.H2GIS)))) {
-                return null;
-            }
-        } catch (SQLException e) {
-            LOGGER.error("Unable to find table.\n" + e.getLocalizedMessage());
-            return null;
-        }
-        StatementWrapper statement;
-        try {
-            DatabaseMetaData dbdm = connection.getMetaData();
-            int type = ResultSet.TYPE_FORWARD_ONLY;
-            if(dbdm.supportsResultSetType(ResultSet.TYPE_SCROLL_SENSITIVE)){
-                type = ResultSet.TYPE_SCROLL_SENSITIVE;
-            }
-            else if(dbdm.supportsResultSetType(ResultSet.TYPE_SCROLL_INSENSITIVE)){
-                type = ResultSet.TYPE_SCROLL_INSENSITIVE;
-            }
-            statement = (StatementWrapper) connection.createStatement(type, ResultSet.CONCUR_UPDATABLE);
-        } catch (SQLException e) {
-            LOGGER.error("Unable to create Statement.\n" + e.getLocalizedMessage());
-            return null;
-        }
-        String query = String.format("SELECT * FROM %s", tableName);
-        try {
-            TableLocation location = new TableLocation(Objects.requireNonNull(getLocation()).toString(), tableName);
-            Connection con = getConnection();
-            if(con != null && !GeometryTableUtilities.getGeometryColumnNamesAndIndexes(con, location).isEmpty()) {
-                return new PostgisSpatialTable(new TableLocation(getLocation().toString(), tableName), query, statement, this);
-            }
-        } catch (SQLException e) {
-            LOGGER.error("Unable to check if table '" + tableName + "' contains geometric fields.\n" +
-                    e.getLocalizedMessage());
-        }
-        return new PostgisTable(new TableLocation(getLocation().toString(), tableName), query, statement, this);
+        return getTable(tableName, null, null, null);
     }
 
     @Override
-    public IJdbcSpatialTable getSpatialTable(@NotNull String tableName) {
+    @Nullable
+    public IJdbcTable getTable(@NotNull String tableName, IJdbcTable.RSType resultSetType, IJdbcTable.RSConcurrency resultSetConcurrency) {
+        return getTable(tableName, resultSetType, resultSetConcurrency, null);
+    }
+
+    @Override
+    @Nullable
+    public IJdbcTable getTable(@NotNull String tableName, IJdbcTable.RSType resultSetType,
+                               IJdbcTable.RSConcurrency resultSetConcurrency, IJdbcTable.RSHoldability resultSetHoldability) {
         Connection connection = getConnection();
+        String name = org.h2gis.utilities.TableLocation.parse(tableName, getDataBaseType().equals(DataBaseType.H2GIS))
+                .toString(getDataBaseType().equals(DataBaseType.H2GIS));
         try {
-            if (!JDBCUtilities.tableExists(connection,
-                    TableLocation.parse(tableName, getDataBaseType().equals(DataBaseType.H2GIS)))) {
+            if (!JDBCUtilities.tableExists(connection, org.h2gis.utilities.TableLocation.parse(name, true))) {
                 return null;
             }
         } catch (SQLException e) {
             LOGGER.error("Unable to find table.\n" + e.getLocalizedMessage());
             return null;
         }
-        StatementWrapper statement;
+        Statement statement;
         try {
-            DatabaseMetaData dbdm = connection.getMetaData();
-            int type = ResultSet.TYPE_FORWARD_ONLY;
-            if(dbdm.supportsResultSetType(ResultSet.TYPE_SCROLL_SENSITIVE)){
-                type = ResultSet.TYPE_SCROLL_SENSITIVE;
-            }
-            else if(dbdm.supportsResultSetType(ResultSet.TYPE_SCROLL_INSENSITIVE)){
-                type = ResultSet.TYPE_SCROLL_INSENSITIVE;
-            }
-            statement = (StatementWrapper) connection.createStatement(type, ResultSet.CONCUR_UPDATABLE);
+            statement = getStatement(connection, resultSetType, resultSetConcurrency, resultSetHoldability);
         } catch (SQLException e) {
             LOGGER.error("Unable to create Statement.\n" + e.getLocalizedMessage());
             return null;
         }
-        String query = String.format("SELECT * FROM %s", tableName);
+        String query = String.format("SELECT * FROM %s", name);
         try {
-            TableLocation location = new TableLocation(Objects.requireNonNull(getLocation()).toString(), tableName);
+            TableLocation location = new TableLocation(Objects.requireNonNull(getLocation()).toString(), name);
             Connection con = getConnection();
-            if(con != null &&
-                    !GeometryTableUtilities.getGeometryColumnNamesAndIndexes(
-                            con, new TableLocation(location.toString(), tableName)).isEmpty()) {
-                return new PostgisSpatialTable(new TableLocation(this.getLocation().toString(), tableName), query, statement, this);
+            if(con != null && !GeometryTableUtilities.getGeometryColumnNamesAndIndexes(con, location).isEmpty()) {
+                return new PostgisSpatialTable(new TableLocation(this.getLocation().toString(), name), query, statement, this);
             }
         } catch (SQLException e) {
-            LOGGER.error("Unable to check if table '" + tableName + "' contains geometric fields.\n" +
+            LOGGER.error("Unable to check if table '" + name + "' contains geometric fields.\n" +
                     e.getLocalizedMessage());
         }
-        LOGGER.error("The table '" + tableName + "' is not a spatial table.");
-        return null;
+        return new PostgisTable(new TableLocation(this.getLocation().toString(), name), query, statement, this);
+    }
+
+    /**
+     * Return a {@link Statement} with the given options.
+     *
+     * @param connection           Database {@link Connection}.
+     * @param resultSetType        Type of the resultset.
+     * @param resultSetConcurrency Concurrency of the resultset.
+     * @param resultSetHoldability Holdability of the resultset.
+     * @return A {@link Statement} with the given options.
+     * @throws SQLException
+     */
+    private Statement getStatement(Connection connection, IJdbcTable.RSType resultSetType, IJdbcTable.RSConcurrency resultSetConcurrency,
+                                   IJdbcTable.RSHoldability resultSetHoldability) throws SQLException {
+        if(connection == null || (resultSetType == null ^ resultSetConcurrency == null)){
+            return null;
+        }
+        else if(resultSetType == null) {
+            DatabaseMetaData dbdm = connection.getMetaData();
+            int type = ResultSet.TYPE_FORWARD_ONLY;
+            if (dbdm.supportsResultSetType(ResultSet.TYPE_SCROLL_SENSITIVE)) {
+                type = ResultSet.TYPE_SCROLL_SENSITIVE;
+            } else if (dbdm.supportsResultSetType(ResultSet.TYPE_SCROLL_INSENSITIVE)) {
+                type = ResultSet.TYPE_SCROLL_INSENSITIVE;
+            }
+            return connection.createStatement(type, ResultSet.CONCUR_UPDATABLE);
+        }
+        else {
+            int type = 0;
+            switch (resultSetType) {
+                case TYPE_FORWARD_ONLY:
+                    type = ResultSet.TYPE_FORWARD_ONLY;
+                    break;
+                case TYPE_SCROLL_SENSITIVE:
+                    type = ResultSet.TYPE_SCROLL_SENSITIVE;
+                    break;
+                case TYPE_SCROLL_INSENSITIVE:
+                    type = ResultSet.TYPE_SCROLL_INSENSITIVE;
+                    break;
+            }
+            int concurrency = 0;
+            switch (resultSetConcurrency) {
+                case CONCUR_READ_ONLY:
+                    concurrency = ResultSet.CONCUR_READ_ONLY;
+                    break;
+                case CONCUR_UPDATABLE:
+                    concurrency = ResultSet.CONCUR_UPDATABLE;
+                    break;
+            }
+            if(resultSetHoldability == null) {
+                return connection.createStatement(type, concurrency);
+            }
+            else {
+                int holdability = 0;
+                switch (resultSetHoldability) {
+                    case CLOSE_CURSORS_AT_COMMIT:
+                        holdability = ResultSet.CLOSE_CURSORS_AT_COMMIT;
+                        break;
+                    case HOLD_CURSORS_OVER_COMMIT:
+                        holdability = ResultSet.HOLD_CURSORS_OVER_COMMIT;
+                        break;
+                }
+                return connection.createStatement(type, concurrency, holdability);
+            }
+        }
+    }
+
+
+    @Override
+    @Nullable
+    public IJdbcSpatialTable getSpatialTable(@NotNull String tableName) {
+        return getSpatialTable(tableName, null, null, null);
+    }
+
+    @Override
+    @Nullable
+    public IJdbcSpatialTable getSpatialTable(@NotNull String tableName, IJdbcTable.RSType resultSetType, IJdbcTable.RSConcurrency resultSetConcurrency) {
+        return getSpatialTable(tableName, resultSetType, resultSetConcurrency, null);
+    }
+    @Override
+    @Nullable
+    public IJdbcSpatialTable getSpatialTable(@NotNull String tableName, IJdbcTable.RSType resultSetType, IJdbcTable.RSConcurrency resultSetConcurrency,
+                                             IJdbcTable.RSHoldability resultSetHoldability) {
+        IJdbcTable table = getTable(tableName);
+        if (table instanceof ISpatialTable) {
+            return (JdbcSpatialTable) table;
+        } else {
+            String name = "";
+            if(table != null){
+                name = "'" + table.getName() + "' ";
+            }
+            LOGGER.error("The table " + name + "is not a spatial table.");
+            return null;
+        }
     }
 
     @Override

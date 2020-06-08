@@ -52,6 +52,7 @@ import org.slf4j.LoggerFactory;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.sql.Statement;
 
 /**
  * Implementation of {@link ISpatialTable} for H2GIS.
@@ -72,7 +73,7 @@ public class H2gisSpatialTable extends JdbcSpatialTable {
      * @param jdbcDataSource DataSource to use for the creation of the resultSet.
      */
     public H2gisSpatialTable(@Nullable TableLocation tableLocation, @NotNull String baseQuery,
-                             @NotNull StatementWrapper statement, @NotNull JdbcDataSource jdbcDataSource) {
+                             @NotNull Statement statement, @NotNull JdbcDataSource jdbcDataSource) {
         super(DataBaseType.H2GIS, jdbcDataSource, tableLocation, statement, baseQuery);
     }
 
@@ -99,10 +100,10 @@ public class H2gisSpatialTable extends JdbcSpatialTable {
     @Override
     public Object asType(@NotNull Class<?> clazz) {
         if (ISpatialTable.class.isAssignableFrom(clazz)) {
-            return new H2gisSpatialTable(getTableLocation(), getBaseQuery(), (StatementWrapper) getStatement(),
+            return new H2gisSpatialTable(getTableLocation(), getBaseQuery(), getStatement(),
                     getJdbcDataSource());
         } else if (ITable.class.isAssignableFrom(clazz)) {
-            return new H2gisTable(getTableLocation(), getBaseQuery(), (StatementWrapper) getStatement(),
+            return new H2gisTable(getTableLocation(), getBaseQuery(), getStatement(),
                     getJdbcDataSource());
         } else {
             return super.asType(clazz);

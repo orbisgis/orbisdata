@@ -167,6 +167,60 @@ public abstract class JdbcTable extends DefaultResultSet implements IJdbcTable<S
         return resultSet;
     }
 
+    protected ResultSet getResultSet(RSType resultSetType, RSConcurrency resultSetConcurrency,
+                                     RSHoldability resultSetHoldability) {
+        if (resultSet == null) {
+            try {
+                int type = 0;
+                switch (resultSetType) {
+                    case TYPE_FORWARD_ONLY:
+                        type = ResultSet.TYPE_FORWARD_ONLY;
+                        break;
+                    case TYPE_SCROLL_SENSITIVE:
+                        type = ResultSet.TYPE_SCROLL_SENSITIVE;
+                        break;
+                    case TYPE_SCROLL_INSENSITIVE:
+                        type = ResultSet.TYPE_SCROLL_INSENSITIVE;
+                        break;
+                }
+                int concurrency = 0;
+                switch (resultSetConcurrency) {
+                    case CONCUR_READ_ONLY:
+                        concurrency = ResultSet.CONCUR_READ_ONLY;
+                        break;
+                    case CONCUR_UPDATABLE:
+                        concurrency = ResultSet.CONCUR_UPDATABLE;
+                        break;
+                }
+                if(resultSetHoldability == null) {
+                    resultSet = getJdbcDataSource()
+                            .getConnection()
+                            .createStatement(type, concurrency)
+                            .executeQuery(getBaseQuery());
+                }
+                else {
+                    int holdability = 0;
+                    switch (resultSetHoldability) {
+                        case CLOSE_CURSORS_AT_COMMIT:
+                            holdability = ResultSet.CLOSE_CURSORS_AT_COMMIT;
+                            break;
+                        case HOLD_CURSORS_OVER_COMMIT:
+                            holdability = ResultSet.HOLD_CURSORS_OVER_COMMIT;
+                            break;
+                    }
+                    resultSet = getJdbcDataSource()
+                            .getConnection()
+                            .createStatement(type, concurrency, holdability)
+                            .executeQuery(getBaseQuery());
+                }
+            } catch (SQLException e) {
+                LOGGER.error("Unable to execute the query '" + getBaseQuery() + "'.\n" + e.getLocalizedMessage());
+                return null;
+            }
+        }
+        return resultSet;
+    }
+
     /**
      * Return the {@link ResultSet} with a limit.
      *

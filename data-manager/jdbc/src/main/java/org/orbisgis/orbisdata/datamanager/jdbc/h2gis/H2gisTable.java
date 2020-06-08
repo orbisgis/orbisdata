@@ -46,6 +46,8 @@ import org.orbisgis.orbisdata.datamanager.jdbc.JdbcDataSource;
 import org.orbisgis.orbisdata.datamanager.jdbc.JdbcTable;
 import org.orbisgis.orbisdata.datamanager.jdbc.TableLocation;
 
+import java.sql.Statement;
+
 /**
  * @author Erwan Bocher (CNRS)
  * @author Sylvain PALOMINOS (UBS 2018-2019)
@@ -61,17 +63,17 @@ public class H2gisTable extends JdbcTable {
      * @param jdbcDataSource DataSource to use for the creation of the resultSet.
      */
     public H2gisTable(@Nullable TableLocation tableLocation, @NotNull String baseQuery,
-                      @NotNull StatementWrapper statement, @NotNull JdbcDataSource jdbcDataSource) {
+                      @NotNull Statement statement, @NotNull JdbcDataSource jdbcDataSource) {
         super(DataBaseType.H2GIS, jdbcDataSource, tableLocation, statement, baseQuery);
     }
 
     @Override
     public Object asType(@NotNull Class<?> clazz) {
         if (ISpatialTable.class.isAssignableFrom(clazz)) {
-            return new H2gisSpatialTable(getTableLocation(), getBaseQuery(), (StatementWrapper) getStatement(),
+            return new H2gisSpatialTable(getTableLocation(), getBaseQuery(), getStatement(),
                     getJdbcDataSource());
         } else if (ITable.class.isAssignableFrom(clazz)) {
-            return new H2gisTable(getTableLocation(), getBaseQuery(), (StatementWrapper) getStatement(),
+            return new H2gisTable(getTableLocation(), getBaseQuery(), getStatement(),
                     getJdbcDataSource());
         } else {
             return super.asType(clazz);

@@ -880,6 +880,16 @@ class JdbcDataSourceTest {
         }
 
         @Override
+        public IJdbcTable getTable(String tableName, IJdbcTable.RSType resultSetType, IJdbcTable.RSConcurrency resultSetConcurrency) {
+            return null;
+        }
+
+        @Override
+        public IJdbcTable getTable(String tableName, IJdbcTable.RSType resultSetType, IJdbcTable.RSConcurrency resultSetConcurrency, IJdbcTable.RSHoldability resultSetHoldability) {
+            return null;
+        }
+
+        @Override
         public IJdbcSpatialTable getSpatialTable(@NotNull String s) {
             ConnectionWrapper connectionWrapper = new ConnectionWrapper(this.getConnection());
             try {
@@ -899,6 +909,16 @@ class JdbcDataSourceTest {
             } catch (SQLException e) {
                 e.printStackTrace();
             }
+            return null;
+        }
+
+        @Override
+        public IJdbcSpatialTable getSpatialTable(String tableName, IJdbcTable.RSType resultSetType, IJdbcTable.RSConcurrency resultSetConcurrency) {
+            return null;
+        }
+
+        @Override
+        public IJdbcSpatialTable getSpatialTable(String tableName, IJdbcTable.RSType resultSetType, IJdbcTable.RSConcurrency resultSetConcurrency, IJdbcTable.RSHoldability resultSetHoldability) {
             return null;
         }
 

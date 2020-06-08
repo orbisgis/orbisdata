@@ -43,6 +43,9 @@ import org.orbisgis.commons.annotations.Nullable;
 import org.orbisgis.orbisdata.datamanager.api.dataset.DataBaseType;
 import org.orbisgis.orbisdata.datamanager.api.dataset.IJdbcSpatialTable;
 import org.orbisgis.orbisdata.datamanager.api.dataset.IJdbcTable;
+import org.orbisgis.orbisdata.datamanager.api.dataset.IJdbcTable.RSConcurrency;
+import org.orbisgis.orbisdata.datamanager.api.dataset.IJdbcTable.RSHoldability;
+import org.orbisgis.orbisdata.datamanager.api.dataset.IJdbcTable.RSType;
 import org.orbisgis.orbisdata.datamanager.api.dataset.ISpatialTable;
 
 import javax.sql.DataSource;
@@ -78,6 +81,32 @@ public interface IJdbcDataSource extends IDataSource<ResultSet>, GroovyObject, D
     IJdbcTable getTable(@NotNull String tableName);
 
     /**
+     * Return the {@link IJdbcTable} contained by the database with the given name and the given option.
+     * If the table contains a geometric field, return a {@link ISpatialTable}.
+     *
+     * @param tableName            Name of the requested table.
+     * @param resultSetType        Type of the wrapped resultset in the table.
+     * @param resultSetConcurrency Concurrency of the wrapped resultset in the table.
+     * @return The {@link IJdbcTable} with the given name or null if no table is found.
+     */
+    IJdbcTable getTable(@NotNull String tableName, RSType resultSetType,
+                        RSConcurrency resultSetConcurrency);
+
+
+    /**
+     * Return the {@link IJdbcTable} contained by the database with the given name and the given option.
+     * If the table contains a geometric field, return a {@link ISpatialTable}.
+     *
+     * @param tableName            Name of the requested table.
+     * @param resultSetType        Type of the wrapped resultset in the table.
+     * @param resultSetConcurrency Concurrency of the wrapped resultset in the table.
+     * @param resultSetHoldability Holdability of the wrapped resultset in the table.
+     * @return The {@link IJdbcTable} with the given name or null if no table is found.
+     */
+    IJdbcTable getTable(@NotNull String tableName, RSType resultSetType,
+                        RSConcurrency resultSetConcurrency, RSHoldability resultSetHoldability);
+
+    /**
      * Return a {@link ISpatialTable} contained by the database with the given name. If the table doesn't contains a
      * geometric field, return null;
      *
@@ -87,6 +116,32 @@ public interface IJdbcDataSource extends IDataSource<ResultSet>, GroovyObject, D
      */
     @Nullable
     IJdbcSpatialTable getSpatialTable(@NotNull String tableName);
+
+    /**
+     * Return a {@link ISpatialTable} contained by the database with the given name and the given option.
+     * If the table doesn't contains a geometric field, return null;
+     *
+     * @param tableName            Name of the requested table.
+     * @param resultSetType        Type of the wrapped resultset in the table.
+     * @param resultSetConcurrency Concurrency of the wrapped resultset in the table.
+     * @return The {@link ISpatialTable} with the given name or null if no table is found.
+     */
+    IJdbcSpatialTable getSpatialTable(@NotNull String tableName, RSType resultSetType,
+                        RSConcurrency resultSetConcurrency);
+
+
+    /**
+     * Return a {@link ISpatialTable} contained by the database with the given name and the given option.
+     * If the table doesn't contains a geometric field, return null;
+     *
+     * @param tableName            Name of the requested table.
+     * @param resultSetType        Type of the wrapped resultset in the table.
+     * @param resultSetConcurrency Concurrency of the wrapped resultset in the table.
+     * @param resultSetHoldability Holdability of the wrapped resultset in the table.
+     * @return The {@link ISpatialTable} with the given name or null if no table is found.
+     */
+    IJdbcSpatialTable getSpatialTable(@NotNull String tableName, RSType resultSetType,
+                        RSConcurrency resultSetConcurrency, RSHoldability resultSetHoldability);
 
     /**
      * Get all table names from the underlying database.

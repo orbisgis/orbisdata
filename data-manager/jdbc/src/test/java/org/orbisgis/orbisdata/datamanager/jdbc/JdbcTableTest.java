@@ -938,6 +938,16 @@ class JdbcTableTest {
         }
 
         @Override
+        public IJdbcTable getTable(String tableName, IJdbcTable.RSType resultSetType, IJdbcTable.RSConcurrency resultSetConcurrency) {
+            return null;
+        }
+
+        @Override
+        public IJdbcTable getTable(String tableName, IJdbcTable.RSType resultSetType, IJdbcTable.RSConcurrency resultSetConcurrency, IJdbcTable.RSHoldability resultSetHoldability) {
+            return null;
+        }
+
+        @Override
         public IJdbcSpatialTable getSpatialTable(@NotNull String tableName) {
             try {
                 if (!JDBCUtilities.tableExists(connection,
@@ -956,6 +966,16 @@ class JdbcTableTest {
             String query = String.format("SELECT * FROM %s", tableName);
             return new H2gisSpatialTable(new TableLocation(BASE_DATABASE, tableName), query,
                     new StatementWrapper(statement, new ConnectionWrapper(connection)), this);
+        }
+
+        @Override
+        public IJdbcSpatialTable getSpatialTable(String tableName, IJdbcTable.RSType resultSetType, IJdbcTable.RSConcurrency resultSetConcurrency) {
+            return null;
+        }
+
+        @Override
+        public IJdbcSpatialTable getSpatialTable(String tableName, IJdbcTable.RSType resultSetType, IJdbcTable.RSConcurrency resultSetConcurrency, IJdbcTable.RSHoldability resultSetHoldability) {
+            return null;
         }
 
         @NotNull

@@ -299,6 +299,16 @@ public class JdbcSpatialTableTest {
         }
 
         @Override
+        public IJdbcTable getTable(String tableName, IJdbcTable.RSType resultSetType, IJdbcTable.RSConcurrency resultSetConcurrency) {
+            return null;
+        }
+
+        @Override
+        public IJdbcTable getTable(String tableName, IJdbcTable.RSType resultSetType, IJdbcTable.RSConcurrency resultSetConcurrency, IJdbcTable.RSHoldability resultSetHoldability) {
+            return null;
+        }
+
+        @Override
         public IJdbcSpatialTable getSpatialTable(@NotNull String tableName) {
             String name = TableLocation.parse(tableName, getDataBaseType().equals(DataBaseType.H2GIS)).toString(getDataBaseType().equals(DataBaseType.H2GIS));
             try {
@@ -316,6 +326,16 @@ public class JdbcSpatialTableTest {
             }
             String query = String.format("SELECT * FROM %s", name);
             return new DummyJdbcSpatialTable(new TableLocation(null, name), query, statement, this);
+        }
+
+        @Override
+        public IJdbcSpatialTable getSpatialTable(String tableName, IJdbcTable.RSType resultSetType, IJdbcTable.RSConcurrency resultSetConcurrency) {
+            return null;
+        }
+
+        @Override
+        public IJdbcSpatialTable getSpatialTable(String tableName, IJdbcTable.RSType resultSetType, IJdbcTable.RSConcurrency resultSetConcurrency, IJdbcTable.RSHoldability resultSetHoldability) {
+            return null;
         }
 
         @NotNull

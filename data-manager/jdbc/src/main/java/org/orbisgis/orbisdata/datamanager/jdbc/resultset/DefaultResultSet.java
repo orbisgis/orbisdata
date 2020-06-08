@@ -38,6 +38,10 @@ package org.orbisgis.orbisdata.datamanager.jdbc.resultset;
 
 import org.orbisgis.commons.annotations.NotNull;
 import org.orbisgis.commons.annotations.Nullable;
+import org.orbisgis.orbisdata.datamanager.api.dataset.IJdbcTable;
+import org.orbisgis.orbisdata.datamanager.api.dataset.IJdbcTable.RSConcurrency;
+import org.orbisgis.orbisdata.datamanager.api.dataset.IJdbcTable.RSHoldability;
+import org.orbisgis.orbisdata.datamanager.api.dataset.IJdbcTable.RSType;
 
 import java.io.InputStream;
 import java.io.Reader;
@@ -61,6 +65,18 @@ public abstract class DefaultResultSet implements ResultSet {
      */
     @Nullable
     protected abstract ResultSet getResultSet();
+
+    /**
+     * Return the contained ResultSet with the given options.
+     *
+     * @param resultSetType        Type of the wrapped resultset in the table.
+     * @param resultSetConcurrency Concurrency of the wrapped resultset in the table.
+     * @param resultSetHoldability Holdability of the wrapped resultset in the table.
+     * @return The table ResultSet.
+     */
+    @Nullable
+    protected abstract ResultSet getResultSet(RSType resultSetType, RSConcurrency resultSetConcurrency,
+                                              RSHoldability resultSetHoldability);
 
     @Override
     public boolean next() throws SQLException {

@@ -56,6 +56,19 @@ import java.util.List;
 public interface IJdbcTable<T> extends ITable<ResultSet, T>, ResultSet, IWhereBuilderOrOptionBuilder {
 
     /**
+     * Enumeration of the resultSet types.
+     */
+    enum RSType {TYPE_FORWARD_ONLY, TYPE_SCROLL_INSENSITIVE, TYPE_SCROLL_SENSITIVE}
+    /**
+     * Enumeration of the resultSet consurency.
+     */
+    enum RSConcurrency {CONCUR_READ_ONLY, CONCUR_UPDATABLE}
+    /**
+     * Enumeration of the resultSet holdability.
+     */
+    enum RSHoldability {HOLD_CURSORS_OVER_COMMIT, CLOSE_CURSORS_AT_COMMIT}
+
+    /**
      * {@link String} location/name of the query built table
      */
     String QUERY_LOCATION = "query";

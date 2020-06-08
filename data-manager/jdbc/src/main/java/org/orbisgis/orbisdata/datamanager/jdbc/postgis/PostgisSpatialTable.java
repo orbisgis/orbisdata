@@ -51,6 +51,7 @@ import org.slf4j.LoggerFactory;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.sql.Statement;
 
 /**
  * Implementation of {@link ISpatialTable} for PostGIG.
@@ -71,7 +72,7 @@ public class PostgisSpatialTable extends JdbcSpatialTable {
      * @param jdbcDataSource DataSource to use for the creation of the resultSet.
      */
     public PostgisSpatialTable(@Nullable TableLocation tableLocation, @NotNull String baseQuery,
-                               @NotNull StatementWrapper statement, @NotNull JdbcDataSource jdbcDataSource) {
+                               @NotNull Statement statement, @NotNull JdbcDataSource jdbcDataSource) {
         super(DataBaseType.H2GIS, jdbcDataSource, tableLocation, statement, baseQuery);
     }
 

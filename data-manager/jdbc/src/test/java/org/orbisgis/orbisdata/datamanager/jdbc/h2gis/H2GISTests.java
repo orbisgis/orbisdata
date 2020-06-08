@@ -49,12 +49,14 @@ import org.osgi.service.jdbc.DataSourceFactory;
 import java.io.File;
 import java.sql.SQLException;
 import java.sql.Time;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.orbisgis.orbisdata.datamanager.api.dataset.IJdbcTable.RSConcurrency.CONCUR_READ_ONLY;
+import static org.orbisgis.orbisdata.datamanager.api.dataset.IJdbcTable.RSConcurrency.CONCUR_UPDATABLE;
+import static org.orbisgis.orbisdata.datamanager.api.dataset.IJdbcTable.RSHoldability.CLOSE_CURSORS_AT_COMMIT;
+import static org.orbisgis.orbisdata.datamanager.api.dataset.IJdbcTable.RSHoldability.HOLD_CURSORS_OVER_COMMIT;
+import static org.orbisgis.orbisdata.datamanager.api.dataset.IJdbcTable.RSType.*;
 import static org.orbisgis.orbisdata.datamanager.api.dsl.IOptionBuilder.Order.DESC;
 
 /**
@@ -79,6 +81,36 @@ public class H2GISTests {
         assertNotNull(H2GIS.open(ds));
         assertNotNull(H2GIS.open(ds).getDataSource());
         assertFalse(H2GIS.open(ds).getTableNames().isEmpty());
+    }
+
+    @Test
+    public void getTableTest() throws SQLException {
+        H2GIS h2gis = H2GIS.open(
+                "./target/openH2GIS2_"+ UUID.randomUUID().toString().replaceAll("-", "_"), "sa", "sa");
+        h2gis.execute("DROP TABLE IF EXISTS h2gis; CREATE TABLE h2gis (id int, the_geom geometry(point));" +
+                "insert into h2gis values (1, 'POINT(10 10)'::GEOMETRY), (2, 'POINT(1 1)'::GEOMETRY);");
+
+        IJdbcTable.RSType[] types = {TYPE_FORWARD_ONLY, TYPE_SCROLL_INSENSITIVE, TYPE_SCROLL_SENSITIVE};
+        IJdbcTable.RSConcurrency[] concurs = {CONCUR_READ_ONLY, CONCUR_UPDATABLE};
+        IJdbcTable.RSHoldability[] holds = {null, CLOSE_CURSORS_AT_COMMIT, HOLD_CURSORS_OVER_COMMIT};
+        final ArrayList<String> values = new ArrayList<>();
+        for(IJdbcTable.RSType type : types) {
+            for (IJdbcTable.RSConcurrency concur : concurs) {
+                for (IJdbcTable.RSHoldability hold : holds) {
+                    values.clear();
+                    h2gis.getSpatialTable("h2gis", type, concur, hold).eachRow(new Closure(null) {
+                        @Override
+                        public Object call(Object argument) {
+                            values.add(((ISpatialTable) argument).getGeometry().toString());
+                            return argument;
+                        }
+                    });
+                    assertEquals(2, values.size());
+                    assertEquals("POINT (10 10)", values.get(0));
+                    assertEquals("POINT (1 1)", values.get(1));
+                }
+            }
+        }
     }
 
     @Test

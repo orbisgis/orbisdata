@@ -187,7 +187,7 @@ public abstract class JdbcSpatialTable extends JdbcTable implements IJdbcSpatial
     }
 
     @Override
-    public Envelope getExtend() {
+    public Geometry getExtend() {
         if (getTableLocation() == null) {
             try {
                 Connection con = getJdbcDataSource().getConnection();
@@ -200,19 +200,8 @@ public abstract class JdbcSpatialTable extends JdbcTable implements IJdbcSpatial
                     LOGGER.error("Unable to get the ResultSet.");
                     return null;
                 }
-                List<String> names = new ArrayList<>(GeometryTableUtilities.getGeometryColumnNames(rs0.getMetaData()));
-                if (names.isEmpty()) {
-                    LOGGER.error("There is no geometric field.");
-                    return null;
-                }
+                return GeometryTableUtilities.getEnvelope(rs0);
 
-                ResultSet rs = con.createStatement().executeQuery("SELECT ST_Extent(" +
-                        TableLocation.quoteIdentifier(names.get(0)) + ") ext FROM SELECT" + getBaseQuery());
-                if (rs.next()) {
-                    return ((Geometry) rs.getObject(1)).getEnvelopeInternal();
-                } else {
-                    throw new SQLException("Unable to get the table extent it may be empty");
-                }
             } catch (SQLException e) {
                 LOGGER.error("Unable to get the table estimated extend on ResultSet.", e);
             }
@@ -223,12 +212,7 @@ public abstract class JdbcSpatialTable extends JdbcTable implements IJdbcSpatial
                     LOGGER.error("Unable to get connection for the geometric field.");
                     return null;
                 }
-                List<String> names = new ArrayList<>(GeometryTableUtilities.getGeometryColumnNames(con, getTableLocation()));
-                if (names.isEmpty()) {
-                    LOGGER.error("There is no geometric field.");
-                    return null;
-                }
-                return GeometryTableUtilities.getEnvelope(con, getTableLocation(), names.get(0));
+                return GeometryTableUtilities.getEnvelope(con, getTableLocation());
             } catch (SQLException e) {
                 LOGGER.error("Unable to get the table estimated extend.", e);
             }
@@ -247,12 +231,7 @@ public abstract class JdbcSpatialTable extends JdbcTable implements IJdbcSpatial
                 LOGGER.error("Unable to get connection for the geometric field.");
                 return null;
             }
-            List<String> names = new ArrayList<>(GeometryTableUtilities.getGeometryColumnNames(con, getTableLocation()));
-            if (names.isEmpty()) {
-                LOGGER.error("There is no geometric field.");
-                return null;
-            }
-            return GeometryTableUtilities.getEstimatedExtent(con, getTableLocation(), names.get(0));
+            return GeometryTableUtilities.getEstimatedExtent(con, getTableLocation());
         } catch (SQLException e) {
             LOGGER.error("Unable to get the table estimated extend.", e);
         }

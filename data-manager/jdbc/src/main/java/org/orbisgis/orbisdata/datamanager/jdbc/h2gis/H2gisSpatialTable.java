@@ -126,7 +126,6 @@ public class H2gisSpatialTable extends JdbcSpatialTable {
                     fieldNames[i - 1] = columnName;
                 }
             }
-
             String query = "SELECT " + String.join(",", fieldNames) + " FROM " +
                     (getTableLocation() == null ? "(" + getBaseQuery() + ")" : getTableLocation().toString(true));
             return new H2gisSpatialTable(null, query, (StatementWrapper) getStatement(), getJdbcDataSource());

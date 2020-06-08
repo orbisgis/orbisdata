@@ -364,7 +364,7 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, ISe
             LOGGER.error("No connection, cannot save.");
             return false;
         }
-        return IOMethods.saveAsFile(getConnection(), tableName, filePath, encoding);
+        return IOMethods.saveAsFile(getConnection(), tableName, filePath, encoding, false);
     }
 
     @Override

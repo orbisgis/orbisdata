@@ -72,7 +72,7 @@ public class PostgisSpatialTable extends JdbcSpatialTable {
      */
     public PostgisSpatialTable(@Nullable TableLocation tableLocation, @NotNull String baseQuery,
                                @NotNull StatementWrapper statement, @NotNull JdbcDataSource jdbcDataSource) {
-        super(DataBaseType.H2GIS, jdbcDataSource, tableLocation, statement, baseQuery);
+        super(DataBaseType.POSTGIS, jdbcDataSource, tableLocation, statement, baseQuery);
     }
 
     @Override

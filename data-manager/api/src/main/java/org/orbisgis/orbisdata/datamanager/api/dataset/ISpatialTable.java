@@ -137,7 +137,7 @@ public interface ISpatialTable<T, U> extends ITable<T, U> {
      * @return The full extend {@link Geometry} of the first geometry column of the table.
      */
     @Nullable
-    Envelope getExtend();
+    Geometry getExtend();
 
     /**
      * Return the estimated extend {@link Geometry} of the first geometry column of the table.

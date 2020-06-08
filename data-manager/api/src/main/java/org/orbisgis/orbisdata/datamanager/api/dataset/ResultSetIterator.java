@@ -120,5 +120,4 @@ public class ResultSetIterator implements Iterator<ResultSet> {
         return resultSet;
     }
 
-
 }

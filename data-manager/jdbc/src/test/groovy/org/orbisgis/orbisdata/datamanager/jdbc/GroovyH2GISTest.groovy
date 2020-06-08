@@ -45,6 +45,7 @@ import org.orbisgis.commons.printer.Html
 import org.orbisgis.orbisdata.datamanager.api.dataset.ISpatialTable
 import org.orbisgis.orbisdata.datamanager.api.dataset.ITable
 import org.orbisgis.orbisdata.datamanager.jdbc.h2gis.H2GIS
+import org.orbisgis.orbisdata.datamanager.jdbc.postgis.POSTGIS
 
 import java.sql.SQLException
 import java.sql.Time
@@ -723,5 +724,20 @@ class GroovyH2GISTest {
                 .filter{ it[0]%2 == 1 } //Filter only the odd id row
                 .collect(Collectors.toList()) //Gather data into a list
         assertEquals("[[1, just a string], [3, a last very, ...]]", str2)
+    }
+
+
+    @Test
+    void testEstimateExtent(){
+        def h2GIS = H2GIS.open('./target/orbisgis')
+        h2GIS.execute"""DROP TABLE  IF EXISTS forests;
+                CREATE TABLE forests ( fid INTEGER NOT NULL PRIMARY KEY, name CHARACTER VARYING(64),
+                 boundary GEOMETRY(MULTIPOLYGON, 4326));
+                INSERT INTO forests VALUES(109, 'Green Forest', ST_MPolyFromText( 'MULTIPOLYGON(((28 26,28 0,84 0,
+                84 42,28 26), (52 18,66 23,73 9,48 6,52 18)),((59 18,67 18,67 13,59 13,59 18)))', 4326));"""
+        Geometry geom = h2GIS.getSpatialTable("forests").getEstimatedExtend();
+        assertEquals 4326, geom.SRID
+        assertEquals("POLYGON ((28 0, 28 42, 84 42, 84 0, 28 0))", geom.toString());
+        h2GIS.execute("drop table forests");
     }
 }

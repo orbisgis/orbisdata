@@ -579,7 +579,7 @@ public abstract class JdbcTable extends DefaultResultSet implements IJdbcTable<S
     public boolean save(@NotNull String filePath, String encoding) {
         try {
             String toSave = getTableLocation() == null ? "(" + getBaseQuery() + ")" : getTableLocation().toString(getDbType());
-            return IOMethods.saveAsFile(getStatement().getConnection(), toSave, filePath, encoding);
+            return IOMethods.saveAsFile(getStatement().getConnection(), toSave, filePath, encoding, false);
 
         } catch (SQLException e) {
             LOGGER.error("Cannot save the table.\n", e);

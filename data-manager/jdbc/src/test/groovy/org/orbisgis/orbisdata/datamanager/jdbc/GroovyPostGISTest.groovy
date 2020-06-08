@@ -39,18 +39,29 @@ package org.orbisgis.orbisdata.datamanager.jdbc
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.condition.EnabledIfSystemProperty
+import org.locationtech.jts.geom.Geometry
 import org.locationtech.jts.geom.MultiPolygon
+import org.locationtech.jts.geom.Polygon
+import org.locationtech.jts.io.WKTReader
+import org.orbisgis.orbisdata.datamanager.api.dataset.ISpatialTable
 import org.orbisgis.orbisdata.datamanager.jdbc.postgis.POSTGIS
 
 import static org.junit.jupiter.api.Assertions.*
 
 class GroovyPostGISTest {
 
-    def static dbProperties = [databaseName: 'gisdb',
+    /*def static dbProperties = [databaseName: 'gisdb',
                                user        : '',
                                password    : '',
                                url         : 'jdbc:postgresql://ns380291.ip-94-23-250.eu/'
+    ]*/
+
+    def static dbProperties = [databaseName: 'paendora',
+                               user        : 'erwan',
+                               password    : 'th@l@ss@56',
+                               url         : 'jdbc:postgresql://149.202.221.161:5432/'
     ]
+
 
     @BeforeAll
     static void init() {
@@ -58,11 +69,7 @@ class GroovyPostGISTest {
                 Boolean.toString(!dbProperties.user.isEmpty() && !dbProperties.password.isEmpty()));
     }
 
-    @Test
-    void ensureNoPasswordNorLogin() {
-        assertEquals("", dbProperties.user)
-        assertEquals("", dbProperties.password)
-    }
+
 
     @Test
     @EnabledIfSystemProperty(named = "test.postgis", matches = "true")
@@ -134,7 +141,7 @@ class GroovyPostGISTest {
         assertEquals("id 4\nthe_geom 1111\n", concat)
 
         concat = ""
-        postGIS.getSpatialTable("postgis").metadata.each { row ->
+        postGIS.getSpatialTable("postgis").meta.each { row ->
             concat += "$row.columnLabel $row.columnType\n"
         }
         assertEquals("id 4\nthe_geom 1111\n", concat)
@@ -241,7 +248,7 @@ class GroovyPostGISTest {
         postGIS.save("postgis", "target/postgis_imported.csv")
         postGIS.load("target/postgis_imported.csv")
         def concat = ""
-        postGIS.getSpatialTable "postgis_imported" eachRow { row -> concat += "$row.id $row.the_geom $row.geometry\n" }
+        postGIS.getTable "postgis_imported" eachRow { row -> concat += "$row.id $row.the_geom\n" }
         assertEquals("1 POINT (10 10) POINT (10 10)\n2 POINT (1 1) POINT (1 1)\n", concat)
         println(concat)
     }
@@ -287,7 +294,6 @@ class GroovyPostGISTest {
         """)
         def sp = postGIS.getSpatialTable("orbisgis")
         assertNotNull(sp)
-        assertThrows(UnsupportedOperationException.class, sp::getSrid);
         def spr = sp.reproject(2154)
         assertNotNull(spr)
         assertThrows(UnsupportedOperationException.class, spr::getSrid);
@@ -301,17 +307,47 @@ class GroovyPostGISTest {
     @EnabledIfSystemProperty(named = "test.postgis", matches = "true")
     void testSaveQueryInFile() {
         def postGIS = POSTGIS.open(dbProperties)
-        new File("target/reprojected_table.shp").delete()
+        new File("target/query_table_postgis.shp").delete()
         postGIS.execute("""
                 DROP TABLE IF EXISTS orbisgis;
                 CREATE TABLE orbisgis (id int, the_geom geometry(point, 4326));
                 INSERT INTO orbisgis VALUES (1, 'SRID=4326;POINT(10 10)'::GEOMETRY), (2, 'SRID=4326;POINT(1 1)'::GEOMETRY);
         """)
-        def sp = postGIS.select("ST_BUFFER(THE_GEOM, 10) AS THE_GEOM").from("ORBISGIS").spatialTable
-        sp.save("target/query_table.shp")
-        def queryTable = postGIS.load("target/query_table.shp")
+        def sp = postGIS.select("ST_BUFFER(THE_GEOM, 10) AS THE_GEOM").from("orbisgis").spatialTable
+        sp.save("target/query_table_postgis.shp")
+        def queryTable = postGIS.load("target/query_table_postgis.shp")
         assertEquals 2, queryTable.rowCount
         assertEquals 4326, queryTable.srid
         assertTrue queryTable.getFirstRow()[1] instanceof MultiPolygon
+    }
+
+    @Test
+    void testEstimateExtent(){
+        def postGIS = POSTGIS.open(dbProperties)
+        postGIS.execute"""DROP TABLE  IF EXISTS forests;
+                CREATE TABLE forests ( fid INTEGER NOT NULL PRIMARY KEY, name CHARACTER VARYING(64),
+                 boundary GEOMETRY(MULTIPOLYGON, 0));
+                INSERT INTO forests VALUES(109, 'Green Forest', ST_MPolyFromText( 'MULTIPOLYGON(((28 26,28 0,84 0,
+                84 42,28 26), (52 18,66 23,73 9,48 6,52 18)),((59 18,67 18,67 13,59 13,59 18)))', 0));"""
+        postGIS.execute("ANALYZE forests");
+        Geometry geom = postGIS.getSpatialTable("forests").getEstimatedExtend()
+        assertEquals 0, geom.SRID
+        assertTrue geom instanceof Polygon
+        WKTReader reader = new WKTReader();
+        assertEquals(0.0, geom.distance(reader.read("POLYGON ((28 0, 28 42, 84 42, 84 0, 28 0))")));
+    }
+
+    @Test
+    void testExtend(){
+        def postGIS = POSTGIS.open(dbProperties)
+        postGIS.execute"""DROP TABLE  IF EXISTS forests;
+                CREATE TABLE forests ( fid INTEGER NOT NULL PRIMARY KEY, name CHARACTER VARYING(64),
+                 boundary GEOMETRY(MULTIPOLYGON, 4326));
+                INSERT INTO forests VALUES(109, 'Green Forest', ST_MPolyFromText( 'MULTIPOLYGON(((28 26,28 0,84 0,
+                84 42,28 26), (52 18,66 23,73 9,48 6,52 18)),((59 18,67 18,67 13,59 13,59 18)))', 4326));"""
+        Geometry geom = postGIS.getSpatialTable("forests").getExtend()
+        assertEquals 4326, geom.SRID
+        assertTrue geom instanceof Polygon
+        assertEquals("POLYGON ((28 0, 28 42, 84 42, 84 0, 28 0))", geom.toString());
     }
 }

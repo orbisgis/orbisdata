@@ -8,6 +8,7 @@ import org.h2gis.functions.io.geojson.GeoJsonDriverFunction;
 import org.h2gis.functions.io.geojson.GeoJsonReaderDriver;
 import org.h2gis.functions.io.gpx.GPXDriverFunction;
 import org.h2gis.functions.io.json.JsonDriverFunction;
+import org.h2gis.functions.io.kml.KMLDriverFunction;
 import org.h2gis.functions.io.osm.OSMDriverFunction;
 import org.h2gis.functions.io.shp.SHPDriverFunction;
 import org.h2gis.functions.io.tsv.TSVDriverFunction;
@@ -64,11 +65,13 @@ public class IOMethods {
                 return new DBFDriverFunction();
             case "kml":
             case "kmz":
+                return new KMLDriverFunction();
             case "osm":
+                return new OSMDriverFunction();
             case "gz":
             case "bz":
             case "gpx":
-                return null;
+                return new GPXDriverFunction();
             default:
                 LOGGER.error("Unsupported file format.\n" +
                         "Supported formats are : [shp, geojson, tsv, csv, dbf, kml, kmz, osm, gz, bz, gpx].");
@@ -94,7 +97,7 @@ public class IOMethods {
      * @return True if the file has been saved, false otherwise.
      */
     public static boolean saveAsFile(@NotNull Connection connection, @NotNull String tableName,
-                                     @NotNull String filePath, @Nullable String encoding) {
+                                     @NotNull String filePath, @Nullable String encoding, @Nullable boolean deleteFile) {
         String enc = encoding;
         boolean isH2 = false;
         try {
@@ -112,7 +115,7 @@ public class IOMethods {
             }
             if (driverFunction != null) {
                 driverFunction.exportTable(connection, isH2 ? tableName.toUpperCase() : tableName, fileToSave,
-                        new EmptyProgressVisitor(), enc);
+                         enc, deleteFile, new EmptyProgressVisitor());
                 return true;
             }
         } catch (SQLException | IOException e) {
@@ -127,40 +130,21 @@ public class IOMethods {
      * @param filePath   the path of the file
      * @param tableName  the name of the table created to store the file
      * @param encoding   an encoding value to read the file
-     * @param delete     true to delete the table if exists
+     * @param deleteTable     true to delete the table if exists
      * @param dataSource the database
      */
-    //TODO reformat the code once all the driver have the same importFile signature
     public static boolean loadFile(@NotNull String filePath, @NotNull String tableName, @Nullable String encoding,
-                                   boolean delete, @NotNull JdbcDataSource dataSource) {
+                                   boolean deleteTable, @NotNull JdbcDataSource dataSource) {
         String enc = encoding;
         Connection connection = dataSource.getConnection();
         File fileToImport = URIUtilities.fileFromString(filePath);
         DriverFunction driverFunction = getDriverFromFile(fileToImport);
         try {
-            if (FileUtil.isExtensionWellFormated(fileToImport, "geojson")) {
-                dataSource.execute("DROP TABLE IF EXISTS " + tableName);
-                GeoJsonReaderDriver driver = new GeoJsonReaderDriver(connection, fileToImport);
-                driver.read(new EmptyProgressVisitor(), tableName);
-                return true;
-            } else if (FileUtil.isExtensionWellFormated(fileToImport, "tsv")) {
-                enc = unsupportedEncoding(enc);
-                driverFunction = new TSVDriverFunction();
-            } else if (FileUtil.isExtensionWellFormated(fileToImport, "osm") ||
-                    FileUtil.isExtensionWellFormated(fileToImport, "gz") ||
-                    FileUtil.isExtensionWellFormated(fileToImport, "bz")) {
-                enc = unsupportedEncoding(enc);
-                driverFunction = new OSMDriverFunction();
-            } else if (FileUtil.isExtensionWellFormated(fileToImport, "gpx")) {
-                enc = unsupportedEncoding(enc);
-                driverFunction = new GPXDriverFunction();
-            }
             if (driverFunction != null) {
-                dataSource.execute("DROP TABLE IF EXISTS " + tableName);
                 if (enc != null) {
-                    driverFunction.importFile(connection, tableName, fileToImport, new EmptyProgressVisitor(), enc);
+                    driverFunction.importFile(connection, tableName, fileToImport,encoding, deleteTable, new EmptyProgressVisitor());
                 } else {
-                    driverFunction.importFile(connection, tableName, fileToImport, new EmptyProgressVisitor(), delete);
+                    driverFunction.importFile(connection, tableName, fileToImport,null, deleteTable, new EmptyProgressVisitor());
                 }
                 return true;
             }

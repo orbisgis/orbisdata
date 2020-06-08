@@ -112,7 +112,7 @@ public class IOMethods {
             }
             if (driverFunction != null) {
                 driverFunction.exportTable(connection, isH2 ? tableName.toUpperCase() : tableName, fileToSave,
-                        new EmptyProgressVisitor(), enc);
+                        enc, new EmptyProgressVisitor());
                 return true;
             }
         } catch (SQLException | IOException e) {
@@ -140,7 +140,7 @@ public class IOMethods {
         try {
             if (FileUtil.isExtensionWellFormated(fileToImport, "geojson")) {
                 dataSource.execute("DROP TABLE IF EXISTS " + tableName);
-                GeoJsonReaderDriver driver = new GeoJsonReaderDriver(connection, fileToImport);
+                GeoJsonReaderDriver driver = new GeoJsonReaderDriver(connection, fileToImport, enc, delete);
                 driver.read(new EmptyProgressVisitor(), tableName);
                 return true;
             } else if (FileUtil.isExtensionWellFormated(fileToImport, "tsv")) {
@@ -158,9 +158,9 @@ public class IOMethods {
             if (driverFunction != null) {
                 dataSource.execute("DROP TABLE IF EXISTS " + tableName);
                 if (enc != null) {
-                    driverFunction.importFile(connection, tableName, fileToImport, new EmptyProgressVisitor(), enc);
+                    driverFunction.importFile(connection, tableName, fileToImport, enc, delete, new EmptyProgressVisitor());
                 } else {
-                    driverFunction.importFile(connection, tableName, fileToImport, new EmptyProgressVisitor(), delete);
+                    driverFunction.importFile(connection, tableName, fileToImport, delete, new EmptyProgressVisitor());
                 }
                 return true;
             }

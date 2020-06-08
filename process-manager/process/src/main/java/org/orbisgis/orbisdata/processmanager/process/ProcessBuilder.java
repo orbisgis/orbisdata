@@ -63,6 +63,11 @@ public class ProcessBuilder implements IProcessBuilder {
      */
     private final Object delegate;
     /**
+     * Identifier of the process.
+     */
+    @Nullable
+    private String id;
+    /**
      * Title of the process.
      */
     @Nullable
@@ -109,6 +114,13 @@ public class ProcessBuilder implements IProcessBuilder {
         CheckUtils.checkNotNull(delegate, "The Closure delegate object should not be null.");
         this.factory = factory;
         this.delegate = delegate;
+    }
+
+    @NotNull
+    @Override
+    public IProcessBuilder id(@Nullable String id) {
+        this.id = id;
+        return this;
     }
 
     @Override
@@ -167,7 +179,7 @@ public class ProcessBuilder implements IProcessBuilder {
     @Override
     @NotNull
     public IProcess getProcess() {
-        IProcess process = new Process(title, description, keywords, inputs, outputs, version, closure);
+        IProcess process = new Process(id, title, description, keywords, inputs, outputs, version, closure);
         factory.registerProcess(process);
         return process;
     }

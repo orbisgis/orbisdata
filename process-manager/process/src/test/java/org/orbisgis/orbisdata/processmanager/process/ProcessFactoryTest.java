@@ -84,10 +84,22 @@ public class ProcessFactoryTest {
     @Test
     void testRegister() {
         IProcess process = new Process(null, null, null, null, null, null, null);
+        IProcess newInst = process.newInstance();
+        IProcess copy = process.copy();
 
         ProcessFactory pf = new ProcessFactory(false, false);
         pf.registerProcess(process);
         assertTrue(pf.getProcess(process.getIdentifier()).isPresent());
+
+        pf.registerProcess(newInst);
+        assertTrue(pf.getProcess(newInst.getIdentifier()).isPresent());
+        assertTrue(pf.getProcess(process.getIdentifier()).isPresent());
+
+        pf.registerProcess(copy);
+        assertTrue(pf.getProcess(newInst.getIdentifier()).isPresent());
+        assertTrue(pf.getProcess(copy.getIdentifier()).isPresent());
+        assertTrue(pf.getProcess(process.getIdentifier()).isPresent());
+
         pf = new ProcessFactory(false, false);
         pf.registerProcess(null);
         assertFalse(pf.getProcess(process.getIdentifier()).isPresent());
@@ -125,10 +137,14 @@ public class ProcessFactoryTest {
 
         IProcess process = opt.get();
         assertNotNull(process);
-        assertEquals("simple process", process.getTitle());
-        assertEquals("description", process.getDescription());
-        assertEquals("version", process.getVersion());
-        assertArrayEquals(new String[]{"key1", "key2"}, process.getKeywords());
+        assertTrue(process.getTitle().isPresent());
+        assertEquals("simple process", process.getTitle().get());
+        assertTrue(process.getDescription().isPresent());
+        assertEquals("description", process.getDescription().get());
+        assertTrue(process.getVersion().isPresent());
+        assertEquals("version", process.getVersion().get());
+        assertTrue(process.getKeywords().isPresent());
+        assertArrayEquals(new String[]{"key1", "key2"}, process.getKeywords().get());
         assertEquals(2, process.getInputs().size());
         assertEquals(1, process.getOutputs().size());
     }
@@ -151,7 +167,7 @@ public class ProcessFactoryTest {
      * Test the {@link ProcessFactory#invokeMethod(String, Object)} method.
      */
     @Test
-    void propertyTest() {
+    void invokeMethodTest() {
         ProcessFactory factory = new ProcessFactory(false, true);
         assertNull(factory.invokeMethod(null, null));
         assertEquals(false, factory.invokeMethod("isLocked", null));
@@ -160,5 +176,20 @@ public class ProcessFactoryTest {
         assertNull(factory.invokeMethod(null, null));
         assertEquals(false, factory.invokeMethod("isLocked", null));
         assertNull(factory.invokeMethod("getProcess", null));
+    }
+
+    /**
+     * Test the {@link ProcessFactory#getProcessManager()} and {@link ProcessFactory#setProcessManager(org.orbisgis.orbisdata.processmanager.api.IProcessManager)} method.
+     */
+    @Test
+    void getProcessManagerTest() {
+        ProcessFactory factory = new ProcessFactory(false, true);
+        assertFalse(factory.getProcessManager().isPresent());
+        ProcessManager pm = new ProcessManager();
+        factory.setProcessManager(pm);
+        assertTrue(factory.getProcessManager().isPresent());
+        assertEquals(pm, factory.getProcessManager().get());
+        factory.setProcessManager(null);
+        assertFalse(factory.getProcessManager().isPresent());
     }
 }

@@ -50,23 +50,19 @@ import static org.junit.jupiter.api.Assertions.*
 
 class GroovyPostGISTest {
 
-    /*def static dbProperties = [databaseName: 'gisdb',
-                               user        : '',
-                               password    : '',
-                               url         : 'jdbc:postgresql://ns380291.ip-94-23-250.eu/'
-    ]*/
-
-    def static dbProperties = [databaseName: 'paendora',
-                               user        : 'erwan',
-                               password    : 'th@l@ss@56',
-                               url         : 'jdbc:postgresql://149.202.221.161:5432/'
+    def static dbProperties = [databaseName: 'orbisgis_db',
+                               user        : 'orbisgis',
+                               password    : 'orbisgis',
+                               url         : 'jdbc:postgresql://localhost:5432/'
     ]
+    def static postGIS;
 
 
     @BeforeAll
     static void init() {
+        postGIS = POSTGIS.open(dbProperties)
         System.setProperty("test.postgis",
-                Boolean.toString(!dbProperties.user.isEmpty() && !dbProperties.password.isEmpty()));
+                Boolean.toString(postGIS!=null));
     }
 
 
@@ -74,14 +70,12 @@ class GroovyPostGISTest {
     @Test
     @EnabledIfSystemProperty(named = "test.postgis", matches = "true")
     void loadPostGIS() {
-        def postGIS = POSTGIS.open(dbProperties)
         assertNotNull(postGIS)
     }
 
     @Test
     @EnabledIfSystemProperty(named = "test.postgis", matches = "true")
     void queryPostGIS() {
-        def postGIS = POSTGIS.open(dbProperties)
         postGIS.execute("""
                 DROP TABLE IF EXISTS postgis;
                 CREATE TABLE postgis (id int, the_geom geometry(point, 0));
@@ -111,7 +105,6 @@ class GroovyPostGISTest {
     @Test
     @EnabledIfSystemProperty(named = "test.postgis", matches = "true")
     void queryPostGISMetaData() {
-        def postGIS = POSTGIS.open(dbProperties)
         postGIS.execute("""
                 DROP TABLE IF EXISTS postgis;
                 CREATE TABLE postgis (id int, the_geom geometry(point, 0));
@@ -127,7 +120,6 @@ class GroovyPostGISTest {
     @Test
     @EnabledIfSystemProperty(named = "test.postgis", matches = "true")
     void querySpatialTableMetaData() {
-        def postGIS = POSTGIS.open(dbProperties)
         postGIS.execute("""
                 DROP TABLE IF EXISTS postgis;
                 CREATE TABLE postgis (id int, the_geom geometry(point, 0));
@@ -151,7 +143,6 @@ class GroovyPostGISTest {
     @Test
     @EnabledIfSystemProperty(named = "test.postgis", matches = "true")
     void exportImportShpFile() {
-        def postGIS = POSTGIS.open(dbProperties)
         postGIS.execute("""
                 DROP TABLE IF EXISTS postgis, postgis_imported;
                 CREATE TABLE postgis (id int, the_geom geometry(point, 0));
@@ -168,7 +159,6 @@ class GroovyPostGISTest {
     @Test
     @EnabledIfSystemProperty(named = "test.postgis", matches = "true")
     void exportImportTwoTimesShpFile() {
-        def postGIS = POSTGIS.open(dbProperties)
         postGIS.execute("""
                 DROP TABLE IF EXISTS postgis, postgis_imported;
                 CREATE TABLE postgis (id int, the_geom geometry(point, 0));
@@ -186,7 +176,6 @@ class GroovyPostGISTest {
     @Test
     @EnabledIfSystemProperty(named = "test.postgis", matches = "true")
     void exportImportShpFileSimple1() {
-        def postGIS = POSTGIS.open(dbProperties)
         postGIS.execute("""
                 DROP TABLE IF EXISTS postgis, postgis_imported;
                 CREATE TABLE postgis (id int, the_geom geometry(point, 0));
@@ -203,7 +192,6 @@ class GroovyPostGISTest {
     @Test
     @EnabledIfSystemProperty(named = "test.postgis", matches = "true")
     void exportImportShpFileSimple2() {
-        def postGIS = POSTGIS.open(dbProperties)
         postGIS.execute("""
                 DROP TABLE IF EXISTS postgis, postgis_imported;
                 CREATE TABLE postgis (id int, the_geom geometry(point, 0));
@@ -220,7 +208,6 @@ class GroovyPostGISTest {
     @Test
     @EnabledIfSystemProperty(named = "test.postgis", matches = "true")
     void exportImportGeoJsonShapeFile() {
-        def postGIS = POSTGIS.open(dbProperties)
         postGIS.execute("""
                 DROP TABLE IF EXISTS postgis, postgis_imported;
                 CREATE TABLE postgis (id int, the_geom geometry(point, 0));
@@ -239,7 +226,6 @@ class GroovyPostGISTest {
     @Test
     @EnabledIfSystemProperty(named = "test.postgis", matches = "true")
     void exportImportCSV() {
-        def postGIS = POSTGIS.open(dbProperties)
         postGIS.execute("""
                 DROP TABLE IF EXISTS postgis, postgis_imported;
                 CREATE TABLE postgis (id int, the_geom geometry(point, 0));
@@ -255,7 +241,6 @@ class GroovyPostGISTest {
     @Test
     @EnabledIfSystemProperty(named = "test.postgis", matches = "true")
     void queryTableColumnNames() {
-        def postGIS = POSTGIS.open(dbProperties)
         postGIS.execute("""
                 DROP TABLE IF EXISTS postgis;
                 CREATE TABLE postgis (id int, the_geom geometry(point, 0));
@@ -267,7 +252,6 @@ class GroovyPostGISTest {
     @Test
     @EnabledIfSystemProperty(named = "test.postgis", matches = "true")
     void exportSaveReadTableGeoJson() {
-        def postGIS = POSTGIS.open(dbProperties)
         postGIS.execute("""
                 DROP TABLE IF EXISTS postgis, postgis_saved;
                 CREATE TABLE postgis (id int, the_geom geometry(point, 0));
@@ -283,7 +267,6 @@ class GroovyPostGISTest {
     @Test
     @EnabledIfSystemProperty(named = "test.postgis", matches = "true")
     void testReproject() {
-        def postGIS = POSTGIS.open(dbProperties)
         new File("target/reprojected_table_postgis.shp").delete()
         postGIS.execute("""
                 DROP TABLE IF EXISTS orbisgis;
@@ -305,7 +288,6 @@ class GroovyPostGISTest {
     @Test
     @EnabledIfSystemProperty(named = "test.postgis", matches = "true")
     void testSaveQueryInFile() {
-        def postGIS = POSTGIS.open(dbProperties)
         new File("target/query_table_postgis.shp").delete()
         postGIS.execute("""
                 DROP TABLE IF EXISTS orbisgis;
@@ -316,13 +298,12 @@ class GroovyPostGISTest {
         sp.save("target/query_table_postgis.shp")
         def queryTable = postGIS.load("target/query_table_postgis.shp", true)
         assertEquals 2, queryTable.rowCount
-        assertEquals 0, queryTable.srid
+        assertEquals 4326, queryTable.srid
         assertTrue queryTable.getFirstRow()[1] instanceof MultiPolygon
     }
 
     @Test
     void testEstimateExtent(){
-        def postGIS = POSTGIS.open(dbProperties)
         postGIS.execute"""DROP TABLE  IF EXISTS forests;
                 CREATE TABLE forests ( fid INTEGER NOT NULL PRIMARY KEY, name CHARACTER VARYING(64),
                  boundary GEOMETRY(MULTIPOLYGON, 0));
@@ -338,7 +319,6 @@ class GroovyPostGISTest {
 
     @Test
     void testExtend(){
-        def postGIS = POSTGIS.open(dbProperties)
         postGIS.execute"""DROP TABLE  IF EXISTS forests;
                 CREATE TABLE forests ( fid INTEGER NOT NULL PRIMARY KEY, name CHARACTER VARYING(64),
                  boundary GEOMETRY(MULTIPOLYGON, 4326));

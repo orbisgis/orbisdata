@@ -45,7 +45,6 @@ import org.orbisgis.commons.printer.Html
 import org.orbisgis.orbisdata.datamanager.api.dataset.ISpatialTable
 import org.orbisgis.orbisdata.datamanager.api.dataset.ITable
 import org.orbisgis.orbisdata.datamanager.jdbc.h2gis.H2GIS
-import org.orbisgis.orbisdata.datamanager.jdbc.postgis.POSTGIS
 
 import java.sql.SQLException
 import java.sql.Time

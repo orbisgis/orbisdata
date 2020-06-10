@@ -5,7 +5,6 @@ import org.h2gis.api.EmptyProgressVisitor;
 import org.h2gis.functions.io.csv.CSVDriverFunction;
 import org.h2gis.functions.io.dbf.DBFDriverFunction;
 import org.h2gis.functions.io.geojson.GeoJsonDriverFunction;
-import org.h2gis.functions.io.geojson.GeoJsonReaderDriver;
 import org.h2gis.functions.io.gpx.GPXDriverFunction;
 import org.h2gis.functions.io.json.JsonDriverFunction;
 import org.h2gis.functions.io.kml.KMLDriverFunction;
@@ -73,8 +72,8 @@ public class IOMethods {
             case "gpx":
                 return new GPXDriverFunction();
             default:
-                LOGGER.error("Unsupported file format.\n" +
-                        "Supported formats are : [shp, geojson, tsv, csv, dbf, kml, kmz, osm, gz, bz, gpx].");
+                LOGGER.error("Unsupported file format.\n"
+                        + "Supported formats are : [shp, geojson, tsv, csv, dbf, kml, kmz, osm, gz, bz, gpx].");
                 return null;
         }
     }
@@ -91,13 +90,13 @@ public class IOMethods {
      * Save a table to a file
      *
      * @param connection The connection to use for the save.
-     * @param tableName  Name of the table to save.
-     * @param filePath   Path of the destination file.
-     * @param encoding   Encoding of the file.
+     * @param tableName Name of the table to save.
+     * @param filePath Path of the destination file.
+     * @param encoding Encoding of the file.
      * @return True if the file has been saved, false otherwise.
      */
     public static boolean saveAsFile(@NotNull Connection connection, @NotNull String tableName,
-                                     @NotNull String filePath, @Nullable String encoding, @Nullable boolean deleteFile) {
+            @NotNull String filePath, @Nullable String encoding, boolean deleteFile) {
         String enc = encoding;
         boolean isH2 = false;
         try {
@@ -115,7 +114,7 @@ public class IOMethods {
             }
             if (driverFunction != null) {
                 driverFunction.exportTable(connection, isH2 ? tableName.toUpperCase() : tableName, fileToSave,
-                         enc, deleteFile, new EmptyProgressVisitor());
+                        enc, deleteFile, new EmptyProgressVisitor());
                 return true;
             }
         } catch (SQLException | IOException e) {
@@ -127,14 +126,14 @@ public class IOMethods {
     /**
      * Load a file to a H2GIS database
      *
-     * @param filePath   the path of the file
-     * @param tableName  the name of the table created to store the file
-     * @param encoding   an encoding value to read the file
-     * @param deleteTable     true to delete the table if exists
+     * @param filePath the path of the file
+     * @param tableName the name of the table created to store the file
+     * @param encoding an encoding value to read the file
+     * @param deleteTable true to delete the table if exists
      * @param dataSource the database
      */
     public static boolean loadFile(@NotNull String filePath, @NotNull String tableName, @Nullable String encoding,
-                                   boolean deleteTable, @NotNull JdbcDataSource dataSource) {
+            boolean deleteTable, @NotNull JdbcDataSource dataSource) {
         String enc = encoding;
         Connection connection = dataSource.getConnection();
         File fileToImport = URIUtilities.fileFromString(filePath);
@@ -142,9 +141,9 @@ public class IOMethods {
         try {
             if (driverFunction != null) {
                 if (enc != null) {
-                    driverFunction.importFile(connection, tableName, fileToImport,encoding, deleteTable, new EmptyProgressVisitor());
+                    driverFunction.importFile(connection, tableName, fileToImport, encoding, deleteTable, new EmptyProgressVisitor());
                 } else {
-                    driverFunction.importFile(connection, tableName, fileToImport,null, deleteTable, new EmptyProgressVisitor());
+                    driverFunction.importFile(connection, tableName, fileToImport, null, deleteTable, new EmptyProgressVisitor());
                 }
                 return true;
             }
@@ -157,14 +156,14 @@ public class IOMethods {
     /**
      * Load a table to a H2GIS database from another database
      *
-     * @param properties      external database properties to set up the connection
-     * @param inputTableName  the name of the table in the external database
+     * @param properties external database properties to set up the connection
+     * @param inputTableName the name of the table in the external database
      * @param outputTableName the name of the table in the H2GIS database
-     * @param delete          true to delete the table if exists
-     * @param jdbcDataSource  the database
+     * @param delete true to delete the table if exists
+     * @param jdbcDataSource the database
      */
     public static void loadTable(Map<String, String> properties, String inputTableName, String outputTableName,
-                                 boolean delete, JdbcDataSource jdbcDataSource) {
+            boolean delete, JdbcDataSource jdbcDataSource) {
         if (jdbcDataSource.getDataBaseType() != DataBaseType.H2GIS) {
             DataBaseType dbType = jdbcDataSource.getDataBaseType();
             String name = dbType.name();
@@ -215,9 +214,9 @@ public class IOMethods {
     /**
      * Create a dynamic link from a file
      *
-     * @param filePath       the path of the file
-     * @param tableName      the name of the table created to store the file
-     * @param delete         true to delete the table if exists
+     * @param filePath the path of the file
+     * @param tableName the name of the table created to store the file
+     * @param delete true to delete the table if exists
      * @param jdbcDataSource the database
      */
     public static void link(String filePath, String tableName, boolean delete, JdbcDataSource jdbcDataSource) {

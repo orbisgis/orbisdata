@@ -61,8 +61,7 @@ class GroovyPostGISTest {
     @BeforeAll
     static void init() {
         postGIS = POSTGIS.open(dbProperties)
-        System.setProperty("test.postgis",
-                Boolean.toString(postGIS!=null));
+        System.setProperty("test.postgis", Boolean.toString(postGIS != null));
     }
 
 
@@ -303,6 +302,7 @@ class GroovyPostGISTest {
     }
 
     @Test
+    @EnabledIfSystemProperty(named = "test.postgis", matches = "true")
     void testEstimateExtent(){
         postGIS.execute"""DROP TABLE  IF EXISTS forests;
                 CREATE TABLE forests ( fid INTEGER NOT NULL PRIMARY KEY, name CHARACTER VARYING(64),
@@ -318,6 +318,7 @@ class GroovyPostGISTest {
     }
 
     @Test
+    @EnabledIfSystemProperty(named = "test.postgis", matches = "true")
     void testExtend(){
         postGIS.execute"""DROP TABLE  IF EXISTS forests;
                 CREATE TABLE forests ( fid INTEGER NOT NULL PRIMARY KEY, name CHARACTER VARYING(64),

@@ -408,7 +408,7 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, ISe
         if (end == -1) {
             end = filePath.length();
         }
-        if(databaseType==DataBaseType.H2GIS){
+        if(databaseType == DataBaseType.H2GIS){
             return filePath.substring(start, end).toUpperCase();
         }
         return filePath.substring(start, end).toLowerCase();

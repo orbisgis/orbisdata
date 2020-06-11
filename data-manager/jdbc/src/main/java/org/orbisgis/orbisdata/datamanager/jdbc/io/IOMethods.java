@@ -72,8 +72,8 @@ public class IOMethods {
             case "gpx":
                 return new GPXDriverFunction();
             default:
-                LOGGER.error("Unsupported file format.\n"
-                        + "Supported formats are : [shp, geojson, tsv, csv, dbf, kml, kmz, osm, gz, bz, gpx].");
+                LOGGER.error("Unsupported file format.\n" +
+                        "Supported formats are : [shp, geojson, tsv, csv, dbf, kml, kmz, osm, gz, bz, gpx].");
                 return null;
         }
     }
@@ -90,19 +90,19 @@ public class IOMethods {
      * Save a table to a file
      *
      * @param connection The connection to use for the save.
-     * @param tableName Name of the table to save.
-     * @param filePath Path of the destination file.
-     * @param encoding Encoding of the file.
+     * @param tableName  Name of the table to save.
+     * @param filePath   Path of the destination file.
+     * @param encoding   Encoding of the file.
      * @return True if the file has been saved, false otherwise.
      */
     public static boolean saveAsFile(@NotNull Connection connection, @NotNull String tableName,
-            @NotNull String filePath, @Nullable String encoding, boolean deleteFile) {
+                                     @NotNull String filePath, @Nullable String encoding, boolean deleteFile) {
         String enc = encoding;
         boolean isH2 = false;
         try {
             isH2 = JDBCUtilities.isH2DataBase(connection);
         } catch (SQLException e) {
-            LOGGER.error("Unable to get the DataBase metadata.\n" + e.getLocalizedMessage());
+            LOGGER.error("Unable to get the DataBase metadata.\n", e);
         }
         File fileToSave = URIUtilities.fileFromString(filePath);
         DriverFunction driverFunction = getDriverFromFile(fileToSave);
@@ -118,7 +118,7 @@ public class IOMethods {
                 return true;
             }
         } catch (SQLException | IOException e) {
-            LOGGER.error("Cannot save.\n" + e.getLocalizedMessage());
+            LOGGER.error("Cannot save.\n", e);
         }
         return false;
     }
@@ -126,29 +126,25 @@ public class IOMethods {
     /**
      * Load a file to a H2GIS database
      *
-     * @param filePath the path of the file
-     * @param tableName the name of the table created to store the file
-     * @param encoding an encoding value to read the file
-     * @param deleteTable true to delete the table if exists
-     * @param dataSource the database
+     * @param filePath    The path of the file
+     * @param tableName   The name of the table created to store the file
+     * @param encoding    An encoding value to read the file
+     * @param deleteTable True to delete the table if exists
+     * @param dataSource  The database
      */
     public static boolean loadFile(@NotNull String filePath, @NotNull String tableName, @Nullable String encoding,
             boolean deleteTable, @NotNull JdbcDataSource dataSource) {
-        String enc = encoding;
         Connection connection = dataSource.getConnection();
         File fileToImport = URIUtilities.fileFromString(filePath);
         DriverFunction driverFunction = getDriverFromFile(fileToImport);
         try {
             if (driverFunction != null) {
-                if (enc != null) {
-                    driverFunction.importFile(connection, tableName, fileToImport, encoding, deleteTable, new EmptyProgressVisitor());
-                } else {
-                    driverFunction.importFile(connection, tableName, fileToImport, null, deleteTable, new EmptyProgressVisitor());
-                }
+                driverFunction.importFile(connection, tableName, fileToImport, encoding, deleteTable,
+                        new EmptyProgressVisitor());
                 return true;
             }
         } catch (SQLException | IOException e) {
-            LOGGER.error("Cannot load.\n" + e.getLocalizedMessage());
+            LOGGER.error("Cannot load.\n", e);
         }
         return false;
     }
@@ -156,11 +152,11 @@ public class IOMethods {
     /**
      * Load a table to a H2GIS database from another database
      *
-     * @param properties external database properties to set up the connection
-     * @param inputTableName the name of the table in the external database
-     * @param outputTableName the name of the table in the H2GIS database
-     * @param delete true to delete the table if exists
-     * @param jdbcDataSource the database
+     * @param properties      External database properties to set up the connection
+     * @param inputTableName  The name of the table in the external database
+     * @param outputTableName The name of the table in the H2GIS database
+     * @param delete          True to delete the table if exists
+     * @param jdbcDataSource  The database
      */
     public static void loadTable(Map<String, String> properties, String inputTableName, String outputTableName,
             boolean delete, JdbcDataSource jdbcDataSource) {
@@ -187,7 +183,7 @@ public class IOMethods {
                         try {
                             jdbcDataSource.execute("DROP TABLE IF EXISTS " + outputTableName);
                         } catch (SQLException e) {
-                            LOGGER.error("Cannot drop the table.\n" + e.getLocalizedMessage());
+                            LOGGER.error("Cannot drop the table.\n", e);
                         }
                     }
                     try {
@@ -198,7 +194,7 @@ public class IOMethods {
                                 tmpTableName));
                         jdbcDataSource.execute("DROP TABLE IF EXISTS " + tmpTableName);
                     } catch (SQLException e) {
-                        LOGGER.error("Cannot load the table.\n" + e.getLocalizedMessage());
+                        LOGGER.error("Cannot load the table.\n", e);
                     }
                 } else {
                     LOGGER.error("This database is not yet supported");
@@ -214,10 +210,10 @@ public class IOMethods {
     /**
      * Create a dynamic link from a file
      *
-     * @param filePath the path of the file
-     * @param tableName the name of the table created to store the file
-     * @param delete true to delete the table if exists
-     * @param jdbcDataSource the database
+     * @param filePath       The path of the file
+     * @param tableName      The name of the table created to store the file
+     * @param delete         True to delete the table if exists
+     * @param jdbcDataSource The database
      */
     public static void link(String filePath, String tableName, boolean delete, JdbcDataSource jdbcDataSource) {
         if (jdbcDataSource.getDataBaseType() != DataBaseType.H2GIS) {
@@ -230,14 +226,14 @@ public class IOMethods {
             try {
                 jdbcDataSource.execute("DROP TABLE IF EXISTS " + tableName);
             } catch (SQLException e) {
-                LOGGER.error("Cannot drop the table.\n" + e.getLocalizedMessage());
+                LOGGER.error("Cannot drop the table.\n", e);
             }
         }
 
         try {
             jdbcDataSource.execute(String.format("CALL FILE_TABLE('%s','%s')", filePath, tableName));
         } catch (SQLException e) {
-            LOGGER.error("Cannot link the file.\n" + e.getLocalizedMessage());
+            LOGGER.error("Cannot link the file.\n", e);
         }
     }
 }

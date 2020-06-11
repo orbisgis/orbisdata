@@ -41,11 +41,13 @@ import groovy.lang.DelegatesTo;
 import org.orbisgis.commons.annotations.NotNull;
 import org.orbisgis.commons.annotations.Nullable;
 
+import java.util.Optional;
+
 /**
  * This interface defines the methods dedicated to the process creation and managing.
  *
  * @author Erwan Bocher (CNRS)
- * @author Sylvain PALOMINOS (UBS 2019)
+ * @author Sylvain PALOMINOS (UBS Lab-STICC 2019-2020)
  */
 public interface IProcessFactory {
 
@@ -54,7 +56,7 @@ public interface IProcessFactory {
      *
      * @param process {@link IProcess} to register.
      */
-    void registerProcess(@NotNull IProcess process);
+    void registerProcess(@Nullable IProcess process);
 
     /**
      * Return true if the process creation is locked, false otherwise.
@@ -76,8 +78,8 @@ public interface IProcessFactory {
      * @param processId Identifier of the process to get.
      * @return The process with the given identifier.
      */
-    @Nullable
-    IProcess getProcess(@NotNull String processId);
+    @NotNull
+    Optional<IProcess> getProcess(@Nullable String processId);
 
     /**
      * Return a {@link IProcessBuilder} to create a {@link IProcess}. Once the process created, it will be register
@@ -96,5 +98,20 @@ public interface IProcessFactory {
      * @return A {@link IProcess}.
      */
     @NotNull
-    IProcess create(@NotNull @DelegatesTo(IProcessBuilder.class) Closure<?> cl);
+    Optional<IProcess> create(@Nullable @DelegatesTo(IProcessBuilder.class) Closure<?> cl);
+
+    /**
+     * Return the {@link IProcessManager} containing the factory.
+     *
+     * @return The {@link IProcessManager} containing the factory.
+     */
+    @NotNull
+    Optional<IProcessManager> getProcessManager();
+
+    /**
+     * Set the {@link IProcessManager} containing the factory.
+     *
+     * @param processManager The {@link IProcessManager} containing the factory.
+     */
+    void setProcessManager(@Nullable IProcessManager processManager);
 }

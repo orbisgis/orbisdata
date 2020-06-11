@@ -36,11 +36,14 @@
  */
 package org.orbisgis.orbisdata.processmanager.process.inoutput;
 
+import groovy.lang.MetaClass;
 import org.codehaus.groovy.runtime.InvokerHelper;
 import org.orbisgis.commons.annotations.NotNull;
 import org.orbisgis.commons.annotations.Nullable;
 import org.orbisgis.orbisdata.processmanager.api.IProcess;
 import org.orbisgis.orbisdata.processmanager.api.inoutput.IOutput;
+
+import java.util.Objects;
 
 /**
  * Implementation of the {@link IOutput} interface.
@@ -97,5 +100,33 @@ public class Output extends InOutPut implements IOutput {
     public Output process(@Nullable IProcess process) {
         super.setProcess(process);
         return this;
+    }
+
+    @Override
+    public void setMetaClass(@Nullable MetaClass metaClass) {
+        this.metaClass = metaClass == null ? InvokerHelper.getMetaClass(this.getClass()) : metaClass;
+    }
+
+    @Override
+    public boolean equals(Object obj){
+        if(! (obj instanceof Output)){
+            return false;
+        }
+        Output out = (Output)obj;
+        return Objects.equals(this.getProcess(), out.getProcess()) &&
+                Objects.equals(this.getName(), out.getName());
+    }
+
+    @Nullable
+    @Override
+    public Output copy() {
+        Output copy = new Output();
+        copy.setProcess(this.getProcess().orElse(null));
+        copy.setName(this.getName().orElse(null));
+        copy.setType(this.getType().orElse(null));
+        copy.setTitle(this.getTitle().orElse(null));
+        copy.setDescription(this.getDescription().orElse(null));
+        copy.setKeywords(this.getKeywords().orElse(null));
+        return copy;
     }
 }

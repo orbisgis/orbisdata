@@ -613,7 +613,7 @@ class JdbcDataSourceTest {
         ds2.execute("DROP TABLE IF EXISTS LOADTABLE, NAME");
         table = ds2.load(path);
         assertNotNull(table);
-        assertEquals("LOADTABLE", table.getName());
+        assertEquals("loadtable", table.getName());
         ds2.execute("DROP TABLE IF EXISTS LOADTABLE, NAME");
         table = ds2.load(path, name);
         assertNotNull(table);
@@ -626,6 +626,10 @@ class JdbcDataSourceTest {
         table = ds2.load(path, name, "UTF8", true);
         assertNotNull(table);
         assertEquals(name, table.getName());
+        ds2.execute("DROP TABLE IF EXISTS LOADTABLE, NAME");
+        table = ds2.load(path, name.toLowerCase(), "UTF8", true);
+        assertNotNull(table);
+        assertEquals(name.toLowerCase(), table.getName());
 
         //Test URL
         ds1.execute("DROP TABLE IF EXISTS LOADTABLE, NAME");
@@ -652,7 +656,7 @@ class JdbcDataSourceTest {
         ds2.execute("DROP TABLE IF EXISTS LOADTABLE, NAME");
         table = ds2.load(url);
         assertNotNull(table);
-        assertEquals("LOADTABLE", table.getName());
+        assertEquals("loadtable", table.getName());
         ds2.execute("DROP TABLE IF EXISTS LOADTABLE, NAME");
         table = ds2.load(url, name);
         assertNotNull(table);
@@ -660,7 +664,7 @@ class JdbcDataSourceTest {
         ds2.execute("DROP TABLE IF EXISTS LOADTABLE, NAME");
         table = ds2.load(url, true);
         assertNotNull(table);
-        assertEquals("LOADTABLE", table.getName());
+        assertEquals("loadtable", table.getName());
         ds2.execute("DROP TABLE IF EXISTS LOADTABLE, NAME");
         table = ds2.load(url, name, true);
         assertNotNull(table);
@@ -669,6 +673,10 @@ class JdbcDataSourceTest {
         table = ds2.load(url, name, "UTF8", true);
         assertNotNull(table);
         assertEquals(name, table.getName());
+        ds2.execute("DROP TABLE IF EXISTS LOADTABLE, NAME");
+        table = ds2.load(url, name.toLowerCase(), "UTF8", true);
+        assertNotNull(table);
+        assertEquals(name.toLowerCase(), table.getName());
 
         //Test URI
         ds1.execute("DROP TABLE IF EXISTS LOADTABLE, NAME");
@@ -691,7 +699,7 @@ class JdbcDataSourceTest {
         ds2.execute("DROP TABLE IF EXISTS LOADTABLE, NAME");
         table = ds2.load(uri);
         assertNotNull(table);
-        assertEquals("LOADTABLE", table.getName());
+        assertEquals("loadtable", table.getName());
         ds2.execute("DROP TABLE IF EXISTS LOADTABLE, NAME");
         table = ds2.load(uri, name);
         assertNotNull(table);
@@ -726,7 +734,7 @@ class JdbcDataSourceTest {
         ds2.execute("DROP TABLE IF EXISTS LOADTABLE, NAME");
         table = ds2.load(file);
         assertNotNull(table);
-        assertEquals("LOADTABLE", table.getName());
+        assertEquals("loadtable", table.getName());
         ds2.execute("DROP TABLE IF EXISTS LOADTABLE, NAME");
         table = ds2.load(file, name);
         assertNotNull(table);

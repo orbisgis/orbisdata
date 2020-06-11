@@ -36,14 +36,19 @@
  */
 package org.orbisgis.orbisdata.processmanager.process;
 
-import groovy.lang.Closure;
-import groovy.lang.DelegatesTo;
-import groovy.lang.Script;
+import groovy.lang.*;
+import org.codehaus.groovy.runtime.InvokerHelper;
 import org.orbisgis.commons.annotations.NotNull;
 import org.orbisgis.commons.annotations.Nullable;
 import org.orbisgis.orbisdata.processmanager.api.IProcess;
 import org.orbisgis.orbisdata.processmanager.api.IProcessBuilder;
 import org.orbisgis.orbisdata.processmanager.api.IProcessFactory;
+import org.orbisgis.orbisdata.processmanager.api.IProcessManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.Optional;
+import java.util.UUID;
 
 /**
  * Implementation of the {@link IProcessFactory} class dedicated to Groovy.
@@ -51,11 +56,19 @@ import org.orbisgis.orbisdata.processmanager.api.IProcessFactory;
  * @author Erwan Bocher (CNRS)
  * @author Sylvain PALOMINOS (UBS Lab-STICC 2019-2020)
  */
-public abstract class GroovyProcessFactory extends Script implements IProcessFactory {
+public abstract class GroovyProcessFactory extends Script implements IProcessFactory, GroovyObject, GroovyInterceptable {
     private final ProcessFactory factory = new ProcessFactory();
+    private Logger LOGGER = LoggerFactory.getLogger(GroovyProcessFactory.class);
+    /**
+     * MetaClass use for groovy methods/properties binding
+     */
+    @NotNull
+    protected MetaClass metaClass = InvokerHelper.getMetaClass(ProcessManager.class);
+    @Nullable
+    private IProcessManager processManager;
 
     @Override
-    public void registerProcess(@NotNull IProcess process) {
+    public void registerProcess(@Nullable IProcess process) {
         factory.registerProcess(process);
     }
 
@@ -70,23 +83,189 @@ public abstract class GroovyProcessFactory extends Script implements IProcessFac
     }
 
     @Override
-    @Nullable
-    public IProcess getProcess(@NotNull String processId) {
+    @NotNull
+    public Optional<IProcess> getProcess(@Nullable String processId) {
         return factory.getProcess(processId);
     }
 
     @Override
     @NotNull
     public IProcessBuilder create() {
-        return new ProcessBuilder(factory, this);
+        return factory.create();
     }
 
     @Override
     @NotNull
-    public IProcess create(@NotNull @DelegatesTo(IProcessBuilder.class) Closure<?> cl) {
-        IProcessBuilder builder = new ProcessBuilder(factory, this);
-        Closure<?> code = cl.rehydrate(builder, this, this);
-        code.setResolveStrategy(Closure.DELEGATE_FIRST);
-        return ((IProcessBuilder) code.call()).getProcess();
+    public Optional<IProcess> create(@Nullable @DelegatesTo(IProcessBuilder.class) Closure<?> cl) {
+        if(cl == null) {
+            return Optional.empty();
+        }
+        else {
+            IProcessBuilder builder = new ProcessBuilder(this, this);
+            Closure<?> code = cl.rehydrate(builder, this, this);
+            code.setResolveStrategy(Closure.DELEGATE_FIRST);
+            return Optional.of(((IProcessBuilder) code.call()).getProcess());
+        }
+    }
+
+    @Nullable
+    @Override
+    public Object invokeMethod(@Nullable String name, @Nullable Object args) {
+        if(name != null) {
+            Object obj = getMetaClass().invokeMethod(this, name, args);
+            if(obj instanceof Optional){
+                return ((Optional<?>)obj).orElse(null);
+            }
+            else {
+                return obj;
+            }
+        }
+        else {
+            return null;
+        }
+    }
+
+    @Nullable
+    @Override
+    public Object getProperty(@Nullable String name) {
+        if(name == null) {
+            return null;
+        }
+        Optional<IProcess> p = getProcess(name);
+        if(p.isPresent()){
+            return p.get().newInstance();
+        }
+        else{
+            Object o = getMetaClass().getProperty(this, name);
+            if(o instanceof Optional){
+                return ((Optional) o).orElse(null);
+            }
+            return o;
+        }
+    }
+
+    @NotNull
+    @Override
+    public Optional<IProcessManager> getProcessManager() {
+        return Optional.ofNullable(processManager);
+    }
+
+    @Override
+    public void setProcessManager(@Nullable IProcessManager processManager) {
+        this.processManager = processManager;
+    }
+
+    /**
+     * Call {@link Logger#info(String)}.
+     * @param o Object to log.
+     */
+    public void info(Object o) {
+        LOGGER.info(String.valueOf(o));
+    }
+
+    /**
+     * Call {@link Logger#info(String, Throwable)}.
+     * @param o Object to log.
+     * @param e Exception to log.
+     */
+    public void info(Object o, Exception e) {
+        LOGGER.info(String.valueOf(o), e);
+    }
+
+    /**
+     * Call {@link Logger#debug(String)}.
+     * @param o Object to log.
+     */
+    public void debug(Object o) {
+        LOGGER.debug(String.valueOf(o));
+    }
+
+    /**
+     * Call {@link Logger#debug(String, Throwable)}.
+     * @param o Object to log.
+     * @param e Exception to log.
+     */
+    public void debug(Object o, Exception e) {
+        LOGGER.debug(String.valueOf(o), e);
+    }
+
+    /**
+     * Call {@link Logger#debug(String)}.
+     * @param o Object to log.
+     */
+    public void warn(Object o) {
+        LOGGER.warn(String.valueOf(o));
+    }
+
+    /**
+     * Call {@link Logger#debug(String, Throwable)}.
+     * @param o Object to log.
+     * @param e Exception to log.
+     */
+    public void warn(Object o, Exception e) {
+        LOGGER.warn(String.valueOf(o), e);
+    }
+
+    /**
+     * Call {@link Logger#error(String, Throwable)}.
+     * @param o Object to log.
+     * @param e Exception to log.
+     */
+    public void error(Object o, Exception e) {
+        LOGGER.error(String.valueOf(o), e);
+    }
+
+    /**
+     * Call {@link Logger#error(String)}.
+     * @param o Object to log.
+     */
+    public void error(Object o) {
+        LOGGER.error(String.valueOf(o));
+    }
+
+    /**
+     * Prefix the given String with '_' and an UUID.
+     *
+     * @param name String to prefix
+     * @return The prefixed String
+     */
+    public static String prefix(String name) {
+        return UUID.randomUUID().toString().replaceAll("-", "_") + "_" + name;
+    }
+
+    /**
+     * Prefix the given String with the given prefix.
+     *
+     * @param prefix Prefix
+     * @param name String to prefix
+     * @return The prefixed String
+     */
+    public static String prefix(String prefix, String name) {
+        return prefix == null || prefix.isEmpty() ? name : prefix + "_" + name;
+    }
+
+    /**
+     * Postfix the given String with '_' and an UUID..
+     *
+     * @param name String to postfix
+     * @return The postfix String
+     */
+    public static String postfix(String name) {
+        return name + "_" + UUID.randomUUID().toString().replaceAll("-", "_");
+    }
+
+    /**
+     * Postfix the given String with the given postfix.
+     *
+     * @param postfix Postfix
+     * @param name String to postfix
+     * @return The postfix String
+     */
+    public static String postfix(String name, String postfix) {
+        return postfix == null || postfix.isEmpty() ? name : name + "_" + postfix;
+    }
+
+    public void setLogger(Logger logger) {
+        LOGGER = logger;
     }
 }

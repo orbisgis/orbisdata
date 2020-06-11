@@ -196,7 +196,7 @@ public class JdbcSpatialTableTest {
      */
     @Test
     public void testGetExtend() {
-        assertEquals("Env[0.0 : 0.0, 0.0 : 1.0]", dataSource.getSpatialTable(TABLE_NAME).getExtend().toString());
+        assertEquals("Env[0.0 : 0.0, 0.0 : 1.0]", dataSource.getSpatialTable(TABLE_NAME).getExtend().getEnvelopeInternal().toString());
     }
 
     /**

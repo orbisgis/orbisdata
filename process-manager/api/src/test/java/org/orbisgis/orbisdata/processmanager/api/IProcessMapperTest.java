@@ -46,10 +46,11 @@ import org.orbisgis.orbisdata.processmanager.api.inoutput.IOutput;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
@@ -65,7 +66,7 @@ public class IProcessMapperTest {
      */
     @Test
     public void testGetVersion() {
-        assertNull(new DummyProcessMapper().getVersion());
+        assertFalse(new DummyProcessMapper().getVersion().isPresent());
     }
 
     /**
@@ -73,7 +74,7 @@ public class IProcessMapperTest {
      */
     @Test
     public void testGetDescription() {
-        assertNull(new DummyProcessMapper().getDescription());
+        assertFalse(new DummyProcessMapper().getDescription().isPresent());
     }
 
     /**
@@ -81,7 +82,7 @@ public class IProcessMapperTest {
      */
     @Test
     public void testGetKeyword() {
-        assertNull(new DummyProcessMapper().getKeywords());
+        assertFalse(new DummyProcessMapper().getKeywords().isPresent());
     }
 
     /**
@@ -130,8 +131,8 @@ public class IProcessMapperTest {
 
         @NotNull
         @Override
-        public String getTitle() {
-            return null;
+        public Optional<String> getTitle() {
+            return Optional.empty();
         }
 
         @NotNull
@@ -155,6 +156,12 @@ public class IProcessMapperTest {
         @Override
         public boolean call(LinkedHashMap<String, Object> inputDataMap) {
             return false;
+        }
+
+        @NotNull
+        @Override
+        public IProcessMapper copy() {
+            return null;
         }
     }
 }

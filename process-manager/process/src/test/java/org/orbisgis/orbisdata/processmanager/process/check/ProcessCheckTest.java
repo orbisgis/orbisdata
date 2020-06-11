@@ -346,7 +346,7 @@ public class ProcessCheckTest {
         processCheck.setMetaClass(null);
         processCheck.setProperty("inOutPuts", null);
         obj = processCheck.getProperty("inOutPuts");
-        assertNull(obj);
+        assertTrue(obj instanceof LinkedList);
 
         processCheck.setMetaClass(InvokerHelper.getMetaClass(processCheck.getClass()));
         obj = processCheck.getProperty("inOutPuts");
@@ -376,12 +376,13 @@ public class ProcessCheckTest {
         assertNotNull(processCheck.invokeMethod("getClosure", null));
 
         processCheck.setMetaClass(null);
+        assertNotNull(processCheck.getMetaClass());
         assertNull(processCheck.invokeMethod(null, "value"));
         assertNull(processCheck.invokeMethod(null, null));
         assertNull(processCheck.invokeMethod("setClosure", null));
         assertNull(processCheck.invokeMethod("getClosure", null));
         assertNull(processCheck.invokeMethod("setClosure", cl));
-        assertNull(processCheck.invokeMethod("getClosure", null));
+        assertEquals(cl, processCheck.invokeMethod("getClosure", null));
     }
 
     /**

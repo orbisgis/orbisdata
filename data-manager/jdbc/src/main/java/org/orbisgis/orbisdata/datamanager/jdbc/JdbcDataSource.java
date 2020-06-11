@@ -408,7 +408,10 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, ISe
         if (end == -1) {
             end = filePath.length();
         }
-        return filePath.substring(start, end);
+        if(databaseType==DataBaseType.H2GIS){
+            return filePath.substring(start, end).toUpperCase();
+        }
+        return filePath.substring(start, end).toLowerCase();
     }
 
     @Override
@@ -736,5 +739,26 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, ISe
             return getSpatialTable(dataSetName);
         }
         return getTable(dataSetName);
+    }
+
+    @Nullable
+    @Override
+    public Object getProperty(String propertyName) {
+        if (propertyName == null) {
+            //LOGGER.error("Trying to get null property name.");
+            return null;
+        }
+        IJdbcTable table = getTable(propertyName);
+        if(table == null) {
+            return getMetaClass().getProperty(this, propertyName);
+        }
+        else {
+            return table;
+        }
+    }
+
+    @Override
+    public int call(GString gstring) throws Exception {
+        return super.call(gstring.toString());
     }
 }

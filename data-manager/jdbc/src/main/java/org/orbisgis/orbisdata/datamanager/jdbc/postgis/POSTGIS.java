@@ -178,7 +178,7 @@ public class POSTGIS extends JdbcDataSource {
         Connection connection = getConnection();
         try {
             if (!JDBCUtilities.tableExists(connection,
-                    TableLocation.parse(tableName, getDataBaseType().equals(DataBaseType.H2GIS)))) {
+                    TableLocation.parse(tableName, false))) {
                 return null;
             }
         } catch (SQLException e) {
@@ -219,7 +219,7 @@ public class POSTGIS extends JdbcDataSource {
         Connection connection = getConnection();
         try {
             if (!JDBCUtilities.tableExists(connection,
-                    TableLocation.parse(tableName, getDataBaseType().equals(DataBaseType.H2GIS)))) {
+                    TableLocation.parse(tableName, false))) {
                 return null;
             }
         } catch (SQLException e) {

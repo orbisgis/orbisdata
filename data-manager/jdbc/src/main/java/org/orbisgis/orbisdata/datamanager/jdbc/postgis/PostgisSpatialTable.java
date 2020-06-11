@@ -72,7 +72,7 @@ public class PostgisSpatialTable extends JdbcSpatialTable {
      */
     public PostgisSpatialTable(@Nullable TableLocation tableLocation, @NotNull String baseQuery,
                                @NotNull StatementWrapper statement, @NotNull JdbcDataSource jdbcDataSource) {
-        super(DataBaseType.H2GIS, jdbcDataSource, tableLocation, statement, baseQuery);
+        super(DataBaseType.POSTGIS, jdbcDataSource, tableLocation, statement, baseQuery);
     }
 
     @Override
@@ -130,7 +130,7 @@ public class PostgisSpatialTable extends JdbcSpatialTable {
                 LOGGER.error("Unable to get table location for reprojection");
                 return null;
             }
-            String query = "SELECT " + String.join(",", fieldNames) + " FROM " + location.toString(true);
+            String query = "SELECT " + String.join(",", fieldNames) + " FROM " + location.toString(false);
             return new PostgisSpatialTable(null, query, (StatementWrapper) getStatement(), getJdbcDataSource());
         } catch (SQLException e) {
             LOGGER.error("Cannot reproject the table '" + getLocation() + "' in the SRID '" + srid + "'.\n", e);

@@ -76,7 +76,8 @@ public class SummaryTest {
     @Test
     public void asTypeTest(){
         assertNull(summary.asType(Time.class));
-        String str = "+------+-----+---+---+---+\n" +
+        String str = "[column: String, count: long, min: double, avg: double, max: double]\n" +
+                "+------+-----+---+---+---+\n" +
                 "|column|count|min|avg|max|\n" +
                 "+------+-----+---+---+---+\n" +
                 "|  COL1|    5|  0|  2|  4|\n" +

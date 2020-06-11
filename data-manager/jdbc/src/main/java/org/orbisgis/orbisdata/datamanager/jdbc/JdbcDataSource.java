@@ -364,7 +364,7 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, ISe
             LOGGER.error("No connection, cannot save.");
             return false;
         }
-        return IOMethods.saveAsFile(getConnection(), tableName, filePath, encoding);
+        return IOMethods.saveAsFile(getConnection(), tableName, filePath, encoding, false);
     }
 
     @Override
@@ -408,7 +408,10 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, ISe
         if (end == -1) {
             end = filePath.length();
         }
-        return filePath.substring(start, end).toUpperCase();
+        if(databaseType == DataBaseType.H2GIS){
+            return filePath.substring(start, end).toUpperCase();
+        }
+        return filePath.substring(start, end).toLowerCase();
     }
 
     @Override

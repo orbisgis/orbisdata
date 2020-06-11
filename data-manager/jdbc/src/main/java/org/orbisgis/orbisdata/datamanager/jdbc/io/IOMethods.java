@@ -139,7 +139,6 @@ public class IOMethods {
         File fileToImport = URIUtilities.fileFromString(filePath);
         DriverFunction driverFunction = getDriverFromFile(fileToImport);
         try {
-
             if (driverFunction != null) {
                 if (enc != null) {
                     driverFunction.importFile(connection, tableName, fileToImport, encoding, deleteTable, new EmptyProgressVisitor());

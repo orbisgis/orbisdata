@@ -19,15 +19,15 @@
  *
  *
  * DataManager is free software: you can redistribute it and/or modify it under the
- * terms of the GNU General Public License as published by the Free Software
+ * terms of the GNU General License as published by the Free Software
  * Foundation, either version 3 of the License, or (at your option) any later
  * version.
  *
  * DataManager is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
- * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * A PARTICULAR PURPOSE. See the GNU General License for more details.
  *
- * You should have received a copy of the GNU General Public License along with
+ * You should have received a copy of the GNU General License along with
  * DataManager. If not, see <http://www.gnu.org/licenses/>.
  *
  * For more information, please consult: <http://www.orbisgis.org/>
@@ -53,8 +53,11 @@ import java.sql.Date;
 import java.sql.SQLException;
 import java.sql.Time;
 import java.sql.Timestamp;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Arrays;
+import java.util.Map;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -65,18 +68,18 @@ import static org.orbisgis.orbisdata.datamanager.dataframe.TestUtils.RANDOM_DS;
  *
  * @author Sylvain PALOMINOS (UBS LAB-STICC 2019)
  */
-public class DataFrameTest {
+class DataFrameTest {
 
     private DataFrame dataFrame;
     private static H2GIS h2gis;
 
     @BeforeAll
-    public static void beforeAll() {
+    static void beforeAll() {
         h2gis = RANDOM_DS();
     }
 
     @BeforeEach
-    public void beforeEach() {
+    void beforeEach() {
         try {
             h2gis.execute("DROP TABLE IF EXISTS toto");
             h2gis.execute("CREATE TABLE toto(col1 int, col2 varchar, col3 boolean, col4 char, col5 TINYINT, col6 SMALLINT, " +
@@ -474,7 +477,7 @@ public class DataFrameTest {
      * Tests {@link DataFrame#reload()} method.
      */
     @Test
-    public void reloadTest(){
+    void reloadTest(){
         assertFalse(dataFrame.reload());
     }
 
@@ -484,7 +487,7 @@ public class DataFrameTest {
      * methods.
      */
     @Test
-    public void cursorPositionTest(){
+    void cursorPositionTest(){
         assertFalse(dataFrame.isFirst());
         assertFalse(dataFrame.isLast());
         assertEquals(-1, dataFrame.getRow());
@@ -536,7 +539,42 @@ public class DataFrameTest {
      * Tests {@link DataFrame#filter(String)} method.
      */
     @Test
-    public void filterTest(){
+    void filterTest(){
         assertThrows(UnsupportedOperationException.class, () -> dataFrame.filter("tata"));
+    }
+
+    /**
+     * Test the {@link DataFrame#firstRow()} method.
+     */
+    @Test
+    void firstRowTest() {
+        Map<String, Object> map = dataFrame.firstRow();
+        assertEquals(13, map.size());
+        assertTrue(map.containsKey("COL1"));
+        assertEquals(0, map.get("COL1"));
+        assertTrue(map.containsKey("COL2"));
+        assertEquals("val0", map.get("COL2"));
+        assertTrue(map.containsKey("COL3"));
+        assertEquals(true, map.get("COL3"));
+        assertTrue(map.containsKey("COL4"));
+        assertEquals("0", map.get("COL4"));
+        assertTrue(map.containsKey("COL5"));
+        assertEquals((byte)0, map.get("COL5"));
+        assertTrue(map.containsKey("COL6"));
+        assertEquals((short)0, map.get("COL6"));
+        assertTrue(map.containsKey("COL7"));
+        assertEquals((long)0, map.get("COL7"));
+        assertTrue(map.containsKey("COL8"));
+        assertEquals(0.0f, map.get("COL8"));
+        assertTrue(map.containsKey("COL9"));
+        assertEquals(0.0d, map.get("COL9"));
+        assertTrue(map.containsKey("COL10"));
+        assertEquals(LocalTime.of(12, 34, 56), map.get("COL10"));
+        assertTrue(map.containsKey("COL11"));
+        assertEquals(LocalDate.of(2020, 4, 16), map.get("COL11"));
+        assertTrue(map.containsKey("COL12"));
+        assertEquals(LocalDateTime.of(2020, 4, 16, 12, 34, 56, 700000000), map.get("COL12"));
+        assertTrue(map.containsKey("COL13"));
+        assertEquals(new BigDecimal("0.00"), map.get("COL13"));
     }
 }

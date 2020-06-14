@@ -34,24 +34,57 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
+package org.orbisgis.orbisdata.datamanager.api.dsl.sql;
 
-package org.orbisgis.orbisdata.datamanager.api.dsl;
 
+import groovy.lang.Closure;
+import org.orbisgis.commons.annotations.NotNull;
+import org.orbisgis.commons.annotations.Nullable;
+import org.orbisgis.orbisdata.datamanager.api.dataset.ISpatialTable;
+import org.orbisgis.orbisdata.datamanager.api.dataset.ITable;
 
 /**
- * Interface defining methods for the SQL 'select' building. The request construction can be continued thanks to the
- * {@link IFromBuilder}.
+ * Define the methods use to get the result of a SQL request built throw the {@link org.orbisgis.orbisdata.datamanager.api.dsl}
+ * package interfaces.
  *
  * @author Erwan Bocher (CNRS)
  * @author Sylvain PALOMINOS (Lab-STICC UBS 2019)
  */
-public interface ISelectBuilder {
+public interface IBuilderResult {
 
     /**
-     * Start point of the SQL request.
+     * Apply the given {@link Closure} on each row of the result of the SQL request.
      *
-     * @param fields Array of the fields to select.
-     * @return {@link IFromBuilder} instance to continue building.
+     * @param closure {@link Closure} to apply to each row.
      */
-    IFromBuilder select(String... fields);
+    void eachRow(@NotNull Closure<Object> closure);
+
+    /**
+     * Convert the result of the SQL request into a {@link ITable} or {@link ISpatialTable}.
+     *
+     * @param clazz New class of the result.
+     * @return The result wrapped into the given class.
+     */
+    @Nullable
+    Object asType(@NotNull Class<?> clazz);
+
+    /**
+     * Return the {@link ITable} representing the result of the SQL query.
+     *
+     * @return The {@link ITable} representing the result of the SQL query.
+     */
+    @Nullable
+    ITable<?, ?> getTable();
+
+    /**
+     * Return the {@link ISpatialTable} representing the result of the SQL query.
+     *
+     * @return The {@link ISpatialTable} representing the result of the SQL query.
+     */
+    @Nullable
+    ISpatialTable<?, ?> getSpatialTable();
+
+    @Override
+    @NotNull
+    String toString();
 }

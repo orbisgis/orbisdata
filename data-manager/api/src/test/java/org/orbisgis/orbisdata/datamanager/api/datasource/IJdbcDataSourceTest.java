@@ -36,6 +36,7 @@
  */
 package org.orbisgis.orbisdata.datamanager.api.datasource;
 
+import groovy.lang.Closure;
 import groovy.lang.MetaClass;
 import groovy.lang.MissingMethodException;
 import groovy.lang.MissingPropertyException;
@@ -329,6 +330,11 @@ public class IJdbcDataSourceTest {
         @Override
         public IJdbcTable load(@NotNull Map<String, String> properties, @NotNull String inputTableName, @NotNull String outputTableName, boolean delete) {
             return null;
+        }
+
+        @Override
+        public boolean save(@Nullable Closure<?> cl) {
+            return false;
         }
 
         @Override

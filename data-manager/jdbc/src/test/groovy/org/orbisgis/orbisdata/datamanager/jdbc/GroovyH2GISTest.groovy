@@ -36,6 +36,7 @@
  */
 package org.orbisgis.orbisdata.datamanager.jdbc
 
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.locationtech.jts.geom.Geometry
 import org.locationtech.jts.geom.MultiPolygon
@@ -51,7 +52,7 @@ import java.sql.Time
 import java.util.stream.Collectors
 
 import static org.junit.jupiter.api.Assertions.*
-import static org.orbisgis.orbisdata.datamanager.api.dsl.IOptionBuilder.Order.DESC
+import static org.orbisgis.orbisdata.datamanager.api.dsl.sql.IOptionBuilder.Order.DESC
 
 class GroovyH2GISTest {
 
@@ -177,6 +178,34 @@ class GroovyH2GISTest {
         assertEquals("ID 4\nTHE_GEOM 1111\n", concat)
     }
 
+    @Test
+    void save() {
+        def h2GIS = H2GIS.open([databaseName: './target/loadH2GIS'])
+        h2GIS.execute("""
+                DROP TABLE IF EXISTS test0, test1, test2;
+                CREATE TABLE test0 (id int, the_geom geometry(point));
+                INSERT INTO test0 VALUES (1, 'POINT(10 10)'::GEOMETRY), (2, 'POINT(1 1)'::GEOMETRY);
+                CREATE TABLE test1 (id int, the_geom geometry(point));
+                INSERT INTO test1 VALUES (2, 'POINT(20 20)'::GEOMETRY), (3, 'POINT(2 2)'::GEOMETRY);
+                CREATE TABLE test2 (id int, the_geom geometry(point));
+                INSERT INTO test2 VALUES (3, 'POINT(30 30)'::GEOMETRY), (4, 'POINT(3 3)'::GEOMETRY);
+        """)
+        assert h2GIS.save {
+            test0.folder('./target/').name('test0').save('json')
+            test1.folder('./target/').name('test1').save('csv')
+            test2.folder('./target/').name('test2').save('json')
+        }
+        File f0 = new File("./target/test0.json");
+        assertTrue(f0.exists());
+        assertTrue(f0.length() > 0);
+        File f1 = new File("./target/test1.csv");
+        assertTrue(f1.exists());
+        assertTrue(f1.length() > 0);
+        File f2 = new File("./target/test2.json");
+        assertTrue(f2.exists());
+        assertTrue(f2.length() > 0);
+        assertFalse(h2GIS.save(null));
+    }
 
     @Test
     void exportImportShpFile() {
@@ -430,6 +459,7 @@ class GroovyH2GISTest {
 
 
     @Test
+    @Disabled
     void loadOSMFile() {
         def h2GIS = H2GIS.open([databaseName: './target/loadH2GIS'])
         def bbox = "(47.63538867628185,-2.126747667789459,47.63620380562177,-2.1253328025341034)"

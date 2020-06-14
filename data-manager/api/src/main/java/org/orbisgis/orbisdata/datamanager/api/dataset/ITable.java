@@ -216,7 +216,7 @@ public interface ITable<T, U> extends IMatrix<T, U> {
      * @param filePath Path of the file to be saved.
      * @return True is the file has been saved, false otherwise.
      */
-    default boolean save(@NotNull String filePath) {
+    default boolean save(@Nullable String filePath) {
         return save(filePath, null);
     }
 

@@ -36,45 +36,38 @@
  */
 package org.orbisgis.orbisdata.datamanager.jdbc.dsl;
 
-import org.orbisgis.orbisdata.datamanager.api.datasource.IJdbcDataSource;
-import org.orbisgis.orbisdata.datamanager.api.dsl.IConditionOrOptionBuilder;
-import org.orbisgis.orbisdata.datamanager.jdbc.JdbcDataSource;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.orbisgis.orbisdata.datamanager.jdbc.dsl.sql.BuilderResult;
+import org.orbisgis.orbisdata.datamanager.jdbc.h2gis.H2GIS;
+
+import java.sql.SQLException;
+import java.util.UUID;
+
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
- * Implementation of {@link IConditionOrOptionBuilder}.
+ * Test class dedicated to the {@link BuilderResult} class.
  *
  * @author Erwan Bocher (CNRS)
- * @author Sylvain PALOMINOS (UBS 2019)
+ * @author Sylvain PALOMINOS (Lab-STICC UBS, Chaire GEOTERA, 2020)
  */
-public class ConditionOrOptionBuilder extends OptionBuilder implements IConditionOrOptionBuilder {
+public class SaveBuilderTest {
 
-    private final StringBuilder query;
-    private final JdbcDataSource dataSource;
+    private static H2GIS h2gis;
 
-    /**
-     * Main constructor.
-     *
-     * @param request    String request coming from the ISelectBuilder.
-     * @param dataSource {@link IJdbcDataSource} where the request will be executed.
-     */
-    public ConditionOrOptionBuilder(String request, JdbcDataSource dataSource) {
-        super(request, dataSource);
-        query = new StringBuilder();
-        query.append(request).append(" ");
-        this.dataSource = dataSource;
+    @BeforeAll
+    public static void beforeAll() throws SQLException {
+        h2gis = H2GIS.open("./target/" + SaveBuilderTest.class.getSimpleName() + "_" + UUID.randomUUID().toString());
+        h2gis.execute("DROP TABLE IF EXISTS data");
+        h2gis.execute("CREATE TABLE data(id int, the_geom GEOMETRY, text varchar)");
+        h2gis.execute("INSERT INTO data VALUES (1, 'POINT(0 0)', 'toto')");
     }
 
-    @Override
-    public IConditionOrOptionBuilder and(String condition) {
-        query.append("AND ");
-        query.append(condition);
-        return new ConditionOrOptionBuilder(query.toString(), dataSource);
-    }
-
-    @Override
-    public IConditionOrOptionBuilder or(String condition) {
-        query.append("OR ");
-        query.append(condition);
-        return new ConditionOrOptionBuilder(query.toString(), dataSource);
+    @Test
+    void test() {
+        SaveBuilder builder = new SaveBuilder(h2gis.getConnection(), h2gis.getSpatialTable("data"));
+        assertTrue(builder.folder("./target").name("toto").encoding("UTF8").save("json"));
+        assertTrue(builder.delete().utf8().save("csv"));
     }
 }

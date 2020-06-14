@@ -37,6 +37,7 @@
 package org.orbisgis.orbisdata.datamanager.api.dsl;
 
 import org.junit.jupiter.api.Test;
+import org.orbisgis.orbisdata.datamanager.api.dsl.sql.IOptionBuilder;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 

@@ -34,25 +34,36 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.orbisdata.datamanager.api.dsl;
+package org.orbisgis.orbisdata.datamanager.api.dsl.sql;
 
 import org.orbisgis.orbisdata.datamanager.api.dataset.ITable;
 
 /**
- * Interface defining methods for the SQL 'from' building. The request construction can be continued thanks to the
- * {@link IWhereBuilderOrOptionBuilder} or its result can be get calling 'eachRow' to iterate on the resultSet or
- * 'as ITable' to get the {@link ITable} object
+ * Interface defining methods for the SQL 'where' condition building. The request construction can be continued thanks
+ * to the {@link IConditionOrOptionBuilder} or its result can be get calling 'eachRow' to iterate on the resultSet or
+ * 'as ITable' to get the {@link ITable} object.
+ * The methods inherited from IOptionBuilder allow to set option returning an {@link IOptionBuilder} while
+ * {@link IConditionOrOptionBuilder} own methods allow to add where condition returning an
+ * {@link IConditionOrOptionBuilder}.
  *
  * @author Erwan Bocher (CNRS)
  * @author Sylvain PALOMINOS (Lab-STICC UBS 2019)
  */
-public interface IFromBuilder {
+public interface IConditionOrOptionBuilder extends IOptionBuilder {
 
     /**
-     * Indicates the table use for the selection.
+     * Add a 'AND' condition for the selection.
      *
-     * @param tables Array of the table use for the selection.
-     * @return {@link IWhereBuilderOrOptionBuilder} instance to continue building.
+     * @param condition Condition to add for for the selection.
+     * @return {@link IConditionOrOptionBuilder} instance to continue building.
      */
-    IWhereBuilderOrOptionBuilder from(String... tables);
+    IConditionOrOptionBuilder and(String condition);
+
+    /**
+     * Add a 'OR' condition for the selection.
+     *
+     * @param condition Condition to add for for the selection.
+     * @return {@link IConditionOrOptionBuilder} instance to continue building.
+     */
+    IConditionOrOptionBuilder or(String condition);
 }

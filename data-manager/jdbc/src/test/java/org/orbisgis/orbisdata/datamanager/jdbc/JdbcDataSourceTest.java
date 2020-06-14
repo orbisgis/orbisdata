@@ -36,9 +36,7 @@
  */
 package org.orbisgis.orbisdata.datamanager.jdbc;
 
-import groovy.lang.Closure;
-import groovy.lang.GString;
-import groovy.lang.MetaClass;
+import groovy.lang.*;
 import groovy.sql.GroovyRowResult;
 import groovy.sql.Sql;
 import org.codehaus.groovy.runtime.GStringImpl;
@@ -53,7 +51,7 @@ import org.junit.jupiter.api.Test;
 import org.orbisgis.commons.annotations.NotNull;
 import org.orbisgis.commons.annotations.Nullable;
 import org.orbisgis.orbisdata.datamanager.api.dataset.*;
-import org.orbisgis.orbisdata.datamanager.api.dsl.IFromBuilder;
+import org.orbisgis.orbisdata.datamanager.api.dsl.sql.IFromBuilder;
 import org.orbisgis.orbisdata.datamanager.jdbc.h2gis.H2GIS;
 import org.orbisgis.orbisdata.datamanager.jdbc.h2gis.H2gisSpatialTable;
 import org.orbisgis.orbisdata.datamanager.jdbc.h2gis.H2gisTable;
@@ -110,11 +108,19 @@ class JdbcDataSourceTest {
         ds2 = new DummyJdbcDataSource(connection, DataBaseType.POSTGIS);
 
         Statement st = dataSource.getConnection().createStatement();
-        st.execute("DROP TABLE IF EXISTS test");
+        st.execute("DROP TABLE IF EXISTS test, test2, test3");
         st.execute("CREATE TABLE test(id int, the_geom GEOMETRY, text varchar)");
         st.execute("INSERT INTO test VALUES (1, 'POINT(0 0)', 'toto')");
         st.execute("INSERT INTO test VALUES (2, 'LINESTRING(0 0, 1 1, 2 2)', 'tata')");
         st.execute("INSERT INTO test VALUES (3, 'POINT(4 5)', 'titi')");
+        st.execute("CREATE TABLE test2(id int, the_geom GEOMETRY, text varchar)");
+        st.execute("INSERT INTO test2 VALUES (11, 'POINT(10 10)', 'toto1')");
+        st.execute("INSERT INTO test2 VALUES (12, 'LINESTRING(10 10, 11 11, 12 12)', 'tata1')");
+        st.execute("INSERT INTO test2 VALUES (13, 'POINT(14 15)', 'titi1')");
+        st.execute("CREATE TABLE test3(id int, the_geom GEOMETRY, text varchar)");
+        st.execute("INSERT INTO test3 VALUES (21, 'POINT(20 20)', 'toto2')");
+        st.execute("INSERT INTO test3 VALUES (22, 'LINESTRING(20 20, 21 21, 22 22)', 'tata2')");
+        st.execute("INSERT INTO test3 VALUES (33, 'POINT(24 25)', 'titi2')");
     }
 
     /**
@@ -425,7 +431,7 @@ class JdbcDataSourceTest {
      * Test the link methods.
      */
     @Test
-    void testLink() throws SQLException, URISyntaxException, MalformedURLException {
+    void testLink() throws SQLException, URISyntaxException {
         URL url = this.getClass().getResource("linkTable.dbf");
         URI uri = url.toURI();
         File file = new File(uri);
@@ -772,14 +778,14 @@ class JdbcDataSourceTest {
     void testGetTableNames() {
         Collection<String> names = ds1.getTableNames();
         assertNotNull(names);
-        assertEquals(38, names.size());
+        assertEquals(40, names.size());
         assertTrue(names.contains("JDBCDATASOURCETEST.PUBLIC.GEOMETRY_COLUMNS"));
         assertTrue(names.contains("JDBCDATASOURCETEST.PUBLIC.TEST"));
         assertTrue(names.contains("JDBCDATASOURCETEST.PUBLIC.SPATIAL_REF_SYS"));
 
         names = ds2.getTableNames();
         assertNotNull(names);
-        assertEquals(38, names.size());
+        assertEquals(40, names.size());
         assertTrue(names.contains("JDBCDATASOURCETEST.PUBLIC.GEOMETRY_COLUMNS"));
         assertTrue(names.contains("JDBCDATASOURCETEST.PUBLIC.TEST"));
         assertTrue(names.contains("JDBCDATASOURCETEST.PUBLIC.SPATIAL_REF_SYS"));
@@ -824,7 +830,7 @@ class JdbcDataSourceTest {
     void testHasTable() {
         Collection<String> names = ds1.getTableNames();
         assertNotNull(names);
-        assertEquals(38, names.size());
+        assertEquals(40, names.size());
         assertTrue(ds1.hasTable("GEOMETRY_COLUMNS"));
         assertTrue(ds1.hasTable("TEST"));
         assertTrue(ds1.hasTable("JDBCDATASOURCETEST.PUBLIC.SPATIAL_REF_SYS"));

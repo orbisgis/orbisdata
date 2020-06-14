@@ -55,7 +55,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.orbisgis.orbisdata.datamanager.api.dsl.IOptionBuilder.Order.DESC;
+import static org.orbisgis.orbisdata.datamanager.api.dsl.sql.IOptionBuilder.Order.DESC;
 
 /**
  * Test class dedicated to the {@link H2GIS} class.

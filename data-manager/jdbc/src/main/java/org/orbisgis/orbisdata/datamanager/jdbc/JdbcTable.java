@@ -54,10 +54,12 @@ import org.orbisgis.orbisdata.datamanager.api.dataset.DataBaseType;
 import org.orbisgis.orbisdata.datamanager.api.dataset.IJdbcSpatialTable;
 import org.orbisgis.orbisdata.datamanager.api.dataset.IJdbcTable;
 import org.orbisgis.orbisdata.datamanager.api.dataset.ITable;
-import org.orbisgis.orbisdata.datamanager.api.dsl.IConditionOrOptionBuilder;
-import org.orbisgis.orbisdata.datamanager.api.dsl.IOptionBuilder;
-import org.orbisgis.orbisdata.datamanager.jdbc.dsl.OptionBuilder;
-import org.orbisgis.orbisdata.datamanager.jdbc.dsl.WhereBuilder;
+import org.orbisgis.orbisdata.datamanager.api.dsl.ISaveBuilder;
+import org.orbisgis.orbisdata.datamanager.api.dsl.sql.IConditionOrOptionBuilder;
+import org.orbisgis.orbisdata.datamanager.api.dsl.sql.IOptionBuilder;
+import org.orbisgis.orbisdata.datamanager.jdbc.dsl.SaveBuilder;
+import org.orbisgis.orbisdata.datamanager.jdbc.dsl.sql.OptionBuilder;
+import org.orbisgis.orbisdata.datamanager.jdbc.dsl.sql.WhereBuilder;
 import org.orbisgis.orbisdata.datamanager.jdbc.io.IOMethods;
 import org.orbisgis.orbisdata.datamanager.jdbc.resultset.DefaultResultSet;
 import org.orbisgis.orbisdata.datamanager.jdbc.resultset.ResultSetSpliterator;
@@ -80,7 +82,8 @@ import static org.orbisgis.commons.printer.ICustomPrinter.CellPosition.*;
  *
  * @author Sylvain Palominos (Lab-STICC UBS 2019)
  */
-public abstract class JdbcTable extends DefaultResultSet implements IJdbcTable<StreamResultSet>, GroovyObject {
+public abstract class JdbcTable extends DefaultResultSet
+        implements IJdbcTable<StreamResultSet>, ISaveBuilder, GroovyObject {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(JdbcTable.class);
 
@@ -579,12 +582,72 @@ public abstract class JdbcTable extends DefaultResultSet implements IJdbcTable<S
     public boolean save(@NotNull String filePath, String encoding) {
         try {
             String toSave = getTableLocation() == null ? "(" + getBaseQuery() + ")" : getTableLocation().toString(getDbType());
-            return IOMethods.saveAsFile(getStatement().getConnection(), toSave, filePath, encoding, false);
-
+            return IOMethods.saveAsFile(getStatement().getConnection(), toSave, filePath, encoding, null, false);
         } catch (SQLException e) {
             LOGGER.error("Cannot save the table.\n", e);
             return false;
         }
+    }
+
+    @Override
+    public boolean save(@Nullable String filePath) {
+        return save(filePath, null);
+    }
+
+    @NotNull
+    @Override
+    public ISaveBuilder encoding(@Nullable String encoding) {
+        SaveBuilder saveBuilder = new SaveBuilder(jdbcDataSource.getConnection(), this);
+        saveBuilder.encoding(encoding);
+        return saveBuilder;
+    }
+
+    @NotNull
+    @Override
+    public ISaveBuilder utf8() {
+        SaveBuilder saveBuilder = new SaveBuilder(jdbcDataSource.getConnection(), this);
+        saveBuilder.utf8();
+        return saveBuilder;
+    }
+
+    @NotNull
+    @Override
+    public ISaveBuilder zip() {
+        SaveBuilder saveBuilder = new SaveBuilder(jdbcDataSource.getConnection(), this);
+        saveBuilder.zip();
+        return saveBuilder;
+    }
+
+    @NotNull
+    @Override
+    public ISaveBuilder gz() {
+        SaveBuilder saveBuilder = new SaveBuilder(jdbcDataSource.getConnection(), this);
+        saveBuilder.gz();
+        return saveBuilder;
+    }
+
+    @NotNull
+    @Override
+    public ISaveBuilder name(@Nullable String name) {
+        SaveBuilder saveBuilder = new SaveBuilder(jdbcDataSource.getConnection(), this);
+        saveBuilder.name(name);
+        return saveBuilder;
+    }
+
+    @NotNull
+    @Override
+    public ISaveBuilder folder(@Nullable String folder) {
+        SaveBuilder saveBuilder = new SaveBuilder(jdbcDataSource.getConnection(), this);
+        saveBuilder.folder(folder);
+        return saveBuilder;
+    }
+
+    @NotNull
+    @Override
+    public ISaveBuilder delete() {
+        SaveBuilder saveBuilder = new SaveBuilder(jdbcDataSource.getConnection(), this);
+        saveBuilder.delete();
+        return saveBuilder;
     }
 
     @NotNull

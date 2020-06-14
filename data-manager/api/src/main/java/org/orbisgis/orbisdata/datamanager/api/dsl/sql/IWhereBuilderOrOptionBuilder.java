@@ -15,7 +15,7 @@
  *
  * DataManager API is distributed under LGPL 3 license.
  *
- * Copyright (C) 2019-2020 CNRS (Lab-STICC UMR CNRS 6285)
+ * Copyright (C) 2018-2020 CNRS (Lab-STICC UMR CNRS 6285)
  *
  *
  * DataManager API is free software: you can redistribute it and/or modify it under the
@@ -34,57 +34,27 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.orbisdata.datamanager.api.dsl;
+package org.orbisgis.orbisdata.datamanager.api.dsl.sql;
 
-
-import groovy.lang.Closure;
-import org.orbisgis.commons.annotations.NotNull;
-import org.orbisgis.commons.annotations.Nullable;
-import org.orbisgis.orbisdata.datamanager.api.dataset.ISpatialTable;
 import org.orbisgis.orbisdata.datamanager.api.dataset.ITable;
 
 /**
- * Define the methods use to get the result of a SQL request built throw the {@link org.orbisgis.orbisdata.datamanager.api.dsl}
- * package interfaces.
+ * Interface defining methods for the SQL 'from' building. The request construction can be continued thanks to the
+ * {@link IConditionOrOptionBuilder} or the {@link IOptionBuilder} or its result can be get calling 'eachRow' to
+ * iterate on the resultSet or 'as ITable' to get the {@link ITable} object.
+ * As the {@link IConditionOrOptionBuilder} extends {@link IOptionBuilder} the result of the where method ca be
+ * used to add condition (using AND or OR) or to set options (Like LIMIT, GROUP BY, ...).
  *
  * @author Erwan Bocher (CNRS)
  * @author Sylvain PALOMINOS (Lab-STICC UBS 2019)
  */
-public interface IBuilderResult {
+public interface IWhereBuilderOrOptionBuilder extends IOptionBuilder {
 
     /**
-     * Apply the given {@link Closure} on each row of the result of the SQL request.
+     * Indicates the condition for the selection.
      *
-     * @param closure {@link Closure} to apply to each row.
+     * @param condition Condition to use for for the selection.
+     * @return {@link IConditionOrOptionBuilder} instance to continue building.
      */
-    void eachRow(@NotNull Closure<Object> closure);
-
-    /**
-     * Convert the result of the SQL request into a {@link ITable} or {@link ISpatialTable}.
-     *
-     * @param clazz New class of the result.
-     * @return The result wrapped into the given class.
-     */
-    @Nullable
-    Object asType(@NotNull Class<?> clazz);
-
-    /**
-     * Return the {@link ITable} representing the result of the SQL query.
-     *
-     * @return The {@link ITable} representing the result of the SQL query.
-     */
-    @Nullable
-    ITable<?, ?> getTable();
-
-    /**
-     * Return the {@link ISpatialTable} representing the result of the SQL query.
-     *
-     * @return The {@link ISpatialTable} representing the result of the SQL query.
-     */
-    @Nullable
-    ISpatialTable<?, ?> getSpatialTable();
-
-    @Override
-    @NotNull
-    String toString();
+    IConditionOrOptionBuilder where(String condition);
 }

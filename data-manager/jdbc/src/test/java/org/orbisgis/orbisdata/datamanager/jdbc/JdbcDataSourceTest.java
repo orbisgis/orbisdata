@@ -85,6 +85,7 @@ class JdbcDataSourceTest {
 
     private static final String DB_NAME = "target/JdbcDataSourceTest";
     private static final String DB_LINK_NAME = "./target/dbToLink";
+    private static final String DB_POSTGRES_MODE = "./target/db_postgresql_mode;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE";
     private static DummyJdbcDataSource ds1;
     private static DummyJdbcDataSource ds2;
 
@@ -105,16 +106,28 @@ class JdbcDataSourceTest {
     void init() throws SQLException {
         DataSource dataSource = H2GISDBFactory.createDataSource(new File(DB_NAME).toURI().toString(), true);
         Connection connection = dataSource.getConnection();
-
-        ds1 = new DummyJdbcDataSource(dataSource, DataBaseType.H2GIS);
-        ds2 = new DummyJdbcDataSource(connection, DataBaseType.POSTGIS);
-
         Statement st = dataSource.getConnection().createStatement();
         st.execute("DROP TABLE IF EXISTS test");
         st.execute("CREATE TABLE test(id int, the_geom GEOMETRY, text varchar)");
         st.execute("INSERT INTO test VALUES (1, 'POINT(0 0)', 'toto')");
         st.execute("INSERT INTO test VALUES (2, 'LINESTRING(0 0, 1 1, 2 2)', 'tata')");
         st.execute("INSERT INTO test VALUES (3, 'POINT(4 5)', 'titi')");
+
+        ds1 = new DummyJdbcDataSource(dataSource, DataBaseType.H2GIS);
+
+
+        DataSource ds_postgres = H2GISDBFactory.createDataSource(new File(DB_POSTGRES_MODE).toURI().toString(), true);
+        Connection con_postgres = ds_postgres.getConnection();
+        Statement st_postgres = con_postgres.createStatement();
+        st_postgres.execute("DROP TABLE IF EXISTS test");
+        st_postgres.execute("CREATE TABLE test(id int, the_geom GEOMETRY, text varchar)");
+        st_postgres.execute("INSERT INTO test VALUES (1, 'POINT(0 0)', 'toto')");
+        st_postgres.execute("INSERT INTO test VALUES (2, 'LINESTRING(0 0, 1 1, 2 2)', 'tata')");
+        st_postgres.execute("INSERT INTO test VALUES (3, 'POINT(4 5)', 'titi')");
+
+        ds2 = new DummyJdbcDataSource(con_postgres, DataBaseType.POSTGIS);
+
+
     }
 
     /**
@@ -194,12 +207,12 @@ class JdbcDataSourceTest {
         assertFalse(ds1.firstRow(gstring1).isEmpty());
         assertEquals("{ID=1, THE_GEOM=POINT (0 0), TEXT=toto}", ds1.firstRow(gstring1).toString());
         assertFalse(ds2.firstRow(gstring1).isEmpty());
-        assertEquals("{ID=1, THE_GEOM=POINT (0 0), TEXT=toto}", ds2.firstRow(gstring1).toString());
+        assertEquals("{id=1, the_geom=point (0 0), text=toto}", ds2.firstRow(gstring1).toString());
 
         assertFalse(ds1.firstRow(gstring3).isEmpty());
         assertEquals("{ID=1, THE_GEOM=POINT (0 0), TEXT=toto}", ds1.firstRow(gstring3).toString());
         assertFalse(ds2.firstRow(gstring3).isEmpty());
-        assertEquals("{ID=1, THE_GEOM=POINT (0 0), TEXT=toto}", ds2.firstRow(gstring3).toString());
+        assertEquals("{id=1, the_geom=point (0 0), text=toto}", ds2.firstRow(gstring3).toString());
     }
 
     /**
@@ -253,9 +266,9 @@ class JdbcDataSourceTest {
                 "[ID:3, THE_GEOM:POINT (4 5), TEXT:titi]\n", collect[0]);
         collect[0] = "";
         ds2.eachRow(gstring1, cl);
-        assertEquals("[ID:1, THE_GEOM:POINT (0 0), TEXT:toto]\n" +
-                "[ID:2, THE_GEOM:LINESTRING (0 0, 1 1, 2 2), TEXT:tata]\n" +
-                "[ID:3, THE_GEOM:POINT (4 5), TEXT:titi]\n", collect[0]);
+        assertEquals("[id:1, the_geom:point (0 0), text:toto]\n" +
+                "[id:2, the_geom:linestring (0 0, 1 1, 2 2), text:tata]\n" +
+                "[id:3, the_geom:point (4 5), text:titi]\n", collect[0]);
         collect[0] = "";
 
         collect[0] = "";
@@ -265,9 +278,9 @@ class JdbcDataSourceTest {
                 "[ID:3, THE_GEOM:POINT (4 5), TEXT:titi]\n", collect[0]);
         collect[0] = "";
         ds2.eachRow(gstring3, cl);
-        assertEquals("[ID:1, THE_GEOM:POINT (0 0), TEXT:toto]\n" +
-                "[ID:2, THE_GEOM:LINESTRING (0 0, 1 1, 2 2), TEXT:tata]\n" +
-                "[ID:3, THE_GEOM:POINT (4 5), TEXT:titi]\n", collect[0]);
+        assertEquals("[id:1, the_geom:point (0 0), text:toto]\n" +
+                "[id:2, the_geom:linestring (0 0, 1 1, 2 2), text:tata]\n" +
+                "[id:3, the_geom:point (4 5), text:titi]\n", collect[0]);
         collect[0] = "";
     }
 
@@ -324,13 +337,13 @@ class JdbcDataSourceTest {
         assertTrue(ds2.executeScript(file.getAbsolutePath(), map));
         assertFalse(ds2.executeScript("toto", map));
         str = ds2.rows("SELECT * FROM script").stream().map(Objects::toString).collect(Collectors.joining("\n"));
-        assertEquals("{ID=1}\n{ID=11}\n{ID=51}", str);
+        assertEquals("{id=1}\n{id=11}\n{id=51}", str);
         assertTrue(ds2.executeScript(url.toURI().toString(), map));
         str = ds2.rows("SELECT * FROM script").stream().map(Objects::toString).collect(Collectors.joining("\n"));
-        assertEquals("{ID=1}\n{ID=11}\n{ID=51}", str);
+        assertEquals("{id=1}\n{id=11}\n{id=51}", str);
         assertTrue(ds2.executeScript(url.toString(), map));
         str = ds2.rows("SELECT * FROM script").stream().map(Objects::toString).collect(Collectors.joining("\n"));
-        assertEquals("{ID=1}\n{ID=11}\n{ID=51}", str);
+        assertEquals("{id=1}\n{id=11}\n{id=51}", str);
 
         assertFalse(ds1.executeScript("notAFile.sql"));
         assertFalse(ds2.executeScript("notAFile.sql"));
@@ -350,7 +363,7 @@ class JdbcDataSourceTest {
 
         assertTrue(ds2.executeScript(this.getClass().getResourceAsStream("simpleWithArgs.sql"), map));
         str = ds2.rows("SELECT * FROM script").stream().map(Objects::toString).collect(Collectors.joining("\n"));
-        assertEquals("{ID=1}\n{ID=11}\n{ID=51}", str);
+        assertEquals("{id=1}\n{id=11}\n{id=51}", str);
 
         assertFalse(ds1.executeScript(this.getClass().getResourceAsStream("badSql.sql"), map));
         assertFalse(ds2.executeScript(this.getClass().getResourceAsStream("badSql.sql"), map));
@@ -762,7 +775,7 @@ class JdbcDataSourceTest {
         assertNotNull(ds1.getLocation());
         assertEquals(new File(DB_NAME).getAbsolutePath(), ds1.getLocation().asType(String.class));
         assertNotNull(ds2.getLocation());
-        assertEquals(new File(DB_NAME).getAbsolutePath(), ds2.getLocation().asType(String.class));
+        assertEquals(new File(DB_POSTGRES_MODE).getAbsolutePath().split(";")[0], ds2.getLocation().asType(String.class));
     }
 
     /**
@@ -780,9 +793,9 @@ class JdbcDataSourceTest {
         names = ds2.getTableNames();
         assertNotNull(names);
         assertEquals(38, names.size());
-        assertTrue(names.contains("JDBCDATASOURCETEST.PUBLIC.GEOMETRY_COLUMNS"));
-        assertTrue(names.contains("JDBCDATASOURCETEST.PUBLIC.TEST"));
-        assertTrue(names.contains("JDBCDATASOURCETEST.PUBLIC.SPATIAL_REF_SYS"));
+        assertTrue(names.contains("jdbcdatasourcetest.public.geometry_columns"));
+        assertTrue(names.contains("jdbcdatasourcetest.public.test"));
+        assertTrue(names.contains("jdbcdatasourcetest.public.spatial_ref_sys"));
     }
 
     /**
@@ -809,11 +822,11 @@ class JdbcDataSourceTest {
         assertTrue(names.contains("THE_GEOM"));
         assertTrue(names.contains("TEXT"));
 
-        names = ds2.getColumnNames("JDBCDATASOURCETEST.PUBLIC.TEST");
+        names = ds2.getColumnNames("jdbcdatasourcetest.public.test");
         assertNull(names);
-        names = ds2.getColumnNames("PUBLIC.TEST");
+        names = ds2.getColumnNames("public.test");
         assertNull(names);
-        names = ds2.getColumnNames("TEST");
+        names = ds2.getColumnNames("test");
         assertNull(names);
     }
 
@@ -841,9 +854,9 @@ class JdbcDataSourceTest {
         dataset = ds1.getDataSet("GEOMETRY_COLUMNS");
         assertTrue(dataset instanceof ITable);
 
-        dataset = ds2.getDataSet("TEST");
+        dataset = ds2.getDataSet("test");
         assertTrue(dataset instanceof ISpatialTable);
-        dataset = ds2.getDataSet("GEOMETRY_COLUMNS");
+        dataset = ds2.getDataSet("geometry_columns");
         assertTrue(dataset instanceof ITable);
     }
 

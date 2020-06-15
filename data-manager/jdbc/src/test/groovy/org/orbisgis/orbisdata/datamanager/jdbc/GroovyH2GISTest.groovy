@@ -748,7 +748,7 @@ class GroovyH2GISTest {
                 DROP TABLE IF EXISTS H2GIS;
                 CREATE TABLE H2GIS (id int, the_geom geometry(point, 4326));
         """)
-        assertEquals(4326, h2GIS.getSpatialTable("postgis").srid)
+        assertEquals(4326, h2GIS.getSpatialTable("H2GIS").srid)
 
         h2GIS.execute("""
                 DROP SCHEMA IF EXISTS cnrs CASCADE;

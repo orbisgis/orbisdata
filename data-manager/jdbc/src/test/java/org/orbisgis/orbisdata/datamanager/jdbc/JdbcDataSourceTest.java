@@ -207,12 +207,12 @@ class JdbcDataSourceTest {
         assertFalse(ds1.firstRow(gstring1).isEmpty());
         assertEquals("{ID=1, THE_GEOM=POINT (0 0), TEXT=toto}", ds1.firstRow(gstring1).toString());
         assertFalse(ds2.firstRow(gstring1).isEmpty());
-        assertEquals("{id=1, the_geom=point (0 0), text=toto}", ds2.firstRow(gstring1).toString());
+        assertEquals("{id=1, the_geom=POINT (0 0), text=toto}", ds2.firstRow(gstring1).toString());
 
         assertFalse(ds1.firstRow(gstring3).isEmpty());
         assertEquals("{ID=1, THE_GEOM=POINT (0 0), TEXT=toto}", ds1.firstRow(gstring3).toString());
         assertFalse(ds2.firstRow(gstring3).isEmpty());
-        assertEquals("{id=1, the_geom=point (0 0), text=toto}", ds2.firstRow(gstring3).toString());
+        assertEquals("{id=1, the_geom=POINT (0 0), text=toto}", ds2.firstRow(gstring3).toString());
     }
 
     /**
@@ -223,11 +223,11 @@ class JdbcDataSourceTest {
         GString gstring1 = new GStringImpl(new String[]{"test"}, new String[]{"SELECT * FROM "});
         GString gstring3 = new GStringImpl(new String[]{}, new String[]{"SELECT * FROM test"});
 
-        testRows(ds1.rows(gstring1));
-        testRows(ds2.rows(gstring1));
+        testRowsH2GIS(ds1.rows(gstring1));
+        testRowsPOSTGIS(ds2.rows(gstring1));
 
-        testRows(ds1.rows(gstring3));
-        testRows(ds2.rows(gstring3));
+        testRowsH2GIS(ds1.rows(gstring3));
+        testRowsPOSTGIS(ds2.rows(gstring3));
     }
 
     /**
@@ -235,12 +235,25 @@ class JdbcDataSourceTest {
      *
      * @param list List containing the rows to test.
      */
-    private void testRows(List<GroovyRowResult> list) {
+    private void testRowsH2GIS(List<GroovyRowResult> list) {
         assertFalse(list.isEmpty());
         assertEquals(3, list.size());
         assertEquals("{ID=1, THE_GEOM=POINT (0 0), TEXT=toto}", list.get(0).toString());
         assertEquals("{ID=2, THE_GEOM=LINESTRING (0 0, 1 1, 2 2), TEXT=tata}", list.get(1).toString());
         assertEquals("{ID=3, THE_GEOM=POINT (4 5), TEXT=titi}", list.get(2).toString());
+    }
+
+    /**
+     * Test all the rows from the given list.
+     *
+     * @param list List containing the rows to test.
+     */
+    private void testRowsPOSTGIS(List<GroovyRowResult> list) {
+        assertFalse(list.isEmpty());
+        assertEquals(3, list.size());
+        assertEquals("{id=1, the_geom=POINT (0 0), text=toto}", list.get(0).toString());
+        assertEquals("{id=2, the_geom=LINESTRING (0 0, 1 1, 2 2), text=tata}", list.get(1).toString());
+        assertEquals("{id=3, the_geom=POINT (4 5), text=titi}", list.get(2).toString());
     }
 
     /**
@@ -266,9 +279,9 @@ class JdbcDataSourceTest {
                 "[ID:3, THE_GEOM:POINT (4 5), TEXT:titi]\n", collect[0]);
         collect[0] = "";
         ds2.eachRow(gstring1, cl);
-        assertEquals("[id:1, the_geom:point (0 0), text:toto]\n" +
-                "[id:2, the_geom:linestring (0 0, 1 1, 2 2), text:tata]\n" +
-                "[id:3, the_geom:point (4 5), text:titi]\n", collect[0]);
+        assertEquals("[id:1, the_geom:POINT (0 0), text:toto]\n" +
+                "[id:2, the_geom:LINESTRING (0 0, 1 1, 2 2), text:tata]\n" +
+                "[id:3, the_geom:POINT (4 5), text:titi]\n", collect[0]);
         collect[0] = "";
 
         collect[0] = "";
@@ -278,9 +291,9 @@ class JdbcDataSourceTest {
                 "[ID:3, THE_GEOM:POINT (4 5), TEXT:titi]\n", collect[0]);
         collect[0] = "";
         ds2.eachRow(gstring3, cl);
-        assertEquals("[id:1, the_geom:point (0 0), text:toto]\n" +
-                "[id:2, the_geom:linestring (0 0, 1 1, 2 2), text:tata]\n" +
-                "[id:3, the_geom:point (4 5), text:titi]\n", collect[0]);
+        assertEquals("[id:1, the_geom:POINT (0 0), text:toto]\n" +
+                "[id:2, the_geom:LINESTRING (0 0, 1 1, 2 2), text:tata]\n" +
+                "[id:3, the_geom:POINT (4 5), text:titi]\n", collect[0]);
         collect[0] = "";
     }
 
@@ -785,17 +798,15 @@ class JdbcDataSourceTest {
     void testGetTableNames() {
         Collection<String> names = ds1.getTableNames();
         assertNotNull(names);
-        assertEquals(38, names.size());
         assertTrue(names.contains("JDBCDATASOURCETEST.PUBLIC.GEOMETRY_COLUMNS"));
         assertTrue(names.contains("JDBCDATASOURCETEST.PUBLIC.TEST"));
         assertTrue(names.contains("JDBCDATASOURCETEST.PUBLIC.SPATIAL_REF_SYS"));
 
         names = ds2.getTableNames();
         assertNotNull(names);
-        assertEquals(38, names.size());
-        assertTrue(names.contains("jdbcdatasourcetest.public.geometry_columns"));
-        assertTrue(names.contains("jdbcdatasourcetest.public.test"));
-        assertTrue(names.contains("jdbcdatasourcetest.public.spatial_ref_sys"));
+        assertTrue(names.contains("\"db_postgresql_mode\".\"public\".\"geometry_columns\""));//Due to the H2 driver
+        assertTrue(names.contains("\"db_postgresql_mode\".\"public\".\"test\""));
+        assertTrue(names.contains("\"db_postgresql_mode\".\"public\".\"spatial_ref_sys\""));
     }
 
     /**
@@ -837,7 +848,6 @@ class JdbcDataSourceTest {
     void testHasTable() {
         Collection<String> names = ds1.getTableNames();
         assertNotNull(names);
-        assertEquals(38, names.size());
         assertTrue(ds1.hasTable("GEOMETRY_COLUMNS"));
         assertTrue(ds1.hasTable("TEST"));
         assertTrue(ds1.hasTable("JDBCDATASOURCETEST.PUBLIC.SPATIAL_REF_SYS"));

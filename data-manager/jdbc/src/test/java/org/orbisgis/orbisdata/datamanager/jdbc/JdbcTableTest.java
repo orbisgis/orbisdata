@@ -253,7 +253,7 @@ class JdbcTableTest {
         str = getTempTable().stream()
                 .map(resultSet -> resultSet.getObject(COL_THE_GEOM).toString())
                 .collect(Collectors.joining(" ; "));
-        assertEquals("", str);
+        assertEquals("POINT (0 1)", str);
 
         str = getBuiltTable().stream()
                 .map(resultSet -> resultSet.getObject(COL_THE_GEOM).toString())
@@ -313,7 +313,7 @@ class JdbcTableTest {
         assertEquals("Simple points", map.get(COL_MEANING));
 
         map = getTempTable().firstRow();
-        assertTrue(map.isEmpty());
+        assertTrue(!map.isEmpty());
 
         map = getEmptyTable().firstRow();
         assertTrue(map.isEmpty());
@@ -568,8 +568,7 @@ class JdbcTableTest {
     @Test
     void testGetRowCount() {
         assertEquals(2, getTable().getRowCount());
-        assertEquals(2, getLinkedTable().getRowCount());
-        assertEquals(0, getTempTable().getRowCount());
+        assertEquals(1, getTempTable().getRowCount());
         assertEquals(0, getEmptyTable().getRowCount());
         assertEquals(2, getBuiltTable().getRowCount());
     }
@@ -914,10 +913,10 @@ class JdbcTableTest {
         assertEquals(5, getEmptyTable().getSummary().getColumnCount());
         assertEquals(0, getEmptyTable().getSummary().getRowCount());
 
-        assertEquals("\"TEMPTABLE\"; row count : 0; column count : 5", getTempTable().getSummary().toString());
+        assertEquals("\"TEMPTABLE\"; row count : 1; column count : 5", getTempTable().getSummary().toString());
         assertEquals("\"TEMPTABLE\"", getTempTable().getSummary().getLocation().toString());
         assertEquals(5, getTempTable().getSummary().getColumnCount());
-        assertEquals(0, getTempTable().getSummary().getRowCount());
+        assertEquals(1, getTempTable().getSummary().getRowCount());
 
         assertEquals("\"LINKEDTABLE\"; row count : 2; column count : 5", getLinkedTable().getSummary().toString());
         assertEquals("\"LINKEDTABLE\"", getLinkedTable().getSummary().getLocation().toString());

@@ -330,4 +330,21 @@ class GroovyPostGISTest {
         assertTrue geom instanceof Polygon
         assertEquals("POLYGON ((28 0, 28 42, 84 42, 84 0, 28 0))", geom.toString());
     }
+
+    @Test
+    @EnabledIfSystemProperty(named = "test.postgis", matches = "true")
+    void sridOnEmptyTable() {
+        postGIS.execute("""
+                DROP TABLE IF EXISTS postgis;
+                CREATE TABLE postgis (id int, the_geom geometry(point, 4326));
+        """)
+        assertEquals(4326, postGIS.getSpatialTable("postgis").srid)
+
+        postGIS.execute("""
+                DROP SCHEMA IF EXISTS cnrs CASCADE;
+                CREATE SCHEMA cnrs ;
+                CREATE TABLE cnrs.postgis (id int, the_geom geometry(point, 4326));
+        """)
+        assertEquals(4326, postGIS.getSpatialTable("cnrs.postgis").srid)
+    }
 }

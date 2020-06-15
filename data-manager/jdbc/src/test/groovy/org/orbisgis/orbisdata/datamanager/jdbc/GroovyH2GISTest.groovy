@@ -37,6 +37,7 @@
 package org.orbisgis.orbisdata.datamanager.jdbc
 
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.condition.EnabledIfSystemProperty
 import org.locationtech.jts.geom.Geometry
 import org.locationtech.jts.geom.MultiPolygon
 import org.locationtech.jts.geom.Point
@@ -738,5 +739,22 @@ class GroovyH2GISTest {
         assertEquals 4326, geom.SRID
         assertEquals("POLYGON ((28 0, 28 42, 84 42, 84 0, 28 0))", geom.toString());
         h2GIS.execute("drop table forests");
+    }
+
+    @Test
+    void sridOnEmptyTable() {
+        def h2GIS = H2GIS.open('./target/orbisgis')
+        h2GIS.execute("""
+                DROP TABLE IF EXISTS H2GIS;
+                CREATE TABLE H2GIS (id int, the_geom geometry(point, 4326));
+        """)
+        assertEquals(4326, h2GIS.getSpatialTable("postgis").srid)
+
+        h2GIS.execute("""
+                DROP SCHEMA IF EXISTS cnrs CASCADE;
+                CREATE SCHEMA cnrs ;
+                CREATE TABLE cnrs.H2GIS (id int, the_geom geometry(point, 4326));
+        """)
+        assertEquals(4326, h2GIS.getSpatialTable("CNRS.H2GIS").srid)
     }
 }

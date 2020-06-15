@@ -407,44 +407,28 @@ class JdbcDataSourceTest {
         ds2.execute("DROP TABLE IF EXISTS load");
 
         assertTrue(ds1.save("test", "target/save_path_ds1.geojson"));
-        assertTrue(ds2.save("test", "target/save_path_ds2.geojson"));
         assertTrue(new File("target/save_path_ds1.geojson").exists());
-        assertTrue(new File("target/save_path_ds2.geojson").exists());
 
         assertTrue(ds1.save("test", "target/save_path_enc_ds1.geojson", "UTF8"));
-        assertTrue(ds2.save("test", "target/save_path_enc_ds2.geojson", "UTF8"));
         assertTrue(new File("target/save_path_enc_ds1.geojson").exists());
-        assertTrue(new File("target/save_path_enc_ds2.geojson").exists());
 
         assertTrue(ds1.save("test", new File("target/save_url_ds1.geojson").toURI().toURL()));
-        assertTrue(ds2.save("test", new File("target/save_url_ds2.geojson").toURI().toURL()));
         assertTrue(new File("target/save_url_ds1.geojson").exists());
-        assertTrue(new File("target/save_url_ds2.geojson").exists());
 
         assertTrue(ds1.save("test", new File("target/save_url_enc_ds1.geojson").toURI().toURL(), "UTF8"));
-        assertTrue(ds2.save("test", new File("target/save_url_enc_ds2.geojson").toURI().toURL(), "UTF8"));
         assertTrue(new File("target/save_url_enc_ds1.geojson").exists());
-        assertTrue(new File("target/save_url_enc_ds2.geojson").exists());
 
         assertTrue(ds1.save("test", new File("target/save_uri_ds1.geojson").toURI()));
-        assertTrue(ds2.save("test", new File("target/save_uri_ds2.geojson").toURI()));
         assertTrue(new File("target/save_uri_ds1.geojson").exists());
-        assertTrue(new File("target/save_uri_ds2.geojson").exists());
 
         assertTrue(ds1.save("test", new File("target/save_uri_enc_ds1.geojson").toURI(), "UTF8"));
-        assertTrue(ds2.save("test", new File("target/save_uri_enc_ds2.geojson").toURI(), "UTF8"));
         assertTrue(new File("target/save_uri_enc_ds1.geojson").exists());
-        assertTrue(new File("target/save_uri_enc_ds2.geojson").exists());
 
         assertTrue(ds1.save("test", new File("target/save_file_ds1.geojson")));
-        assertTrue(ds2.save("test", new File("target/save_file_ds2.geojson")));
         assertTrue(new File("target/save_file_ds1.geojson").exists());
-        assertTrue(new File("target/save_file_ds2.geojson").exists());
 
         assertTrue(ds1.save("test", new File("target/save_file_enc_ds1.geojson"), "UTF8"));
-        assertTrue(ds2.save("test", new File("target/save_file_enc_ds2.geojson"), "UTF8"));
         assertTrue(new File("target/save_file_enc_ds1.geojson").exists());
-        assertTrue(new File("target/save_file_enc_ds2.geojson").exists());
     }
 
     /**
@@ -833,12 +817,18 @@ class JdbcDataSourceTest {
         assertTrue(names.contains("THE_GEOM"));
         assertTrue(names.contains("TEXT"));
 
-        names = ds2.getColumnNames("jdbcdatasourcetest.public.test");
-        assertNull(names);
+        names = ds2.getColumnNames("db_postgresql_mode.public.test");
+        assertTrue(names.contains("id"));
+        assertTrue(names.contains("the_geom"));
+        assertTrue(names.contains("text"));
         names = ds2.getColumnNames("public.test");
-        assertNull(names);
+        assertTrue(names.contains("id"));
+        assertTrue(names.contains("the_geom"));
+        assertTrue(names.contains("text"));
         names = ds2.getColumnNames("test");
-        assertNull(names);
+        assertTrue(names.contains("id"));
+        assertTrue(names.contains("the_geom"));
+        assertTrue(names.contains("text"));
     }
 
     /**

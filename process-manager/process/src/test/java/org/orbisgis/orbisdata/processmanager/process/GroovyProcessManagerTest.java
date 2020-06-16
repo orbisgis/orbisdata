@@ -238,24 +238,6 @@ public class GroovyProcessManagerTest {
     }
 
     /**
-     * Test the {@link GroovyProcessFactory#setLogger(Logger)} method.
-     */
-    @Test
-    void setLoggerTest() {
-        GroovyProcessManager pm = new DummyGPM();
-        pm.registerFactory("toto1", new ProcessFactory());
-        pm.registerFactory("toto2", new ProcessFactory());
-        List<Class<?extends GroovyProcessFactory>> list = new ArrayList<>();
-        list.add(DummyGPF.class);
-        try {
-            pm.register(list);
-        } catch (IllegalAccessException | InstantiationException e) {
-            fail(e);
-        }
-        assertDoesNotThrow(() -> pm.setLogger(LoggerFactory.getLogger(GroovyProcessManagerTest.class)));
-    }
-
-    /**
      * Test the {@link GroovyProcessManager#load(Class)} method.
      */
     @Test

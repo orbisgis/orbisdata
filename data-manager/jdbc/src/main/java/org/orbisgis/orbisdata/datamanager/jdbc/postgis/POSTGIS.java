@@ -10,7 +10,9 @@ import org.orbisgis.commons.annotations.Nullable;
 import org.orbisgis.orbisdata.datamanager.api.dataset.DataBaseType;
 import org.orbisgis.orbisdata.datamanager.api.dataset.IJdbcSpatialTable;
 import org.orbisgis.orbisdata.datamanager.api.dataset.IJdbcTable;
+import org.orbisgis.orbisdata.datamanager.api.dataset.ISpatialTable;
 import org.orbisgis.orbisdata.datamanager.jdbc.JdbcDataSource;
+import org.orbisgis.orbisdata.datamanager.jdbc.JdbcSpatialTable;
 import org.orbisgis.orbisdata.datamanager.jdbc.TableLocation;
 import org.osgi.service.jdbc.DataSourceFactory;
 import org.slf4j.Logger;
@@ -176,9 +178,9 @@ public class POSTGIS extends JdbcDataSource {
     @Override
     public IJdbcTable getTable(@NotNull String tableName) {
         Connection connection = getConnection();
+        org.h2gis.utilities.TableLocation inputLocation = TableLocation.parse(tableName, false);
         try {
-            if (!JDBCUtilities.tableExists(connection,
-                    TableLocation.parse(tableName, false))) {
+            if (!JDBCUtilities.tableExists(connection,inputLocation)) {
                 return null;
             }
         } catch (SQLException e) {
@@ -201,61 +203,32 @@ public class POSTGIS extends JdbcDataSource {
             return null;
         }
         String query = String.format("SELECT * FROM %s", tableName);
+        TableLocation location = new TableLocation(Objects.requireNonNull(getLocation()).toString(), inputLocation.getCatalog(), inputLocation.getSchema(), inputLocation.getTable());
         try {
-            TableLocation location = new TableLocation(Objects.requireNonNull(getLocation()).toString(), tableName);
             Connection con = getConnection();
-            if(con != null && !GeometryTableUtilities.getGeometryColumnNamesAndIndexes(con, location).isEmpty()) {
-                return new PostgisSpatialTable(new TableLocation(getLocation().toString(), tableName), query, statement, this);
+            if(con != null && GeometryTableUtilities.hasGeometryColumn(con, location)) {
+                return new PostgisSpatialTable(location, query, statement, this);
             }
         } catch (SQLException e) {
             LOGGER.error("Unable to check if table '" + tableName + "' contains geometric fields.\n" +
                     e.getLocalizedMessage());
         }
-        return new PostgisTable(new TableLocation(getLocation().toString(), tableName), query, statement, this);
+        return new PostgisTable(location, query, statement, this);
     }
 
     @Override
     public IJdbcSpatialTable getSpatialTable(@NotNull String tableName) {
-        Connection connection = getConnection();
-        try {
-            if (!JDBCUtilities.tableExists(connection,
-                    TableLocation.parse(tableName, false))) {
-                return null;
+        IJdbcTable table = getTable(tableName);
+        if (table instanceof ISpatialTable) {
+            return (JdbcSpatialTable) table;
+        } else {
+            String name = "";
+            if(table != null){
+                name = "'" + table.getName() + "' ";
             }
-        } catch (SQLException e) {
-            LOGGER.error("Unable to find table.\n" + e.getLocalizedMessage());
+            LOGGER.error("The table " + name + "is not a spatial table.");
             return null;
         }
-        StatementWrapper statement;
-        try {
-            DatabaseMetaData dbdm = connection.getMetaData();
-            int type = ResultSet.TYPE_FORWARD_ONLY;
-            if(dbdm.supportsResultSetType(ResultSet.TYPE_SCROLL_SENSITIVE)){
-                type = ResultSet.TYPE_SCROLL_SENSITIVE;
-            }
-            else if(dbdm.supportsResultSetType(ResultSet.TYPE_SCROLL_INSENSITIVE)){
-                type = ResultSet.TYPE_SCROLL_INSENSITIVE;
-            }
-            statement = (StatementWrapper) connection.createStatement(type, ResultSet.CONCUR_UPDATABLE);
-        } catch (SQLException e) {
-            LOGGER.error("Unable to create Statement.\n" + e.getLocalizedMessage());
-            return null;
-        }
-        String query = String.format("SELECT * FROM %s", tableName);
-        try {
-            TableLocation location = new TableLocation(Objects.requireNonNull(getLocation()).toString(), tableName);
-            Connection con = getConnection();
-            if(con != null &&
-                    !GeometryTableUtilities.getGeometryColumnNamesAndIndexes(
-                            con, new TableLocation(location.toString(), tableName)).isEmpty()) {
-                return new PostgisSpatialTable(new TableLocation(this.getLocation().toString(), tableName), query, statement, this);
-            }
-        } catch (SQLException e) {
-            LOGGER.error("Unable to check if table '" + tableName + "' contains geometric fields.\n" +
-                    e.getLocalizedMessage());
-        }
-        LOGGER.error("The table '" + tableName + "' is not a spatial table.");
-        return null;
     }
 
     @Override

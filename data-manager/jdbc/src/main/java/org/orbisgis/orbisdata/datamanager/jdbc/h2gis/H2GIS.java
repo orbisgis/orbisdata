@@ -250,10 +250,9 @@ public class H2GIS extends JdbcDataSource {
     @Nullable
     public IJdbcTable getTable(@NotNull String tableName) {
         Connection connection = getConnection();
-        String name = org.h2gis.utilities.TableLocation.parse(tableName, getDataBaseType().equals(DataBaseType.H2GIS))
-                .toString(getDataBaseType().equals(DataBaseType.H2GIS));
+        org.h2gis.utilities.TableLocation inputLocation = TableLocation.parse(tableName, true);
         try {
-            if (!JDBCUtilities.tableExists(connection, org.h2gis.utilities.TableLocation.parse(name, true))) {
+            if (!JDBCUtilities.tableExists(connection, inputLocation)) {
                 return null;
             }
         } catch (SQLException e) {
@@ -275,18 +274,18 @@ public class H2GIS extends JdbcDataSource {
             LOGGER.error("Unable to create Statement.\n" + e.getLocalizedMessage());
             return null;
         }
-        String query = String.format("SELECT * FROM %s", name);
+        String query = String.format("SELECT * FROM %s", inputLocation);
+        TableLocation location = new TableLocation(Objects.requireNonNull(getLocation()).toString(), inputLocation.getCatalog(), inputLocation.getSchema(), inputLocation.getTable());
         try {
-            TableLocation location = new TableLocation(Objects.requireNonNull(getLocation()).toString(), name);
             Connection con = getConnection();
-            if(con != null && !GeometryTableUtilities.getGeometryColumnNamesAndIndexes(con, location).isEmpty()) {
-                return new H2gisSpatialTable(new TableLocation(this.getLocation().toString(), name), query, statement, this);
+            if(con != null && GeometryTableUtilities.hasGeometryColumn(con, inputLocation)) {
+                return new H2gisSpatialTable(location, query, statement, this);
             }
         } catch (SQLException e) {
-            LOGGER.error("Unable to check if table '" + name + "' contains geometric fields.\n" +
+            LOGGER.error("Unable to check if table '" + location + "' contains geometric fields.\n" +
                     e.getLocalizedMessage());
         }
-        return new H2gisTable(new TableLocation(this.getLocation().toString(), name), query, statement, this);
+        return new H2gisTable(location, query, statement, this);
     }
 
     @Override

@@ -58,7 +58,8 @@ import java.util.UUID;
  */
 public abstract class GroovyProcessFactory extends Script implements IProcessFactory, GroovyObject, GroovyInterceptable {
     private final ProcessFactory factory = new ProcessFactory();
-    private Logger LOGGER = LoggerFactory.getLogger(GroovyProcessFactory.class);
+    private Logger logger = LoggerFactory.getLogger(GroovyProcessFactory.class);
+    private GroovyObject gLogger;
     /**
      * MetaClass use for groovy methods/properties binding
      */
@@ -160,7 +161,7 @@ public abstract class GroovyProcessFactory extends Script implements IProcessFac
      * @param o Object to log.
      */
     public void info(Object o) {
-        LOGGER.info(String.valueOf(o));
+        gLogger.invokeMethod("info", String.valueOf(o));
     }
 
     /**
@@ -169,7 +170,7 @@ public abstract class GroovyProcessFactory extends Script implements IProcessFac
      * @param e Exception to log.
      */
     public void info(Object o, Exception e) {
-        LOGGER.info(String.valueOf(o), e);
+        gLogger.invokeMethod("info", new Object[]{String.valueOf(o), e});
     }
 
     /**
@@ -177,7 +178,7 @@ public abstract class GroovyProcessFactory extends Script implements IProcessFac
      * @param o Object to log.
      */
     public void debug(Object o) {
-        LOGGER.debug(String.valueOf(o));
+        gLogger.invokeMethod("debug", String.valueOf(o));
     }
 
     /**
@@ -186,7 +187,7 @@ public abstract class GroovyProcessFactory extends Script implements IProcessFac
      * @param e Exception to log.
      */
     public void debug(Object o, Exception e) {
-        LOGGER.debug(String.valueOf(o), e);
+        gLogger.invokeMethod("info", new Object[]{String.valueOf(o), e});
     }
 
     /**
@@ -194,7 +195,7 @@ public abstract class GroovyProcessFactory extends Script implements IProcessFac
      * @param o Object to log.
      */
     public void warn(Object o) {
-        LOGGER.warn(String.valueOf(o));
+        gLogger.invokeMethod("warn", String.valueOf(o));
     }
 
     /**
@@ -203,7 +204,7 @@ public abstract class GroovyProcessFactory extends Script implements IProcessFac
      * @param e Exception to log.
      */
     public void warn(Object o, Exception e) {
-        LOGGER.warn(String.valueOf(o), e);
+        gLogger.invokeMethod("info", new Object[]{String.valueOf(o), e});
     }
 
     /**
@@ -212,7 +213,7 @@ public abstract class GroovyProcessFactory extends Script implements IProcessFac
      * @param e Exception to log.
      */
     public void error(Object o, Exception e) {
-        LOGGER.error(String.valueOf(o), e);
+        gLogger.invokeMethod("info", new Object[]{String.valueOf(o), e});
     }
 
     /**
@@ -220,7 +221,7 @@ public abstract class GroovyProcessFactory extends Script implements IProcessFac
      * @param o Object to log.
      */
     public void error(Object o) {
-        LOGGER.error(String.valueOf(o));
+        gLogger.invokeMethod("error", String.valueOf(o));
     }
 
     /**
@@ -265,7 +266,11 @@ public abstract class GroovyProcessFactory extends Script implements IProcessFac
         return postfix == null || postfix.isEmpty() ? name : name + "_" + postfix;
     }
 
-    public void setLogger(Logger logger) {
-        LOGGER = logger;
+    public void setLogger(GroovyObject logger) {
+        gLogger = logger;
+    }
+
+    public GroovyObject getLogger() {
+        return this.gLogger;
     }
 }

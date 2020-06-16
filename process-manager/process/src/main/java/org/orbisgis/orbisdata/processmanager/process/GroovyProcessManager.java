@@ -129,7 +129,6 @@ public abstract class GroovyProcessManager extends Script implements IProcessMan
             for (Class<? extends GroovyProcessFactory> clazz : list) {
                 GroovyProcessFactory gpf = clazz.newInstance();
                 gpf.run();
-                gpf.setLogger(LoggerFactory.getLogger(clazz));
                 registerFactory(clazz.getSimpleName(), gpf);
                 gpf.setProcessManager(this);
             }
@@ -142,7 +141,7 @@ public abstract class GroovyProcessManager extends Script implements IProcessMan
         return gpm;
     }
 
-    public void setLogger(Logger logger) {
+    public void setLogger(GroovyObject logger) {
         factoryIds().stream()
                 .map(this::factory)
                 .filter(pf -> pf instanceof GroovyProcessFactory)

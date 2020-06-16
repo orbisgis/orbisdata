@@ -775,12 +775,14 @@ class JdbcDataSourceTest {
     void testGetTableNames() {
         Collection<String> names = ds1.getTableNames();
         assertNotNull(names);
+        assertTrue(names.size()>0);
         assertTrue(names.contains("JDBCDATASOURCETEST.PUBLIC.GEOMETRY_COLUMNS"));
         assertTrue(names.contains("JDBCDATASOURCETEST.PUBLIC.TEST"));
         assertTrue(names.contains("JDBCDATASOURCETEST.PUBLIC.SPATIAL_REF_SYS"));
 
         names = ds2.getTableNames();
         assertNotNull(names);
+        assertTrue(names.size()>0);
         assertTrue(names.contains("\"db_postgresql_mode\".\"public\".\"geometry_columns\""));//Due to the H2 driver
         assertTrue(names.contains("\"db_postgresql_mode\".\"public\".\"test\""));
         assertTrue(names.contains("\"db_postgresql_mode\".\"public\".\"spatial_ref_sys\""));
@@ -831,6 +833,7 @@ class JdbcDataSourceTest {
     void testHasTable() {
         Collection<String> names = ds1.getTableNames();
         assertNotNull(names);
+        assertTrue(names.size()>0);
         assertTrue(ds1.hasTable("GEOMETRY_COLUMNS"));
         assertTrue(ds1.hasTable("TEST"));
         assertTrue(ds1.hasTable("JDBCDATASOURCETEST.PUBLIC.SPATIAL_REF_SYS"));

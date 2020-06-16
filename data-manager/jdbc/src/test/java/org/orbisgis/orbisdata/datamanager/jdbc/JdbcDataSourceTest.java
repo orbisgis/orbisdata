@@ -112,10 +112,7 @@ class JdbcDataSourceTest {
         st.execute("INSERT INTO test VALUES (1, 'POINT(0 0)', 'toto')");
         st.execute("INSERT INTO test VALUES (2, 'LINESTRING(0 0, 1 1, 2 2)', 'tata')");
         st.execute("INSERT INTO test VALUES (3, 'POINT(4 5)', 'titi')");
-
         ds1 = new DummyJdbcDataSource(dataSource, DataBaseType.H2GIS);
-
-
         DataSource ds_postgres = H2GISDBFactory.createDataSource(new File(DB_POSTGRES_MODE).toURI().toString(), true);
         Connection con_postgres = ds_postgres.getConnection();
         Statement st_postgres = con_postgres.createStatement();
@@ -124,10 +121,7 @@ class JdbcDataSourceTest {
         st_postgres.execute("INSERT INTO test VALUES (1, 'POINT(0 0)', 'toto')");
         st_postgres.execute("INSERT INTO test VALUES (2, 'LINESTRING(0 0, 1 1, 2 2)', 'tata')");
         st_postgres.execute("INSERT INTO test VALUES (3, 'POINT(4 5)', 'titi')");
-
         ds2 = new DummyJdbcDataSource(con_postgres, DataBaseType.POSTGIS);
-
-
     }
 
     /**
@@ -146,7 +140,6 @@ class JdbcDataSourceTest {
         assertEquals(ds1.getDataSource().unwrap(DataSource.class), ds1.unwrap(DataSource.class));
         assertEquals(ds1.getDataSource().isWrapperFor(DataSource.class), ds1.isWrapperFor(DataSource.class));
         assertEquals(ds1.getDataSource().getParentLogger(), ds1.getParentLogger());
-
         assertNull(ds2.getDataSource());
         assertNull(ds2.getConnection("sa", "sa"));
         assertNull(ds2.getLogWriter());

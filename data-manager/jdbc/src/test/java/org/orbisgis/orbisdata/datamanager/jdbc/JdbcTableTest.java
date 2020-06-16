@@ -568,6 +568,7 @@ class JdbcTableTest {
     @Test
     void testGetRowCount() {
         assertEquals(2, getTable().getRowCount());
+        assertEquals(2, getLinkedTable().getRowCount());
         assertEquals(1, getTempTable().getRowCount());
         assertEquals(0, getEmptyTable().getRowCount());
         assertEquals(2, getBuiltTable().getRowCount());

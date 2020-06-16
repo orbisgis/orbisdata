@@ -34,21 +34,21 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.orbisdata.datamanager.jdbc.dsl.sql;
+package org.orbisgis.orbisdata.datamanager.jdbc.dsl;
 
 import org.orbisgis.orbisdata.datamanager.api.datasource.IJdbcDataSource;
-import org.orbisgis.orbisdata.datamanager.api.dsl.sql.IBuilderResult;
-import org.orbisgis.orbisdata.datamanager.api.dsl.sql.IConditionOrOptionBuilder;
-import org.orbisgis.orbisdata.datamanager.api.dsl.sql.IWhereBuilderOrOptionBuilder;
+import org.orbisgis.orbisdata.datamanager.api.dsl.IOptionBuilder;
 import org.orbisgis.orbisdata.datamanager.jdbc.JdbcDataSource;
 
+import java.util.Map;
+
 /**
- * Implementation of {@link IWhereBuilderOrOptionBuilder}
+ * Implementation of {@link IOptionBuilder}.
  *
  * @author Erwan Bocher (CNRS)
  * @author Sylvain PALOMINOS (UBS 2019)
  */
-public class WhereBuilder extends OptionBuilder implements IWhereBuilderOrOptionBuilder, IBuilderResult {
+public class OptionBuilder extends BuilderResult implements IOptionBuilder {
 
     private final StringBuilder query;
     private final JdbcDataSource dataSource;
@@ -59,17 +59,52 @@ public class WhereBuilder extends OptionBuilder implements IWhereBuilderOrOption
      * @param request    String request coming from the ISelectBuilder.
      * @param dataSource {@link IJdbcDataSource} where the request will be executed.
      */
-    public WhereBuilder(String request, JdbcDataSource dataSource) {
-        super(request, dataSource);
+    public OptionBuilder(String request, JdbcDataSource dataSource) {
         query = new StringBuilder();
         query.append(request).append(" ");
         this.dataSource = dataSource;
     }
 
     @Override
-    public IConditionOrOptionBuilder where(String condition) {
-        query.append("WHERE ");
-        query.append(condition);
-        return new ConditionOrOptionBuilder(query.toString(), dataSource);
+    public IOptionBuilder groupBy(String... fields) {
+        query.append("GROUP BY ");
+        query.append(String.join(",", fields));
+        return new OptionBuilder(query.toString(), dataSource);
+    }
+
+    @Override
+    public IOptionBuilder orderBy(Map<String, Order> orderByMap) {
+        query.append("ORDER BY ");
+        orderByMap.forEach((key, value) -> query.append(key).append(" ").append(value.name()).append(", "));
+        query.deleteCharAt(query.length() - 2);
+        return new OptionBuilder(query.toString(), dataSource);
+    }
+
+    @Override
+    public IOptionBuilder orderBy(String field, Order order) {
+        query.append("ORDER BY ").append(field).append(" ").append(order.name());
+        return new OptionBuilder(query.toString(), dataSource);
+    }
+
+    @Override
+    public IOptionBuilder orderBy(String field) {
+        query.append("ORDER BY ").append(field);
+        return new OptionBuilder(query.toString(), dataSource);
+    }
+
+    @Override
+    public IOptionBuilder limit(int limitCount) {
+        query.append("LIMIT ").append(limitCount);
+        return new OptionBuilder(query.toString(), dataSource);
+    }
+
+    @Override
+    protected JdbcDataSource getDataSource() {
+        return dataSource;
+    }
+
+    @Override
+    protected String getQuery() {
+        return query.toString();
     }
 }

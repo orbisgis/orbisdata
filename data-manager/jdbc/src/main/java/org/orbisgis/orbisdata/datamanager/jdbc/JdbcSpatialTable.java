@@ -47,7 +47,7 @@ import org.orbisgis.commons.annotations.Nullable;
 import org.orbisgis.orbisdata.datamanager.api.dataset.DataBaseType;
 import org.orbisgis.orbisdata.datamanager.api.dataset.IJdbcSpatialTable;
 import org.orbisgis.orbisdata.datamanager.api.dataset.IRaster;
-import org.orbisgis.orbisdata.datamanager.jdbc.dsl.sql.WhereBuilder;
+import org.orbisgis.orbisdata.datamanager.jdbc.dsl.WhereBuilder;
 import org.orbisgis.orbisdata.datamanager.jdbc.resultset.StreamResultSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

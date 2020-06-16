@@ -34,20 +34,21 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.orbisdata.datamanager.jdbc.dsl.sql;
+package org.orbisgis.orbisdata.datamanager.jdbc.dsl;
 
 import org.orbisgis.orbisdata.datamanager.api.datasource.IJdbcDataSource;
-import org.orbisgis.orbisdata.datamanager.api.dsl.sql.IFromBuilder;
-import org.orbisgis.orbisdata.datamanager.api.dsl.sql.IWhereBuilderOrOptionBuilder;
+import org.orbisgis.orbisdata.datamanager.api.dsl.IBuilderResult;
+import org.orbisgis.orbisdata.datamanager.api.dsl.IConditionOrOptionBuilder;
+import org.orbisgis.orbisdata.datamanager.api.dsl.IWhereBuilderOrOptionBuilder;
 import org.orbisgis.orbisdata.datamanager.jdbc.JdbcDataSource;
 
 /**
- * Implementation of {@link IFromBuilder}.
+ * Implementation of {@link IWhereBuilderOrOptionBuilder}
  *
  * @author Erwan Bocher (CNRS)
  * @author Sylvain PALOMINOS (UBS 2019)
  */
-public class FromBuilder implements IFromBuilder {
+public class WhereBuilder extends OptionBuilder implements IWhereBuilderOrOptionBuilder, IBuilderResult {
 
     private final StringBuilder query;
     private final JdbcDataSource dataSource;
@@ -58,15 +59,17 @@ public class FromBuilder implements IFromBuilder {
      * @param request    String request coming from the ISelectBuilder.
      * @param dataSource {@link IJdbcDataSource} where the request will be executed.
      */
-    public FromBuilder(String request, JdbcDataSource dataSource) {
+    public WhereBuilder(String request, JdbcDataSource dataSource) {
+        super(request, dataSource);
         query = new StringBuilder();
         query.append(request).append(" ");
         this.dataSource = dataSource;
     }
 
     @Override
-    public IWhereBuilderOrOptionBuilder from(String... tables) {
-        query.append("FROM ").append(String.join(",", tables));
-        return new WhereBuilder(query.toString(), dataSource);
+    public IConditionOrOptionBuilder where(String condition) {
+        query.append("WHERE ");
+        query.append(condition);
+        return new ConditionOrOptionBuilder(query.toString(), dataSource);
     }
 }

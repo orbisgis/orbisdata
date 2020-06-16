@@ -40,8 +40,8 @@ import groovy.lang.Closure;
 import org.junit.jupiter.api.Test;
 import org.orbisgis.commons.annotations.NotNull;
 import org.orbisgis.commons.annotations.Nullable;
-import org.orbisgis.orbisdata.datamanager.api.dsl.sql.IConditionOrOptionBuilder;
-import org.orbisgis.orbisdata.datamanager.api.dsl.sql.IOptionBuilder;
+import org.orbisgis.orbisdata.datamanager.api.dsl.IConditionOrOptionBuilder;
+import org.orbisgis.orbisdata.datamanager.api.dsl.IOptionBuilder;
 
 import javax.sql.rowset.RowSetMetaDataImpl;
 import java.io.InputStream;

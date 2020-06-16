@@ -58,16 +58,15 @@ import org.orbisgis.orbisdata.datamanager.api.dataset.DataBaseType;
 import org.orbisgis.orbisdata.datamanager.api.dataset.IJdbcTable;
 import org.orbisgis.orbisdata.datamanager.api.datasource.IDataSourceLocation;
 import org.orbisgis.orbisdata.datamanager.api.datasource.IJdbcDataSource;
-import org.orbisgis.orbisdata.datamanager.api.dsl.sql.IFromBuilder;
-import org.orbisgis.orbisdata.datamanager.api.dsl.sql.ISelectBuilder;
-import org.orbisgis.orbisdata.datamanager.jdbc.dsl.sql.FromBuilder;
+import org.orbisgis.orbisdata.datamanager.api.dsl.IFromBuilder;
+import org.orbisgis.orbisdata.datamanager.api.dsl.ISelectBuilder;
+import org.orbisgis.orbisdata.datamanager.jdbc.dsl.FromBuilder;
 import org.orbisgis.orbisdata.datamanager.jdbc.io.IOMethods;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.sql.DataSource;
 import java.io.*;
-import java.lang.reflect.Field;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -355,24 +354,6 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, ISe
     }
 
     @Override
-    public boolean save(@Nullable Closure<?> cl) {
-        if(cl == null) {
-            return false;
-        }
-        cl.setDelegate(this);
-        try {
-            Field f = cl.getClass().getSuperclass().getDeclaredField("owner");
-            f.setAccessible(true);
-            f.set(cl, this);
-        } catch (IllegalAccessException | NoSuchFieldException e) {
-            LOGGER.error("Unable perform save.", e);
-            return false;
-        }
-        cl.call();
-        return true;
-    }
-
-    @Override
     public boolean save(@NotNull String tableName, @NotNull String filePath) {
         return save(tableName, filePath, null);
     }
@@ -383,7 +364,7 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, ISe
             LOGGER.error("No connection, cannot save.");
             return false;
         }
-        return IOMethods.saveAsFile(getConnection(), tableName, filePath, encoding, null, false);
+        return IOMethods.saveAsFile(getConnection(), tableName, filePath, encoding, false);
     }
 
     @Override
@@ -764,6 +745,7 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, ISe
     @Override
     public Object getProperty(String propertyName) {
         if (propertyName == null) {
+            //LOGGER.error("Trying to get null property name.");
             return null;
         }
         IJdbcTable table = getTable(propertyName);

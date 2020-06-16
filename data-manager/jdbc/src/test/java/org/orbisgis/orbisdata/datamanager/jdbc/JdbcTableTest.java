@@ -58,8 +58,7 @@ import org.orbisgis.commons.annotations.Nullable;
 import org.orbisgis.commons.printer.Ascii;
 import org.orbisgis.commons.printer.Html;
 import org.orbisgis.orbisdata.datamanager.api.dataset.*;
-import org.orbisgis.orbisdata.datamanager.api.dsl.ISaveBuilder;
-import org.orbisgis.orbisdata.datamanager.api.dsl.sql.IOptionBuilder;
+import org.orbisgis.orbisdata.datamanager.api.dsl.IOptionBuilder;
 import org.orbisgis.orbisdata.datamanager.jdbc.h2gis.H2gisSpatialTable;
 
 import java.io.File;
@@ -609,15 +608,15 @@ class JdbcTableTest {
         assertTrue(getTable().save("./target/save2.json"), "UTF8");
         assertTrue(new File("./target/save2.json").exists());
 
-        new File("./target/save3.csv").delete();
-        assertFalse(new File("./target/save3.csv").exists());
-        assertTrue(getTempTable().save("./target/save3.csv"));
-        assertTrue(new File("./target/save3.csv").exists());
+        new File("./target/save3.json").delete();
+        assertFalse(new File("./target/save3.json").exists());
+        assertTrue(getTempTable().save("./target/save3.json"));
+        assertTrue(new File("./target/save3.json").exists());
 
-        new File("./target/save4.csv").delete();
-        assertFalse(new File("./target/save4.csv").exists());
-        assertTrue(getTempTable().save("./target/save4.csv"), "UTF8");
-        assertTrue(new File("./target/save4.csv").exists());
+        new File("./target/save4.json").delete();
+        assertFalse(new File("./target/save4.json").exists());
+        assertTrue(getTempTable().save("./target/save4.json"), "UTF8");
+        assertTrue(new File("./target/save4.json").exists());
     }
 
     /**
@@ -922,19 +921,6 @@ class JdbcTableTest {
         assertEquals("\"LINKEDTABLE\"", getLinkedTable().getSummary().getLocation().toString());
         assertEquals(5, getLinkedTable().getSummary().getColumnCount());
         assertEquals(2, getLinkedTable().getSummary().getRowCount());
-    }
-
-    /**
-     * Test the {@link ISaveBuilder} methods.
-     */
-    @Test
-    void testSaveBuilder() {
-        assertTrue(getTable().utf8().gz().folder("./target/").name("toto").encoding("UTF-16").delete().save("json"));
-        assertTrue(new File("./target/toto.json.gz").exists());
-        assertTrue(getTable().zip().folder("./target/").name("tata").encoding("UTF-32").delete().save("json"));
-        assertTrue(new File("./target/tata.json.zip").exists());
-        assertTrue(getTable().folder("./target/").save("csv"));
-        assertTrue(new File("./target/ORBISGIS.csv").exists());
     }
 
     /**

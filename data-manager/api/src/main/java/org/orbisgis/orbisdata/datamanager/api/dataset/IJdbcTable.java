@@ -39,7 +39,7 @@ package org.orbisgis.orbisdata.datamanager.api.dataset;
 import groovy.lang.Closure;
 import org.orbisgis.commons.annotations.NotNull;
 import org.orbisgis.commons.annotations.Nullable;
-import org.orbisgis.orbisdata.datamanager.api.dsl.sql.IWhereBuilderOrOptionBuilder;
+import org.orbisgis.orbisdata.datamanager.api.dsl.IWhereBuilderOrOptionBuilder;
 
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;

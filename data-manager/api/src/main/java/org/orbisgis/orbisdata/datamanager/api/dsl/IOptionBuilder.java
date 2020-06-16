@@ -34,7 +34,7 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.orbisdata.datamanager.api.dsl.sql;
+package org.orbisgis.orbisdata.datamanager.api.dsl;
 
 import org.orbisgis.orbisdata.datamanager.api.dataset.ITable;
 

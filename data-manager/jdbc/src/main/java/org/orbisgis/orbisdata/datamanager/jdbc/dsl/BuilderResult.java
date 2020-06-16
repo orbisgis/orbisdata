@@ -34,7 +34,7 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.orbisdata.datamanager.jdbc.dsl.sql;
+package org.orbisgis.orbisdata.datamanager.jdbc.dsl;
 
 import groovy.lang.Closure;
 import org.h2gis.utilities.wrapper.ConnectionWrapper;
@@ -43,7 +43,7 @@ import org.orbisgis.commons.annotations.NotNull;
 import org.orbisgis.commons.printer.ICustomPrinter;
 import org.orbisgis.orbisdata.datamanager.api.dataset.ISpatialTable;
 import org.orbisgis.orbisdata.datamanager.api.dataset.ITable;
-import org.orbisgis.orbisdata.datamanager.api.dsl.sql.IBuilderResult;
+import org.orbisgis.orbisdata.datamanager.api.dsl.IBuilderResult;
 import org.orbisgis.orbisdata.datamanager.jdbc.JdbcDataSource;
 import org.orbisgis.orbisdata.datamanager.jdbc.h2gis.H2gisSpatialTable;
 import org.orbisgis.orbisdata.datamanager.jdbc.h2gis.H2gisTable;

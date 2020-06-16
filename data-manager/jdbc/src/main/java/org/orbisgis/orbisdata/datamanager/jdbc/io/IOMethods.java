@@ -89,17 +89,14 @@ public class IOMethods {
     /**
      * Save a table to a file
      *
-     * @param connection  The connection to use for the save.
-     * @param tableName   Name of the table to save.
-     * @param filePath    Path of the destination file.
-     * @param encoding    Encoding of the file.
-     * @param compression Compression format of the output file.
-     * @param deleteFile  True if the file should be deleted, false otherwise.
+     * @param connection The connection to use for the save.
+     * @param tableName  Name of the table to save.
+     * @param filePath   Path of the destination file.
+     * @param encoding   Encoding of the file.
      * @return True if the file has been saved, false otherwise.
      */
     public static boolean saveAsFile(@NotNull Connection connection, @NotNull String tableName,
-                                     @NotNull String filePath, @Nullable String encoding, @Nullable String compression,
-                                     boolean deleteFile) {
+                                     @NotNull String filePath, @Nullable String encoding, boolean deleteFile) {
         String enc = encoding;
         boolean isH2 = false;
         try {
@@ -114,9 +111,6 @@ public class IOMethods {
                 if (enc == null) {
                     enc = ENCODING_OPTION + UTF_ENCODING;
                 }
-            }
-            if(compression != null && !compression.isEmpty()) {
-                fileToSave = new File(fileToSave.getAbsolutePath() + "." + compression);
             }
             if (driverFunction != null) {
                 driverFunction.exportTable(connection, isH2 ? tableName.toUpperCase() : tableName, fileToSave,

@@ -15,7 +15,7 @@
  *
  * DataManager API is distributed under LGPL 3 license.
  *
- * Copyright (C) 2019-2020 CNRS (Lab-STICC UMR CNRS 6285)
+ * Copyright (C) 2018-2020 CNRS (Lab-STICC UMR CNRS 6285)
  *
  *
  * DataManager API is free software: you can redistribute it and/or modify it under the
@@ -34,24 +34,27 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
+package org.orbisgis.orbisdata.datamanager.api.dsl;
 
-package org.orbisgis.orbisdata.datamanager.api.dsl.sql;
-
+import org.orbisgis.orbisdata.datamanager.api.dataset.ITable;
 
 /**
- * Interface defining methods for the SQL 'select' building. The request construction can be continued thanks to the
- * {@link IFromBuilder}.
+ * Interface defining methods for the SQL 'from' building. The request construction can be continued thanks to the
+ * {@link IConditionOrOptionBuilder} or the {@link IOptionBuilder} or its result can be get calling 'eachRow' to
+ * iterate on the resultSet or 'as ITable' to get the {@link ITable} object.
+ * As the {@link IConditionOrOptionBuilder} extends {@link IOptionBuilder} the result of the where method ca be
+ * used to add condition (using AND or OR) or to set options (Like LIMIT, GROUP BY, ...).
  *
  * @author Erwan Bocher (CNRS)
  * @author Sylvain PALOMINOS (Lab-STICC UBS 2019)
  */
-public interface ISelectBuilder {
+public interface IWhereBuilderOrOptionBuilder extends IOptionBuilder {
 
     /**
-     * Start point of the SQL request.
+     * Indicates the condition for the selection.
      *
-     * @param fields Array of the fields to select.
-     * @return {@link IFromBuilder} instance to continue building.
+     * @param condition Condition to use for for the selection.
+     * @return {@link IConditionOrOptionBuilder} instance to continue building.
      */
-    IFromBuilder select(String... fields);
+    IConditionOrOptionBuilder where(String condition);
 }

@@ -49,7 +49,6 @@ import org.orbisgis.orbisdata.datamanager.api.dataset.*;
 import org.orbisgis.orbisdata.datamanager.jdbc.JdbcDataSource;
 import org.orbisgis.orbisdata.datamanager.jdbc.JdbcSpatialTable;
 import org.orbisgis.orbisdata.datamanager.jdbc.TableLocation;
-import org.orbisgis.orbisdata.datamanager.jdbc.dsl.sql.BuilderResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

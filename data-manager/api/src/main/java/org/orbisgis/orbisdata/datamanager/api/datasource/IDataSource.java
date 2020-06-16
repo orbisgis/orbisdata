@@ -36,7 +36,6 @@
  */
 package org.orbisgis.orbisdata.datamanager.api.datasource;
 
-import groovy.lang.Closure;
 import org.orbisgis.commons.annotations.NotNull;
 import org.orbisgis.commons.annotations.Nullable;
 import org.orbisgis.orbisdata.datamanager.api.dataset.IDataSet;
@@ -348,19 +347,6 @@ public interface IDataSource<T> {
     /* ********************** */
     /*      Save methods      */
     /* ********************** */
-
-    /**
-     * Execute a list of save with the given syntax for the closure :
-     * {
-     *     tableName1.option().you.want().save(extension1)
-     *     tableName2.option().you.want().save(extension2)
-     *     tableName3.option().you.want().save(extension3)
-     * }
-     *
-     * @param cl Closure with thesaves to execute.
-     * @return True if the save has been done with success, false otherwise.
-     */
-    boolean save(@Nullable Closure<?> cl);
 
     /**
      * Save a table into a file.

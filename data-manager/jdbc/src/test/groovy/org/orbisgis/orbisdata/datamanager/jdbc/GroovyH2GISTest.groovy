@@ -773,16 +773,18 @@ class GroovyH2GISTest {
                             password    : 'orbisgis',
                             url         : 'jdbc:postgresql://localhost:5432/'
         ]
-        def  postGIS = POSTGIS.open(dbProperties)
-        h2GIS.getSpatialTable("h2gis").save(postGIS, true);
-        def concat = ""
-        postGIS.spatialTable "H2GIS" eachRow { row -> concat += "$row.id $row.the_geom $row.geometry\n" }
-        assertEquals("1 POINT (10 10) POINT (10 10)\n2 POINT (1 1) POINT (1 1)\n", concat)
-        concat = ""
-        postGIS.execute("DROP TABLE IF EXISTS \"H2GIS\" ")
-        h2GIS.getSpatialTable("h2gis").save(postGIS)
-        postGIS.spatialTable "H2GIS" eachRow { row -> concat += "$row.id $row.the_geom $row.geometry\n" }
-        assertEquals("1 POINT (10 10) POINT (10 10)\n2 POINT (1 1) POINT (1 1)\n", concat)
+        if(postGIS) {
+            def postGIS = POSTGIS.open(dbProperties)
+            h2GIS.getSpatialTable("h2gis").save(postGIS, true);
+            def concat = ""
+            postGIS.spatialTable "H2GIS" eachRow { row -> concat += "$row.id $row.the_geom $row.geometry\n" }
+            assertEquals("1 POINT (10 10) POINT (10 10)\n2 POINT (1 1) POINT (1 1)\n", concat)
+            concat = ""
+            postGIS.execute("DROP TABLE IF EXISTS \"H2GIS\" ")
+            h2GIS.getSpatialTable("h2gis").save(postGIS)
+            postGIS.spatialTable "H2GIS" eachRow { row -> concat += "$row.id $row.the_geom $row.geometry\n" }
+            assertEquals("1 POINT (10 10) POINT (10 10)\n2 POINT (1 1) POINT (1 1)\n", concat)
+        }
     }
     @Test
     void saveQueryToPOSTGIS() {
@@ -799,11 +801,13 @@ class GroovyH2GISTest {
                             url         : 'jdbc:postgresql://localhost:5432/'
         ]
         def  postGIS = POSTGIS.open(dbProperties)
+        if(postGIS){
         assertFalse(h2GIS.select().from( "h2gis").getSpatialTable().save(postGIS, true))
         h2GIS.select().from( "h2gis").getSpatialTable().save(postGIS, "H2GIS",true )
         def concat = ""
         postGIS.spatialTable "H2GIS" eachRow { row -> concat += "$row.id $row.the_geom $row.geometry\n" }
         assertEquals("1 POINT (10 10) POINT (10 10)\n2 POINT (1 1) POINT (1 1)\n", concat)
+        }
     }
 
     @Test

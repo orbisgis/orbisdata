@@ -805,4 +805,24 @@ class GroovyH2GISTest {
         postGIS.spatialTable "H2GIS" eachRow { row -> concat += "$row.id $row.the_geom $row.geometry\n" }
         assertEquals("1 POINT (10 10) POINT (10 10)\n2 POINT (1 1) POINT (1 1)\n", concat)
     }
+
+    @Test
+    void saveTableToH2GIS() {
+        def h2GIS = H2GIS.open([databaseName: './target/loadH2GIS'])
+        h2GIS.execute("""
+                DROP TABLE IF EXISTS h2gis;
+                CREATE TABLE h2gis (id int, the_geom geometry(point));
+                INSERT INTO h2gis VALUES (1, 'POINT(10 10)'::GEOMETRY), (2, 'POINT(1 1)'::GEOMETRY);
+        """)
+        def h2GISTarget = H2GIS.open([databaseName: './target/loadH2GIS_target'])
+        h2GIS.getSpatialTable("h2gis").save(h2GISTarget, true);
+        def concat = ""
+        h2GISTarget.spatialTable "H2GIS" eachRow { row -> concat += "$row.id $row.the_geom $row.geometry\n" }
+        assertEquals("1 POINT (10 10) POINT (10 10)\n2 POINT (1 1) POINT (1 1)\n", concat)
+        concat = ""
+        h2GISTarget.execute("DROP TABLE IF EXISTS \"H2GIS\" ")
+        h2GIS.getSpatialTable("h2gis").save(h2GISTarget)
+        h2GISTarget.spatialTable "H2GIS" eachRow { row -> concat += "$row.id $row.the_geom $row.geometry\n" }
+        assertEquals("1 POINT (10 10) POINT (10 10)\n2 POINT (1 1) POINT (1 1)\n", concat)
+    }
 }

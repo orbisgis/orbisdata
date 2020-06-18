@@ -215,7 +215,7 @@ public interface ITable<T, U> extends IMatrix<T, U> {
      * Save the {@link ITable} into a file.
      *
      * @param filePath Path of the file to be saved.
-     * @return True is the file has been saved, false otherwise.
+     * @return True if the file has been saved, false otherwise.
      */
     default boolean save(@NotNull String filePath) {
         return save(filePath, null);
@@ -226,7 +226,7 @@ public interface ITable<T, U> extends IMatrix<T, U> {
      *
      * @param filePath Path of the file to be saved.
      * @param encoding Encoding of the file.
-     * @return True is the file has been saved, false otherwise.
+     * @return True if the file has been saved, false otherwise.
      */
     boolean save(@NotNull String filePath, @Nullable String encoding);
 
@@ -235,9 +235,9 @@ public interface ITable<T, U> extends IMatrix<T, U> {
      * Save the {@link ITable} into another database.
      *
      * @param dataSource Connection to the output database
-     * @return True is the table has been saved, false otherwise.
+     * @return True if the table has been saved, false otherwise.
      */
-    default boolean save(@NotNull IJdbcDataSource dataSource) {
+    default boolean save(@Nullable IJdbcDataSource dataSource) {
         return save(dataSource, false);
     }
 
@@ -246,9 +246,9 @@ public interface ITable<T, U> extends IMatrix<T, U> {
      *
      * @param dataSource Connection to the output database
      * @param deleteTable True to delete the output table is exists
-     * @return True is the file has been saved, false otherwise.
+     * @return True if the file has been saved, false otherwise.
      */
-    boolean save(@NotNull IJdbcDataSource dataSource, boolean deleteTable);
+    boolean save(@Nullable IJdbcDataSource dataSource, boolean deleteTable);
 
     /**
      * Save the {@link ITable} into another database.
@@ -256,9 +256,9 @@ public interface ITable<T, U> extends IMatrix<T, U> {
      * @param dataSource Connection to the output database
      * @param outputTableName name of the output table
      * @param deleteTable True to delete the output table is exists
-     * @return True is the file has been saved, false otherwise.
+     * @return True if the file has been saved, false otherwise.
      */
-    boolean save(@NotNull IJdbcDataSource dataSource, @NotNull String outputTableName, boolean deleteTable);
+    boolean save(@Nullable IJdbcDataSource dataSource, @NotNull String outputTableName, boolean deleteTable);
 
     /**
      * Return the values of the first row in a {@link List}. If there is no row, return an empty list.

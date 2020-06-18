@@ -306,6 +306,7 @@ public class IOMethods {
                     }
                 } catch (SQLException e) {
                     LOGGER.error("Cannot save the table $tableLocation.\n", e);
+                    return false;
                 } finally {
                 outputconnection.setAutoCommit(true);
                     if(preparedStatement!=null){
@@ -322,8 +323,8 @@ public class IOMethods {
             }
         } catch (SQLException e) {
             LOGGER.error("Cannot save the table $tableLocation.\n", e);
+            return false;
         }
-        return false;
     }
 
     /**
@@ -340,6 +341,7 @@ public class IOMethods {
                                    boolean deleteTable, IJdbcDataSource outputdataSource,TableLocation outputTableLocation) {
         if(outputdataSource==null){
             LOGGER.error("The connection to the output database cannot be null.\n");
+            return false;
         }
         try {
             if(outputTableLocation==null){
@@ -390,6 +392,7 @@ public class IOMethods {
                     }
                 } catch (SQLException e) {
                     LOGGER.error("Cannot save the table $tableLocation.\n", e);
+                    return false;
                 } finally {
                     outputconnection.setAutoCommit(true);
                     if(preparedStatement!=null){
@@ -406,7 +409,7 @@ public class IOMethods {
             }
         } catch (SQLException e) {
             LOGGER.error("Cannot save the table $tableLocation.\n", e);
+            return false;
         }
-        return false;
     }
 }

@@ -773,8 +773,8 @@ class GroovyH2GISTest {
                             password    : 'orbisgis',
                             url         : 'jdbc:postgresql://localhost:5432/'
         ]
+        def postGIS = POSTGIS.open(dbProperties)
         if(postGIS) {
-            def postGIS = POSTGIS.open(dbProperties)
             h2GIS.getSpatialTable("h2gis").save(postGIS, true);
             def concat = ""
             postGIS.spatialTable "H2GIS" eachRow { row -> concat += "$row.id $row.the_geom $row.geometry\n" }

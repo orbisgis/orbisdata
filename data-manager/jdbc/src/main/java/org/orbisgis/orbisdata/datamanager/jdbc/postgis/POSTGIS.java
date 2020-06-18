@@ -178,7 +178,7 @@ public class POSTGIS extends JdbcDataSource {
     @Override
     public IJdbcTable getTable(@NotNull String tableName) {
         Connection connection = getConnection();
-        org.h2gis.utilities.TableLocation inputLocation = TableLocation.parse(tableName, false);
+        org.h2gis.utilities.TableLocation inputLocation = TableLocation.parse(tableName);
         try {
             if (!JDBCUtilities.tableExists(connection,inputLocation)) {
                 return null;
@@ -202,7 +202,7 @@ public class POSTGIS extends JdbcDataSource {
             LOGGER.error("Unable to create Statement.\n" + e.getLocalizedMessage());
             return null;
         }
-        String query = String.format("SELECT * FROM %s", tableName);
+        String query = String.format("SELECT * FROM %s", inputLocation.toString(false));
         TableLocation location = new TableLocation(Objects.requireNonNull(getLocation()).toString(), inputLocation.getCatalog(), inputLocation.getSchema(), inputLocation.getTable());
         try {
             Connection con = getConnection();

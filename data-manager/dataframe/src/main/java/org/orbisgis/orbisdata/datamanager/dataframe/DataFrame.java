@@ -44,6 +44,7 @@ import org.orbisgis.commons.printer.Html;
 import org.orbisgis.commons.printer.ICustomPrinter;
 import org.orbisgis.orbisdata.datamanager.api.dataset.IJdbcTable;
 import org.orbisgis.orbisdata.datamanager.api.dataset.ITable;
+import org.orbisgis.orbisdata.datamanager.api.datasource.IJdbcDataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import smile.data.Tuple;
@@ -674,6 +675,16 @@ public class DataFrame implements smile.data.DataFrame, ITable<BaseVector, Tuple
             }
         }
         return f.exists();
+    }
+
+    @Override
+    public boolean save(IJdbcDataSource dataSource, boolean deleteTable) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public boolean save(IJdbcDataSource dataSource, String outputTableName, boolean deleteTable) {
+        throw new UnsupportedOperationException();
     }
 
     @Override

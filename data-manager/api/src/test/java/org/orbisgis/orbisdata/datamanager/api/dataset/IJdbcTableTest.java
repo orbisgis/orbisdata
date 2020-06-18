@@ -40,6 +40,7 @@ import groovy.lang.Closure;
 import org.junit.jupiter.api.Test;
 import org.orbisgis.commons.annotations.NotNull;
 import org.orbisgis.commons.annotations.Nullable;
+import org.orbisgis.orbisdata.datamanager.api.datasource.IJdbcDataSource;
 import org.orbisgis.orbisdata.datamanager.api.dsl.IConditionOrOptionBuilder;
 import org.orbisgis.orbisdata.datamanager.api.dsl.IOptionBuilder;
 
@@ -1143,6 +1144,16 @@ public class IJdbcTableTest {
 
         @Override
         public boolean save(@NotNull String filePath, String encoding) {
+            return false;
+        }
+
+        @Override
+        public boolean save(IJdbcDataSource dataSource, boolean deleteTable) {
+            return false;
+        }
+
+        @Override
+        public boolean save(IJdbcDataSource dataSource, String outputTableName, boolean deleteTable) {
             return false;
         }
 

@@ -40,6 +40,7 @@ import groovy.lang.Closure;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.orbisgis.commons.annotations.NotNull;
+import org.orbisgis.orbisdata.datamanager.api.datasource.IJdbcDataSource;
 
 import java.math.BigDecimal;
 import java.sql.Date;
@@ -379,6 +380,16 @@ public class ITableTest {
         @Override
         public boolean save(@NotNull String filePath, String encoding) {
             return true;
+        }
+
+        @Override
+        public boolean save(IJdbcDataSource dataSource, boolean deleteTable) {
+            return false;
+        }
+
+        @Override
+        public boolean save(IJdbcDataSource dataSource, String outputTableName, boolean deleteTable) {
+            return false;
         }
 
         @NotNull

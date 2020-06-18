@@ -39,6 +39,7 @@ package org.orbisgis.orbisdata.datamanager.api.dataset;
 import groovy.lang.Closure;
 import org.orbisgis.commons.annotations.NotNull;
 import org.orbisgis.commons.annotations.Nullable;
+import org.orbisgis.orbisdata.datamanager.api.datasource.IJdbcDataSource;
 
 import java.math.BigDecimal;
 import java.sql.Date;
@@ -228,6 +229,36 @@ public interface ITable<T, U> extends IMatrix<T, U> {
      * @return True is the file has been saved, false otherwise.
      */
     boolean save(@NotNull String filePath, @Nullable String encoding);
+
+
+    /**
+     * Save the {@link ITable} into another database.
+     *
+     * @param dataSource Connection to the output database
+     * @return True is the table has been saved, false otherwise.
+     */
+    default boolean save(@NotNull IJdbcDataSource dataSource) {
+        return save(dataSource, false);
+    }
+
+    /**
+     * Save the {@link ITable} into another database.
+     *
+     * @param dataSource Connection to the output database
+     * @param deleteTable True to delete the output table is exists
+     * @return True is the file has been saved, false otherwise.
+     */
+    boolean save(@NotNull IJdbcDataSource dataSource, boolean deleteTable);
+
+    /**
+     * Save the {@link ITable} into another database.
+     *
+     * @param dataSource Connection to the output database
+     * @param outputTableName name of the output table
+     * @param deleteTable True to delete the output table is exists
+     * @return True is the file has been saved, false otherwise.
+     */
+    boolean save(@NotNull IJdbcDataSource dataSource, @NotNull String outputTableName, boolean deleteTable);
 
     /**
      * Return the values of the first row in a {@link List}. If there is no row, return an empty list.

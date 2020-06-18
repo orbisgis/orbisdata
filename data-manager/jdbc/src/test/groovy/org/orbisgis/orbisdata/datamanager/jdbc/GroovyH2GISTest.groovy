@@ -46,6 +46,7 @@ import org.orbisgis.commons.printer.Html
 import org.orbisgis.orbisdata.datamanager.api.dataset.ISpatialTable
 import org.orbisgis.orbisdata.datamanager.api.dataset.ITable
 import org.orbisgis.orbisdata.datamanager.jdbc.h2gis.H2GIS
+import org.orbisgis.orbisdata.datamanager.jdbc.postgis.POSTGIS
 
 import java.sql.SQLException
 import java.sql.Time
@@ -756,5 +757,52 @@ class GroovyH2GISTest {
                 CREATE TABLE cnrs.H2GIS (id int, the_geom geometry(point, 4326));
         """)
         assertEquals(4326, h2GIS.getSpatialTable("CNRS.H2GIS").srid)
+    }
+
+    @Test
+    void saveTableToPOSTGIS() {
+        def h2GIS = H2GIS.open([databaseName: './target/loadH2GIS'])
+        h2GIS.execute("""
+                DROP TABLE IF EXISTS h2gis;
+                CREATE TABLE h2gis (id int, the_geom geometry(point));
+                INSERT INTO h2gis VALUES (1, 'POINT(10 10)'::GEOMETRY), (2, 'POINT(1 1)'::GEOMETRY);
+        """)
+
+        def dbProperties = [databaseName: 'orbisgis_db',
+                            user        : 'orbisgis',
+                            password    : 'orbisgis',
+                            url         : 'jdbc:postgresql://localhost:5432/'
+        ]
+        def  postGIS = POSTGIS.open(dbProperties)
+        h2GIS.getSpatialTable("h2gis").save(postGIS, true);
+        def concat = ""
+        postGIS.spatialTable "H2GIS" eachRow { row -> concat += "$row.id $row.the_geom $row.geometry\n" }
+        assertEquals("1 POINT (10 10) POINT (10 10)\n2 POINT (1 1) POINT (1 1)\n", concat)
+        concat = ""
+        postGIS.execute("DROP TABLE IF EXISTS \"H2GIS\" ")
+        h2GIS.getSpatialTable("h2gis").save(postGIS)
+        postGIS.spatialTable "H2GIS" eachRow { row -> concat += "$row.id $row.the_geom $row.geometry\n" }
+        assertEquals("1 POINT (10 10) POINT (10 10)\n2 POINT (1 1) POINT (1 1)\n", concat)
+    }
+    @Test
+    void saveQueryToPOSTGIS() {
+        def h2GIS = H2GIS.open([databaseName: './target/loadH2GIS'])
+        h2GIS.execute("""
+                DROP TABLE IF EXISTS h2gis;
+                CREATE TABLE h2gis (id int, the_geom geometry(point));
+                INSERT INTO h2gis VALUES (1, 'POINT(10 10)'::GEOMETRY), (2, 'POINT(1 1)'::GEOMETRY);
+        """)
+
+        def dbProperties = [databaseName: 'orbisgis_db',
+                            user        : 'orbisgis',
+                            password    : 'orbisgis',
+                            url         : 'jdbc:postgresql://localhost:5432/'
+        ]
+        def  postGIS = POSTGIS.open(dbProperties)
+        assertFalse(h2GIS.select().from( "h2gis").getSpatialTable().save(postGIS, true))
+        h2GIS.select().from( "h2gis").getSpatialTable().save(postGIS, "H2GIS",true )
+        def concat = ""
+        postGIS.spatialTable "H2GIS" eachRow { row -> concat += "$row.id $row.the_geom $row.geometry\n" }
+        assertEquals("1 POINT (10 10) POINT (10 10)\n2 POINT (1 1) POINT (1 1)\n", concat)
     }
 }

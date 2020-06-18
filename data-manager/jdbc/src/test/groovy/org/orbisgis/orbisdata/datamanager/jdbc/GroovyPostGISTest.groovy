@@ -305,7 +305,7 @@ class GroovyPostGISTest {
     @EnabledIfSystemProperty(named = "test.postgis", matches = "true")
     void testEstimateExtent(){
         postGIS.execute"""DROP TABLE  IF EXISTS forests;
-                CREATE TABLE forests ( fid INTEGER NOT NULL PRIMARY KEY, name CHARACTER VARYING(64),
+                CREATE TABLE forests ( fid INTEGER, name CHARACTER VARYING(64),
                  boundary GEOMETRY(MULTIPOLYGON, 0));
                 INSERT INTO forests VALUES(109, 'Green Forest', ST_MPolyFromText( 'MULTIPOLYGON(((28 26,28 0,84 0,
                 84 42,28 26), (52 18,66 23,73 9,48 6,52 18)),((59 18,67 18,67 13,59 13,59 18)))', 0));"""

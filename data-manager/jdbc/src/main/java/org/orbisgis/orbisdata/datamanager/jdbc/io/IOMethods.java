@@ -13,10 +13,12 @@ import org.h2gis.functions.io.shp.SHPDriverFunction;
 import org.h2gis.functions.io.tsv.TSVDriverFunction;
 import org.h2gis.functions.io.utility.FileUtil;
 import org.h2gis.utilities.JDBCUtilities;
+import org.h2gis.utilities.TableLocation;
 import org.h2gis.utilities.URIUtilities;
 import org.orbisgis.commons.annotations.NotNull;
 import org.orbisgis.commons.annotations.Nullable;
 import org.orbisgis.orbisdata.datamanager.api.dataset.DataBaseType;
+import org.orbisgis.orbisdata.datamanager.api.datasource.IJdbcDataSource;
 import org.orbisgis.orbisdata.datamanager.jdbc.JdbcDataSource;
 import org.osgi.service.jdbc.DataSourceFactory;
 import org.slf4j.Logger;
@@ -24,8 +26,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.Map;
 
 /**
@@ -235,5 +236,177 @@ public class IOMethods {
         } catch (SQLException e) {
             LOGGER.error("Cannot link the file.\n", e);
         }
+    }
+
+    /**
+     * Method to save a table into another database
+     *
+     * @param connection source database connection
+     * @param tableLocation source table name
+     * @param dbType source db type
+     * @param deleteTable True to delete the target table if exists
+     * @param outputdataSource target database
+     * @param outputTableLocation target table name
+     *
+     * @return True if the table is saved
+     */
+    public static boolean saveInDB(Connection connection, TableLocation tableLocation, DataBaseType dbType,
+                                          boolean deleteTable, IJdbcDataSource outputdataSource, TableLocation outputTableLocation) {
+       if(outputdataSource==null){
+           LOGGER.error("The connection to the output database cannot be null.\n");
+           return false;
+       }
+         try {
+           String outputTableName =tableLocation.toString(outputdataSource.getDataBaseType()==DataBaseType.H2GIS);
+           if(outputTableLocation!=null){
+               outputTableName = outputTableLocation.toString(outputdataSource.getDataBaseType()==DataBaseType.H2GIS);
+           }
+            String ddlCommand = JDBCUtilities.createDDL(connection, outputTableName);
+            if(!ddlCommand.isEmpty()) {
+                int BATCH_MAX_SIZE = 1000;
+                Connection  outputconnection = outputdataSource.getConnection();
+                PreparedStatement preparedStatement = null;
+                ResultSet inputRes =null;
+                try{
+                    outputconnection.setAutoCommit(false);
+                Statement outputconnectionStatement = outputconnection.createStatement();
+                String innputTableName =tableLocation.toString(dbType==DataBaseType.H2GIS);
+                if(deleteTable){
+                    outputconnectionStatement.execute("DROP TABLE IF EXISTS "+ outputTableName);
+                    connection.commit();
+                }
+                outputconnectionStatement.execute(ddlCommand);
+                connection.commit();
+                Statement inputStat = connection.createStatement();
+                inputRes = inputStat.executeQuery("SELECT * FROM " + innputTableName);
+                int columnsCount = inputRes.getMetaData().getColumnCount();
+                    StringBuilder insertTable = new StringBuilder("INSERT INTO ");
+                    insertTable.append(outputTableName).append(" VALUES(?");
+                    for (int i = 1; i < columnsCount; i++) {
+                        insertTable.append(",").append("?");
+                    }
+                    insertTable.append(")");
+                    preparedStatement = outputconnection.prepareStatement(insertTable.toString());
+                    long batchSize = 0;
+                    while (inputRes.next()){
+                        for (int i = 0; i < columnsCount; i++) {
+                            preparedStatement.setObject(i +1,inputRes.getObject(i+1) );
+                        }
+                        preparedStatement.addBatch();
+                        batchSize++;
+                        if (batchSize >= BATCH_MAX_SIZE) {
+                            preparedStatement.executeBatch();
+                            connection.commit();
+                            preparedStatement.clearBatch();
+                            batchSize = 0;
+                        }
+                    }
+                    if (batchSize > 0) {
+                        preparedStatement.executeBatch();
+                    }
+                } catch (SQLException e) {
+                    LOGGER.error("Cannot save the table $tableLocation.\n", e);
+                } finally {
+                outputconnection.setAutoCommit(true);
+                    if(preparedStatement!=null){
+                        preparedStatement.close();
+                    }
+                    if(inputRes!=null){
+                        inputRes.close();
+                    }
+            }
+                return true;
+            }
+            else {
+                return false;
+            }
+        } catch (SQLException e) {
+            LOGGER.error("Cannot save the table $tableLocation.\n", e);
+        }
+        return false;
+    }
+
+    /**
+     * Method to save a table into another database
+     * @param connection source database connection
+     * @param query source query from source database
+     * @param dbType source db type
+     * @param deleteTable True to delete the target table if exists
+     * @param outputdataSource target database
+     * @param outputTableLocation target table name
+     * @return True if the table is saved
+     */
+    public static boolean saveInDB(Connection connection, String query, DataBaseType dbType,
+                                   boolean deleteTable, IJdbcDataSource outputdataSource,TableLocation outputTableLocation) {
+        if(outputdataSource==null){
+            LOGGER.error("The connection to the output database cannot be null.\n");
+        }
+        try {
+            if(outputTableLocation==null){
+                LOGGER.error("The output table name cannot be null or empty\n");
+                return false;
+            }
+            String outputTableName =outputTableLocation.toString(outputdataSource.getDataBaseType()==DataBaseType.H2GIS);
+            Statement inputStat = connection.createStatement();
+            ResultSet inputRes = inputStat.executeQuery(query);
+            String ddlCommand = JDBCUtilities.createTableDDL(inputRes, outputTableName);
+            if(!ddlCommand.isEmpty()) {
+                int BATCH_MAX_SIZE = 1000;
+                Connection  outputconnection = outputdataSource.getConnection();
+                PreparedStatement preparedStatement = null;
+                try{
+                    outputconnection.setAutoCommit(false);
+                    Statement outputconnectionStatement = outputconnection.createStatement();
+                    if(deleteTable){
+                        outputconnectionStatement.execute("DROP TABLE IF EXISTS "+ outputTableName);
+                        connection.commit();
+                    }
+                    outputconnectionStatement.execute(ddlCommand);
+                    connection.commit();
+                    int columnsCount = inputRes.getMetaData().getColumnCount();
+                    StringBuilder insertTable = new StringBuilder("INSERT INTO ");
+                    insertTable.append(outputTableName).append(" VALUES(?");
+                    for (int i = 1; i < columnsCount; i++) {
+                        insertTable.append(",").append("?");
+                    }
+                    insertTable.append(")");
+                    preparedStatement = outputconnection.prepareStatement(insertTable.toString());
+                    long batchSize = 0;
+                    while (inputRes.next()){
+                        for (int i = 0; i < columnsCount; i++) {
+                            preparedStatement.setObject(i +1,inputRes.getObject(i+1) );
+                        }
+                        preparedStatement.addBatch();
+                        batchSize++;
+                        if (batchSize >= BATCH_MAX_SIZE) {
+                            preparedStatement.executeBatch();
+                            connection.commit();
+                            preparedStatement.clearBatch();
+                            batchSize = 0;
+                        }
+                    }
+                    if (batchSize > 0) {
+                        preparedStatement.executeBatch();
+                    }
+                } catch (SQLException e) {
+                    LOGGER.error("Cannot save the table $tableLocation.\n", e);
+                } finally {
+                    outputconnection.setAutoCommit(true);
+                    if(preparedStatement!=null){
+                        preparedStatement.close();
+                    }
+                    if(inputRes!=null){
+                        inputRes.close();
+                    }
+                }
+                return true;
+            }
+            else {
+                return false;
+            }
+        } catch (SQLException e) {
+            LOGGER.error("Cannot save the table $tableLocation.\n", e);
+        }
+        return false;
     }
 }

@@ -54,6 +54,7 @@ import org.orbisgis.orbisdata.datamanager.api.dataset.DataBaseType;
 import org.orbisgis.orbisdata.datamanager.api.dataset.IJdbcSpatialTable;
 import org.orbisgis.orbisdata.datamanager.api.dataset.IJdbcTable;
 import org.orbisgis.orbisdata.datamanager.api.dataset.ITable;
+import org.orbisgis.orbisdata.datamanager.api.datasource.IJdbcDataSource;
 import org.orbisgis.orbisdata.datamanager.api.dsl.IConditionOrOptionBuilder;
 import org.orbisgis.orbisdata.datamanager.api.dsl.IOptionBuilder;
 import org.orbisgis.orbisdata.datamanager.jdbc.dsl.OptionBuilder;
@@ -581,6 +582,49 @@ public abstract class JdbcTable extends DefaultResultSet implements IJdbcTable<S
             String toSave = getTableLocation() == null ? "(" + getBaseQuery() + ")" : getTableLocation().toString(getDbType());
             return IOMethods.saveAsFile(getStatement().getConnection(), toSave, filePath, encoding, false);
 
+        } catch (SQLException e) {
+            LOGGER.error("Cannot save the table.\n", e);
+            return false;
+        }
+    }
+
+    @Override
+    public boolean save(IJdbcDataSource dataSource, boolean deleteTable) {
+        if(dataSource==null){
+            LOGGER.error("The output datasource connexion cannot be null\n");
+            return false;
+        }
+        try {
+            if(getTableLocation() != null ){
+                return IOMethods.saveInDB(getStatement().getConnection(), getTableLocation(), getDbType(),  deleteTable, dataSource, getTableLocation());
+            }
+            else{
+                LOGGER.error("Cannot save the table without a provided name.\n");
+                return false;
+            }
+        } catch (SQLException e) {
+            LOGGER.error("Cannot save the table.\n", e);
+            return false;
+        }
+    }
+
+    @Override
+    public boolean save(IJdbcDataSource dataSource, String outputTableName, boolean deleteTable) {
+        if(dataSource==null){
+            LOGGER.error("The output datasource connexion cannot ne null\n");
+            return false;
+        }
+        try {
+            if(getTableLocation() != null ){
+                if(outputTableName==null || outputTableName.isEmpty()){
+                    LOGGER.error("The output table name cannot be null or empty\n");
+                    return false;
+                }
+                return IOMethods.saveInDB(getStatement().getConnection(), getTableLocation(), getDbType(),  deleteTable, dataSource, TableLocation.parse(outputTableName));
+            }
+            else{
+                return IOMethods.saveInDB(getStatement().getConnection(), getBaseQuery(),  getDbType(), deleteTable, dataSource, TableLocation.parse(outputTableName));
+            }
         } catch (SQLException e) {
             LOGGER.error("Cannot save the table.\n", e);
             return false;

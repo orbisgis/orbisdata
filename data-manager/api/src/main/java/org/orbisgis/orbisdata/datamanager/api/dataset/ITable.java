@@ -245,10 +245,29 @@ public interface ITable<T, U> extends IMatrix<T, U> {
      * Save the {@link ITable} into another database.
      *
      * @param dataSource Connection to the output database
+     * @param batchSize Number of rows that must be accumulated in memory.
+     * @return True if the file has been saved, false otherwise.
+     */
+    boolean save(@Nullable IJdbcDataSource dataSource, int batchSize);
+
+    /**
+     * Save the {@link ITable} into another database.
+     *
+     * @param dataSource Connection to the output database
      * @param deleteTable True to delete the output table is exists
      * @return True if the file has been saved, false otherwise.
      */
     boolean save(@Nullable IJdbcDataSource dataSource, boolean deleteTable);
+
+    /**
+     * Save the {@link ITable} into another database.
+     *
+     * @param dataSource Connection to the output database
+     * @param deleteTable True to delete the output table is exists
+     * @param batchSize Number of rows that must be accumulated in memory.
+     * @return True if the file has been saved, false otherwise.
+     */
+    boolean save(@Nullable IJdbcDataSource dataSource, boolean deleteTable, int batchSize);
 
     /**
      * Save the {@link ITable} into another database.
@@ -259,6 +278,17 @@ public interface ITable<T, U> extends IMatrix<T, U> {
      * @return True if the file has been saved, false otherwise.
      */
     boolean save(@Nullable IJdbcDataSource dataSource, @NotNull String outputTableName, boolean deleteTable);
+
+    /**
+     * Save the {@link ITable} into another database.
+     *
+     * @param dataSource Connection to the output database
+     * @param outputTableName name of the output table
+     * @param deleteTable True to delete the output table is exists
+     * @param batchSize Number of rows that must be accumulated in memory.
+     * @return True if the file has been saved, false otherwise.
+     */
+    boolean save(@Nullable IJdbcDataSource dataSource, @NotNull String outputTableName, boolean deleteTable, int batchSize);
 
     /**
      * Return the values of the first row in a {@link List}. If there is no row, return an empty list.

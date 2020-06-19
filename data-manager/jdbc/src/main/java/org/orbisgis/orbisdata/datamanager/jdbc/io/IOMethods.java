@@ -247,45 +247,46 @@ public class IOMethods {
      * @param deleteTable True to delete the target table if exists
      * @param outputdataSource target database
      * @param outputTableLocation target table name
-     *
+     * @param batch_size batch size value before sending the data     *
      * @return True if the table is saved
      */
     public static boolean saveInDB(Connection connection, TableLocation tableLocation, DataBaseType dbType,
-                                          boolean deleteTable, IJdbcDataSource outputdataSource, TableLocation outputTableLocation) {
-       if(outputdataSource==null){
-           LOGGER.error("The connection to the output database cannot be null.\n");
-           return false;
-       }
-         try {
-           String outputTableName =tableLocation.toString(outputdataSource.getDataBaseType()==DataBaseType.H2GIS);
-           if(outputTableLocation!=null){
-               outputTableName = outputTableLocation.toString(outputdataSource.getDataBaseType()==DataBaseType.H2GIS);
-           }
-            String ddlCommand = JDBCUtilities.createDDL(connection, outputTableName);
+                                          boolean deleteTable, IJdbcDataSource outputdataSource, TableLocation outputTableLocation,  int batch_size) {
+        if(outputdataSource==null){
+            LOGGER.error("The connection to the output database cannot be null.\n");
+            return false;
+        }
+        if(batch_size<=0){
+            LOGGER.error("The batch size must be greater than 0.\n");
+            return false;
+        }
+        try {
+            String outputTableName =tableLocation.toString(outputdataSource.getDataBaseType()==DataBaseType.H2GIS);
+            if(outputTableLocation!=null){
+                outputTableName = outputTableLocation.toString(outputdataSource.getDataBaseType()==DataBaseType.H2GIS);
+            }
+            String innputTableName =tableLocation.toString(dbType==DataBaseType.H2GIS);
+            String ddlCommand = JDBCUtilities.createTableDDL(connection, innputTableName, outputTableName);
             if(!ddlCommand.isEmpty()) {
-                int BATCH_MAX_SIZE = 1000;
                 Connection  outputconnection = outputdataSource.getConnection();
                 PreparedStatement preparedStatement = null;
                 ResultSet inputRes =null;
                 try{
-                    outputconnection.setAutoCommit(false);
-                Statement outputconnectionStatement = outputconnection.createStatement();
-                String innputTableName =tableLocation.toString(dbType==DataBaseType.H2GIS);
-                if(deleteTable){
-                    outputconnectionStatement.execute("DROP TABLE IF EXISTS "+ outputTableName);
-                    connection.commit();
-                }
-                outputconnectionStatement.execute(ddlCommand);
-                connection.commit();
-                Statement inputStat = connection.createStatement();
-                inputRes = inputStat.executeQuery("SELECT * FROM " + innputTableName);
-                int columnsCount = inputRes.getMetaData().getColumnCount();
+                    Statement outputconnectionStatement = outputconnection.createStatement();
+                    if(deleteTable){
+                        outputconnectionStatement.execute("DROP TABLE IF EXISTS "+ outputTableName);
+                    }
+                    outputconnectionStatement.execute(ddlCommand);
+                    Statement inputStat = connection.createStatement();
+                    inputRes = inputStat.executeQuery("SELECT * FROM " + innputTableName);
+                    int columnsCount = inputRes.getMetaData().getColumnCount();
                     StringBuilder insertTable = new StringBuilder("INSERT INTO ");
                     insertTable.append(outputTableName).append(" VALUES(?");
                     for (int i = 1; i < columnsCount; i++) {
                         insertTable.append(",").append("?");
                     }
                     insertTable.append(")");
+                    outputconnection.setAutoCommit(false);
                     preparedStatement = outputconnection.prepareStatement(insertTable.toString());
                     long batchSize = 0;
                     while (inputRes.next()){
@@ -294,7 +295,7 @@ public class IOMethods {
                         }
                         preparedStatement.addBatch();
                         batchSize++;
-                        if (batchSize >= BATCH_MAX_SIZE) {
+                        if (batchSize >= batch_size) {
                             preparedStatement.executeBatch();
                             connection.commit();
                             preparedStatement.clearBatch();
@@ -308,14 +309,14 @@ public class IOMethods {
                     LOGGER.error("Cannot save the table $tableLocation.\n", e);
                     return false;
                 } finally {
-                outputconnection.setAutoCommit(true);
+                    outputconnection.setAutoCommit(true);
                     if(preparedStatement!=null){
                         preparedStatement.close();
                     }
                     if(inputRes!=null){
                         inputRes.close();
                     }
-            }
+                }
                 return true;
             }
             else {
@@ -335,12 +336,17 @@ public class IOMethods {
      * @param deleteTable True to delete the target table if exists
      * @param outputdataSource target database
      * @param outputTableLocation target table name
+     * @param batch_size batch size value before sending the data
      * @return True if the table is saved
      */
     public static boolean saveInDB(Connection connection, String query, DataBaseType dbType,
-                                   boolean deleteTable, IJdbcDataSource outputdataSource,TableLocation outputTableLocation) {
+                                   boolean deleteTable, IJdbcDataSource outputdataSource,TableLocation outputTableLocation, int batch_size) {
         if(outputdataSource==null){
             LOGGER.error("The connection to the output database cannot be null.\n");
+            return false;
+        }
+        if(batch_size<=0){
+            LOGGER.error("The batch size must be greater than 0.\n");
             return false;
         }
         try {
@@ -353,18 +359,14 @@ public class IOMethods {
             ResultSet inputRes = inputStat.executeQuery(query);
             String ddlCommand = JDBCUtilities.createTableDDL(inputRes, outputTableName);
             if(!ddlCommand.isEmpty()) {
-                int BATCH_MAX_SIZE = 1000;
                 Connection  outputconnection = outputdataSource.getConnection();
                 PreparedStatement preparedStatement = null;
                 try{
-                    outputconnection.setAutoCommit(false);
                     Statement outputconnectionStatement = outputconnection.createStatement();
                     if(deleteTable){
                         outputconnectionStatement.execute("DROP TABLE IF EXISTS "+ outputTableName);
-                        connection.commit();
                     }
                     outputconnectionStatement.execute(ddlCommand);
-                    connection.commit();
                     int columnsCount = inputRes.getMetaData().getColumnCount();
                     StringBuilder insertTable = new StringBuilder("INSERT INTO ");
                     insertTable.append(outputTableName).append(" VALUES(?");
@@ -372,6 +374,7 @@ public class IOMethods {
                         insertTable.append(",").append("?");
                     }
                     insertTable.append(")");
+                    outputconnection.setAutoCommit(false);
                     preparedStatement = outputconnection.prepareStatement(insertTable.toString());
                     long batchSize = 0;
                     while (inputRes.next()){
@@ -380,7 +383,7 @@ public class IOMethods {
                         }
                         preparedStatement.addBatch();
                         batchSize++;
-                        if (batchSize >= BATCH_MAX_SIZE) {
+                        if (batchSize >= batch_size) {
                             preparedStatement.executeBatch();
                             connection.commit();
                             preparedStatement.clearBatch();

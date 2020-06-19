@@ -590,13 +590,51 @@ public abstract class JdbcTable extends DefaultResultSet implements IJdbcTable<S
 
     @Override
     public boolean save(IJdbcDataSource dataSource, boolean deleteTable) {
+        return save(dataSource,  deleteTable,  1000);
+    }
+
+    @Override
+    public boolean save(IJdbcDataSource dataSource, String outputTableName, boolean deleteTable) {
+        return save( dataSource,  outputTableName,  deleteTable, 1000);
+    }
+
+    @Override
+    public boolean save(IJdbcDataSource dataSource, int batchSize) {
+        return save(dataSource,  false,  batchSize);
+    }
+
+    @Override
+    public boolean save(IJdbcDataSource dataSource, String outputTableName, boolean deleteTable, int batchSize) {
+        if(dataSource==null){
+            LOGGER.error("The output datasource connexion cannot ne null\n");
+            return false;
+        }
+        try {
+            if(getTableLocation() != null ){
+                if(outputTableName==null || outputTableName.isEmpty()){
+                    LOGGER.error("The output table name cannot be null or empty\n");
+                    return false;
+                }
+                return IOMethods.saveInDB(getStatement().getConnection(), getTableLocation(), getDbType(),  deleteTable, dataSource, TableLocation.parse(outputTableName),batchSize);
+            }
+            else{
+                return IOMethods.saveInDB(getStatement().getConnection(), getBaseQuery(),  getDbType(), deleteTable, dataSource, TableLocation.parse(outputTableName),batchSize);
+            }
+        } catch (SQLException e) {
+            LOGGER.error("Cannot save the table.\n", e);
+            return false;
+        }
+    }
+
+    @Override
+    public boolean save(IJdbcDataSource dataSource, boolean deleteTable, int batchSize) {
         if(dataSource==null){
             LOGGER.error("The output datasource connexion cannot be null\n");
             return false;
         }
         try {
             if(getTableLocation() != null ){
-                return IOMethods.saveInDB(getStatement().getConnection(), getTableLocation(), getDbType(),  deleteTable, dataSource, getTableLocation());
+                return IOMethods.saveInDB(getStatement().getConnection(), getTableLocation(), getDbType(),  deleteTable, dataSource, getTableLocation(), batchSize);
             }
             else{
                 LOGGER.error("Cannot save the table without a provided name.\n");
@@ -608,28 +646,6 @@ public abstract class JdbcTable extends DefaultResultSet implements IJdbcTable<S
         }
     }
 
-    @Override
-    public boolean save(IJdbcDataSource dataSource, String outputTableName, boolean deleteTable) {
-        if(dataSource==null){
-            LOGGER.error("The output datasource connexion cannot ne null\n");
-            return false;
-        }
-        try {
-            if(getTableLocation() != null ){
-                if(outputTableName==null || outputTableName.isEmpty()){
-                    LOGGER.error("The output table name cannot be null or empty\n");
-                    return false;
-                }
-                return IOMethods.saveInDB(getStatement().getConnection(), getTableLocation(), getDbType(),  deleteTable, dataSource, TableLocation.parse(outputTableName));
-            }
-            else{
-                return IOMethods.saveInDB(getStatement().getConnection(), getBaseQuery(),  getDbType(), deleteTable, dataSource, TableLocation.parse(outputTableName));
-            }
-        } catch (SQLException e) {
-            LOGGER.error("Cannot save the table.\n", e);
-            return false;
-        }
-    }
 
     @NotNull
     private String getQuery() {

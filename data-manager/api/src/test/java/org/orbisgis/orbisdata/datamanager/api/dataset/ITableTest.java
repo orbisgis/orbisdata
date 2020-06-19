@@ -383,12 +383,27 @@ public class ITableTest {
         }
 
         @Override
+        public boolean save(IJdbcDataSource dataSource, int batchSize) {
+            return false;
+        }
+
+        @Override
         public boolean save(IJdbcDataSource dataSource, boolean deleteTable) {
             return false;
         }
 
         @Override
+        public boolean save(IJdbcDataSource dataSource, boolean deleteTable, int batchSize) {
+            return false;
+        }
+
+        @Override
         public boolean save(IJdbcDataSource dataSource, String outputTableName, boolean deleteTable) {
+            return false;
+        }
+
+        @Override
+        public boolean save(IJdbcDataSource dataSource, String outputTableName, boolean deleteTable, int batchSize) {
             return false;
         }
 

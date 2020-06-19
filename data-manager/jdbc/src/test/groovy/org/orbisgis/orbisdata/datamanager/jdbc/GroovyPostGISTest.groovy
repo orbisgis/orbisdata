@@ -44,6 +44,7 @@ import org.locationtech.jts.geom.MultiPolygon
 import org.locationtech.jts.geom.Polygon
 import org.locationtech.jts.io.WKTReader
 import org.orbisgis.orbisdata.datamanager.api.dataset.ISpatialTable
+import org.orbisgis.orbisdata.datamanager.jdbc.h2gis.H2GIS
 import org.orbisgis.orbisdata.datamanager.jdbc.postgis.POSTGIS
 
 import static org.junit.jupiter.api.Assertions.*
@@ -346,5 +347,26 @@ class GroovyPostGISTest {
                 CREATE TABLE cnrs.postgis (id int, the_geom geometry(point, 4326));
         """)
         assertEquals(4326, postGIS.getSpatialTable("cnrs.postgis").srid)
+    }
+
+    @Test
+    @EnabledIfSystemProperty(named = "test.postgis", matches = "true")
+    void saveTableToH2GISBatchSize() {
+        postGIS.execute("""
+                DROP TABLE IF EXISTS h2gis;
+                CREATE TABLE h2gis (id int, the_geom geometry(point));
+                INSERT INTO h2gis VALUES (1, 'POINT(10 10)'::GEOMETRY), (2, 'POINT(1 1)'::GEOMETRY);
+        """)
+        def h2GISTarget = H2GIS.open([databaseName: './target/loadH2GIS_target'])
+        assertFalse(postGIS.getSpatialTable("h2gis").save(h2GISTarget, true, -1))
+        assertTrue(postGIS.getSpatialTable("h2gis").save(h2GISTarget, true, 100))
+        def concat = ""
+        h2GISTarget.spatialTable "\"h2gis\"" eachRow { row -> concat += "$row.id $row.the_geom $row.geometry\n" }
+        assertEquals("1 POINT (10 10) POINT (10 10)\n2 POINT (1 1) POINT (1 1)\n", concat)
+        concat = ""
+        h2GISTarget.execute("DROP TABLE IF EXISTS \"h2gis\" ")
+        postGIS.getSpatialTable("h2gis").save(h2GISTarget)
+        h2GISTarget.spatialTable "\"h2gis\"" eachRow { row -> concat += "$row.id $row.the_geom $row.geometry\n" }
+        assertEquals("1 POINT (10 10) POINT (10 10)\n2 POINT (1 1) POINT (1 1)\n", concat)
     }
 }

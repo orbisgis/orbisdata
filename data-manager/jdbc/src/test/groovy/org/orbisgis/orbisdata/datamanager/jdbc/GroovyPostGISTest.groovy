@@ -350,6 +350,7 @@ class GroovyPostGISTest {
     }
 
     @Test
+    @EnabledIfSystemProperty(named = "test.postgis", matches = "true")
     void saveTableToH2GISBatchSize() {
         postGIS.execute("""
                 DROP TABLE IF EXISTS h2gis;

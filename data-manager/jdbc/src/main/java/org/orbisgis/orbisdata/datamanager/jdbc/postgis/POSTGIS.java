@@ -181,6 +181,7 @@ public class POSTGIS extends JdbcDataSource {
         org.h2gis.utilities.TableLocation inputLocation = TableLocation.parse(tableName);
         try {
             if (!JDBCUtilities.tableExists(connection,inputLocation)) {
+                LOGGER.error("Unable to find table "+ tableName);
                 return null;
             }
         } catch (SQLException e) {

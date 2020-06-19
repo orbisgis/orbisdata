@@ -678,12 +678,27 @@ public class DataFrame implements smile.data.DataFrame, ITable<BaseVector, Tuple
     }
 
     @Override
+    public boolean save(IJdbcDataSource dataSource, int batchSize) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
     public boolean save(IJdbcDataSource dataSource, boolean deleteTable) {
         throw new UnsupportedOperationException();
     }
 
     @Override
+    public boolean save(IJdbcDataSource dataSource, boolean deleteTable, int batchSize) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
     public boolean save(IJdbcDataSource dataSource, String outputTableName, boolean deleteTable) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public boolean save(IJdbcDataSource dataSource, String outputTableName, boolean deleteTable, int batchSize) {
         throw new UnsupportedOperationException();
     }
 

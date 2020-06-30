@@ -288,6 +288,13 @@ public class IOMethods {
                     insertTable.append(")");
                     outputconnection.setAutoCommit(false);
                     preparedStatement = outputconnection.prepareStatement(insertTable.toString());
+                    //Check the first row in order to limit the batch size if the query doesn't work
+                    inputRes.next();
+                    for (int i = 0; i < columnsCount; i++) {
+                        preparedStatement.setObject(i +1,inputRes.getObject(i+1) );
+                    }
+                    preparedStatement.execute();
+                    outputconnection.commit();
                     long batchSize = 0;
                     while (inputRes.next()){
                         for (int i = 0; i < columnsCount; i++) {
@@ -376,6 +383,13 @@ public class IOMethods {
                     insertTable.append(")");
                     outputconnection.setAutoCommit(false);
                     preparedStatement = outputconnection.prepareStatement(insertTable.toString());
+                    //Check the first row in order to limit the batch size if the query doesn't work
+                    inputRes.next();
+                    for (int i = 0; i < columnsCount; i++) {
+                        preparedStatement.setObject(i +1,inputRes.getObject(i+1) );
+                    }
+                    preparedStatement.execute();
+                    outputconnection.commit();
                     long batchSize = 0;
                     while (inputRes.next()){
                         for (int i = 0; i < columnsCount; i++) {
@@ -412,6 +426,195 @@ public class IOMethods {
             }
         } catch (SQLException e) {
             LOGGER.error("Cannot save the table $tableLocation.\n", e);
+            return false;
+        }
+    }
+
+    /**
+     * Method to load the content of query from a source database in a target database
+     *
+     * @param targetDataSource target database
+     * @param sourceDataSource source database
+     * @param targetTableName name of the table into the target database
+     * @param query query to execute on the source database
+     * @param deleteOutputIfExists True to delete the imported table if exists
+     * @param batch_size batch size value before sending the data     *
+     * @return True if the table is saved
+     */
+    public static boolean loadFromDB(IJdbcDataSource targetDataSource, IJdbcDataSource sourceDataSource,
+                                     TableLocation targetTableName, String query,
+                                     boolean deleteOutputIfExists,  int batch_size) {
+        if(targetDataSource==null){
+            LOGGER.error("The connection to the output database cannot be null.\n");
+            return false;
+        }
+        if(batch_size<=0){
+            LOGGER.error("The batch size must be greater than 0.\n");
+            return false;
+        }
+        try {
+            String targetTableNameTmp =targetTableName.toString(targetDataSource.getDataBaseType()==DataBaseType.H2GIS);
+            Connection  sourceConnection = sourceDataSource.getConnection();
+            Statement inputStat = sourceConnection.createStatement();
+            ResultSet inputRes = inputStat.executeQuery(query);
+            String ddlCommand = JDBCUtilities.createTableDDL(inputRes, targetTableNameTmp);
+            if(!ddlCommand.isEmpty()) {
+                Connection  targetConnection = targetDataSource.getConnection();
+                PreparedStatement preparedStatement = null;
+                try{
+                    Statement targetStatement = targetConnection.createStatement();
+                    if(deleteOutputIfExists){
+                        targetStatement.execute("DROP TABLE IF EXISTS "+ targetTableNameTmp);
+                    }
+                    targetStatement.execute(ddlCommand);
+                    int columnsCount = inputRes.getMetaData().getColumnCount();
+                    StringBuilder insertTable = new StringBuilder("INSERT INTO ");
+                    insertTable.append(targetTableNameTmp).append(" VALUES(?");
+                    for (int i = 1; i < columnsCount; i++) {
+                        insertTable.append(",").append("?");
+                    }
+                    insertTable.append(")");
+                    targetConnection.setAutoCommit(false);
+                    preparedStatement = targetConnection.prepareStatement(insertTable.toString());
+                    //Check the first row in order to limit the batch size if the query doesn't work
+                    inputRes.next();
+                    for (int i = 0; i < columnsCount; i++) {
+                        preparedStatement.setObject(i +1,inputRes.getObject(i+1) );
+                    }
+                    preparedStatement.execute();
+                    targetConnection.commit();
+                    long batchSize = 0;
+                    while (inputRes.next()){
+                        for (int i = 0; i < columnsCount; i++) {
+                            preparedStatement.setObject(i +1,inputRes.getObject(i+1) );
+                        }
+                        preparedStatement.addBatch();
+                        batchSize++;
+                        if (batchSize >= batch_size) {
+                            preparedStatement.executeBatch();
+                            targetConnection.commit();
+                            preparedStatement.clearBatch();
+                            batchSize = 0;
+                        }
+                    }
+                    if (batchSize > 0) {
+                        preparedStatement.executeBatch();
+                    }
+                } catch (SQLException e) {
+                    LOGGER.error("Cannot save the query $query.\n", e);
+                    return false;
+                } finally {
+                    targetConnection.setAutoCommit(true);
+                    if(preparedStatement!=null){
+                        preparedStatement.close();
+                    }
+                    if(inputRes!=null){
+                        inputRes.close();
+                    }
+                }
+                return true;
+            }
+            else {
+                return false;
+            }
+        } catch (SQLException e) {
+            LOGGER.error("Cannot load the query $tableLocation from the datasource ${sourceDataSource.getLocation()}\n" , e);
+            return false;
+        }
+    }
+
+
+    /**
+     * Method to load a table from a source database in a target database
+     *
+     * @param targetDataSource target database
+     * @param sourceDataSource source database
+     * @param targetTableName name of the table into the target database
+     * @param sourceTableName name of the imported table
+     * @param deleteOutputIfExists True to delete the imported table if exists
+     * @param batch_size batch size value before sending the data     *
+     * @return True if the table is saved
+     */
+    public static boolean loadFromDB(IJdbcDataSource targetDataSource, IJdbcDataSource sourceDataSource,
+                                     TableLocation targetTableName, TableLocation sourceTableName,
+                                     boolean deleteOutputIfExists,  int batch_size) {
+        if(targetDataSource==null){
+            LOGGER.error("The connection to the output database cannot be null.\n");
+            return false;
+        }
+        if(batch_size<=0){
+            LOGGER.error("The batch size must be greater than 0.\n");
+            return false;
+        }
+        try {
+            String targetTableNameTmp =targetTableName.toString(targetDataSource.getDataBaseType()==DataBaseType.H2GIS);
+            String sourceTableNameTmp =sourceTableName.toString(sourceDataSource.getDataBaseType()==DataBaseType.H2GIS);
+            String ddlCommand = JDBCUtilities.createTableDDL(sourceDataSource.getConnection(), sourceTableNameTmp, targetTableNameTmp);
+            if(!ddlCommand.isEmpty()) {
+                Connection  targetConnection = targetDataSource.getConnection();
+                Connection  sourceConnection = sourceDataSource.getConnection();
+                PreparedStatement preparedStatement = null;
+                ResultSet inputRes =null;
+                try{
+                    Statement targetStatement = targetConnection.createStatement();
+                    if(deleteOutputIfExists){
+                        targetStatement.execute("DROP TABLE IF EXISTS "+ targetTableNameTmp);
+                    }
+                    targetStatement.execute(ddlCommand);
+                    Statement inputStat = sourceConnection.createStatement();
+                    inputRes = inputStat.executeQuery("SELECT * FROM " + sourceTableNameTmp);
+                    int columnsCount = inputRes.getMetaData().getColumnCount();
+                    StringBuilder insertTable = new StringBuilder("INSERT INTO ");
+                    insertTable.append(targetTableNameTmp).append(" VALUES(?");
+                    for (int i = 1; i < columnsCount; i++) {
+                        insertTable.append(",").append("?");
+                    }
+                    insertTable.append(")");
+                    targetConnection.setAutoCommit(false);
+                    preparedStatement = targetConnection.prepareStatement(insertTable.toString());
+                    //Check the first row in order to limit the batch size if the query doesn't work
+                    inputRes.next();
+                    for (int i = 0; i < columnsCount; i++) {
+                        preparedStatement.setObject(i +1,inputRes.getObject(i+1) );
+                    }
+                    preparedStatement.execute();
+                    targetConnection.commit();
+                    long batchSize = 0;
+                    while (inputRes.next()){
+                        for (int i = 0; i < columnsCount; i++) {
+                            preparedStatement.setObject(i +1,inputRes.getObject(i+1) );
+                        }
+                        preparedStatement.addBatch();
+                        batchSize++;
+                        if (batchSize >= batch_size) {
+                            preparedStatement.executeBatch();
+                            targetConnection.commit();
+                            preparedStatement.clearBatch();
+                            batchSize = 0;
+                        }
+                    }
+                    if (batchSize > 0) {
+                        preparedStatement.executeBatch();
+                    }
+                } catch (SQLException e) {
+                    LOGGER.error("Cannot save the table $tableLocation.\n", e);
+                    return false;
+                } finally {
+                    targetConnection.setAutoCommit(true);
+                    if(preparedStatement!=null){
+                        preparedStatement.close();
+                    }
+                    if(inputRes!=null){
+                        inputRes.close();
+                    }
+                }
+                return true;
+            }
+            else {
+                return false;
+            }
+        } catch (SQLException e) {
+            LOGGER.error("Cannot load the table $tableLocation from the datasource ${sourceDataSource.getLocation()}\n" , e);
             return false;
         }
     }

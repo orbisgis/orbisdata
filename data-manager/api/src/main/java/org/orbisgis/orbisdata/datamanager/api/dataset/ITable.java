@@ -290,6 +290,7 @@ public interface ITable<T, U> extends IMatrix<T, U> {
      */
     boolean save(@Nullable IJdbcDataSource dataSource, @NotNull String outputTableName, boolean deleteTable, int batchSize);
 
+
     /**
      * Return the values of the first row in a {@link List}. If there is no row, return an empty list.
      *

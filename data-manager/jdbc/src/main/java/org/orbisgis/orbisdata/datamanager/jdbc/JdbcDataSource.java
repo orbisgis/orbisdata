@@ -78,6 +78,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
@@ -522,29 +523,6 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, ISe
     }
 
     @Override
-    public IJdbcTable load(@NotNull Map<String, String> properties, @NotNull String inputTableName) {
-        return load(properties, inputTableName, inputTableName, false);
-    }
-
-    @Override
-    public IJdbcTable load(@NotNull Map<String, String> properties, @NotNull String inputTableName, boolean delete) {
-        return load(properties, inputTableName, inputTableName, delete);
-    }
-
-    @Override
-    public IJdbcTable load(@NotNull Map<String, String> properties, @NotNull String inputTableName,
-                           @NotNull String outputTableName) {
-        return load(properties, inputTableName, outputTableName, false);
-    }
-
-    @Override
-    public IJdbcTable load(@NotNull Map<String, String> properties, @NotNull String inputTableName,
-                           @NotNull String outputTableName, boolean delete) {
-        IOMethods.loadTable(properties, inputTableName, outputTableName, delete, this);
-        return getTable(outputTableName);
-    }
-
-    @Override
     public IJdbcTable load(@NotNull String filePath, @NotNull String tableName, @Nullable String encoding,
                            boolean delete) {
         IOMethods.loadFile(filePath, tableName, encoding, delete, this);
@@ -675,6 +653,86 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, ISe
     @Override
     public IJdbcTable load(@NotNull File file, @NotNull String tableName, @Nullable String encoding, boolean delete) {
         return load(file.getAbsolutePath(), tableName, encoding, delete);
+    }
+
+    @Override
+    public IJdbcTable load(@NotNull IJdbcDataSource dataSource, @NotNull String inputTableName, @NotNull String outputTableName, boolean deleteIfExists) {
+        return load(dataSource, inputTableName, outputTableName, deleteIfExists, 1000);
+    }
+
+    @Override
+    public IJdbcTable load(@NotNull IJdbcDataSource dataSource, @NotNull String inputTableName, @NotNull String outputTableName) {
+        return load(dataSource, inputTableName, outputTableName, false, 1000);
+    }
+
+    @Override
+    public IJdbcTable load(@NotNull IJdbcDataSource dataSource, @NotNull String inputTableName, boolean deleteIfExists) {
+        //The inputTableName can be query
+        String regex = ".*(?i)\\b(select|from)\\b.*";
+        Pattern pattern = Pattern.compile(regex);
+        Matcher matcher = pattern.matcher(inputTableName);
+        if (matcher.find()) {
+            LOGGER.error("This function doesn't support query as input data.");
+        }else{
+            TableLocation sourceTableLocation =  TableLocation.parse(inputTableName, dataSource.getDataBaseType()==DataBaseType.H2GIS);
+            TableLocation targetTableLocation =  TableLocation.parse(inputTableName, this.getDataBaseType()==DataBaseType.H2GIS);
+            if(IOMethods.loadFromDB( this,  dataSource,
+                    targetTableLocation,  sourceTableLocation,
+                    deleteIfExists,   1000)){
+                return getTable(targetTableLocation.toString(this.getDataBaseType()==DataBaseType.H2GIS));
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public IJdbcTable load(@NotNull IJdbcDataSource dataSource, @NotNull String inputTableName) {
+        //The inputTableName can be query
+        String regex = ".*(?i)\\b(select|from)\\b.*";
+        Pattern pattern = Pattern.compile(regex);
+        Matcher matcher = pattern.matcher(inputTableName);
+        if (matcher.find()) {
+            LOGGER.error("This function doesn't support query as input data.");
+        }else{
+            TableLocation sourceTableLocation =  TableLocation.parse(inputTableName, dataSource.getDataBaseType()==DataBaseType.H2GIS);
+            TableLocation targetTableLocation =  TableLocation.parse(inputTableName, this.getDataBaseType()==DataBaseType.H2GIS);
+            if(IOMethods.loadFromDB( this,  dataSource,
+                    targetTableLocation,  sourceTableLocation,
+                    false,   1000)){
+                return getTable(targetTableLocation.toString(this.getDataBaseType()==DataBaseType.H2GIS));
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public IJdbcTable load(@NotNull IJdbcDataSource dataSource, @NotNull String inputTableName, @NotNull String outputTableName, boolean deleteIfExists, int batchSize) {
+        //The inputTableName can be query
+        String regex = ".*(?i)\\b(select|from)\\b.*";
+        Pattern pattern = Pattern.compile(regex);
+        Matcher matcher = pattern.matcher(inputTableName);
+        if (matcher.find()) {
+            if (inputTableName.startsWith("(") && inputTableName.endsWith(")")) {
+                TableLocation targetTableLocation =  TableLocation.parse(outputTableName, this.getDataBaseType()==DataBaseType.H2GIS);
+                if(IOMethods.loadFromDB( this,  dataSource,
+                        targetTableLocation,  inputTableName,
+                        deleteIfExists,   batchSize)){
+                    return getTable(targetTableLocation.toString(this.getDataBaseType()==DataBaseType.H2GIS));
+                }
+            }
+            else{
+                LOGGER.error("The query must be enclosed in parenthesis: '(SELECT * FROM ORDERS)'.");
+            }
+        }else{
+            TableLocation sourceTableLocation =  TableLocation.parse(inputTableName, dataSource.getDataBaseType()==DataBaseType.H2GIS);
+            TableLocation targetTableLocation =  TableLocation.parse(outputTableName, this.getDataBaseType()==DataBaseType.H2GIS);
+            if(IOMethods.loadFromDB( this,  dataSource,
+                    targetTableLocation,  sourceTableLocation,
+                    deleteIfExists,   batchSize)){
+                return getTable(targetTableLocation.toString(this.getDataBaseType()==DataBaseType.H2GIS));
+            }
+        }
+        return null;
     }
 
     @Override

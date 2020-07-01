@@ -137,7 +137,6 @@ public class H2GIS extends JdbcDataSource {
         }
         check(connection);
         H2GIS h2GIS = new H2GIS(connection);
-        h2GIS.properties = properties;
         return h2GIS;
     }
 

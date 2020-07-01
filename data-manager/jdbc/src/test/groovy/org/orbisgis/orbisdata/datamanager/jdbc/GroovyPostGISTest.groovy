@@ -369,4 +369,22 @@ class GroovyPostGISTest {
         h2GISTarget.spatialTable "\"h2gis\"" eachRow { row -> concat += "$row.id $row.the_geom $row.geometry\n" }
         assertEquals("1 POINT (10 10) POINT (10 10)\n2 POINT (1 1) POINT (1 1)\n", concat)
     }
+
+    @Test
+    @EnabledIfSystemProperty(named = "test.postgis", matches = "true")
+    void loadTableFromH2GISToPostGIS() {
+        def h2GISSource = H2GIS.open([databaseName: './target/loadH2GIS_source'])
+        h2GISSource.execute("""
+                DROP TABLE IF EXISTS externalTable;
+                CREATE TABLE externalTable (id int, the_geom geometry(point));
+                INSERT INTO externalTable VALUES (1, 'POINT(10 10)'::GEOMETRY), (2, 'POINT(1 1)'::GEOMETRY);
+        """)
+        assertNull(postGIS.load(h2GISSource, 'SELECT the_geom from externalTable limit 1', true))
+        assertNull(postGIS.load(h2GISSource, 'SELECT the_geom from externalTable limit 1'))
+        assertNull( postGIS.load(h2GISSource, 'SELECT the_geom from externalTable limit 1', "QUERY_TABLE", true))
+        postGIS.load(h2GISSource, '(SELECT the_geom from externalTable limit 1)', "query_table", true)
+        assertEquals(1, postGIS.getSpatialTable("query_table").getRowCount())
+        assertEquals(1, postGIS.getSpatialTable("query_table").getColumnCount())
+        assertEquals("the_geom", postGIS.getSpatialTable("query_table").getColumns().first())
+    }
 }

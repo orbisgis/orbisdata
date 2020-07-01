@@ -346,55 +346,74 @@ public interface IJdbcDataSource extends IDataSource<ResultSet>, GroovyObject, D
     @Nullable
     IJdbcTable load(@NotNull File file, @NotNull String tableName, @Nullable String encoding, boolean delete);
 
-    /**
-     * Load a table from another database.
-     *
-     * @param properties     Properties used to connect to the database.
-     * @param inputTableName Name of the table to import.
-     * @return The {@link IJdbcTable} containing the loaded data.
-     */
-    @Override
-    @Nullable
-    IJdbcTable load(@NotNull Map<String, String> properties, @NotNull String inputTableName);
 
     /**
      * Load a table from another database.
      *
-     * @param properties      Properties used to connect to the database.
+     * @param dataSource      Connection to the input database
+     * @param inputTableName  Name of the table to import.
+     * @return The {@link IJdbcTable} containing the loaded data.
+     */
+    @Override
+    @Nullable
+    IJdbcTable load(@Nullable IJdbcDataSource dataSource, @NotNull String inputTableName);
+
+    /**
+     * Load a table from another database.
+     *
+     * @param dataSource      Connection to the input database
+     * @param inputTableName  Name of the table to import.
+     * @param deleteIfExists  True to delete the outputTableName if exists, false otherwise.
+     * @return The {@link IJdbcTable} containing the loaded data.
+     */
+    @Override
+    @Nullable
+    IJdbcTable load(@Nullable IJdbcDataSource dataSource, @NotNull String inputTableName,
+                    boolean deleteIfExists);
+
+
+    /**
+     * Load a table from another database.
+     *
+     * @param dataSource      Connection to the input database
      * @param inputTableName  Name of the table to import.
      * @param outputTableName Name of the imported table in the database.
      * @return The {@link IJdbcTable} containing the loaded data.
      */
     @Override
     @Nullable
-    IJdbcTable load(@NotNull Map<String, String> properties, @NotNull String inputTableName,
+    IJdbcTable load(@Nullable IJdbcDataSource dataSource, @NotNull String inputTableName,
                     @NotNull String outputTableName);
 
     /**
      * Load a table from another database.
      *
-     * @param properties     Properties used to connect to the database.
-     * @param inputTableName Name of the table to import.
-     * @param delete         True to delete the outputTableName if exists, false otherwise.
+     * @param dataSource      Connection to the input database
+     * @param inputTableName  Name of the table to import.
+     * @param outputTableName Name of the imported table in the database.
+     * @param deleteIfExists  True to delete the outputTableName if exists, false otherwise.
      * @return The {@link IJdbcTable} containing the loaded data.
      */
     @Override
     @Nullable
-    IJdbcTable load(@NotNull Map<String, String> properties, @NotNull String inputTableName, boolean delete);
+    IJdbcTable load(@Nullable IJdbcDataSource dataSource, @NotNull String inputTableName,
+                    @NotNull String outputTableName, boolean deleteIfExists);
+
 
     /**
      * Load a table from another database.
      *
-     * @param properties      Properties used to connect to the database.
+     * @param dataSource      Connection to the input database
      * @param inputTableName  Name of the table to import.
      * @param outputTableName Name of the imported table in the database.
-     * @param delete          True to delete the outputTableName if exists, false otherwise.
+     * @param deleteIfExists  True to delete the outputTableName if exists, false otherwise.
+     * @param batchSize       Number of rows that must be accumulated in memory.
      * @return The {@link IJdbcTable} containing the loaded data.
      */
     @Override
     @Nullable
-    IJdbcTable load(@NotNull Map<String, String> properties, @NotNull String inputTableName,
-                    @NotNull String outputTableName, boolean delete);
+    IJdbcTable load(@Nullable IJdbcDataSource dataSource, @NotNull String inputTableName,
+                    @NotNull String outputTableName, boolean deleteIfExists,int batchSize);
 
 
     /* ********************** */

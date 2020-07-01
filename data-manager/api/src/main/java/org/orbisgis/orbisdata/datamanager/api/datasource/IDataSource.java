@@ -299,50 +299,63 @@ public interface IDataSource<T> {
     /**
      * Load a table from another {@link IDataSource}.
      *
-     * @param properties     Properties used to connect to the database.
-     * @param inputdataSetId Name of the table to import.
+     * @param dataSource      DataSource reference to the input database
+     * @param inputTableName  Name of the table to import.
+     * @param deleteIfExists  True to delete the outputTableName if exists, false otherwise.
      * @return The {@link IDataSet} containing the loaded data.
      */
     @Nullable
-    IDataSet<?, ?> load(@NotNull Map<String, String> properties, @NotNull String inputdataSetId);
-
+    IDataSet<?, ?> load(@Nullable IJdbcDataSource dataSource, @NotNull String inputTableName,
+                         boolean deleteIfExists);
 
     /**
      * Load a table from another {@link IDataSource}.
      *
-     * @param properties      Properties used to connect to the database.
-     * @param inputdataSetId  Name of the table to import.
-     * @param outputdataSetId Name of the imported table in the database.
+     * @param dataSource      DataSource reference to the input database
+     * @param inputTableName  Name of the table to import.
+     * @param outputTableName Name of the imported table in the database.
      * @return The {@link IDataSet} containing the loaded data.
      */
     @Nullable
-    IDataSet<?, ?> load(@NotNull Map<String, String> properties, @NotNull String inputdataSetId,
-                    @NotNull String outputdataSetId);
+    IDataSet<?, ?> load(@Nullable IJdbcDataSource dataSource, @NotNull String inputTableName,
+                         @NotNull String outputTableName);
 
     /**
      * Load a table from another {@link IDataSource}.
      *
-     * @param properties     Properties used to connect to the database.
-     * @param inputdataSetId Name of the table to import.
-     * @param delete         True to delete the {@link IDataSet} if exists, false otherwise.
+     * @param dataSource      DataSource reference to the input database
+     * @param inputTableName  Name of the table to import.
      * @return The {@link IDataSet} containing the loaded data.
      */
     @Nullable
-    IDataSet<?, ?> load(@NotNull Map<String, String> properties, @NotNull String inputdataSetId, boolean delete);
+    IDataSet<?, ?> load(@Nullable IJdbcDataSource dataSource, @NotNull String inputTableName);
 
     /**
      * Load a table from another {@link IDataSource}.
      *
-     * @param properties      Properties used to connect to the database.
-     * @param inputdataSetId  Name of the table to import.
-     * @param outputdataSetId Name of the imported table in the database.
-     * @param delete          True to delete the {@link IDataSet} if exists, false otherwise.
+     * @param dataSource      DataSource reference to the input database
+     * @param inputTableName  Name of the table to import.
+     * @param outputTableName Name of the imported table in the database.
+     * @param deleteIfExists  True to delete the outputTableName if exists, false otherwise.
      * @return The {@link IDataSet} containing the loaded data.
      */
     @Nullable
-    IDataSet<?, ?> load(@NotNull Map<String, String> properties, @NotNull String inputdataSetId,
-                    @NotNull String outputdataSetId, boolean delete);
+    IDataSet<?, ?> load(@Nullable IJdbcDataSource dataSource, @NotNull String inputTableName,
+                    @NotNull String outputTableName, boolean deleteIfExists);
 
+    /**
+     * Load a table from another {@link IDataSource}.
+     *
+     * @param dataSource      DataSource reference to the input database
+     * @param inputTableName  Name of the table to import.
+     * @param outputTableName Name of the imported table in the database.
+     * @param deleteIfExists  True to delete the outputTableName if exists, false otherwise.
+     * @param batchSize       Integer value to queue the data before executing the query
+     * @return The {@link IDataSet} containing the loaded data.
+     */
+    @Nullable
+    IDataSet<?, ?> load(@Nullable IJdbcDataSource dataSource, @NotNull String inputTableName,
+                         @NotNull String outputTableName, boolean deleteIfExists, int batchSize);
 
     /* ********************** */
     /*      Save methods      */

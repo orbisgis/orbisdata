@@ -312,22 +312,27 @@ public class IJdbcDataSourceTest {
         }
 
         @Override
-        public IJdbcTable load(@NotNull Map<String, String> properties, @NotNull String inputTableName) {
+        public IJdbcTable load(IJdbcDataSource dataSource, String inputTableName) {
             return null;
         }
 
         @Override
-        public IJdbcTable load(@NotNull Map<String, String> properties, @NotNull String inputTableName, @NotNull String outputTableName) {
+        public IJdbcTable load(IJdbcDataSource dataSource, String inputTableName, boolean deleteIfExists) {
             return null;
         }
 
         @Override
-        public IJdbcTable load(@NotNull Map<String, String> properties, @NotNull String inputTableName, boolean delete) {
+        public IJdbcTable load(IJdbcDataSource dataSource, String inputTableName, String outputTableName) {
             return null;
         }
 
         @Override
-        public IJdbcTable load(@NotNull Map<String, String> properties, @NotNull String inputTableName, @NotNull String outputTableName, boolean delete) {
+        public IJdbcTable load(IJdbcDataSource dataSource, String inputTableName, String outputTableName, boolean deleteIfExists) {
+            return null;
+        }
+
+        @Override
+        public IJdbcTable load(IJdbcDataSource dataSource, String inputTableName, String outputTableName, boolean deleteIfExists, int batchSize) {
             return null;
         }
 

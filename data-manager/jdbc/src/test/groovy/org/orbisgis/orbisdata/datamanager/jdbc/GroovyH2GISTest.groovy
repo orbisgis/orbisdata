@@ -313,8 +313,26 @@ class GroovyH2GISTest {
                 INSERT INTO externalTable VALUES (1, 'POINT(10 10)'::GEOMETRY), (2, 'POINT(1 1)'::GEOMETRY);
         """)
         def h2GIS = H2GIS.open([databaseName: './target/loadH2GIS'])
-        h2GIS.load([user: 'sa', password: 'sa', url: 'jdbc:h2:./target/secondH2GIS'], 'externalTable', true)
+        h2GIS.load(h2External, 'externalTable', true)
         assertTrue(h2GIS.tableNames.contains("LOADH2GIS.PUBLIC.EXTERNALTABLE"))
+    }
+
+    @Test
+    void loadExternalTableFromDataBaseWithQuery() {
+        def h2External = H2GIS.open([databaseName: './target/secondH2GIS', user: 'sa', password: 'sa'])
+        h2External.execute("""
+                DROP TABLE IF EXISTS externalTable;
+                CREATE TABLE externalTable (id int, the_geom geometry(point));
+                INSERT INTO externalTable VALUES (1, 'POINT(10 10)'::GEOMETRY), (2, 'POINT(1 1)'::GEOMETRY);
+        """)
+        def h2GIS = H2GIS.open([databaseName: './target/loadH2GIS'])
+        assertNull(h2GIS.load(h2External, 'SELECT the_geom from externalTable limit 1', true))
+        assertNull(h2GIS.load(h2External, 'SELECT the_geom from externalTable limit 1'))
+        assertNull( h2GIS.load(h2External, 'SELECT the_geom from externalTable limit 1', "QUERY_TABLE", true))
+        h2GIS.load(h2External, '(SELECT the_geom from externalTable limit 1)', "QUERY_TABLE", true)
+        assertEquals(1, h2GIS.getSpatialTable("QUERY_TABLE").getRowCount())
+        assertEquals(1, h2GIS.getSpatialTable("QUERY_TABLE").getColumnCount())
+        assertEquals("THE_GEOM", h2GIS.getSpatialTable("QUERY_TABLE").getColumns().first())
     }
 
     @Test

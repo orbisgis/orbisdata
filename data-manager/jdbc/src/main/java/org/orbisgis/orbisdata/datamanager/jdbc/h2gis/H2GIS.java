@@ -80,9 +80,6 @@ public class H2GIS extends JdbcDataSource {
     private static final OsgiDataSourceFactory dataSourceFactory = new OsgiDataSourceFactory(new Driver());
     private static final Logger LOGGER = LoggerFactory.getLogger(H2GIS.class);
 
-    /** Properties used for the connection to the database. */
-    private Properties properties;
-
     /**
      * Private constructor.
      *
@@ -323,6 +320,11 @@ public class H2GIS extends JdbcDataSource {
         }
     }
 
+    /**
+     * Load the H2GIS Network function in the current H2GIS DataSource.
+     *
+     * @return True if the functions have been successfully loaded, false otherwise.
+     */
     public boolean addNetworkFunctions(){
         Connection connection = getConnection();
         if(connection == null){

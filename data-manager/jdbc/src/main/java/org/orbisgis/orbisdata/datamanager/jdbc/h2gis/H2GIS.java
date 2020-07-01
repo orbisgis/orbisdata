@@ -40,6 +40,7 @@ import org.h2.Driver;
 import org.h2.util.OsgiDataSourceFactory;
 import org.h2gis.functions.factory.H2GISFunctions;
 import org.h2gis.functions.io.utility.FileUtil;
+import org.h2gis.network.functions.NetworkFunctions;
 import org.h2gis.utilities.GeometryTableUtilities;
 import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.wrapper.StatementWrapper;
@@ -135,7 +136,8 @@ public class H2GIS extends JdbcDataSource {
             return null;
         }
         check(connection);
-        return new H2GIS(connection);
+        H2GIS h2GIS = new H2GIS(connection);
+        return h2GIS;
     }
 
     /**
@@ -315,6 +317,26 @@ public class H2GIS extends JdbcDataSource {
                     ex.getLocalizedMessage());
             return false;
         }
+    }
+
+    /**
+     * Load the H2GIS Network function in the current H2GIS DataSource.
+     *
+     * @return True if the functions have been successfully loaded, false otherwise.
+     */
+    public boolean addNetworkFunctions(){
+        Connection connection = getConnection();
+        if(connection == null){
+            LOGGER.error("Cannot load the H2GIS Network extension.\n");
+            return false;
+        }
+        try {
+            NetworkFunctions.load(connection);
+        } catch (SQLException e) {
+            LOGGER.error("Cannot load the H2GIS Network extension.\n", e);
+            return false;
+        }
+        return true;
     }
 
     @Nullable

@@ -296,68 +296,66 @@ public interface IDataSource<T> {
     @Nullable
     IDataSet<?, ?> load(@NotNull File file, @NotNull String dataSetId, @Nullable String encoding, boolean delete);
 
-
     /**
      * Load a table from another {@link IDataSource}.
      *
-     * @param dataSource      Connection to the input database
+     * @param dataSource      DataSource reference to the input database
      * @param inputTableName  Name of the table to import.
      * @param deleteIfExists  True to delete the outputTableName if exists, false otherwise.
      * @return The {@link IDataSet} containing the loaded data.
      */
     @Nullable
-    IDataSet<?, ?>  load(@Nullable IJdbcDataSource dataSource, @NotNull String inputTableName,
+    IDataSet<?, ?> load(@Nullable IJdbcDataSource dataSource, @NotNull String inputTableName,
                          boolean deleteIfExists);
 
     /**
      * Load a table from another {@link IDataSource}.
      *
-     * @param dataSource      Connection to the input database
+     * @param dataSource      DataSource reference to the input database
      * @param inputTableName  Name of the table to import.
      * @param outputTableName Name of the imported table in the database.
      * @return The {@link IDataSet} containing the loaded data.
      */
     @Nullable
-    IDataSet<?, ?>  load(@Nullable IJdbcDataSource dataSource, @NotNull String inputTableName,
+    IDataSet<?, ?> load(@Nullable IJdbcDataSource dataSource, @NotNull String inputTableName,
                          @NotNull String outputTableName);
 
     /**
      * Load a table from another {@link IDataSource}.
      *
-     * @param dataSource      Connection to the input database
+     * @param dataSource      DataSource reference to the input database
      * @param inputTableName  Name of the table to import.
      * @return The {@link IDataSet} containing the loaded data.
      */
     @Nullable
-    IDataSet<?, ?>  load(@Nullable IJdbcDataSource dataSource, @NotNull String inputTableName);
+    IDataSet<?, ?> load(@Nullable IJdbcDataSource dataSource, @NotNull String inputTableName);
 
     /**
      * Load a table from another {@link IDataSource}.
      *
-     * @param dataSource      Connection to the input database
+     * @param dataSource      DataSource reference to the input database
      * @param inputTableName  Name of the table to import.
      * @param outputTableName Name of the imported table in the database.
      * @param deleteIfExists  True to delete the outputTableName if exists, false otherwise.
      * @return The {@link IDataSet} containing the loaded data.
      */
     @Nullable
-    IDataSet<?, ?>  load(@Nullable IJdbcDataSource dataSource, @NotNull String inputTableName,
+    IDataSet<?, ?> load(@Nullable IJdbcDataSource dataSource, @NotNull String inputTableName,
                     @NotNull String outputTableName, boolean deleteIfExists);
 
-
     /**
      * Load a table from another {@link IDataSource}.
      *
-     * @param dataSource      Connection to the input database
+     * @param dataSource      DataSource reference to the input database
      * @param inputTableName  Name of the table to import.
      * @param outputTableName Name of the imported table in the database.
      * @param deleteIfExists  True to delete the outputTableName if exists, false otherwise.
+     * @param batchSize       Integer value to queue the data before executing the query
      * @return The {@link IDataSet} containing the loaded data.
      */
     @Nullable
-    IDataSet<?, ?>  load(@Nullable IJdbcDataSource dataSource, @NotNull String inputTableName,
+    IDataSet<?, ?> load(@Nullable IJdbcDataSource dataSource, @NotNull String inputTableName,
                          @NotNull String outputTableName, boolean deleteIfExists, int batchSize);
-
 
     /* ********************** */
     /*      Save methods      */

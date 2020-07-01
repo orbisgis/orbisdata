@@ -47,12 +47,12 @@ import org.orbisgis.orbisdata.datamanager.api.dataset.ITable;
 import org.osgi.service.jdbc.DataSourceFactory;
 
 import java.io.File;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Time;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.orbisgis.orbisdata.datamanager.api.dsl.IOptionBuilder.Order.DESC;
@@ -351,5 +351,62 @@ public class H2GISTests {
         assertNotNull(h2GIS.getSpatialTable("table1"));
         assertNotNull(h2GIS.getSpatialTable("table1").getGeometricColumns());
         assertNotNull(h2GIS.getTable("table1"));
+    }
+
+    @Test
+    void addNetworkFunctionsTest() {
+        String[] fcts = new String[]{ "ST_ACCESSIBILITY", "ST_CONNECTEDCOMPONENTS", "ST_GRAPHANALYSIS",
+                "ST_SHORTESTPATHLENGTH", "ST_SHORTESTPATHTREE", "ST_SHORTESTPATH"};
+        Map<String, String> map = new HashMap<>();
+        map.put(DataSourceFactory.JDBC_DATABASE_NAME, "./target/addNetworkFunctionsTest" + UUID.randomUUID().toString());
+        H2GIS h2GIS = H2GIS.open(map);
+        ITable table = h2GIS.getTable("INFORMATION_SCHEMA.FUNCTION_ALIASES");
+        assertNotNull(table);
+        try {
+            assertTrue(table.first());
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        //Collect the functions names
+        List<Object> list = (List<Object>)table.stream()
+                .map(t -> {
+                    try {
+                        return ((ResultSet)t).getString(3);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    return null;
+                })
+                .collect(Collectors.toList());
+        assertFalse(list.contains(fcts[0]));
+        assertFalse(list.contains(fcts[1]));
+        assertFalse(list.contains(fcts[2]));
+        assertFalse(list.contains(fcts[3]));
+        assertFalse(list.contains(fcts[4]));
+
+        table = h2GIS.getTable("INFORMATION_SCHEMA.FUNCTION_ALIASES");
+        assertTrue(h2GIS.addNetworkFunctions());
+        try {
+            assertTrue(table.first());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        //Collect the functions names
+        list = (List<Object>)table.stream()
+                .map(t -> {
+                    try {
+                        return ((ResultSet)t).getString(3);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    return null;
+                })
+                .collect(Collectors.toList());
+        assertTrue(list.contains(fcts[0]));
+        assertTrue(list.contains(fcts[1]));
+        assertTrue(list.contains(fcts[2]));
+        assertTrue(list.contains(fcts[3]));
+        assertTrue(list.contains(fcts[4]));
     }
 }

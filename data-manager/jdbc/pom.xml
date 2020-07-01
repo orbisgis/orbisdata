@@ -52,6 +52,10 @@
         </dependency>
         <dependency>
             <groupId>org.orbisgis</groupId>
+            <artifactId>h2gis-network</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.orbisgis</groupId>
             <artifactId>h2gis-utilities</artifactId>
         </dependency>
         <dependency>

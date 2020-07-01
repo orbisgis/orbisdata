@@ -38,6 +38,8 @@ package org.orbisgis.orbisdata.datamanager.dataframe
 
 import org.junit.jupiter.api.Test
 import org.orbisgis.orbisdata.datamanager.jdbc.h2gis.H2GIS
+import smile.data.formula.Formula
+import smile.math.Complex
 
 import static org.junit.jupiter.api.Assertions.assertEquals
 import static org.junit.jupiter.api.Assertions.assertNotNull
@@ -86,5 +88,34 @@ class GroovyDataFrameTest {
         assertEquals 2, df.stringVector(6).size()
         assertEquals 2, df.stringVector(7).size()
         assertEquals 2, df.stringVector(8).size()
+    }
+
+    @Test
+    void testSaveLoadDFFromTable() {
+        def h2GIS = RANDOM_DS();
+        h2GIS.execute("""
+                DROP TABLE IF EXISTS geotable;
+                CREATE TABLE geotable (id int, the_geom geometry(point), type varchar,temperature int);
+                INSERT INTO geotable VALUES (1, 'POINT(10 10)'::GEOMETRY, 'grass', -12), (2, 'POINT(1 1)'::GEOMETRY, 'corn', 22);
+        """)
+        DataFrame df = DataFrame.of(h2GIS.select().from("GEOTABLE").where("type = 'grass'").getSpatialTable())
+        assertNotNull df
+        assertNotNull df.schema()
+        assertEquals 4, df.ncols()
+        assertEquals 0, df.columnIndex("ID")
+        assertEquals 1, df.columnIndex("THE_GEOM")
+        assertEquals 2, df.columnIndex("TYPE")
+        assertEquals 3, df.columnIndex("TEMPERATURE")
+        df.save(h2GIS, "output_dataframe", true)
+        def table = h2GIS.getTable("OUTPUT_DATAFRAME")
+        assertNotNull(table)
+        assertEquals(4,table.getColumnCount())
+        assertEquals(1,table.getRowCount())
+        table.next();
+        def row = table.firstRow()
+        assertEquals(1,row.ID)
+        assertEquals("POINT (10 10)",row.THE_GEOM)
+        assertEquals("grass",row.TYPE)
+        assertEquals(-12,row.TEMPERATURE)
     }
 }

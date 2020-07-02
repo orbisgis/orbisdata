@@ -36,12 +36,14 @@
  */
 package org.orbisgis.orbisdata.datamanager.dataframe;
 
+import org.h2gis.utilities.TableLocation;
 import org.locationtech.jts.geom.Geometry;
 import org.orbisgis.commons.annotations.NotNull;
 import org.orbisgis.commons.annotations.Nullable;
 import org.orbisgis.commons.printer.Ascii;
 import org.orbisgis.commons.printer.Html;
 import org.orbisgis.commons.printer.ICustomPrinter;
+import org.orbisgis.orbisdata.datamanager.api.dataset.DataBaseType;
 import org.orbisgis.orbisdata.datamanager.api.dataset.IJdbcTable;
 import org.orbisgis.orbisdata.datamanager.api.dataset.ITable;
 import org.orbisgis.orbisdata.datamanager.api.datasource.IJdbcDataSource;
@@ -50,6 +52,7 @@ import org.slf4j.LoggerFactory;
 import smile.data.Tuple;
 import smile.data.formula.Formula;
 import smile.data.type.DataType;
+import smile.data.type.DataTypes;
 import smile.data.type.StructField;
 import smile.data.type.StructType;
 import smile.data.vector.Vector;
@@ -582,8 +585,21 @@ public class DataFrame implements smile.data.DataFrame, ITable<BaseVector, Tuple
     }
 
     @Override
+    public int getColumnCount() {
+        return ncols();
+    }
+
+    @Override
     public boolean hasColumn(@NotNull String columnName, @NotNull Class<?> clazz) {
-        return getColumnsTypes().get(columnName).equalsIgnoreCase(clazz.getCanonicalName());
+        String[] names = names();
+        DataType[] dataTypes = types();
+        for (int i = 0; i < names.length; i++) {
+            String name = names[i];
+            if (name.equalsIgnoreCase(columnName) ) {
+                return dataTypes[i].name().equalsIgnoreCase(clazz.getCanonicalName());
+            }
+        }
+        return false;
     }
 
     @Override
@@ -709,12 +725,84 @@ public class DataFrame implements smile.data.DataFrame, ITable<BaseVector, Tuple
 
     @Override
     public boolean save(IJdbcDataSource dataSource, String outputTableName, boolean deleteTable) {
-        throw new UnsupportedOperationException();
+        return  save(dataSource,  outputTableName,  deleteTable, 1000);
     }
 
     @Override
-    public boolean save(IJdbcDataSource dataSource, String outputTableName, boolean deleteTable, int batchSize) {
-        throw new UnsupportedOperationException();
+    public boolean save(@NotNull  IJdbcDataSource dataSource, @NotNull  String outputTableName, boolean deleteTable, int batchSize) {
+        if (isEmpty()) {
+            return false;
+        }
+        String tableName = TableLocation.parse(outputTableName, dataSource.getDataBaseType() == DataBaseType.H2GIS).toString(dataSource.getDataBaseType() == DataBaseType.H2GIS);
+        try {
+            PreparedStatement preparedStatement = null;
+            Connection outputconnection = dataSource.getConnection();
+            try {
+                Statement outputconnectionStatement = outputconnection.createStatement();
+                if (deleteTable) {
+                    outputconnectionStatement.execute("DROP TABLE IF EXISTS " + outputTableName);
+                }
+                StringBuilder create_table_ = new StringBuilder("CREATE TABLE ").append(tableName).append(" (");
+                StringBuilder insertTable = new StringBuilder("INSERT INTO ");
+                insertTable.append(outputTableName).append(" VALUES(");
+                int k = 0;
+                DataType[] dataTypes = types();
+                String[] names = names();
+                Map<String, String> map = new HashMap<>();
+                for (int i = 0; i < dataTypes.length; i++) {
+                    String columnName = names[i];
+                    DataType dataType = dataTypes[i];
+                    if (k == 0) {
+                        insertTable.append("?");
+                        create_table_.append(columnName).append(" ").append(getSQLType(dataType));
+                    } else {
+                        insertTable.append(",?");
+                        create_table_.append(",").append(columnName).append(" ").append(getSQLType(dataType));
+                    }
+                    k++;
+                }
+                create_table_.append(")");
+                insertTable.append(")");
+                outputconnection.setAutoCommit(false);
+                outputconnectionStatement.execute(create_table_.toString());
+                preparedStatement = outputconnection.prepareStatement(insertTable.toString());
+                //Check the first row in order to limit the batch size if the query doesn't work
+                this.next();
+                for (int i = 0; i < getColumnCount(); i++) {
+                    preparedStatement.setObject(i +1,getObject(i) );
+                }
+                preparedStatement.execute();
+                outputconnection.commit();
+                long batch_size = 0;
+                while (this.next()) {
+                    for (int i = 0; i < getColumnCount(); i++) {
+                        preparedStatement.setObject(i + 1, getObject(i));
+                    }
+                    preparedStatement.addBatch();
+                    batch_size++;
+                    if (batch_size >= batchSize) {
+                        preparedStatement.executeBatch();
+                        preparedStatement.clearBatch();
+                        batchSize = 0;
+                    }
+                }
+                if (batch_size > 0) {
+                    preparedStatement.executeBatch();
+                }
+            } catch (SQLException e) {
+                LOGGER.error("Cannot save the dataframe.\n", e);
+                return false;
+            } finally {
+                outputconnection.setAutoCommit(true);
+                if (preparedStatement != null) {
+                    preparedStatement.close();
+                }
+            }
+        } catch (SQLException e) {
+            LOGGER.error("Cannot save the dataframe.\n", e);
+            return false;
+        }
+        return true;
     }
 
     @Override
@@ -947,7 +1035,6 @@ public class DataFrame implements smile.data.DataFrame, ITable<BaseVector, Tuple
     @NotNull
     private static Tuple toTuple(@NotNull ResultSet rs, @NotNull StructType schema) throws SQLException {
         Object[] row = new Object[rs.getMetaData().getColumnCount()];
-
         for (int i = 0; i < row.length; ++i) {
             row[i] = rs.getObject(i + 1);
             if (row[i] instanceof Date) {
@@ -1058,5 +1145,40 @@ public class DataFrame implements smile.data.DataFrame, ITable<BaseVector, Tuple
     @NotNull
     public static <T> DataFrame of(@NotNull Collection<Map<String, T>> data, @NotNull StructType schema) {
         return of(smile.data.DataFrame.of(data, schema));
+    }
+
+    /**
+     * Returns the SQL type.
+     * @param dataType from the dataframe
+     */
+    public String getSQLType(DataType dataType) {
+        if (DataTypes.BooleanObjectType.equals(dataType) || DataTypes.BooleanType.equals(dataType)) {
+            return "BOOLEAN";
+        } else if (DataTypes.BooleanObjectType.equals(dataType) || DataTypes.BooleanType.equals(dataType)) {
+            return "TINYINT";
+        } else if (DataTypes.ShortObjectType.equals(dataType) || DataTypes.ShortType.equals(dataType)) {
+            return "SMALLINT";
+        } else if (DataTypes.IntegerType.equals(dataType) || DataTypes.IntegerObjectType.equals(dataType)) {
+            return "INTEGER";
+        } else if (DataTypes.LongObjectType.equals(dataType) || DataTypes.LongType.equals(dataType)) {
+            return "BIGINT";
+        } else if (DataTypes.DoubleType.equals(dataType) || DataTypes.DoubleObjectType.equals(dataType)) {
+            return "DOUBLE PRECISION";
+        } else if (DataTypes.DecimalType.equals(dataType)) {
+            return "DECIMAL";
+        } else if (DataTypes.FloatObjectType.equals(dataType) || DataTypes.FloatObjectType.equals(dataType)) {
+            return "FLOAT";
+        } else if (DataTypes.StringType.equals(dataType)) {
+            return "VARCHAR";
+        } else if (DataTypes.DateType.equals(dataType)) {
+            return "DATE";
+        } else if (DataTypes.TimeType.equals(dataType)) {
+            return "TIME";
+        } else if (DataTypes.DateTimeType.equals(dataType)) {
+            return "TIMESTAMP";
+        } else if (DataTypes.ByteObjectType.equals(dataType)) {
+            return "BINARY";
+        }
+        throw new UnsupportedOperationException(String.format("Unsupported dataframe type: %s", dataType));
     }
 }

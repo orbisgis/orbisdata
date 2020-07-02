@@ -41,7 +41,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.orbisgis.commons.printer.Ascii;
 import org.orbisgis.commons.printer.Html;
+import org.orbisgis.orbisdata.datamanager.api.dataset.IJdbcTable;
 import org.orbisgis.orbisdata.datamanager.jdbc.h2gis.H2GIS;
+import smile.data.formula.Formula;
+import smile.data.type.DataType;
 import smile.data.vector.BaseVector;
 import smile.math.matrix.DenseMatrix;
 
@@ -59,6 +62,7 @@ import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.orbisgis.orbisdata.datamanager.dataframe.TestUtils.RANDOM_DS;
+import static smile.data.formula.Terms.floor;
 
 /**
  * Test class for {@link DataFrame}.
@@ -81,15 +85,46 @@ public class DataFrameTest {
             h2gis.execute("DROP TABLE IF EXISTS toto");
             h2gis.execute("CREATE TABLE toto(col1 int, col2 varchar, col3 boolean, col4 char, col5 TINYINT, col6 SMALLINT, " +
                     "col7 INT8, col8 REAL, col9 double, col10 time, col11 date, col12 timestamp, col13 DECIMAL(20, 2))");
-            h2gis.execute("INSERT INTO toto VALUES (0, 'val0', true , 0, 0, 0, 0, 0.0, 0.0, '12:34:56', '2020-04-16', '2020-04-16 12:34:56.7', 0)");
-            h2gis.execute("INSERT INTO toto VALUES (1, 'val1', false, 1, 1, 1, 1, 1.0, 1.0, '12:34:56', '2020-04-16', '2020-04-16 12:34:56.7', 1)");
-            h2gis.execute("INSERT INTO toto VALUES (2, null, true , 2, 2, 2, 2, 2.0, 2.0, null, null, null, null)");
-            h2gis.execute("INSERT INTO toto VALUES (3, 'val3', false, 3, 3, 3, 3, 3.0, 3.0, '12:34:56', '2020-04-16', '2020-04-16 12:34:56.7', 3)");
-            h2gis.execute("INSERT INTO toto VALUES (4, 'val4', true , 4, 4, 4, 4, 4.0, 4.0, '12:34:56', '2020-04-16', '2020-04-16 12:34:56.7', 4)");
+            h2gis.execute("INSERT INTO toto VALUES (0, 'val0', true , 0, 0, 0, 0, 0.5, 0.0, '12:34:56', '2020-04-16', '2020-04-16 12:34:56.7', 0)");
+            h2gis.execute("INSERT INTO toto VALUES (1, 'val1', false, 1, 1, 1, 1, 1.5, 1.0, '12:34:56', '2020-04-16', '2020-04-16 12:34:56.7', 1)");
+            h2gis.execute("INSERT INTO toto VALUES (2, null, true , 2, 2, 2, 2, 2.5, 2.0, null, null, null, null)");
+            h2gis.execute("INSERT INTO toto VALUES (3, 'val3', false, 3, 3, 3, 3, 3.5, 3.0, '12:34:56', '2020-04-16', '2020-04-16 12:34:56.7', 3)");
+            h2gis.execute("INSERT INTO toto VALUES (4, 'val4', true , 4, 4, 4, 4, 4.5, 4.0, '12:34:56', '2020-04-16', '2020-04-16 12:34:56.7', 4)");
             dataFrame = DataFrame.of(h2gis.getTable("toto"));
         } catch(Exception e){
             e.printStackTrace();
         }
+    }
+
+    /**
+     * Tests the {@link DataFrame#apply(Formula)} method.
+     */
+    @Test
+    void applyTest(){
+        DataFrame df = null;
+        Formula formula = Formula.rhs(floor("COL8"));
+
+        try {
+            IJdbcTable<?> table = h2gis.getTable("TOTO");
+            assertNotNull(table);
+            df = DataFrame.of(table);
+            assertNotNull(df);
+        } catch (SQLException e) {
+            fail(e);
+        }
+
+        DataFrame floor = df.apply((Formula)null);
+        assertSame(df, floor);
+
+        floor = df.apply(formula);
+        assertNotNull(floor);
+        assertEquals("floor(COL8)", floor.column(0).name());
+        assertTrue(DataType.isDouble(floor.column(0).type()));
+        assertEquals(0.0, floor.get(0).get(0));
+        assertEquals(1.0, floor.get(1).get(0));
+        assertEquals(2.0, floor.get(2).get(0));
+        assertEquals(3.0, floor.get(3).get(0));
+        assertEquals(4.0, floor.get(4).get(0));
     }
 
     /**

@@ -158,7 +158,7 @@ public class DataFrameTest {
         assertEquals(0, dataFrame.getByte(4));
         assertEquals(0, dataFrame.getShort(5));
         assertEquals(0, dataFrame.getLong(6));
-        assertEquals(0, dataFrame.getFloat(7));
+        assertEquals(0.5, dataFrame.getFloat(7));
         assertEquals(0, dataFrame.getDouble(8));
         assertEquals("12:34:56", dataFrame.getTime(9).toString());
         assertEquals("2020-04-16", dataFrame.getDate(10).toString());
@@ -175,7 +175,7 @@ public class DataFrameTest {
         assertEquals(1, dataFrame.getByte("COL5"));
         assertEquals(1, dataFrame.getShort("COL6"));
         assertEquals(1, dataFrame.getLong("COL7"));
-        assertEquals(1, dataFrame.getFloat("COL8"));
+        assertEquals(1.5, dataFrame.getFloat("COL8"));
         assertEquals(1, dataFrame.getDouble("COL9"));
         assertEquals("12:34:56", dataFrame.getTime("COL10").toString());
         assertEquals("2020-04-16", dataFrame.getDate("COL11").toString());
@@ -213,8 +213,8 @@ public class DataFrameTest {
         assertEquals((short)3, dataFrame.getObject(5, Short.class));
         assertEquals(3l, dataFrame.getObject(6, long.class));
         assertEquals(3l, dataFrame.getObject(6, Long.class));
-        assertEquals(3f, dataFrame.getObject(7, float.class));
-        assertEquals(3f, dataFrame.getObject(7, Float.class));
+        assertEquals(3.5f, dataFrame.getObject(7, float.class));
+        assertEquals(3.5f, dataFrame.getObject(7, Float.class));
         assertEquals(3d, dataFrame.getObject(8, double.class));
         assertEquals(3d, dataFrame.getObject(8, Double.class));
         assertEquals("12:34:56", dataFrame.getObject(9, Time.class).toString());
@@ -237,8 +237,8 @@ public class DataFrameTest {
         assertEquals((short)4, dataFrame.getObject("COL6", Short.class));
         assertEquals(4l, dataFrame.getObject("COL7", long.class));
         assertEquals(4l, dataFrame.getObject("COL7", Long.class));
-        assertEquals(4f, dataFrame.getObject("COL8", float.class));
-        assertEquals(4f, dataFrame.getObject("COL8", Float.class));
+        assertEquals(4.5f, dataFrame.getObject("COL8", float.class));
+        assertEquals(4.5f, dataFrame.getObject("COL8", Float.class));
         assertEquals(4d, dataFrame.getObject("COL9", double.class));
         assertEquals(4d, dataFrame.getObject("COL9", Double.class));
         assertEquals("12:34:56", dataFrame.getObject("COL10", Time.class).toString());

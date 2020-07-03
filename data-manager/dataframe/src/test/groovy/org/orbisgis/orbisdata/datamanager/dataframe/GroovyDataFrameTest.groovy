@@ -125,8 +125,8 @@ class GroovyDataFrameTest {
         def h2GIS = RANDOM_DS();
         h2GIS.execute("""
                 DROP TABLE IF EXISTS geotable;
-                CREATE TABLE geotable (id int,  type varchar,temperature int, baby_jeje_weight double);
-                INSERT INTO geotable VALUES (1,  'grass', -12, 4.780), (2,  'corn', 22, null);
+                CREATE TABLE geotable (id int,  type varchar,temperature int, baby_jeje_weight double, orbisgis boolean);
+                INSERT INTO geotable VALUES (1,  'grass', -12, 4.780, false), (2,  'corn', 22, null, null);
         """)
         DataFrame df = DataFrame.of(h2GIS.select().from("GEOTABLE").where("type = 'corn'").getSpatialTable())
         assertNotNull df
@@ -134,5 +134,6 @@ class GroovyDataFrameTest {
         assertEquals("corn",df.get(0, 1))
         assertEquals(22,df.get(0, 2))
         assertNull(df.get(0, 3))
+        assertNull(df.get(0, 4))
     }
 }

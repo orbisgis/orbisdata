@@ -478,7 +478,7 @@ public class DataFrame implements smile.data.DataFrame, ITable<BaseVector, Tuple
         } else if (clazz == String.class) {
             return this.getString(column);
         } else if (clazz == Boolean.class || clazz == boolean.class) {
-            return this.getBoolean(column);
+            return this.getObject(column);
         } else if (clazz == Byte.class || clazz == byte.class) {
             return this.getByte(column);
         } else if (clazz == Short.class || clazz == short.class) {
@@ -578,7 +578,7 @@ public class DataFrame implements smile.data.DataFrame, ITable<BaseVector, Tuple
         for (int i = 0; i < names.length; i++) {
             String name = names[i];
             if (name.equalsIgnoreCase(columnName)) {
-                return types()[i].name();
+                return types()[i].unboxed().name();
             }
         }
         return null;
@@ -596,7 +596,7 @@ public class DataFrame implements smile.data.DataFrame, ITable<BaseVector, Tuple
         for (int i = 0; i < names.length; i++) {
             String name = names[i];
             if (name.equalsIgnoreCase(columnName) ) {
-                return dataTypes[i].name().equalsIgnoreCase(clazz.getCanonicalName());
+                return dataTypes[i].unboxed().name().equalsIgnoreCase(clazz.getCanonicalName());
             }
         }
         return false;

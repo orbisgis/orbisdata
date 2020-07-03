@@ -136,15 +136,15 @@ public class DataFrameTest {
     @Test
     void typeVectorTest(){
         assertEquals(5, dataFrame.vector(1).size());
-        assertEquals(5, dataFrame.intVector(0).size());
+        assertEquals(5, dataFrame.vector(0).size());
         assertEquals(5, dataFrame.stringVector(1).size());
-        assertEquals(5, dataFrame.booleanVector(2).size());
+        assertEquals(5, dataFrame.vector(2).size());
         assertEquals(5, dataFrame.stringVector(3).size());
-        assertEquals(5, dataFrame.byteVector(4).size());
-        assertEquals(5, dataFrame.shortVector(5).size());
-        assertEquals(5, dataFrame.longVector(6).size());
-        assertEquals(5, dataFrame.floatVector(7).size());
-        assertEquals(5, dataFrame.doubleVector(8).size());
+        assertEquals(5, dataFrame.vector(4).size());
+        assertEquals(5, dataFrame.vector(5).size());
+        assertEquals(5, dataFrame.vector(6).size());
+        assertEquals(5, dataFrame.vector(7).size());
+        assertEquals(5, dataFrame.vector(8).size());
     }
 
     @Test
@@ -153,7 +153,7 @@ public class DataFrameTest {
         assertEquals(0, dataFrame.getInt(0));
         assertEquals("val0", dataFrame.getString(1));
         assertArrayEquals(new byte[]{'v', 'a', 'l', '0'}, dataFrame.getBytes(1));
-        assertTrue(dataFrame.getBoolean(2));
+        assertTrue((Boolean) dataFrame.getObject(2));
         assertEquals("0", dataFrame.getString(3));
         assertEquals(0, dataFrame.getByte(4));
         assertEquals(0, dataFrame.getShort(5));
@@ -204,7 +204,6 @@ public class DataFrameTest {
         assertEquals(3, dataFrame.getObject(0, Integer.class));
         assertEquals("val3", dataFrame.getObject(1, String.class));
         assertEquals(new String(new byte[]{'v', 'a', 'l', '3'}), new String((byte[])dataFrame.getObject(1, byte[].class)));
-        assertEquals(false, dataFrame.getObject(2, boolean.class));
         assertEquals(false, dataFrame.getObject(2, Boolean.class));
         assertEquals("3", dataFrame.getObject(3, String.class));
         assertEquals((byte)3, dataFrame.getObject(4, byte.class));
@@ -490,7 +489,7 @@ public class DataFrameTest {
         assertEquals(6, df.columnIndex("THE_GEOM6"));
         assertEquals(7, df.columnIndex("THE_GEOM7"));
         assertEquals(8, df.columnIndex("THE_GEOM8"));
-        assertEquals(2, df.intVector(0).size());
+        assertEquals(2, df.vector(0).size());
         assertEquals(2, df.stringVector(1).size());
         assertEquals(2, df.stringVector(2).size());
         assertEquals(2, df.stringVector(3).size());

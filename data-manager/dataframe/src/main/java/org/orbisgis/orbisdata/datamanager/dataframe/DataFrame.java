@@ -924,6 +924,9 @@ public class DataFrame implements smile.data.DataFrame, ITable<BaseVector, Tuple
         if (rs instanceof IJdbcTable) {
             IJdbcTable jdbcTable = (IJdbcTable) rs;
             StructType schema = getStructure(jdbcTable);
+            if(schema==null){
+                return null;
+            }
             ArrayList<Tuple> rows = new ArrayList<>();
             while (jdbcTable.next()) {
                 rows.add(toTuple(jdbcTable, schema));
@@ -936,31 +939,23 @@ public class DataFrame implements smile.data.DataFrame, ITable<BaseVector, Tuple
 
     @NotNull
     private static StructType getStructure(@NotNull IJdbcTable<?> table) {
-        StructField[] fields = new StructField[table.getColumnCount()];
-        int i = -1;
-        for (Map.Entry<String, String> entry : table.getColumnsTypes().entrySet()) {
-            i++;
-            String type = entry.getValue();
-            switch (entry.getValue().toUpperCase()) {
-                case "GEOMETRY":
-                case "GEOMETRYCOLLECTION":
-                case "GEOMCOLLECTION":
-                case "MULTIPOLYGON":
-                case "POLYGON":
-                case "MULTILINESTRING":
-                case "LINESTRING":
-                case "MULTIPOINT":
-                case "POINT":
-                    type = "VARCHAR";
-                    break;
-                default:
-                    break;
+        ResultSetMetaData metadata = table.getMetaData();
+        try {
+            StructField[] fields = new StructField[metadata.getColumnCount()];
+            int columnCount = metadata.getColumnCount();
+            for (int i = 1; i <= columnCount; i++) {
+                String type = metadata.getColumnTypeName(i);
+                if (type.equalsIgnoreCase("geometry")) {
+                    type="VARCHAR";
+                }
+                DataType dataType = DataType.of(JDBCType.valueOf(type), metadata.isNullable(i) != 0,(table).getDbType().toString());
+                fields[i-1] = new StructField(metadata.getColumnName(i), dataType);
             }
-            DataType dataType = DataType.of(JDBCType.valueOf(type), false, (table).getDbType().toString());
-            fields[i] = new StructField(entry.getKey(), dataType);
+            return new StructType(fields);
+        } catch (SQLException e) {
+            LOGGER.error("Unable to create the structure of the dataframe", e);
+            return null;
         }
-
-        return new StructType(fields);
     }
 
     /**
@@ -1032,7 +1027,6 @@ public class DataFrame implements smile.data.DataFrame, ITable<BaseVector, Tuple
                 row[i] = row[i].toString();
             }
         }
-
         return Tuple.of(row, schema);
     }
 

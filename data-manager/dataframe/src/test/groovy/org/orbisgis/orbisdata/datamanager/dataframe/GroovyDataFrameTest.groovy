@@ -78,7 +78,7 @@ class GroovyDataFrameTest {
         assertEquals 6, df.columnIndex("THE_GEOM6")
         assertEquals 7, df.columnIndex("THE_GEOM7")
         assertEquals 8, df.columnIndex("THE_GEOM8")
-        assertEquals 2, df.intVector(0).size()
+        assertEquals 2, df.vector(0).size()
         assertEquals 2, df.stringVector(1).size()
         assertEquals 2, df.stringVector(2).size()
         assertEquals 2, df.stringVector(3).size()

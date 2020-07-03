@@ -956,8 +956,8 @@ public class DataFrame implements smile.data.DataFrame, ITable<BaseVector, Tuple
     private static StructType getStructure(@NotNull IJdbcTable<?> table) {
         ResultSetMetaData metadata = table.getMetaData();
         try {
-            StructField[] fields = new StructField[metadata.getColumnCount()];
             int columnCount = metadata.getColumnCount();
+            StructField[] fields = new StructField[columnCount];
             for (int i = 1; i <= columnCount; i++) {
                 String type = metadata.getColumnTypeName(i);
                 if (type.equalsIgnoreCase("geometry")) {

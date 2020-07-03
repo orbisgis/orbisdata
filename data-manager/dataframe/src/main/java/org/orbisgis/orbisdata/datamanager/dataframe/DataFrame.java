@@ -934,7 +934,7 @@ public class DataFrame implements smile.data.DataFrame, ITable<BaseVector, Tuple
      * @return OrbisData {@link DataFrame}.
      * @throws SQLException Exception thrown in case or error while manipulation SQL base {@link ResultSet}.
      */
-    @NotNull
+    @Nullable
     public static DataFrame of(@NotNull ResultSet rs) throws SQLException {
         if (rs instanceof IJdbcTable) {
             IJdbcTable jdbcTable = (IJdbcTable) rs;
@@ -952,7 +952,7 @@ public class DataFrame implements smile.data.DataFrame, ITable<BaseVector, Tuple
         }
     }
 
-    @NotNull
+    @Nullable
     private static StructType getStructure(@NotNull IJdbcTable<?> table) {
         ResultSetMetaData metadata = table.getMetaData();
         try {

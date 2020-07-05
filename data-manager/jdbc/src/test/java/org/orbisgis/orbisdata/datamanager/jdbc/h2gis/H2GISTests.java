@@ -54,6 +54,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.orbisgis.orbisdata.datamanager.api.dsl.IOptionBuilder.Order.DESC;
 
 /**
@@ -407,5 +408,45 @@ public class H2GISTests {
         assertTrue(list.contains(fcts[2]));
         assertTrue(list.contains(fcts[3]));
         assertTrue(list.contains(fcts[4]));
+    }
+
+    @Test
+    void testExtent() throws SQLException{
+        H2GIS h2GIS = H2GIS.open("./target/orbisgis");
+        h2GIS.execute("DROP TABLE  IF EXISTS forests;\n" +
+                "                CREATE TABLE forests ( fid INTEGER NOT NULL PRIMARY KEY, name CHARACTER VARYING(64),\n" +
+                "                 boundary GEOMETRY(MULTIPOLYGON, 4326));\n" +
+                "                INSERT INTO forests VALUES(109, 'Green Forest', ST_MPolyFromText( 'MULTIPOLYGON(((28 26,28 0,84 0,\n" +
+                "                84 42,28 26), (52 18,66 23,73 9,48 6,52 18)),((59 18,67 18,67 13,59 13,59 18)))', 4326));");
+        Geometry geom = h2GIS.getSpatialTable("forests").getExtent();
+        assertEquals(4326, geom.getSRID());
+        assertEquals("POLYGON ((28 0, 28 42, 84 42, 84 0, 28 0))", geom.toString());
+        geom = h2GIS.getSpatialTable("forests").getExtent("boundary");
+        assertEquals(4326, geom.getSRID());
+        assertEquals("POLYGON ((28 0, 28 42, 84 42, 84 0, 28 0))", geom.toString());
+        geom = h2GIS.getSpatialTable("forests").getExtent("ST_Buffer(boundary,0)", "boundary");
+        assertEquals(4326, geom.getSRID());
+        assertEquals("POLYGON ((28 0, 28 42, 84 42, 84 0, 28 0))", geom.toString());
+        h2GIS.execute("drop table forests");
+    }
+
+    @Test
+    void testExtentWithFilter() throws SQLException{
+        H2GIS h2GIS = H2GIS.open("./target/orbisgis");
+        h2GIS.execute("DROP TABLE  IF EXISTS forests;\n" +
+                "                CREATE TABLE forests ( fid INTEGER NOT NULL PRIMARY KEY, name CHARACTER VARYING(64),\n" +
+                "                 boundary GEOMETRY(MULTIPOLYGON, 4326));\n" +
+                "                INSERT INTO forests VALUES(109, 'Green Forest', ST_MPolyFromText( 'MULTIPOLYGON(((28 26,28 0,84 0,\n" +
+                "                84 42,28 26), (52 18,66 23,73 9,48 6,52 18)),((59 18,67 18,67 13,59 13,59 18)))', 4326));");
+        Geometry geom = h2GIS.getSpatialTable("forests").getExtent();
+        assertEquals(4326, geom.getSRID());
+        assertEquals("POLYGON ((28 0, 28 42, 84 42, 84 0, 28 0))", geom.toString());
+        geom = h2GIS.getSpatialTable("forests").getExtent(new String[]{"boundary"}, null);
+        assertEquals(4326, geom.getSRID());
+        assertEquals("POLYGON ((28 0, 28 42, 84 42, 84 0, 28 0))", geom.toString());
+        geom = h2GIS.getSpatialTable("forests").getExtent(new String[]{"ST_Buffer(boundary,0)", "boundary"}, "limit 1");
+        assertEquals(4326, geom.getSRID());
+        assertEquals("POLYGON ((28 0, 28 42, 84 42, 84 0, 28 0))", geom.toString());
+        h2GIS.execute("drop table forests");
     }
 }

@@ -192,19 +192,19 @@ public class JdbcSpatialTableTest {
     }
 
     /**
-     * Test the {@link JdbcSpatialTable#getExtend()} method.
+     * Test the {@link JdbcSpatialTable#getExtent()} method.
      */
     @Test
     public void testGetExtend() {
-        assertEquals("Env[0.0 : 0.0, 0.0 : 1.0]", dataSource.getSpatialTable(TABLE_NAME).getExtend().getEnvelopeInternal().toString());
+        assertEquals("Env[0.0 : 0.0, 0.0 : 1.0]", dataSource.getSpatialTable(TABLE_NAME).getExtent().getEnvelopeInternal().toString());
     }
 
     /**
-     * Test the {@link JdbcSpatialTable#getEstimatedExtend()} method.
+     * Test the {@link JdbcSpatialTable#getEstimatedExtent()} method.
      */
     @Test
     public void testGetEstimatedExtend() {
-        assertEquals("LINESTRING (0 0, 0 1)", dataSource.getSpatialTable(TABLE_NAME).getEstimatedExtend().toString());
+        assertEquals("LINESTRING (0 0, 0 1)", dataSource.getSpatialTable(TABLE_NAME).getEstimatedExtent().toString());
     }
 
     /**

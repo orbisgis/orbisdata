@@ -277,7 +277,7 @@ class GroovyPostGISTest {
         def spr = sp.reproject(2154)
         assertNotNull(spr)
         assertThrows(UnsupportedOperationException.class, spr::getSrid);
-        assertTrue(spr.save("target/reprojected_table_postgis.shp"))
+        assertNotNull(spr.save("target/reprojected_table_postgis.shp"))
         def reprojectedTable = postGIS.getSpatialTable(postGIS.load("target/reprojected_table_postgis.shp", true))
         assertNotNull(reprojectedTable)
         reprojectedTable.next();

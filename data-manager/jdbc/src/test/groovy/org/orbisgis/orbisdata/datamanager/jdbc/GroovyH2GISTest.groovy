@@ -676,7 +676,7 @@ class GroovyH2GISTest {
         def spr = sp.reproject(2154)
         assertNotNull(spr)
         assertThrows(UnsupportedOperationException.class, spr::getSrid);
-        assertTrue(spr.save("target/reprojected_table.shp"))
+        assertEquals("target/reprojected_table.shp", spr.save("target/reprojected_table.shp"))
         def reprojectedTable = h2GIS.getSpatialTable(h2GIS.load("target/reprojected_table.shp", true))
         assertNotNull(reprojectedTable)
         assertEquals(2154, reprojectedTable.srid)
@@ -695,7 +695,7 @@ class GroovyH2GISTest {
         assertNotNull(sp)
         ISpatialTable spr = sp.reproject(2154)
         assertNotNull(spr)
-        assertTrue(spr.save("target/reprojected_table.shp"))
+        assertEquals("target/reprojected_table.shp", spr.save("target/reprojected_table.shp"))
         ISpatialTable reprojectedTable = h2GIS.getSpatialTable(h2GIS.load("target/reprojected_table.shp", true))
         assertNotNull(reprojectedTable)
         assertEquals(2, reprojectedTable.getRowCount())

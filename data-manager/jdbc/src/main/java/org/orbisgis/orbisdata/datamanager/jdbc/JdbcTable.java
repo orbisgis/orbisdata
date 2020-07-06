@@ -577,14 +577,19 @@ public abstract class JdbcTable extends DefaultResultSet implements IJdbcTable<S
     }
 
     @Override
-    public boolean save(@NotNull String filePath, String encoding) {
+    public String save(@NotNull String filePath, String encoding) {
         try {
             String toSave = getTableLocation() == null ? "(" + getBaseQuery() + ")" : getTableLocation().toString(getDbType());
-            return IOMethods.saveAsFile(getStatement().getConnection(), toSave, filePath, encoding, false);
+            if(IOMethods.saveAsFile(getStatement().getConnection(), toSave, filePath, encoding, false)){
+                return filePath;
+            }else{
+                LOGGER.error("Cannot save the table in the file : "+filePath);
+                return null;
+            }
 
         } catch (SQLException e) {
             LOGGER.error("Cannot save the table.\n", e);
-            return false;
+            return null;
         }
     }
 

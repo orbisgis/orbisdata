@@ -215,9 +215,10 @@ public interface ITable<T, U> extends IMatrix<T, U> {
      * Save the {@link ITable} into a file.
      *
      * @param filePath Path of the file to be saved.
-     * @return True if the file has been saved, false otherwise.
+     * @return the full path of the saved file.
+     * If the file cannot be saved return null.
      */
-    default boolean save(@NotNull String filePath) {
+    default String save(@NotNull String filePath) {
         return save(filePath, null);
     }
 
@@ -226,9 +227,10 @@ public interface ITable<T, U> extends IMatrix<T, U> {
      *
      * @param filePath Path of the file to be saved.
      * @param encoding Encoding of the file.
-     * @return True if the file has been saved, false otherwise.
+     * @return the full path of the saved file.
+     * If the file cannot be saved return null.
      */
-    boolean save(@NotNull String filePath, @Nullable String encoding);
+    String save(@NotNull String filePath, @Nullable String encoding);
 
 
     /**

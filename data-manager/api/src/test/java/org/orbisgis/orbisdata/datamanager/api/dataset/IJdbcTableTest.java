@@ -1143,8 +1143,8 @@ public class IJdbcTableTest {
         }
 
         @Override
-        public boolean save(@NotNull String filePath, String encoding) {
-            return false;
+        public String save(@NotNull String filePath, String encoding) {
+            return null;
         }
 
         @Override

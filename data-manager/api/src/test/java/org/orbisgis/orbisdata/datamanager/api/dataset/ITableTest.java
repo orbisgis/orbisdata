@@ -243,7 +243,7 @@ public class ITableTest {
      */
     @Test
     public void testSave() {
-        assertTrue(table.save("path"));
+        assertNull(table.save("path"));
     }
 
     /**
@@ -378,8 +378,8 @@ public class ITableTest {
         }
 
         @Override
-        public boolean save(@NotNull String filePath, String encoding) {
-            return true;
+        public String save(@NotNull String filePath, String encoding) {
+            return null;
         }
 
         @Override

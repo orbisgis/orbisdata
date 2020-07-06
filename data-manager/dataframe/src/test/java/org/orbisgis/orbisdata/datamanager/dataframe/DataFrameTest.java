@@ -433,12 +433,12 @@ public class DataFrameTest {
     @Test
     void saveLoadTest() throws IOException {
         String path = "./target/" + UUID.randomUUID().toString().replaceAll("-", "_") + ".csv";
-        assertTrue(dataFrame.save(path, null));
+        assertNotNull(dataFrame.save(path, null));
         DataFrame df2 = DataFrame.of(new File(path));
         assertNotNull(df2);
         assertEquals(13, df2.schema().length());
 
-        assertTrue(dataFrame.save(path));
+        assertNotNull(dataFrame.save(path));
         DataFrame df3 = DataFrame.of(path);
         assertNotNull(df3);
         assertEquals(13, df3.schema().length());
@@ -449,8 +449,8 @@ public class DataFrameTest {
         assertNull(DataFrame.of(notCsv));
 
         //Test save exception
-        assertFalse(dataFrame.save("target/\u0000"));
-        assertFalse(dataFrame.save("/"));
+        assertNull(dataFrame.save("target/\u0000"));
+        assertNull(dataFrame.save("/"));
     }
 
     /**

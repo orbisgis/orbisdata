@@ -664,17 +664,17 @@ public class DataFrame implements smile.data.DataFrame, ITable<BaseVector, Tuple
     }
 
     @Override
-    public boolean save(@NotNull String filePath, String encoding) {
+    public String save(@NotNull String filePath, String encoding) {
         File f = new File(filePath);
         if (!f.exists()) {
             try {
                 if (!f.createNewFile()) {
                     LOGGER.error("Unable to create the file '" + f.getAbsolutePath() + "'.");
-                    return false;
+                    return null;
                 }
             } catch (IOException e) {
                 LOGGER.error("Unable to create the file '" + f.getAbsolutePath() + "'.", e);
-                return false;
+                return null;
             }
         }
         BufferedWriter writer;
@@ -682,14 +682,14 @@ public class DataFrame implements smile.data.DataFrame, ITable<BaseVector, Tuple
             writer = new BufferedWriter(new FileWriter(f));
         } catch (IOException e) {
             LOGGER.error("Unable to create the FileWriter.", e);
-            return false;
+            return null;
         }
         try {
             writer.write(String.join(",", names()) + "\n");
             writer.flush();
         } catch (IOException e) {
             LOGGER.error("Unable to write in the FileWriter.", e);
-            return false;
+            return null;
         }
         for (int i = 0; i < nrows(); i++) {
             List<String> row = new ArrayList<>();
@@ -702,10 +702,10 @@ public class DataFrame implements smile.data.DataFrame, ITable<BaseVector, Tuple
                 writer.flush();
             } catch (IOException e) {
                 LOGGER.error("Unable to write in the FileWriter.", e);
-                return false;
+                return null;
             }
         }
-        return f.exists();
+        return filePath;
     }
 
     @Override

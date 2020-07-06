@@ -41,6 +41,7 @@ import org.orbisgis.orbisdata.datamanager.jdbc.h2gis.H2GIS
 
 import static org.junit.jupiter.api.Assertions.assertEquals
 import static org.junit.jupiter.api.Assertions.assertNotNull
+import static org.junit.jupiter.api.Assertions.assertNull
 
 class GroovyDataFrameTest {
 
@@ -77,7 +78,7 @@ class GroovyDataFrameTest {
         assertEquals 6, df.columnIndex("THE_GEOM6")
         assertEquals 7, df.columnIndex("THE_GEOM7")
         assertEquals 8, df.columnIndex("THE_GEOM8")
-        assertEquals 2, df.intVector(0).size()
+        assertEquals 2, df.vector(0).size()
         assertEquals 2, df.stringVector(1).size()
         assertEquals 2, df.stringVector(2).size()
         assertEquals 2, df.stringVector(3).size()
@@ -93,21 +94,22 @@ class GroovyDataFrameTest {
         def h2GIS = RANDOM_DS();
         h2GIS.execute("""
                 DROP TABLE IF EXISTS geotable;
-                CREATE TABLE geotable (id int, the_geom geometry(point), type varchar,temperature int);
-                INSERT INTO geotable VALUES (1, 'POINT(10 10)'::GEOMETRY, 'grass', -12), (2, 'POINT(1 1)'::GEOMETRY, 'corn', 22);
+                CREATE TABLE geotable (id int, the_geom geometry(point), type varchar,temperature int, baby_jeje_weight double);
+                INSERT INTO geotable VALUES (1, 'POINT(10 10)'::GEOMETRY, 'grass', -12, 4.780), (2, 'POINT(1 1)'::GEOMETRY, 'corn', 22, 5.500);
         """)
         DataFrame df = DataFrame.of(h2GIS.select().from("GEOTABLE").where("type = 'grass'").getSpatialTable())
         assertNotNull df
         assertNotNull df.schema()
-        assertEquals 4, df.ncols()
+        assertEquals 5, df.ncols()
         assertEquals 0, df.columnIndex("ID")
         assertEquals 1, df.columnIndex("THE_GEOM")
         assertEquals 2, df.columnIndex("TYPE")
         assertEquals 3, df.columnIndex("TEMPERATURE")
+        assertEquals 4, df.columnIndex("BABY_JEJE_WEIGHT")
         df.save(h2GIS, "output_dataframe", true)
         def table = h2GIS.getTable("OUTPUT_DATAFRAME")
         assertNotNull(table)
-        assertEquals(4,table.getColumnCount())
+        assertEquals(5,table.getColumnCount())
         assertEquals(1,table.getRowCount())
         table.next();
         def row = table.firstRow()
@@ -115,5 +117,23 @@ class GroovyDataFrameTest {
         assertEquals("POINT (10 10)",row.THE_GEOM)
         assertEquals("grass",row.TYPE)
         assertEquals(-12,row.TEMPERATURE)
+        assertEquals(4.780,row.BABY_JEJE_WEIGHT)
+    }
+
+    @Test
+    void testCreateDFFromTable() {
+        def h2GIS = RANDOM_DS();
+        h2GIS.execute("""
+                DROP TABLE IF EXISTS geotable;
+                CREATE TABLE geotable (id int,  type varchar,temperature int, baby_jeje_weight double, orbisgis boolean);
+                INSERT INTO geotable VALUES (1,  'grass', -12, 4.780, false), (2,  'corn', 22, null, null);
+        """)
+        DataFrame df = DataFrame.of(h2GIS.select().from("GEOTABLE").where("type = 'corn'").getSpatialTable())
+        assertNotNull df
+        assertEquals(2,df.get(0, 0))
+        assertEquals("corn",df.get(0, 1))
+        assertEquals(22,df.get(0, 2))
+        assertNull(df.get(0, 3))
+        assertNull(df.get(0, 4))
     }
 }

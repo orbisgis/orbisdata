@@ -478,7 +478,7 @@ public class DataFrame implements smile.data.DataFrame, ITable<BaseVector, Tuple
         } else if (clazz == String.class) {
             return this.getString(column);
         } else if (clazz == Boolean.class || clazz == boolean.class) {
-            return this.getBoolean(column);
+            return this.getObject(column);
         } else if (clazz == Byte.class || clazz == byte.class) {
             return this.getByte(column);
         } else if (clazz == Short.class || clazz == short.class) {
@@ -578,7 +578,7 @@ public class DataFrame implements smile.data.DataFrame, ITable<BaseVector, Tuple
         for (int i = 0; i < names.length; i++) {
             String name = names[i];
             if (name.equalsIgnoreCase(columnName)) {
-                return types()[i].name();
+                return types()[i].unboxed().name();
             }
         }
         return null;
@@ -596,7 +596,7 @@ public class DataFrame implements smile.data.DataFrame, ITable<BaseVector, Tuple
         for (int i = 0; i < names.length; i++) {
             String name = names[i];
             if (name.equalsIgnoreCase(columnName) ) {
-                return dataTypes[i].name().equalsIgnoreCase(clazz.getCanonicalName());
+                return dataTypes[i].unboxed().name().equalsIgnoreCase(clazz.getCanonicalName());
             }
         }
         return false;
@@ -934,11 +934,14 @@ public class DataFrame implements smile.data.DataFrame, ITable<BaseVector, Tuple
      * @return OrbisData {@link DataFrame}.
      * @throws SQLException Exception thrown in case or error while manipulation SQL base {@link ResultSet}.
      */
-    @NotNull
+    @Nullable
     public static DataFrame of(@NotNull ResultSet rs) throws SQLException {
         if (rs instanceof IJdbcTable) {
             IJdbcTable jdbcTable = (IJdbcTable) rs;
             StructType schema = getStructure(jdbcTable);
+            if(schema==null){
+                return null;
+            }
             ArrayList<Tuple> rows = new ArrayList<>();
             while (jdbcTable.next()) {
                 rows.add(toTuple(jdbcTable, schema));
@@ -949,33 +952,25 @@ public class DataFrame implements smile.data.DataFrame, ITable<BaseVector, Tuple
         }
     }
 
-    @NotNull
+    @Nullable
     private static StructType getStructure(@NotNull IJdbcTable<?> table) {
-        StructField[] fields = new StructField[table.getColumnCount()];
-        int i = -1;
-        for (Map.Entry<String, String> entry : table.getColumnsTypes().entrySet()) {
-            i++;
-            String type = entry.getValue();
-            switch (entry.getValue().toUpperCase()) {
-                case "GEOMETRY":
-                case "GEOMETRYCOLLECTION":
-                case "GEOMCOLLECTION":
-                case "MULTIPOLYGON":
-                case "POLYGON":
-                case "MULTILINESTRING":
-                case "LINESTRING":
-                case "MULTIPOINT":
-                case "POINT":
-                    type = "VARCHAR";
-                    break;
-                default:
-                    break;
+        ResultSetMetaData metadata = table.getMetaData();
+        try {
+            int columnCount = metadata.getColumnCount();
+            StructField[] fields = new StructField[columnCount];
+            for (int i = 1; i <= columnCount; i++) {
+                String type = metadata.getColumnTypeName(i);
+                if (type.equalsIgnoreCase("geometry")) {
+                    type="VARCHAR";
+                }
+                DataType dataType = DataType.of(JDBCType.valueOf(type), metadata.isNullable(i) != 0,(table).getDbType().toString());
+                fields[i-1] = new StructField(metadata.getColumnName(i), dataType);
             }
-            DataType dataType = DataType.of(JDBCType.valueOf(type), false, (table).getDbType().toString());
-            fields[i] = new StructField(entry.getKey(), dataType);
+            return new StructType(fields);
+        } catch (SQLException e) {
+            LOGGER.error("Unable to create the structure of the dataframe", e);
+            return null;
         }
-
-        return new StructType(fields);
     }
 
     /**
@@ -1047,7 +1042,6 @@ public class DataFrame implements smile.data.DataFrame, ITable<BaseVector, Tuple
                 row[i] = row[i].toString();
             }
         }
-
         return Tuple.of(row, schema);
     }
 

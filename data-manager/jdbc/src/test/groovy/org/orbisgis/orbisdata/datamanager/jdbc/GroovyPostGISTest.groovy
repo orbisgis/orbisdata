@@ -43,7 +43,6 @@ import org.locationtech.jts.geom.Geometry
 import org.locationtech.jts.geom.MultiPolygon
 import org.locationtech.jts.geom.Polygon
 import org.locationtech.jts.io.WKTReader
-import org.orbisgis.orbisdata.datamanager.api.dataset.ISpatialTable
 import org.orbisgis.orbisdata.datamanager.jdbc.h2gis.H2GIS
 import org.orbisgis.orbisdata.datamanager.jdbc.postgis.POSTGIS
 
@@ -311,7 +310,7 @@ class GroovyPostGISTest {
                 INSERT INTO forests VALUES(109, 'Green Forest', ST_MPolyFromText( 'MULTIPOLYGON(((28 26,28 0,84 0,
                 84 42,28 26), (52 18,66 23,73 9,48 6,52 18)),((59 18,67 18,67 13,59 13,59 18)))', 0));"""
         postGIS.execute("ANALYZE forests");
-        Geometry geom = postGIS.getSpatialTable("forests").getEstimatedExtend()
+        Geometry geom = postGIS.getSpatialTable("forests").getEstimatedExtent()
         assertEquals 0, geom.SRID
         assertTrue geom instanceof Polygon
         WKTReader reader = new WKTReader();
@@ -326,7 +325,7 @@ class GroovyPostGISTest {
                  boundary GEOMETRY(MULTIPOLYGON, 4326));
                 INSERT INTO forests VALUES(109, 'Green Forest', ST_MPolyFromText( 'MULTIPOLYGON(((28 26,28 0,84 0,
                 84 42,28 26), (52 18,66 23,73 9,48 6,52 18)),((59 18,67 18,67 13,59 13,59 18)))', 4326));"""
-        Geometry geom = postGIS.getSpatialTable("forests").getExtend()
+        Geometry geom = postGIS.getSpatialTable("forests").getExtent()
         assertEquals 4326, geom.SRID
         assertTrue geom instanceof Polygon
         assertEquals("POLYGON ((28 0, 28 42, 84 42, 84 0, 28 0))", geom.toString());

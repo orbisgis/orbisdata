@@ -53,6 +53,7 @@ import org.junit.jupiter.api.Test;
 import org.orbisgis.commons.annotations.NotNull;
 import org.orbisgis.commons.annotations.Nullable;
 import org.orbisgis.orbisdata.datamanager.api.dataset.*;
+import org.orbisgis.orbisdata.datamanager.api.datasource.IJdbcDataSource;
 import org.orbisgis.orbisdata.datamanager.api.dsl.IFromBuilder;
 import org.orbisgis.orbisdata.datamanager.jdbc.h2gis.H2GIS;
 import org.orbisgis.orbisdata.datamanager.jdbc.h2gis.H2gisSpatialTable;
@@ -74,6 +75,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.orbisgis.orbisdata.datamanager.api.datasource.IJdbcDataSource.TableType.*;
 
 /**
  * Test class dedicated to {@link JdbcDataSource} class.
@@ -105,7 +107,6 @@ class JdbcDataSourceTest {
     @BeforeEach
     void init() throws SQLException {
         DataSource dataSource = H2GISDBFactory.createDataSource(new File(DB_NAME).toURI().toString(), true);
-        Connection connection = dataSource.getConnection();
         Statement st = dataSource.getConnection().createStatement();
         st.execute("DROP TABLE IF EXISTS test_h2gis");
         st.execute("CREATE TABLE test_h2gis(id int, the_geom GEOMETRY, text varchar)");
@@ -850,7 +851,6 @@ class JdbcDataSourceTest {
         assertTrue(ds1.hasTable("JDBCDATASOURCETEST.PUBLIC.SPATIAL_REF_SYS"));
     }
 
-
     /**
      * Test the {@link JdbcDataSource#getDataSet(String)} method.
      */
@@ -865,6 +865,159 @@ class JdbcDataSourceTest {
         assertTrue(dataset instanceof ISpatialTable);
         dataset = ds2.getDataSet("geometry_columns");
         assertTrue(dataset instanceof ITable);
+    }
+
+    /**
+     * Test the {@link JdbcDataSource#getTableNames(String)},
+     * {@link JdbcDataSource#getTableNames(String, IJdbcDataSource.TableType...)},
+     * {@link JdbcDataSource#getTableNames(String, String)},
+     * {@link JdbcDataSource#getTableNames(String, String, IJdbcDataSource.TableType...)},
+     * {@link JdbcDataSource#getTableNames(String, String, String)},
+     * {@link JdbcDataSource#getTableNames(String, String, String, IJdbcDataSource.TableType...)} methods.
+     */
+    @Test
+    void getTableNameTest() {
+        assertTrue(ds1.getTableNames("toto").isEmpty());
+        assertTrue(ds2.getTableNames("toto").isEmpty());
+        assertFalse(ds1.getTableNames("TEST_H2GIS").isEmpty());
+        assertFalse(ds1.getTableNames(null).isEmpty());
+        assertFalse(ds2.getTableNames("test_postgis").isEmpty());
+        assertFalse(ds2.getTableNames(null).isEmpty());
+
+
+        assertTrue(ds1.getTableNames("TEST_H2GIS", UNKOWN, FOREIGN_TABLE, TABLE_LINK, TEMPORARY, VIEW).isEmpty());
+        assertFalse(ds1.getTableNames("TEST_H2GIS", TABLE).isEmpty());
+        assertTrue(ds1.getTableNames("TEST_H2GIS", UNKOWN, FOREIGN_TABLE, TABLE_LINK, TEMPORARY).isEmpty());
+        assertFalse(ds1.getTableNames("TEST_H2GIS", TABLE, VIEW).isEmpty());
+        assertFalse(ds1.getTableNames(null, TABLE).isEmpty());
+        assertFalse(ds1.getTableNames("TEST_H2GIS", (IJdbcDataSource.TableType) null).isEmpty());
+        assertFalse(ds1.getTableNames(null, (IJdbcDataSource.TableType) null).isEmpty());
+
+        assertTrue(ds2.getTableNames("test_postgis", UNKOWN, FOREIGN_TABLE, TABLE_LINK, TEMPORARY, VIEW).isEmpty());
+        assertFalse(ds2.getTableNames("test_postgis", TABLE).isEmpty());
+        assertTrue(ds1.getTableNames("TEST_H2GIS", UNKOWN, FOREIGN_TABLE, TABLE_LINK, TEMPORARY).isEmpty());
+        assertFalse(ds2.getTableNames("test_postgis", TABLE, VIEW).isEmpty());
+        assertFalse(ds2.getTableNames(null, TABLE).isEmpty());
+        assertFalse(ds2.getTableNames("test_postgis", (IJdbcDataSource.TableType) null).isEmpty());
+        assertFalse(ds2.getTableNames(null, (IJdbcDataSource.TableType) null).isEmpty());
+
+
+        assertTrue(ds1.getTableNames("TOTO", "TEST_H2GIS").isEmpty());
+        assertFalse(ds1.getTableNames("PUBLIC", "TEST_H2GIS").isEmpty());
+        assertFalse(ds1.getTableNames(null, "TEST_H2GIS").isEmpty());
+        assertTrue(ds1.getTableNames("INFORMATION_SCHEMA", "TEST_H2GIS").isEmpty());
+        assertTrue(ds1.getTableNames("TOTO", (String)null).isEmpty());
+        assertFalse(ds1.getTableNames("PUBLIC", (String)null).isEmpty());
+        assertFalse(ds1.getTableNames(null, (String)null).isEmpty());
+        assertFalse(ds1.getTableNames("INFORMATION_SCHEMA", (String)null).isEmpty());
+
+        assertTrue(ds2.getTableNames("toto", "test_postgis").isEmpty());
+        assertFalse(ds2.getTableNames("public", "test_postgis").isEmpty());
+        assertFalse(ds2.getTableNames(null, "test_postgis").isEmpty());
+        assertTrue(ds2.getTableNames("toto", (String)null).isEmpty());
+        assertFalse(ds2.getTableNames("public", (String)null).isEmpty());
+        assertFalse(ds2.getTableNames(null, (String)null).isEmpty());
+
+
+        assertTrue(ds1.getTableNames("PUBLIC", "TEST_H2GIS", UNKOWN, FOREIGN_TABLE, TABLE_LINK, TEMPORARY, VIEW).isEmpty());
+        assertFalse(ds1.getTableNames("PUBLIC", "TEST_H2GIS", (IJdbcDataSource.TableType) null).isEmpty());
+        assertFalse(ds1.getTableNames("PUBLIC", "TEST_H2GIS", TABLE).isEmpty());
+        assertFalse(ds1.getTableNames("PUBLIC", "TEST_H2GIS", (IJdbcDataSource.TableType) null).isEmpty());
+        assertTrue(ds1.getTableNames(null, "TEST_H2GIS", UNKOWN, FOREIGN_TABLE, TABLE_LINK, TEMPORARY, VIEW).isEmpty());
+        assertFalse(ds1.getTableNames(null, "TEST_H2GIS", TABLE).isEmpty());
+        assertFalse(ds1.getTableNames(null, "TEST_H2GIS", (IJdbcDataSource.TableType) null).isEmpty());
+        assertTrue(ds1.getTableNames("INFORMATION_SCHEMA", "TEST_H2GIS", UNKOWN, FOREIGN_TABLE, TABLE_LINK, TEMPORARY).isEmpty());
+        assertTrue(ds1.getTableNames("INFORMATION_SCHEMA", "TEST_H2GIS", TABLE, VIEW).isEmpty());
+        assertTrue(ds1.getTableNames("INFORMATION_SCHEMA", "TEST_H2GIS", (IJdbcDataSource.TableType) null).isEmpty());
+        assertTrue(ds1.getTableNames("TOTO", (String)null, UNKOWN, FOREIGN_TABLE, TABLE_LINK, TEMPORARY, VIEW, TABLE).isEmpty());
+        assertTrue(ds1.getTableNames("TOTO", (String)null, (IJdbcDataSource.TableType) null).isEmpty());
+        assertTrue(ds1.getTableNames("PUBLIC", (String)null, UNKOWN, FOREIGN_TABLE, TABLE_LINK, TEMPORARY).isEmpty());
+        assertFalse(ds1.getTableNames("PUBLIC", (String)null, TABLE, VIEW).isEmpty());
+        assertFalse(ds1.getTableNames("PUBLIC", (String)null, (IJdbcDataSource.TableType) null).isEmpty());
+        assertTrue(ds1.getTableNames(null, (String)null, UNKOWN, FOREIGN_TABLE, TABLE_LINK, TEMPORARY).isEmpty());
+        assertFalse(ds1.getTableNames(null, (String)null, TABLE, VIEW).isEmpty());
+        assertFalse(ds1.getTableNames(null, (String)null, (IJdbcDataSource.TableType) null).isEmpty());
+        assertTrue(ds1.getTableNames("INFORMATION_SCHEMA", (String)null, TABLE, VIEW, UNKOWN, FOREIGN_TABLE, TABLE_LINK, TEMPORARY).isEmpty());
+        assertFalse(ds1.getTableNames("INFORMATION_SCHEMA", (String)null, SYSTEM_TABLE).isEmpty());
+        assertFalse(ds1.getTableNames("INFORMATION_SCHEMA", (String)null, (IJdbcDataSource.TableType) null).isEmpty());
+
+        assertTrue(ds2.getTableNames("public", "test_postgis", UNKOWN, FOREIGN_TABLE, TABLE_LINK, TEMPORARY, VIEW).isEmpty());
+        assertFalse(ds2.getTableNames("public", "test_postgis", (IJdbcDataSource.TableType) null).isEmpty());
+        assertFalse(ds2.getTableNames("public", "test_postgis", TABLE).isEmpty());
+        assertFalse(ds2.getTableNames("public", "test_postgis", (IJdbcDataSource.TableType) null).isEmpty());
+        assertTrue(ds2.getTableNames(null, "test_postgis", UNKOWN, FOREIGN_TABLE, TABLE_LINK, TEMPORARY, VIEW).isEmpty());
+        assertFalse(ds2.getTableNames(null, "test_postgis", TABLE).isEmpty());
+        assertFalse(ds2.getTableNames(null, "test_postgis", (IJdbcDataSource.TableType) null).isEmpty());
+        assertTrue(ds2.getTableNames("toto", (String)null, UNKOWN, FOREIGN_TABLE, TABLE_LINK, TEMPORARY, VIEW, TABLE).isEmpty());
+        assertTrue(ds2.getTableNames("toto", (String)null, (IJdbcDataSource.TableType) null).isEmpty());
+        assertTrue(ds2.getTableNames("public", (String)null, UNKOWN, FOREIGN_TABLE, TABLE_LINK, TEMPORARY).isEmpty());
+        assertFalse(ds2.getTableNames("public", (String)null, TABLE, VIEW).isEmpty());
+        assertFalse(ds2.getTableNames("public", (String)null, (IJdbcDataSource.TableType) null).isEmpty());
+        assertTrue(ds2.getTableNames(null, (String)null, UNKOWN, FOREIGN_TABLE, TABLE_LINK, TEMPORARY).isEmpty());
+        assertFalse(ds2.getTableNames(null, (String)null, TABLE, VIEW).isEmpty());
+        assertFalse(ds2.getTableNames(null, (String)null, (IJdbcDataSource.TableType) null).isEmpty());
+
+
+        assertTrue(ds1.getTableNames("TOTO", "PUBLIC", "TEST_H2GIS").isEmpty());
+        assertTrue(ds1.getTableNames("TOTO", null, "TEST_H2GIS").isEmpty());
+        assertTrue(ds1.getTableNames("TOTO", "PUBLIC", (String)null).isEmpty());
+        assertTrue(ds1.getTableNames("TOTO", null, (String)null).isEmpty());
+        assertFalse(ds1.getTableNames("JDBCDATASOURCETEST", "PUBLIC", "TEST_H2GIS").isEmpty());
+        assertFalse(ds1.getTableNames("JDBCDATASOURCETEST", null, "TEST_H2GIS").isEmpty());
+        assertFalse(ds1.getTableNames("JDBCDATASOURCETEST", "PUBLIC", (String)null).isEmpty());
+        assertFalse(ds1.getTableNames("JDBCDATASOURCETEST", null, (String)null).isEmpty());
+        assertFalse(ds1.getTableNames(null, "PUBLIC", "TEST_H2GIS").isEmpty());
+        assertFalse(ds1.getTableNames(null, "PUBLIC", (String)null).isEmpty());
+        assertFalse(ds1.getTableNames(null, null, "TEST_H2GIS").isEmpty());
+        assertFalse(ds1.getTableNames(null, null, (String)null).isEmpty());
+        
+        assertTrue(ds2.getTableNames("toto", "public", "test_postgis").isEmpty());
+        assertTrue(ds2.getTableNames("toto", null, "test_postgis").isEmpty());
+        assertTrue(ds2.getTableNames("toto", "public", (String)null).isEmpty());
+        assertTrue(ds2.getTableNames("toto", null, (String)null).isEmpty());
+        assertFalse(ds2.getTableNames("db_postgresql_mode", "public", "test_postgis").isEmpty());
+        assertFalse(ds2.getTableNames("db_postgresql_mode", null, "test_postgis").isEmpty());
+        assertFalse(ds2.getTableNames("db_postgresql_mode", "public", (String)null).isEmpty());
+        assertFalse(ds2.getTableNames("db_postgresql_mode", null, (String)null).isEmpty());
+        assertFalse(ds2.getTableNames(null, "public", "test_postgis").isEmpty());
+        assertFalse(ds2.getTableNames(null, "public", (String)null).isEmpty());
+        assertFalse(ds2.getTableNames(null, null, "test_postgis").isEmpty());
+        assertFalse(ds2.getTableNames(null, null, (String)null).isEmpty());
+
+
+        assertTrue(ds1.getTableNames("TOTO", "PUBLIC", "TEST_H2GIS",
+                TABLE, VIEW, UNKOWN, FOREIGN_TABLE, TABLE_LINK, TEMPORARY, SYSTEM_TABLE).isEmpty());
+        assertTrue(ds1.getTableNames("TOTO", "PUBLIC", "TEST_H2GIS",
+                (IJdbcDataSource.TableType) null).isEmpty());
+        assertFalse(ds1.getTableNames(null, "PUBLIC", "TEST_H2GIS",
+                TABLE, VIEW, UNKOWN, FOREIGN_TABLE, TABLE_LINK, TEMPORARY, SYSTEM_TABLE).isEmpty());
+        assertFalse(ds1.getTableNames(null, "PUBLIC", "TEST_H2GIS",
+                (IJdbcDataSource.TableType) null).isEmpty());
+        assertFalse(ds1.getTableNames("JDBCDATASOURCETEST", "PUBLIC", "TEST_H2GIS",
+                TABLE, VIEW, UNKOWN, FOREIGN_TABLE, TABLE_LINK, TEMPORARY, SYSTEM_TABLE).isEmpty());
+        assertFalse(ds1.getTableNames("JDBCDATASOURCETEST", "PUBLIC", "TEST_H2GIS",
+                (IJdbcDataSource.TableType) null).isEmpty());
+        assertFalse(ds1.getTableNames("JDBCDATASOURCETEST", null, (String)null,
+                TABLE, VIEW, UNKOWN, FOREIGN_TABLE, TABLE_LINK, TEMPORARY, SYSTEM_TABLE).isEmpty());
+        assertFalse(ds1.getTableNames("JDBCDATASOURCETEST", null, (String)null,
+                (IJdbcDataSource.TableType) null).isEmpty());
+
+        assertTrue(ds2.getTableNames("toto", "public", "test_postgis",
+                TABLE, VIEW, UNKOWN, FOREIGN_TABLE, TABLE_LINK, TEMPORARY, SYSTEM_TABLE).isEmpty());
+        assertTrue(ds2.getTableNames("toto", "public", "test_postgis",
+                (IJdbcDataSource.TableType) null).isEmpty());
+        assertFalse(ds2.getTableNames(null, "public", "test_postgis",
+                TABLE, VIEW, UNKOWN, FOREIGN_TABLE, TABLE_LINK, TEMPORARY, SYSTEM_TABLE).isEmpty());
+        assertFalse(ds2.getTableNames(null, "public", "test_postgis",
+                (IJdbcDataSource.TableType) null).isEmpty());
+        assertFalse(ds2.getTableNames("db_postgresql_mode", "public", "test_postgis",
+                TABLE, VIEW, UNKOWN, FOREIGN_TABLE, TABLE_LINK, TEMPORARY, SYSTEM_TABLE).isEmpty());
+        assertFalse(ds2.getTableNames("db_postgresql_mode", "public", "test_postgis",
+                (IJdbcDataSource.TableType) null).isEmpty());
+        assertFalse(ds2.getTableNames("db_postgresql_mode", null, (String)null,
+                TABLE, VIEW, UNKOWN, FOREIGN_TABLE, TABLE_LINK, TEMPORARY, SYSTEM_TABLE).isEmpty());
+        assertFalse(ds2.getTableNames("db_postgresql_mode", null, (String)null,
+                (IJdbcDataSource.TableType) null).isEmpty());
     }
 
     /**

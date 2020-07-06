@@ -62,6 +62,14 @@ import java.util.Map;
  */
 public interface IJdbcDataSource extends IDataSource<ResultSet>, GroovyObject, DataSource {
 
+    enum TableType{
+        TABLE, VIEW, FOREIGN_TABLE, TEMPORARY, TABLE_LINK, UNKOWN, SYSTEM_TABLE;
+
+        public String toString() {
+            return super.toString().replaceAll("_", " ");
+        }
+    }
+
     /**
      * Close the underlying database.
      */
@@ -95,6 +103,72 @@ public interface IJdbcDataSource extends IDataSource<ResultSet>, GroovyObject, D
      */
     @NotNull
     Collection<String> getTableNames();
+
+    /**
+     * Return the list of the table name corresponding to the given patterns and types.
+     *
+     * @param namePattern Pattern of the table name.
+     * @return            List of the table corresponding to the given patterns and types.
+     */
+    @NotNull
+    Collection<String> getTableNames(@Nullable String namePattern);
+
+    /**
+     * Return the list of the table name corresponding to the given patterns and types.
+     *
+     * @param namePattern Pattern of the table name.
+     * @param types       Type of the table.
+     * @return            List of the table corresponding to the given patterns and types.
+     */
+    @NotNull
+    Collection<String> getTableNames(@Nullable String namePattern, @Nullable TableType... types);
+
+    /**
+     * Return the list of the table name corresponding to the given patterns and types.
+     *
+     * @param schemaPattern Pattern of the schema name.
+     * @param namePattern   Pattern of the table name.
+     * @return              List of the table corresponding to the given patterns and types.
+     */
+    @NotNull
+    Collection<String> getTableNames(@Nullable String schemaPattern, @Nullable String namePattern);
+
+    /**
+     * Return the list of the table name corresponding to the given patterns and types.
+     *
+     * @param schemaPattern Pattern of the schema name.
+     * @param namePattern   Pattern of the table name.
+     * @param types         Type of the table.
+     * @return              List of the table corresponding to the given patterns and types.
+     */
+    @NotNull
+    Collection<String> getTableNames(@Nullable String schemaPattern, @Nullable String namePattern,
+                                     @Nullable TableType... types);
+
+    /**
+     * Return the list of the table name corresponding to the given patterns and types.
+     *
+     * @param catalogPattern Pattern of the catalog name.
+     * @param schemaPattern  Pattern of the schema name.
+     * @param namePattern    Pattern of the table name.
+     * @return               List of the table corresponding to the given patterns and types.
+     */
+    @NotNull
+    Collection<String> getTableNames(@Nullable String catalogPattern, @Nullable String schemaPattern,
+                                     @Nullable String namePattern);
+
+    /**
+     * Return the list of the table name corresponding to the given patterns and types.
+     *
+     * @param catalogPattern Pattern of the catalog name.
+     * @param schemaPattern  Pattern of the schema name.
+     * @param namePattern    Pattern of the table name.
+     * @param types          Type of the table.
+     * @return               List of the table corresponding to the given patterns and types.
+     */
+    @NotNull
+    Collection<String> getTableNames(@Nullable String catalogPattern, @Nullable String schemaPattern,
+                                     @Nullable String namePattern, @Nullable TableType... types);
 
     /**
      * Return true if the {@link IJdbcDataSource} contains a table with the given name.

@@ -73,13 +73,11 @@ import java.net.URL;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  * Abstract class used to implements the request builder methods (select, from ...) in order to give a base to all the
@@ -146,6 +144,54 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, ISe
         this.metaClass = InvokerHelper.getMetaClass(getClass());
         this.databaseType = databaseType;
         LOG.setLevel(Level.OFF);
+    }
+
+    @Override
+    @NotNull
+    public Collection<String> getTableNames(@Nullable String namePattern){
+        return getTableNames(null, null, namePattern, (TableType[]) null);
+    }
+
+    @Override
+    @NotNull
+    public Collection<String> getTableNames(@Nullable String namePattern, @Nullable TableType... types){
+        return getTableNames(null, null, namePattern, types);
+    }
+
+    @Override
+    @NotNull
+    public Collection<String> getTableNames(@Nullable String schemaPattern, @Nullable String namePattern){
+        return getTableNames(null, schemaPattern, namePattern, (TableType[]) null);
+    }
+
+    @Override
+    @NotNull
+    public Collection<String> getTableNames(@Nullable String schemaPattern, @Nullable String namePattern,
+                                     @Nullable TableType... types){
+        return getTableNames(null, schemaPattern, namePattern, types);
+    }
+
+    @Override
+    @NotNull
+    public Collection<String> getTableNames(@Nullable String catalogPattern, @Nullable String schemaPattern,
+                                     @Nullable String namePattern){
+        return getTableNames(catalogPattern, schemaPattern, namePattern, (TableType[]) null);
+    }
+
+    @Override
+    @NotNull
+    public Collection<String> getTableNames(@Nullable String catalogPattern, @Nullable String schemaPattern,
+                                     @Nullable String namePattern, @Nullable TableType... types){
+        String[] array = null;
+        if(types != null){
+            array = Arrays.stream(types).filter(Objects::nonNull).map(Enum::toString).toArray(String[]::new);
+        }
+        try {
+            return JDBCUtilities.getTableNames(this.getConnection(), catalogPattern, schemaPattern, namePattern, array);
+        } catch (SQLException e) {
+            LOGGER.error("Unable to get the table names.", e);
+        }
+        return new ArrayList<>();
     }
 
     @Override

@@ -77,7 +77,6 @@ import java.util.*;
 import java.util.logging.Level;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 /**
  * Abstract class used to implements the request builder methods (select, from ...) in order to give a base to all the

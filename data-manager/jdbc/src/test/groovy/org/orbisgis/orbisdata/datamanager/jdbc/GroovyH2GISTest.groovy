@@ -359,7 +359,7 @@ class GroovyH2GISTest {
                 INSERT INTO externalTable VALUES (1, 'POINT(10 10)'::GEOMETRY), (2, 'POINT(1 1)'::GEOMETRY);
         """)
         h2GIS.save("externalTable", 'target/externalFile.shp')
-        def table = h2GIS.link('target/externalFile.shp', 'super', true) as ITable
+        def table = h2GIS.getTable(h2GIS.link('target/externalFile.shp', 'super', true))
         assertEquals("PK,THE_GEOM,ID", table.columns.join(","))
     }
 
@@ -372,7 +372,7 @@ class GroovyH2GISTest {
                 INSERT INTO externalTable VALUES (1, 'POINT(10 10)'::GEOMETRY), (2, 'POINT(1 1)'::GEOMETRY);
         """)
         h2GIS.save("externalTable", 'target/externalFile.shp')
-        def table = h2GIS.link('target/externalFile.shp', 'super', true) as ITable
+        def table = h2GIS.getTable(h2GIS.link('target/externalFile.shp', 'super', true))
         table.save('target/supersave.shp')
         h2GIS.load('target/supersave.shp', true)
         assertTrue(h2GIS.tableNames.contains("SECONDH2GIS.PUBLIC.SUPERSAVE"))
@@ -534,8 +534,9 @@ class GroovyH2GISTest {
                 INSERT INTO externalTable VALUES (1, 'POINT(10 10)'::GEOMETRY), (2, 'POINT(1 1)'::GEOMETRY);
         """)
         h2GIS.save("externalTable", 'target/externalFile.shp')
-        def table = h2GIS.link('target/externalFile.shp', 'super', true) as ISpatialTable
-        assert (table.geometryTypes.toString() == "[THE_GEOM:MULTIPOINT]")
+        def table = h2GIS.link('target/externalFile.shp', 'super', true)
+        assertNotNull(table)
+        assert (h2GIS.getSpatialTable(table).geometryTypes.toString() == "[THE_GEOM:MULTIPOINT]")
     }
 
     @Test
@@ -547,8 +548,8 @@ class GroovyH2GISTest {
         String osmFile = new File(url.toURI()).absolutePath
         h2GIS.execute("DROP TABLE IF EXISTS  OSM_TAG, OSM_NODE, OSM_NODE_TAG, OSM_WAY,OSM_WAY_TAG, OSM_WAY_NODE, OSM_RELATION, OSM_RELATION_TAG, OSM_NODE_MEMBER, OSM_WAY_MEMBER, OSM_RELATION_MEMBER;")
 
-        assertNull h2GIS.load(osmFile, "OSM")
-        assertNull h2GIS.load(osmFile, "OSM", true)
+        assertEquals"OSM", h2GIS.load(osmFile, "OSM")
+        assertEquals"OSM", h2GIS.load(osmFile, "OSM", true)
 
         h2GIS.eachRow "SELECT count(TABLE_NAME) as nb FROM INFORMATION_SCHEMA.TABLES where TABLE_NAME LIKE 'OSM%'",
                 { row ->
@@ -676,7 +677,7 @@ class GroovyH2GISTest {
         assertNotNull(spr)
         assertThrows(UnsupportedOperationException.class, spr::getSrid);
         assertTrue(spr.save("target/reprojected_table.shp"))
-        def reprojectedTable = h2GIS.load("target/reprojected_table.shp", true).getSpatialTable()
+        def reprojectedTable = h2GIS.getSpatialTable(h2GIS.load("target/reprojected_table.shp", true))
         assertNotNull(reprojectedTable)
         assertEquals(2154, reprojectedTable.srid)
     }
@@ -695,7 +696,7 @@ class GroovyH2GISTest {
         ISpatialTable spr = sp.reproject(2154)
         assertNotNull(spr)
         assertTrue(spr.save("target/reprojected_table.shp"))
-        ISpatialTable reprojectedTable = h2GIS.load("target/reprojected_table.shp", true).getSpatialTable()
+        ISpatialTable reprojectedTable = h2GIS.getSpatialTable(h2GIS.load("target/reprojected_table.shp", true))
         assertNotNull(reprojectedTable)
         assertEquals(2, reprojectedTable.getRowCount())
         assertEquals(2154, reprojectedTable.srid)
@@ -707,13 +708,13 @@ class GroovyH2GISTest {
         def h2GIS = H2GIS.open('./target/orbisgis')
         new File("target/query_table.shp").delete()
         h2GIS.execute("""
-                DROP TABLE IF EXISTS orbisgis;
+                DROP TABLE IF EXISTS orbisgis, query_table;
                 CREATE TABLE orbisgis (id int, the_geom geometry(point, 4326));
                 INSERT INTO orbisgis VALUES (1, 'SRID=4326;POINT(10 10)'::GEOMETRY), (2, 'SRID=4326;POINT(1 1)'::GEOMETRY);
         """)
         def sp = h2GIS.select("ST_BUFFER(THE_GEOM, 10) AS THE_GEOM").from("ORBISGIS").getSpatialTable()
         sp.save("target/query_table.shp")
-        def queryTable = h2GIS.load("target/query_table.shp")
+        def queryTable = h2GIS.getTable(h2GIS.load("target/query_table.shp"))
         assertEquals 2, queryTable.rowCount
         assertEquals 4326, queryTable.srid
         assertTrue queryTable.getFirstRow()[1] instanceof MultiPolygon
@@ -868,7 +869,7 @@ class GroovyH2GISTest {
         ]
         def  postGIS = POSTGIS.open(dbProperties)
         if(postGIS){
-        assertFalse(h2GIS.select().from( "h2gis").getSpatialTable().save(postGIS, true))
+        assertNull(h2GIS.select().from( "h2gis").getSpatialTable().save(postGIS, true))
         h2GIS.select().from( "h2gis").getSpatialTable().save(postGIS, "H2GIS",true )
         def concat = ""
         postGIS.spatialTable "H2GIS" eachRow { row -> concat += "$row.id $row.the_geom $row.geometry\n" }
@@ -905,8 +906,8 @@ class GroovyH2GISTest {
                 INSERT INTO h2gis VALUES (1, 'POINT(10 10)'::GEOMETRY), (2, 'POINT(1 1)'::GEOMETRY);
         """)
         def h2GISTarget = H2GIS.open([databaseName: './target/loadH2GIS_target'])
-        assertFalse(h2GIS.getSpatialTable("h2gis").save(h2GISTarget, true, -1))
-        assertTrue(h2GIS.getSpatialTable("h2gis").save(h2GISTarget, true, 100))
+        assertNull(h2GIS.getSpatialTable("h2gis").save(h2GISTarget, true, -1))
+        assertNotNull(h2GIS.getSpatialTable("h2gis").save(h2GISTarget, true, 100))
         def concat = ""
         h2GISTarget.spatialTable "H2GIS" eachRow { row -> concat += "$row.id $row.the_geom $row.geometry\n" }
         assertEquals("1 POINT (10 10) POINT (10 10)\n2 POINT (1 1) POINT (1 1)\n", concat)

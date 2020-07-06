@@ -446,29 +446,29 @@ class JdbcDataSourceTest {
 
 
         ds1.execute("DROP TABLE IF EXISTS LINKTABLE");
-        ITable table = ds1.link(path);
+        ITable table = ds1.getTable(ds1.link(path));
         assertNotNull(table);
         assertEquals("LINKTABLE", table.getName());
         ds2.execute("DROP TABLE IF EXISTS LINKTABLE");
-        assertNull(ds2.link(path));
+        assertEquals("linktable", ds2.link(path));
 
         ds1.execute("DROP TABLE IF EXISTS LINKTABLE");
-        table = ds1.link(path, true);
+        table = ds1.getTable(ds1.link(path, true));
         assertNotNull(table);
         assertEquals("LINKTABLE", table.getName());
         ds2.execute("DROP TABLE IF EXISTS LINKTABLE");
-        assertNull(ds2.link(path, true));
+        assertEquals("linktable", ds2.link(path, true));
 
 
         ds1.execute("DROP TABLE IF EXISTS LINKTABLE");
         assertNotNull(ds1.link(path, "LINKTABLE"));
         ds2.execute("DROP TABLE IF EXISTS LINKTABLE");
-        assertNull(ds2.link(path, "LINKTABLE"));
+        assertEquals("linktable", ds2.link(path, "LINKTABLE"));
 
         ds1.execute("DROP TABLE IF EXISTS LINKTABLE");
         assertNotNull(ds1.link(path, "LINKTABLE", true));
         ds2.execute("DROP TABLE IF EXISTS LINKTABLE");
-        assertNull(ds2.link(path, "LINKTABLE", true));
+        assertEquals("linktable", ds2.link(path, "LINKTABLE", true));
 
         ds1.execute("DROP TABLE IF EXISTS LINKTABLE");
         assertNull(ds1.link("$toto", true));
@@ -477,81 +477,81 @@ class JdbcDataSourceTest {
 
 
         ds1.execute("DROP TABLE IF EXISTS LINKTABLE");
-        table = ds1.link(url);
+        table = ds1.getTable(ds1.link(url));
         assertNotNull(table);
         assertEquals("LINKTABLE", table.getName());
         ds2.execute("DROP TABLE IF EXISTS LINKTABLE");
-        assertNull(ds2.link(url));
+        assertEquals("linktable", ds2.link(url));
 
         ds1.execute("DROP TABLE IF EXISTS LINKTABLE");
-        table = ds1.link(url, true);
+        table = ds1.getTable(ds1.link(url, true));
         assertNotNull(table);
         assertEquals("LINKTABLE", table.getName());
         ds2.execute("DROP TABLE IF EXISTS LINKTABLE");
-        assertNull(ds2.link(url, true));
+        assertEquals("linktable",ds2.link(url, true));
 
 
         ds1.execute("DROP TABLE IF EXISTS LINKTABLE");
         assertNotNull(ds1.link(url, "LINKTABLE"));
         ds2.execute("DROP TABLE IF EXISTS LINKTABLE");
-        assertNull(ds2.link(url, "LINKTABLE"));
+        assertEquals("linktable",ds2.link(url, "LINKTABLE"));
 
         ds1.execute("DROP TABLE IF EXISTS LINKTABLE");
         assertNotNull(ds1.link(url, "LINKTABLE", true));
         ds2.execute("DROP TABLE IF EXISTS LINKTABLE");
-        assertNull(ds2.link(url, "LINKTABLE", true));
+        assertEquals("linktable",ds2.link(url, "LINKTABLE", true));
 
 
         ds1.execute("DROP TABLE IF EXISTS LINKTABLE");
-        table = ds1.link(uri);
+        table = ds1.getTable(ds1.link(uri));
         assertNotNull(table);
         assertEquals("LINKTABLE", table.getName());
         ds2.execute("DROP TABLE IF EXISTS LINKTABLE");
-        assertNull(ds2.link(uri));
+        assertEquals("linktable",ds2.link(uri));
 
         ds1.execute("DROP TABLE IF EXISTS LINKTABLE");
-        table = ds1.link(uri, true);
+        table = ds1.getTable(ds1.link(uri, true));
         assertNotNull(table);
         assertEquals("LINKTABLE", table.getName());
         ds2.execute("DROP TABLE IF EXISTS LINKTABLE");
-        assertNull(ds2.link(uri, true));
+        assertEquals("linktable",ds2.link(uri, true));
 
 
         ds1.execute("DROP TABLE IF EXISTS LINKTABLE");
         assertNotNull(ds1.link(uri, "LINKTABLE"));
         ds2.execute("DROP TABLE IF EXISTS LINKTABLE");
-        assertNull(ds2.link(uri, "LINKTABLE"));
+        assertEquals("linktable",ds2.link(uri, "LINKTABLE"));
 
         ds1.execute("DROP TABLE IF EXISTS LINKTABLE");
         assertNotNull(ds1.link(uri, "LINKTABLE", true));
         ds2.execute("DROP TABLE IF EXISTS LINKTABLE");
-        assertNull(ds2.link(uri, "LINKTABLE", true));
+        assertEquals("linktable",ds2.link(uri, "LINKTABLE", true));
 
 
         ds1.execute("DROP TABLE IF EXISTS LINKTABLE");
-        table = ds1.link(file);
+        table = ds1.getTable(ds1.link(file));
         assertNotNull(table);
         assertEquals("LINKTABLE", table.getName());
         ds2.execute("DROP TABLE IF EXISTS LINKTABLE");
-        assertNull(ds2.link(file));
+        assertEquals("linktable",ds2.link(file));
 
         ds1.execute("DROP TABLE IF EXISTS LINKTABLE");
-        table = ds1.link(file, true);
+        table = ds1.getTable(ds1.link(file, true));
         assertNotNull(table);
         assertEquals("LINKTABLE", table.getName());
         ds2.execute("DROP TABLE IF EXISTS LINKTABLE");
-        assertNull(ds2.link(file, true));
+        assertEquals("linktable",ds2.link(file, true));
 
 
         ds1.execute("DROP TABLE IF EXISTS LINKTABLE");
         assertNotNull(ds1.link(file, "LINKTABLE"));
         ds2.execute("DROP TABLE IF EXISTS LINKTABLE");
-        assertNull(ds2.link(file, "LINKTABLE"));
+        assertEquals("linktable",ds2.link(file, "LINKTABLE"));
 
         ds1.execute("DROP TABLE IF EXISTS LINKTABLE");
         assertNotNull(ds1.link(file, "LINKTABLE", true));
         ds2.execute("DROP TABLE IF EXISTS LINKTABLE");
-        assertNull(ds2.link(file, "LINKTABLE", true));
+        assertEquals("linktable",ds2.link(file, "LINKTABLE", true));
     }
 
     /**
@@ -563,11 +563,11 @@ class JdbcDataSourceTest {
         String tableNameDS2 = "test_postgis";
 
         ds1.execute("DROP TABLE IF EXISTS " + tableNameDS2);
-        ITable table = ds1.load(ds2, tableNameDS2);
+        ITable table = ds1.getTable(ds1.load(ds2, tableNameDS2));
         assertNotNull(table);
         assertEquals(tableNameDS2.toUpperCase(), table.getName());
         ds2.execute("DROP TABLE IF EXISTS " + tableNameDS1);
-        table = ds2.load(ds1, tableNameDS1);
+        table = ds2.getTable(ds2.load(ds1, tableNameDS1));
         assertNotNull(table);
         assertEquals(tableNameDS1, table.getName());
 
@@ -578,18 +578,18 @@ class JdbcDataSourceTest {
         String tableNameDS2_new = "test_postgis_imported";
 
         ds1.execute("DROP TABLE IF EXISTS " + tableNameDS2_new);
-        table = ds1.load(ds2, tableNameDS2, tableNameDS2_new);
+        table = ds1.getTable(ds1.load(ds2, tableNameDS2, tableNameDS2_new));
         assertNotNull(table);
         assertEquals(tableNameDS2_new.toUpperCase(), table.getName());
         ds2.execute("DROP TABLE IF EXISTS " + tableNameDS1_new);
-        table =ds2.load(ds1, tableNameDS1, tableNameDS1_new);
+        table =ds2.getTable(ds2.load(ds1, tableNameDS1, tableNameDS1_new));
         assertNotNull(table);
         assertEquals(tableNameDS1_new, table.getName());
 
-        table = ds1.load(ds2, tableNameDS2, tableNameDS2_new, true);
+        table = ds1.getTable(ds1.load(ds2, tableNameDS2, tableNameDS2_new, true));
         assertNotNull(table);
         assertEquals(tableNameDS2_new.toUpperCase(), table.getName());
-        table =  ds2.load(ds1, tableNameDS1, tableNameDS1_new, true);
+        table =  ds2.getTable(ds2.load(ds1, tableNameDS1, tableNameDS1_new, true));
         assertNotNull(table);
         assertEquals(tableNameDS1_new, table.getName());
     }
@@ -608,159 +608,159 @@ class JdbcDataSourceTest {
 
         //Test path
         ds1.execute("DROP TABLE IF EXISTS LOADTABLE, NAME");
-        ITable table = ds1.load(path);
+        ITable table = ds1.getTable(ds1.load(path));
         assertNotNull(table);
         assertEquals("LOADTABLE", table.getName());
         ds1.execute("DROP TABLE IF EXISTS LOADTABLE, NAME");
-        table = ds1.load(path, name);
+        table = ds1.getTable(ds1.load(path, name));
         assertNotNull(table);
         assertEquals(name, table.getName());
         ds1.execute("DROP TABLE IF EXISTS LOADTABLE, NAME");
-        table = ds1.load(path, name, true);
+        table = ds1.getTable(ds1.load(path, name, true));
         assertNotNull(table);
         assertEquals(name, table.getName());
         ds1.execute("DROP TABLE IF EXISTS LOADTABLE, NAME");
-        table = ds1.load(path, name, "UTF8", true);
+        table = ds1.getTable(ds1.load(path, name, "UTF8", true));
         assertNotNull(table);
         assertEquals(name, table.getName());
 
         ds2.execute("DROP TABLE IF EXISTS LOADTABLE, NAME");
-        table = ds2.load(path);
+        table = ds2.getTable(ds2.load(path));
         assertNotNull(table);
         assertEquals("loadtable", table.getName());
         ds2.execute("DROP TABLE IF EXISTS LOADTABLE, NAME");
-        table = ds2.load(path, name);
+        table = ds2.getTable(ds2.load(path, name));
         assertNotNull(table);
-        assertEquals(name, table.getName());
+        assertEquals(name.toLowerCase(), table.getName());
         ds2.execute("DROP TABLE IF EXISTS LOADTABLE, NAME");
-        table = ds2.load(path, name, true);
+        table = ds2.getTable(ds2.load(path, name, true));
         assertNotNull(table);
-        assertEquals(name, table.getName());
+        assertEquals(name.toLowerCase(), table.getName());
         ds2.execute("DROP TABLE IF EXISTS LOADTABLE, NAME");
-        table = ds2.load(path, name, "UTF8", true);
+        table = ds2.getTable(ds2.load(path, name, "UTF8", true));
         assertNotNull(table);
-        assertEquals(name, table.getName());
+        assertEquals(name.toLowerCase(), table.getName());
         ds2.execute("DROP TABLE IF EXISTS LOADTABLE, NAME");
-        table = ds2.load(path, name.toLowerCase(), "UTF8", true);
+        table = ds2.getTable(ds2.load(path, name.toLowerCase(), "UTF8", true));
         assertNotNull(table);
         assertEquals(name.toLowerCase(), table.getName());
 
         //Test URL
         ds1.execute("DROP TABLE IF EXISTS LOADTABLE, NAME");
-        table = ds1.load(url);
+        table = ds1.getTable(ds1.load(url));
         assertNotNull(table);
         assertEquals("LOADTABLE", table.getName());
         ds1.execute("DROP TABLE IF EXISTS LOADTABLE, NAME");
-        table = ds1.load(url, name);
+        table = ds1.getTable(ds1.load(url, name));
         assertNotNull(table);
         assertEquals(name, table.getName());
         ds1.execute("DROP TABLE IF EXISTS LOADTABLE, NAME");
-        table = ds1.load(url, name, true);
+        table = ds1.getTable(ds1.load(url, name, true));
         assertNotNull(table);
         assertEquals(name, table.getName());
         ds1.execute("DROP TABLE IF EXISTS LOADTABLE, NAME");
-        table = ds1.load(url, true);
+        table = ds1.getTable(ds1.load(url, true));
         assertNotNull(table);
         assertEquals("LOADTABLE", table.getName());
         ds1.execute("DROP TABLE IF EXISTS LOADTABLE, NAME");
-        table = ds1.load(url, name, "UTF8", true);
+        table = ds1.getTable(ds1.load(url, name, "UTF8", true));
         assertNotNull(table);
         assertEquals(name, table.getName());
 
         ds2.execute("DROP TABLE IF EXISTS LOADTABLE, NAME");
-        table = ds2.load(url);
+        table = ds2.getTable(ds2.load(url));
         assertNotNull(table);
         assertEquals("loadtable", table.getName());
         ds2.execute("DROP TABLE IF EXISTS LOADTABLE, NAME");
-        table = ds2.load(url, name);
+        table = ds2.getTable(ds2.load(url, name));
         assertNotNull(table);
-        assertEquals(name, table.getName());
+        assertEquals(name.toLowerCase(), table.getName());
         ds2.execute("DROP TABLE IF EXISTS LOADTABLE, NAME");
-        table = ds2.load(url, true);
+        table = ds2.getTable(ds2.load(url, true));
         assertNotNull(table);
         assertEquals("loadtable", table.getName());
         ds2.execute("DROP TABLE IF EXISTS LOADTABLE, NAME");
-        table = ds2.load(url, name, true);
+        table = ds2.getTable(ds2.load(url, name, true));
         assertNotNull(table);
-        assertEquals(name, table.getName());
+        assertEquals(name.toLowerCase(), table.getName());
         ds2.execute("DROP TABLE IF EXISTS LOADTABLE, NAME");
-        table = ds2.load(url, name, "UTF8", true);
+        table = ds2.getTable(ds2.load(url, name, "UTF8", true));
         assertNotNull(table);
-        assertEquals(name, table.getName());
+        assertEquals(name.toLowerCase(), table.getName());
         ds2.execute("DROP TABLE IF EXISTS LOADTABLE, NAME");
-        table = ds2.load(url, name.toLowerCase(), "UTF8", true);
+        table = ds2.getTable(ds2.load(url, name.toLowerCase(), "UTF8", true));
         assertNotNull(table);
         assertEquals(name.toLowerCase(), table.getName());
 
         //Test URI
         ds1.execute("DROP TABLE IF EXISTS LOADTABLE, NAME");
-        table = ds1.load(uri);
+        table = ds1.getTable(ds1.load(uri));
         assertNotNull(table);
         assertEquals("LOADTABLE", table.getName());
         ds1.execute("DROP TABLE IF EXISTS LOADTABLE, NAME");
-        table = ds1.load(uri, name);
+        table = ds1.getTable(ds1.load(uri, name));
         assertNotNull(table);
         assertEquals(name, table.getName());
         ds1.execute("DROP TABLE IF EXISTS LOADTABLE, NAME");
-        table = ds1.load(uri, name, true);
+        table = ds1.getTable(ds1.load(uri, name, true));
         assertNotNull(table);
         assertEquals(name, table.getName());
         ds1.execute("DROP TABLE IF EXISTS LOADTABLE, NAME");
-        table = ds1.load(uri, name, "UTF8", true);
+        table = ds1.getTable(ds1.load(uri, name, "UTF8", true));
         assertNotNull(table);
         assertEquals(name, table.getName());
 
         ds2.execute("DROP TABLE IF EXISTS LOADTABLE, NAME");
-        table = ds2.load(uri);
+        table = ds2.getTable(ds2.load(uri));
         assertNotNull(table);
         assertEquals("loadtable", table.getName());
         ds2.execute("DROP TABLE IF EXISTS LOADTABLE, NAME");
-        table = ds2.load(uri, name);
+        table = ds2.getTable(ds2.load(uri, name));
         assertNotNull(table);
-        assertEquals(name, table.getName());
+        assertEquals(name.toLowerCase(), table.getName());
         ds2.execute("DROP TABLE IF EXISTS LOADTABLE, NAME");
-        table = ds2.load(uri, name, true);
+        table = ds2.getTable(ds2.load(uri, name, true));
         assertNotNull(table);
-        assertEquals(name, table.getName());
+        assertEquals(name.toLowerCase(), table.getName());
         ds2.execute("DROP TABLE IF EXISTS LOADTABLE, NAME");
-        table = ds2.load(uri, name, "UTF8", true);
+        table = ds2.getTable(ds2.load(uri, name, "UTF8", true));
         assertNotNull(table);
-        assertEquals(name, table.getName());
+        assertEquals(name.toLowerCase(), table.getName());
 
         //Test File
         ds1.execute("DROP TABLE IF EXISTS LOADTABLE, NAME");
-        table = ds1.load(file);
+        table = ds1.getTable(ds1.load(file));
         assertNotNull(table);
         assertEquals("LOADTABLE", table.getName());
         ds1.execute("DROP TABLE IF EXISTS LOADTABLE, NAME");
-        table = ds1.load(file, name);
+        table = ds1.getTable(ds1.load(file, name));
         assertNotNull(table);
         assertEquals(name, table.getName());
         ds1.execute("DROP TABLE IF EXISTS LOADTABLE, NAME");
-        table = ds1.load(file, name, true);
+        table = ds1.getTable(ds1.load(file, name, true));
         assertNotNull(table);
         assertEquals(name, table.getName());
         ds1.execute("DROP TABLE IF EXISTS LOADTABLE, NAME");
-        table = ds1.load(file, name, "UTF8", true);
+        table = ds1.getTable(ds1.load(file, name, "UTF8", true));
         assertNotNull(table);
         assertEquals(name, table.getName());
 
         ds2.execute("DROP TABLE IF EXISTS LOADTABLE, NAME");
-        table = ds2.load(file);
+        table = ds2.getTable(ds2.load(file));
         assertNotNull(table);
         assertEquals("loadtable", table.getName());
         ds2.execute("DROP TABLE IF EXISTS LOADTABLE, NAME");
-        table = ds2.load(file, name);
+        table = ds2.getTable(ds2.load(file, name));
         assertNotNull(table);
-        assertEquals(name, table.getName());
+        assertEquals(name.toLowerCase(), table.getName());
         ds2.execute("DROP TABLE IF EXISTS LOADTABLE, NAME");
-        table = ds2.load(file, name, true);
+        table = ds2.getTable(ds2.load(file, name, true));
         assertNotNull(table);
-        assertEquals(name, table.getName());
+        assertEquals(name.toLowerCase(), table.getName());
         ds2.execute("DROP TABLE IF EXISTS LOADTABLE, NAME");
-        table = ds2.load(file, name, "UTF8", true);
+        table = ds2.getTable(ds2.load(file, name, "UTF8", true));
         assertNotNull(table);
-        assertEquals(name, table.getName());
+        assertEquals(name.toLowerCase(), table.getName());
 
         //Test bad name
         ds1.load("4file.dbf");

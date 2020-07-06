@@ -92,30 +92,33 @@ public interface IDataSource<T> {
      * Load a file into the {@link IDataSource}.
      *
      * @param filePath Path of the file.
-     * @return The {@link IDataSet} containing the loaded data.
+     * @return The name of the loaded table, formatted according this datasource
+     * Null is the table cannot be loaded.
      */
     @Nullable
-    IDataSet<?, ?> load(@NotNull String filePath);
+    String load(@NotNull String filePath);
 
     /**
      * Load a file into the {@link IDataSource}.
      *
      * @param filePath Path of the file.
      * @param delete   True to delete the {@link IDataSet} if exists, false otherwise.
-     * @return The {@link IDataSet} containing the loaded data.
+     * @return The name of the loaded table, formatted according this datasource
+     * Null is the table cannot be loaded.
      */
     @Nullable
-    IDataSet<?, ?> load(@NotNull String filePath, boolean delete);
+    String load(@NotNull String filePath, boolean delete);
 
     /**
      * Load a file to the {@link IDataSource}.
      *
      * @param filePath  Path of the file.
      * @param dataSetId Identifier of the {@link IDataSet}.
-     * @return The {@link IDataSet} containing the loaded data.
+     * @return The name of the loaded table, formatted according this datasource
+     * Null is the table cannot be loaded.
      */
     @Nullable
-    IDataSet<?, ?> load(@NotNull String filePath, @NotNull String dataSetId);
+    String load(@NotNull String filePath, @NotNull String dataSetId);
 
     /**
      * Load a file to the {@link IDataSource}.
@@ -123,10 +126,11 @@ public interface IDataSource<T> {
      * @param filePath  Path of the file.
      * @param dataSetId Identifier of the {@link IDataSet}.
      * @param delete    True to delete the {@link IDataSet} if exists, false otherwise.
-     * @return The {@link IDataSet} containing the loaded data.
+     * @return The name of the loaded table, formatted according this datasource
+     * Null is the table cannot be loaded.
      */
     @Nullable
-    IDataSet<?, ?> load(@NotNull String filePath, @NotNull String dataSetId, boolean delete);
+    String load(@NotNull String filePath, @NotNull String dataSetId, boolean delete);
 
     /**
      * Load a file to the {@link IDataSource}.
@@ -135,39 +139,43 @@ public interface IDataSource<T> {
      * @param dataSetId Identifier of the {@link IDataSet}.
      * @param encoding  Encoding of the loaded file.
      * @param delete    True to delete the {@link IDataSet} if exists, false otherwise.
-     * @return The {@link IDataSet} containing the loaded data.
+     * @return The name of the loaded table, formatted according this datasource
+     * Null is the table cannot be loaded.
      */
     @Nullable
-    IDataSet<?, ?> load(@NotNull String filePath, @NotNull String dataSetId, @Nullable String encoding, boolean delete);
+    String load(@NotNull String filePath, @NotNull String dataSetId, @Nullable String encoding, boolean delete);
 
     /**
      * Load a file into the {@link IDataSource}.
      *
      * @param url {@link URL} of the file.
-     * @return The {@link IDataSet} containing the loaded data.
+     * @return The name of the loaded table, formatted according this datasource
+     * Null is the table cannot be loaded.
      */
     @Nullable
-    IDataSet<?, ?> load(@NotNull URL url);
+    String load(@NotNull URL url);
 
     /**
      * Load a file into the {@link IDataSource}.
      *
      * @param url    {@link URL} of the file.
      * @param delete True to delete the {@link IDataSet} if exists, false otherwise.
-     * @return The {@link IDataSet} containing the loaded data.
+     * @return The name of the loaded table, formatted according this datasource
+     * Null is the table cannot be loaded.
      */
     @Nullable
-    IDataSet<?, ?> load(@NotNull URL url, boolean delete);
+    String load(@NotNull URL url, boolean delete);
 
     /**
      * Load a file to the {@link IDataSource}.
      *
      * @param url       {@link URL} of the file.
      * @param dataSetId Name of the table.
-     * @return The {@link IDataSet} containing the loaded data.
+     * @return The name of the loaded table, formatted according this datasource
+     * Null is the table cannot be loaded.
      */
     @Nullable
-    IDataSet<?, ?> load(@NotNull URL url, @NotNull String dataSetId);
+    String load(@NotNull URL url, @NotNull String dataSetId);
 
     /**
      * Load a file to the {@link IDataSource}.
@@ -175,10 +183,11 @@ public interface IDataSource<T> {
      * @param url       {@link URL} of the file.
      * @param dataSetId Name of the table.
      * @param delete    True to delete the {@link IDataSet} if exists, false otherwise.
-     * @return The {@link IDataSet} containing the loaded data.
+     * @return The name of the loaded table, formatted according this datasource
+     * Null is the table cannot be loaded.
      */
     @Nullable
-    IDataSet<?, ?> load(@NotNull URL url, @NotNull String dataSetId, boolean delete);
+    String load(@NotNull URL url, @NotNull String dataSetId, boolean delete);
 
     /**
      * Load a file to the {@link IDataSource}.
@@ -187,39 +196,43 @@ public interface IDataSource<T> {
      * @param dataSetId Name of the table
      * @param encoding  Encoding of the loaded file.
      * @param delete    True to delete the {@link IDataSet} if exists, false otherwise.
-     * @return The {@link IDataSet} containing the loaded data.
+     * @return The name of the loaded table, formatted according this datasource
+     * Null is the table cannot be loaded.
      */
     @Nullable
-    IDataSet<?, ?> load(@NotNull URL url, @NotNull String dataSetId, @Nullable String encoding, boolean delete);
+    String load(@NotNull URL url, @NotNull String dataSetId, @Nullable String encoding, boolean delete);
 
     /**
      * Load a file into the {@link IDataSource}.
      *
      * @param uri {@link URI} of the file.
-     * @return The {@link IDataSet} containing the loaded data.
+     * @return The name of the loaded table, formatted according this datasource
+     * Null is the table cannot be loaded.
      */
     @Nullable
-    IDataSet<?, ?> load(@NotNull URI uri);
+    String load(@NotNull URI uri);
 
     /**
      * Load a file into the {@link IDataSource}.
      *
      * @param uri    {@link URI} of the file.
      * @param delete True to delete the {@link IDataSet} if exists, false otherwise.
-     * @return The {@link IDataSet} containing the loaded data.
+     * @return The name of the loaded table, formatted according this datasource
+     * Null is the table cannot be loaded.
      */
     @Nullable
-    IDataSet<?, ?> load(@NotNull URI uri, boolean delete);
+    String load(@NotNull URI uri, boolean delete);
 
     /**
      * Load a file to the {@link IDataSource}.
      *
      * @param uri       {@link URI} of the file.
      * @param dataSetId Name of the table.
-     * @return The {@link IDataSet} containing the loaded data.
+     * @return The name of the loaded table, formatted according this datasource
+     * Null is the table cannot be loaded.
      */
     @Nullable
-    IDataSet<?, ?> load(@NotNull URI uri, @NotNull String dataSetId);
+    String load(@NotNull URI uri, @NotNull String dataSetId);
 
     /**
      * Load a file to the {@link IDataSource}.
@@ -227,10 +240,11 @@ public interface IDataSource<T> {
      * @param uri       {@link URI} of the file.
      * @param dataSetId Name of the table.
      * @param delete    True to delete the {@link IDataSet} if exists, false otherwise.
-     * @return The {@link IDataSet} containing the loaded data.
+     * @return The name of the loaded table, formatted according this datasource
+     * Null is the table cannot be loaded.
      */
     @Nullable
-    IDataSet<?, ?> load(@NotNull URI uri, @NotNull String dataSetId, boolean delete);
+    String load(@NotNull URI uri, @NotNull String dataSetId, boolean delete);
 
     /**
      * Load a file to the {@link IDataSource}.
@@ -239,39 +253,43 @@ public interface IDataSource<T> {
      * @param dataSetId Name of the table
      * @param encoding  Encoding of the loaded file.
      * @param delete    True to delete the {@link IDataSet} if exists, false otherwise.
-     * @return The {@link IDataSet} containing the loaded data.
+     * @return The name of the loaded table, formatted according this datasource
+     * Null is the table cannot be loaded.
      */
     @Nullable
-    IDataSet<?, ?> load(@NotNull URI uri, @NotNull String dataSetId, @Nullable String encoding, boolean delete);
+    String load(@NotNull URI uri, @NotNull String dataSetId, @Nullable String encoding, boolean delete);
 
     /**
      * Load a file into the {@link IDataSource}.
      *
      * @param file {@link File}.
-     * @return The {@link IDataSet} containing the loaded data.
+     * @return The name of the loaded table, formatted according this datasource
+     * Null is the table cannot be loaded.
      */
     @Nullable
-    IDataSet<?, ?> load(@NotNull File file);
+    String load(@NotNull File file);
 
     /**
      * Load a file into the {@link IDataSource}.
      *
      * @param file   {@link File}.
      * @param delete True to delete the {@link IDataSet} if exists, false otherwise.
-     * @return The {@link IDataSet} containing the loaded data.
+     * @return The name of the loaded table, formatted according this datasource
+     * Null is the table cannot be loaded.
      */
     @Nullable
-    IDataSet<?, ?> load(@NotNull File file, boolean delete);
+    String load(@NotNull File file, boolean delete);
 
     /**
      * Load a file to the {@link IDataSource}.
      *
      * @param file      {@link File}.
      * @param dataSetId Name of the table.
-     * @return The {@link IDataSet} containing the loaded data.
+     * @return The name of the loaded table, formatted according this datasource
+     * Null is the table cannot be loaded.
      */
     @Nullable
-    IDataSet<?, ?> load(@NotNull File file, @NotNull String dataSetId);
+    String load(@NotNull File file, @NotNull String dataSetId);
 
     /**
      * Load a file to the {@link IDataSource}.
@@ -279,10 +297,11 @@ public interface IDataSource<T> {
      * @param file      {@link File}.
      * @param dataSetId Name of the table.
      * @param delete    True to delete the {@link IDataSet} if exists, false otherwise.
-     * @return The {@link IDataSet} containing the loaded data.
+     * @return The name of the loaded table, formatted according this datasource
+     * Null is the table cannot be loaded.
      */
     @Nullable
-    IDataSet<?, ?> load(@NotNull File file, @NotNull String dataSetId, boolean delete);
+    String load(@NotNull File file, @NotNull String dataSetId, boolean delete);
 
     /**
      * Load a file to the {@link IDataSource}.
@@ -291,10 +310,11 @@ public interface IDataSource<T> {
      * @param dataSetId Name of the table
      * @param encoding  Encoding of the loaded file.
      * @param delete    True to delete the {@link IDataSet} if exists, false otherwise.
-     * @return The {@link IDataSet} containing the loaded data.
+     * @return The name of the loaded table, formatted according this datasource
+     * Null is the table cannot be loaded.
      */
     @Nullable
-    IDataSet<?, ?> load(@NotNull File file, @NotNull String dataSetId, @Nullable String encoding, boolean delete);
+    String load(@NotNull File file, @NotNull String dataSetId, @Nullable String encoding, boolean delete);
 
     /**
      * Load a table from another {@link IDataSource}.
@@ -302,10 +322,11 @@ public interface IDataSource<T> {
      * @param dataSource      DataSource reference to the input database
      * @param inputTableName  Name of the table to import.
      * @param deleteIfExists  True to delete the outputTableName if exists, false otherwise.
-     * @return The {@link IDataSet} containing the loaded data.
+     * @return The name of the loaded table, formatted according this datasource
+     * Null is the table cannot be loaded.
      */
     @Nullable
-    IDataSet<?, ?> load(@Nullable IJdbcDataSource dataSource, @NotNull String inputTableName,
+    String load(@Nullable IJdbcDataSource dataSource, @NotNull String inputTableName,
                          boolean deleteIfExists);
 
     /**
@@ -314,10 +335,11 @@ public interface IDataSource<T> {
      * @param dataSource      DataSource reference to the input database
      * @param inputTableName  Name of the table to import.
      * @param outputTableName Name of the imported table in the database.
-     * @return The {@link IDataSet} containing the loaded data.
+     * @return The name of the loaded table, formatted according this datasource
+     * Null is the table cannot be loaded.
      */
     @Nullable
-    IDataSet<?, ?> load(@Nullable IJdbcDataSource dataSource, @NotNull String inputTableName,
+    String load(@Nullable IJdbcDataSource dataSource, @NotNull String inputTableName,
                          @NotNull String outputTableName);
 
     /**
@@ -325,10 +347,11 @@ public interface IDataSource<T> {
      *
      * @param dataSource      DataSource reference to the input database
      * @param inputTableName  Name of the table to import.
-     * @return The {@link IDataSet} containing the loaded data.
+     * @return The name of the loaded table, formatted according this datasource
+     * Null is the table cannot be loaded.
      */
     @Nullable
-    IDataSet<?, ?> load(@Nullable IJdbcDataSource dataSource, @NotNull String inputTableName);
+    String load(@Nullable IJdbcDataSource dataSource, @NotNull String inputTableName);
 
     /**
      * Load a table from another {@link IDataSource}.
@@ -337,10 +360,11 @@ public interface IDataSource<T> {
      * @param inputTableName  Name of the table to import.
      * @param outputTableName Name of the imported table in the database.
      * @param deleteIfExists  True to delete the outputTableName if exists, false otherwise.
-     * @return The {@link IDataSet} containing the loaded data.
+     * @return The name of the loaded table, formatted according this datasource
+     * Null is the table cannot be loaded.
      */
     @Nullable
-    IDataSet<?, ?> load(@Nullable IJdbcDataSource dataSource, @NotNull String inputTableName,
+    String load(@Nullable IJdbcDataSource dataSource, @NotNull String inputTableName,
                     @NotNull String outputTableName, boolean deleteIfExists);
 
     /**
@@ -351,10 +375,11 @@ public interface IDataSource<T> {
      * @param outputTableName Name of the imported table in the database.
      * @param deleteIfExists  True to delete the outputTableName if exists, false otherwise.
      * @param batchSize       Integer value to queue the data before executing the query
-     * @return The {@link IDataSet} containing the loaded data.
+     * @return The name of the loaded table, formatted according this datasource
+     * Null is the table cannot be loaded.
      */
     @Nullable
-    IDataSet<?, ?> load(@Nullable IJdbcDataSource dataSource, @NotNull String inputTableName,
+    String load(@Nullable IJdbcDataSource dataSource, @NotNull String inputTableName,
                          @NotNull String outputTableName, boolean deleteIfExists, int batchSize);
 
     /* ********************** */
@@ -448,39 +473,43 @@ public interface IDataSource<T> {
      * @param filePath  Path of the file.
      * @param dataSetId Identifier of the {@link IDataSet}.
      * @param delete    True to delete the {@link IDataSet} if exists, false otherwise.
-     * @return A {@link IDataSet} representing the linked file.
+     * @return The name of the linked table, formatted according this datasource
+     * Null is the table cannot be linked.
      */
     @Nullable
-    IDataSet<?, ?> link(@NotNull String filePath, @NotNull String dataSetId, boolean delete);
+    String link(@NotNull String filePath, @NotNull String dataSetId, boolean delete);
 
     /**
      * Link a file to the {@link IDataSource}.
      *
      * @param filePath  Path of the file.
      * @param dataSetId Identifier of the {@link IDataSet}.
-     * @return A {@link IDataSet} representing the linked file.
+     * @return The name of the linked table, formatted according this datasource
+     * Null is the table cannot be linked.
      */
     @Nullable
-    IDataSet<?, ?> link(@NotNull String filePath, @NotNull String dataSetId);
+    String link(@NotNull String filePath, @NotNull String dataSetId);
 
     /**
      * Link a file to the {@link IDataSource}.
      *
      * @param filePath Path of the file.
      * @param delete   True to delete the {@link IDataSet} if exists, false otherwise.
-     * @return A {@link IDataSet} representing the linked file.
+     * @return The name of the linked table, formatted according this datasource
+     * Null is the table cannot be linked.
      */
     @Nullable
-    IDataSet<?, ?> link(@NotNull String filePath, boolean delete);
+    String link(@NotNull String filePath, boolean delete);
 
     /**
      * Link a file to the {@link IDataSource}.
      *
      * @param filePath Path of the file to link.
-     * @return A {@link IDataSet} representing the linked file.
+     * @return The name of the linked table, formatted according this datasource
+     * Null is the table cannot be linked.
      */
     @Nullable
-    IDataSet<?, ?> link(@NotNull String filePath);
+    String link(@NotNull String filePath);
 
     /**
      * Link a file to the {@link IDataSource}.
@@ -488,39 +517,43 @@ public interface IDataSource<T> {
      * @param uri       {@link URI} of the file.
      * @param dataSetId Identifier of the {@link IDataSet}.
      * @param delete    True to delete the {@link IDataSet} if exists, false otherwise.
-     * @return A {@link IDataSet} representing the linked file.
+     * @return The name of the linked table, formatted according this datasource
+     * Null is the table cannot be linked.
      */
     @Nullable
-    IDataSet<?, ?> link(@NotNull URI uri, @Nullable String dataSetId, boolean delete);
+    String link(@NotNull URI uri, @Nullable String dataSetId, boolean delete);
 
     /**
      * Link a file to the {@link IDataSource}.
      *
      * @param uri       {@link URI} of the file.
      * @param dataSetId Identifier of the {@link IDataSet}.
-     * @return A {@link IDataSet} representing the linked file.
+     * @return The name of the linked table, formatted according this datasource
+     * Null is the table cannot be linked.
      */
     @Nullable
-    IDataSet<?, ?> link(@NotNull URI uri, @Nullable String dataSetId);
+    String link(@NotNull URI uri, @Nullable String dataSetId);
 
     /**
      * Link a file to the {@link IDataSource}.
      *
      * @param uri    {@link URI} of the file.
      * @param delete True to delete the {@link IDataSet} if exists, false otherwise.
-     * @return A {@link IDataSet} representing the linked file.
+     * @return The name of the linked table, formatted according this datasource
+     * Null is the table cannot be linked.
      */
     @Nullable
-    IDataSet<?, ?> link(@NotNull URI uri, boolean delete);
+    String link(@NotNull URI uri, boolean delete);
 
     /**
      * Link a file to the {@link IDataSource}.
      *
      * @param uri {@link URI} of the file.
-     * @return A {@link IDataSet} representing the linked file.
+     * @return The name of the linked table, formatted according this datasource
+     * Null is the table cannot be linked.
      */
     @Nullable
-    IDataSet<?, ?> link(@NotNull URI uri);
+    String link(@NotNull URI uri);
 
     /**
      * Link a file to the {@link IDataSource}.
@@ -528,39 +561,43 @@ public interface IDataSource<T> {
      * @param url       {@link URL} of the file.
      * @param dataSetId Identifier of the {@link IDataSet}.
      * @param delete    True to delete the {@link IDataSet} if exists, false otherwise.
-     * @return A {@link IDataSet} representing the linked file.
+     * @return The name of the linked table, formatted according this datasource
+     * Null is the table cannot be linked.
      */
     @Nullable
-    IDataSet<?, ?> link(@NotNull URL url, @Nullable String dataSetId, boolean delete);
+    String link(@NotNull URL url, @Nullable String dataSetId, boolean delete);
 
     /**
      * Link a file to the {@link IDataSource}.
      *
      * @param url       {@link URI} of the file.
      * @param dataSetId Identifier of the {@link IDataSet}.
-     * @return A {@link IDataSet} representing the linked file.
+     * @return The name of the linked table, formatted according this datasource
+     * Null is the table cannot be linked.
      */
     @Nullable
-    IDataSet<?, ?> link(@NotNull URL url, @Nullable String dataSetId);
+    String link(@NotNull URL url, @Nullable String dataSetId);
 
     /**
      * Link a file to the {@link IDataSource}.
      *
      * @param url    {@link URI} of the file.
      * @param delete True to delete the {@link IDataSet} if exists, false otherwise.
-     * @return A {@link IDataSet} representing the linked file.
+     * @return The name of the linked table, formatted according this datasource
+     * Null is the table cannot be linked.
      */
     @Nullable
-    IDataSet<?, ?> link(@NotNull URL url, boolean delete);
+    String link(@NotNull URL url, boolean delete);
 
     /**
      * Link a file to the {@link IDataSource}.
      *
      * @param url {@link URI} of the file.
-     * @return A {@link IDataSet} representing the linked file.
+     * @return The name of the linked table, formatted according this datasource
+     * Null is the table cannot be linked.
      */
     @Nullable
-    IDataSet<?, ?> link(@NotNull URL url);
+    String link(@NotNull URL url);
 
     /**
      * Link a file to the {@link IDataSource}.
@@ -568,37 +605,41 @@ public interface IDataSource<T> {
      * @param file      {@link File}.
      * @param dataSetId Identifier of the {@link IDataSet}.
      * @param delete    True to delete the {@link IDataSet} if exists, false otherwise.
-     * @return A {@link IDataSet} representing the linked file.
+     * @return The name of the linked table, formatted according this datasource
+     * Null is the table cannot be linked.
      */
     @Nullable
-    IDataSet<?, ?> link(@NotNull File file, @NotNull String dataSetId, boolean delete);
+    String link(@NotNull File file, @NotNull String dataSetId, boolean delete);
 
     /**
      * Link a file to the {@link IDataSource}.
      *
      * @param file      {@link File}.
      * @param dataSetId Identifier of the {@link IDataSet}.
-     * @return A {@link IDataSet} representing the linked file.
+     * @return The name of the linked table, formatted according this datasource
+     * Null is the table cannot be linked.
      */
     @Nullable
-    IDataSet<?, ?> link(@NotNull File file, @NotNull String dataSetId);
+    String link(@NotNull File file, @NotNull String dataSetId);
 
     /**
      * Link a file to the {@link IDataSource}.
      *
      * @param file   {@link File}.
      * @param delete True to delete the {@link IDataSet} if exists, false otherwise.
-     * @return A {@link IDataSet} representing the linked file.
+     * @return The name of the linked table, formatted according this datasource
+     * Null is the table cannot be linked.
      */
     @Nullable
-    IDataSet<?, ?> link(@NotNull File file, boolean delete);
+    String link(@NotNull File file, boolean delete);
 
     /**
      * Link a file to the {@link IDataSource}.
      *
      * @param file {@link File}.
-     * @return A {@link IDataSet} representing the linked file.
+     * @return The name of the linked table, formatted according this datasource
+     * Null is the table cannot be linked.
      */
     @Nullable
-    IDataSet<?, ?> link(@NotNull File file);
+    String link(@NotNull File file);
 }

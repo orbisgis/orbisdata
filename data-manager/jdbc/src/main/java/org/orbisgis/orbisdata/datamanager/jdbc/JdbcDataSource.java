@@ -416,18 +416,19 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, ISe
     }
 
     @Override
-    public IJdbcTable link(@NotNull String filePath, @NotNull String tableName, boolean delete) {
-        IOMethods.link(filePath, tableName, delete, this);
-        return getTable(tableName);
+    public String link(@NotNull String filePath, @NotNull String tableName, boolean delete) {
+        String formatedTableName = TableLocation.parse(tableName, getDataBaseType() == DataBaseType.H2GIS).toString(getDataBaseType() == DataBaseType.H2GIS);
+        IOMethods.link(filePath, formatedTableName, delete, this);
+        return formatedTableName;
     }
 
     @Override
-    public IJdbcTable link(@NotNull String filePath, @NotNull String tableName) {
+    public String link(@NotNull String filePath, @NotNull String tableName) {
         return link(filePath, tableName, false);
     }
 
     @Override
-    public IJdbcTable link(@NotNull String filePath, boolean delete) {
+    public String link(@NotNull String filePath, boolean delete) {
         String tableName = getTableNameFromPath(filePath);
         if (Pattern.compile("^[a-zA-Z][a-zA-Z0-9_]*$").matcher(tableName).find()) {
             return link(filePath, tableName, delete);
@@ -438,12 +439,12 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, ISe
     }
 
     @Override
-    public IJdbcTable link(@NotNull String filePath) {
+    public String link(@NotNull String filePath) {
         return link(filePath, false);
     }
 
     @Override
-    public IJdbcTable link(@NotNull URL url, String tableName, boolean delete) {
+    public String link(@NotNull URL url, String tableName, boolean delete) {
         try {
             return link(url.toURI(), tableName, delete);
         } catch (URISyntaxException e) {
@@ -453,7 +454,7 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, ISe
     }
 
     @Override
-    public IJdbcTable link(@NotNull URL url, String tableName) {
+    public String link(@NotNull URL url, String tableName) {
         try {
             return link(url.toURI(), tableName);
         } catch (URISyntaxException e) {
@@ -463,7 +464,7 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, ISe
     }
 
     @Override
-    public IJdbcTable link(@NotNull URL url, boolean delete) {
+    public String link(@NotNull URL url, boolean delete) {
         try {
             return link(url.toURI(), delete);
         } catch (URISyntaxException e) {
@@ -473,7 +474,7 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, ISe
     }
 
     @Override
-    public IJdbcTable link(@NotNull URL url) {
+    public String link(@NotNull URL url) {
         try {
             return link(url.toURI());
         } catch (URISyntaxException e) {
@@ -483,69 +484,72 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, ISe
     }
 
     @Override
-    public IJdbcTable link(@NotNull URI uri, String tableName, boolean delete) {
+    public String link(@NotNull URI uri, String tableName, boolean delete) {
         return link(new File(uri), tableName, delete);
     }
 
     @Override
-    public IJdbcTable link(@NotNull URI uri, String tableName) {
+    public String link(@NotNull URI uri, String tableName) {
         return link(new File(uri), tableName);
     }
 
     @Override
-    public IJdbcTable link(@NotNull URI uri, boolean delete) {
+    public String link(@NotNull URI uri, boolean delete) {
         return link(new File(uri), delete);
     }
 
     @Override
-    public IJdbcTable link(@NotNull URI uri) {
+    public String link(@NotNull URI uri) {
         return link(new File(uri));
     }
 
     @Override
-    public IJdbcTable link(@NotNull File file, @NotNull String tableName, boolean delete) {
+    public String link(@NotNull File file, @NotNull String tableName, boolean delete) {
         return link(file.getAbsolutePath(), tableName, delete);
     }
 
     @Override
-    public IJdbcTable link(@NotNull File file, @NotNull String tableName) {
+    public String link(@NotNull File file, @NotNull String tableName) {
         return link(file.getAbsolutePath(), tableName);
     }
 
     @Override
-    public IJdbcTable link(@NotNull File file, boolean delete) {
+    public String link(@NotNull File file, boolean delete) {
         return link(file.getAbsolutePath(), delete);
     }
 
     @Override
-    public IJdbcTable link(@NotNull File file) {
+    public String link(@NotNull File file) {
         return link(file.getAbsolutePath());
     }
 
     @Override
-    public IJdbcTable load(@NotNull String filePath, @NotNull String tableName, @Nullable String encoding,
+    public String load(@NotNull String filePath, @NotNull String tableName, @Nullable String encoding,
                            boolean delete) {
-        IOMethods.loadFile(filePath, tableName, encoding, delete, this);
-        return getTable(tableName);
+        String formatedTableName = TableLocation.parse(tableName, getDataBaseType() == DataBaseType.H2GIS).toString(getDataBaseType() == DataBaseType.H2GIS);
+        if(IOMethods.loadFile(filePath, formatedTableName, encoding, delete, this)){
+            return formatedTableName;
+        }
+        return null;
     }
 
     @Override
-    public IJdbcTable load(@NotNull String filePath, @NotNull String tableName) {
+    public String load(@NotNull String filePath, @NotNull String tableName) {
         return load(filePath, tableName, null, false);
     }
 
     @Override
-    public IJdbcTable load(@NotNull String filePath, @NotNull String tableName, boolean delete) {
+    public String load(@NotNull String filePath, @NotNull String tableName, boolean delete) {
         return load(filePath, tableName, null, delete);
     }
 
     @Override
-    public IJdbcTable load(@NotNull String filePath) {
+    public String load(@NotNull String filePath) {
         return load(filePath, false);
     }
 
     @Override
-    public IJdbcTable load(@NotNull String filePath, boolean delete) {
+    public String load(@NotNull String filePath, boolean delete) {
         String tableName = getTableNameFromPath(filePath);
         if (Pattern.compile("^[a-zA-Z][a-zA-Z0-9_]*$").matcher(tableName).find()) {
             return load(filePath, tableName, null, delete);
@@ -556,7 +560,7 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, ISe
     }
 
     @Override
-    public IJdbcTable load(@NotNull URL url, @NotNull String tableName) {
+    public String load(@NotNull URL url, @NotNull String tableName) {
         try {
             return load(url.toURI(), tableName, null, false);
         } catch (URISyntaxException e) {
@@ -566,7 +570,7 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, ISe
     }
 
     @Override
-    public IJdbcTable load(@NotNull URL url, @NotNull String tableName, boolean delete) {
+    public String load(@NotNull URL url, @NotNull String tableName, boolean delete) {
         try {
             return load(url.toURI(), tableName, null, delete);
         } catch (URISyntaxException e) {
@@ -576,7 +580,7 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, ISe
     }
 
     @Override
-    public IJdbcTable load(@NotNull URL url) {
+    public String load(@NotNull URL url) {
         try {
             return load(url.toURI(), false);
         } catch (URISyntaxException e) {
@@ -586,7 +590,7 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, ISe
     }
 
     @Override
-    public IJdbcTable load(@NotNull URL url, boolean delete) {
+    public String load(@NotNull URL url, boolean delete) {
         try {
             return load(url.toURI(), delete);
         } catch (URISyntaxException e) {
@@ -596,7 +600,7 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, ISe
     }
 
     @Override
-    public IJdbcTable load(@NotNull URL url, @NotNull String tableName, @Nullable String encoding, boolean delete) {
+    public String load(@NotNull URL url, @NotNull String tableName, @Nullable String encoding, boolean delete) {
         try {
             return load(url.toURI(), tableName, encoding, delete);
         } catch (URISyntaxException e) {
@@ -606,67 +610,67 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, ISe
     }
 
     @Override
-    public IJdbcTable load(@NotNull URI uri, @NotNull String tableName) {
+    public String load(@NotNull URI uri, @NotNull String tableName) {
         return load(new File(uri), tableName, null, false);
     }
 
     @Override
-    public IJdbcTable load(@NotNull URI uri, @NotNull String tableName, boolean delete) {
+    public String load(@NotNull URI uri, @NotNull String tableName, boolean delete) {
         return load(new File(uri), tableName, null, delete);
     }
 
     @Override
-    public IJdbcTable load(@NotNull URI uri) {
+    public String load(@NotNull URI uri) {
         return load(new File(uri), false);
     }
 
     @Override
-    public IJdbcTable load(@NotNull URI uri, boolean delete) {
+    public String load(@NotNull URI uri, boolean delete) {
         return load(new File(uri), delete);
     }
 
     @Override
-    public IJdbcTable load(@NotNull URI uri, @NotNull String tableName, @Nullable String encoding, boolean delete) {
+    public String load(@NotNull URI uri, @NotNull String tableName, @Nullable String encoding, boolean delete) {
         return load(new File(uri), tableName, encoding, delete);
     }
 
     @Override
-    public IJdbcTable load(@NotNull File file, @NotNull String tableName) {
+    public String load(@NotNull File file, @NotNull String tableName) {
         return load(file.getAbsolutePath(), tableName, null, false);
     }
 
     @Override
-    public IJdbcTable load(@NotNull File file, @NotNull String tableName, boolean delete) {
+    public String load(@NotNull File file, @NotNull String tableName, boolean delete) {
         return load(file.getAbsolutePath(), tableName, null, delete);
     }
 
     @Override
-    public IJdbcTable load(@NotNull File file) {
+    public String load(@NotNull File file) {
         return load(file.getAbsolutePath(), false);
     }
 
     @Override
-    public IJdbcTable load(@NotNull File file, boolean delete) {
+    public String load(@NotNull File file, boolean delete) {
         return load(file.getAbsolutePath(), delete);
     }
 
     @Override
-    public IJdbcTable load(@NotNull File file, @NotNull String tableName, @Nullable String encoding, boolean delete) {
+    public String load(@NotNull File file, @NotNull String tableName, @Nullable String encoding, boolean delete) {
         return load(file.getAbsolutePath(), tableName, encoding, delete);
     }
 
     @Override
-    public IJdbcTable load(@NotNull IJdbcDataSource dataSource, @NotNull String inputTableName, @NotNull String outputTableName, boolean deleteIfExists) {
+    public String load(@NotNull IJdbcDataSource dataSource, @NotNull String inputTableName, @NotNull String outputTableName, boolean deleteIfExists) {
         return load(dataSource, inputTableName, outputTableName, deleteIfExists, 1000);
     }
 
     @Override
-    public IJdbcTable load(@NotNull IJdbcDataSource dataSource, @NotNull String inputTableName, @NotNull String outputTableName) {
+    public String load(@NotNull IJdbcDataSource dataSource, @NotNull String inputTableName, @NotNull String outputTableName) {
         return load(dataSource, inputTableName, outputTableName, false, 1000);
     }
 
     @Override
-    public IJdbcTable load(@NotNull IJdbcDataSource dataSource, @NotNull String inputTableName, boolean deleteIfExists) {
+    public String load(@NotNull IJdbcDataSource dataSource, @NotNull String inputTableName, boolean deleteIfExists) {
         //The inputTableName can be query
         String regex = ".*(?i)\\b(select|from)\\b.*";
         Pattern pattern = Pattern.compile(regex);
@@ -679,14 +683,14 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, ISe
             if (IOMethods.loadFromDB(this, dataSource,
                     targetTableLocation, sourceTableLocation,
                     deleteIfExists, 1000)) {
-                return getTable(targetTableLocation.toString(this.getDataBaseType() == DataBaseType.H2GIS));
+                return targetTableLocation.toString(this.getDataBaseType() == DataBaseType.H2GIS);
             }
         }
         return null;
     }
 
     @Override
-    public IJdbcTable load(@NotNull IJdbcDataSource dataSource, @NotNull String inputTableName) {
+    public String load(@NotNull IJdbcDataSource dataSource, @NotNull String inputTableName) {
         //The inputTableName can be query
         String regex = ".*(?i)\\b(select|from)\\b.*";
         Pattern pattern = Pattern.compile(regex);
@@ -699,14 +703,14 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, ISe
             if (IOMethods.loadFromDB(this, dataSource,
                     targetTableLocation, sourceTableLocation,
                     false, 1000)) {
-                return getTable(targetTableLocation.toString(this.getDataBaseType() == DataBaseType.H2GIS));
+                return targetTableLocation.toString(this.getDataBaseType() == DataBaseType.H2GIS);
             }
         }
         return null;
     }
 
     @Override
-    public IJdbcTable load(@NotNull IJdbcDataSource dataSource, @NotNull String inputTableName, @NotNull String outputTableName, boolean deleteIfExists, int batchSize) {
+    public String load(@NotNull IJdbcDataSource dataSource, @NotNull String inputTableName, @NotNull String outputTableName, boolean deleteIfExists, int batchSize) {
         //The inputTableName can be query
         String regex = ".*(?i)\\b(select|from)\\b.*";
         Pattern pattern = Pattern.compile(regex);
@@ -717,7 +721,7 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, ISe
                 if (IOMethods.loadFromDB(this, dataSource,
                         targetTableLocation, inputTableName,
                         deleteIfExists, batchSize)) {
-                    return getTable(targetTableLocation.toString(this.getDataBaseType() == DataBaseType.H2GIS));
+                    return targetTableLocation.toString(this.getDataBaseType() == DataBaseType.H2GIS);
                 }
             } else {
                 LOGGER.error("The query must be enclosed in parenthesis: '(SELECT * FROM ORDERS)'.");
@@ -728,7 +732,7 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, ISe
             if (IOMethods.loadFromDB(this, dataSource,
                     targetTableLocation, sourceTableLocation,
                     deleteIfExists, batchSize)) {
-                return getTable(targetTableLocation.toString(this.getDataBaseType() == DataBaseType.H2GIS));
+                return targetTableLocation.toString(this.getDataBaseType() == DataBaseType.H2GIS);
             }
         }
         return null;

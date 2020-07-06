@@ -589,60 +589,80 @@ public abstract class JdbcTable extends DefaultResultSet implements IJdbcTable<S
     }
 
     @Override
-    public boolean save(IJdbcDataSource dataSource, boolean deleteTable) {
+    public String save(IJdbcDataSource dataSource, boolean deleteTable) {
         return save(dataSource,  deleteTable,  1000);
     }
 
     @Override
-    public boolean save(IJdbcDataSource dataSource, String outputTableName, boolean deleteTable) {
+    public String save(IJdbcDataSource dataSource, String outputTableName, boolean deleteTable) {
         return save( dataSource,  outputTableName,  deleteTable, 1000);
     }
 
     @Override
-    public boolean save(IJdbcDataSource dataSource, int batchSize) {
+    public String save(IJdbcDataSource dataSource, int batchSize) {
         return save(dataSource,  false,  batchSize);
     }
 
     @Override
-    public boolean save(IJdbcDataSource dataSource, String outputTableName, boolean deleteTable, int batchSize) {
+    public String save(IJdbcDataSource dataSource, String outputTableName, boolean deleteTable, int batchSize) {
         if(dataSource==null){
             LOGGER.error("The output datasource connexion cannot ne null\n");
-            return false;
+            return null;
         }
         try {
             if(getTableLocation() != null ){
                 if(outputTableName==null || outputTableName.isEmpty()){
                     LOGGER.error("The output table name cannot be null or empty\n");
-                    return false;
+                    return null;
                 }
-                return IOMethods.saveInDB(getStatement().getConnection(), getTableLocation(), getDbType(),  deleteTable, dataSource, TableLocation.parse(outputTableName),batchSize);
+                org.h2gis.utilities.TableLocation outputTableLoc = TableLocation.parse(outputTableName, dataSource.getDataBaseType() == DataBaseType.H2GIS);
+                if(IOMethods.saveInDB(getStatement().getConnection(), getTableLocation(), getDbType(),  deleteTable, dataSource,outputTableLoc,batchSize)){
+                    return outputTableLoc.toString(dataSource.getDataBaseType()  == DataBaseType.H2GIS);
+                }
+                else {
+                    LOGGER.error("Cannot save the table.\n");
+                    return null;
+                }
             }
             else{
-                return IOMethods.saveInDB(getStatement().getConnection(), getBaseQuery(),  getDbType(), deleteTable, dataSource, TableLocation.parse(outputTableName),batchSize);
+                org.h2gis.utilities.TableLocation outputTableLoc = TableLocation.parse(outputTableName, dataSource.getDataBaseType() == DataBaseType.H2GIS);
+                if(IOMethods.saveInDB(getStatement().getConnection(), getBaseQuery(),  getDbType(), deleteTable, dataSource, outputTableLoc,batchSize)){
+                    return outputTableLoc.toString(dataSource.getDataBaseType()  == DataBaseType.H2GIS);
+                } else {
+                    LOGGER.error("Cannot save the query.");
+                    return null;
+                }
             }
         } catch (SQLException e) {
             LOGGER.error("Cannot save the table.\n", e);
-            return false;
+            return null;
         }
     }
 
     @Override
-    public boolean save(IJdbcDataSource dataSource, boolean deleteTable, int batchSize) {
+    public String save(IJdbcDataSource dataSource, boolean deleteTable, int batchSize) {
         if(dataSource==null){
             LOGGER.error("The output datasource connexion cannot be null\n");
-            return false;
+            return null;
         }
         try {
             if(getTableLocation() != null ){
-                return IOMethods.saveInDB(getStatement().getConnection(), getTableLocation(), getDbType(),  deleteTable, dataSource, getTableLocation(), batchSize);
+                if(IOMethods.saveInDB(getStatement().getConnection(), getTableLocation(), getDbType(),
+                        deleteTable, dataSource, getTableLocation(), batchSize)){
+                    return getTableLocation().toString(DataBaseType.H2GIS);
+                }
+                else{
+                    LOGGER.error("Cannot save the table.\n");
+                    return null;
+                }
             }
             else{
                 LOGGER.error("Cannot save the table without a provided name.\n");
-                return false;
+                return null;
             }
         } catch (SQLException e) {
             LOGGER.error("Cannot save the table.\n", e);
-            return false;
+            return null;
         }
     }
 

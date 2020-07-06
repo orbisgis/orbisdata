@@ -278,7 +278,7 @@ class GroovyPostGISTest {
         assertNotNull(spr)
         assertThrows(UnsupportedOperationException.class, spr::getSrid);
         assertTrue(spr.save("target/reprojected_table_postgis.shp"))
-        def reprojectedTable = postGIS.load("target/reprojected_table_postgis.shp", true).spatialTable
+        def reprojectedTable = postGIS.getSpatialTable(postGIS.load("target/reprojected_table_postgis.shp", true))
         assertNotNull(reprojectedTable)
         reprojectedTable.next();
         assertEquals(2154, reprojectedTable.getGeometry(2).getSRID())
@@ -295,7 +295,7 @@ class GroovyPostGISTest {
         """)
         def sp = postGIS.select("ST_BUFFER(THE_GEOM, 10) AS THE_GEOM").from("orbisgis").spatialTable
         sp.save("target/query_table_postgis.shp")
-        def queryTable = postGIS.load("target/query_table_postgis.shp", true)
+        def queryTable = postGIS.getSpatialTable(postGIS.load("target/query_table_postgis.shp", true))
         assertEquals 2, queryTable.rowCount
         assertEquals 4326, queryTable.srid
         assertTrue queryTable.getFirstRow()[1] instanceof MultiPolygon
@@ -357,8 +357,8 @@ class GroovyPostGISTest {
                 INSERT INTO h2gis VALUES (1, 'POINT(10 10)'::GEOMETRY), (2, 'POINT(1 1)'::GEOMETRY);
         """)
         def h2GISTarget = H2GIS.open([databaseName: './target/loadH2GIS_target'])
-        assertFalse(postGIS.getSpatialTable("h2gis").save(h2GISTarget, true, -1))
-        assertTrue(postGIS.getSpatialTable("h2gis").save(h2GISTarget, true, 100))
+        assertNull(postGIS.getSpatialTable("h2gis").save(h2GISTarget, true, -1))
+        assertNotNull(postGIS.getSpatialTable("h2gis").save(h2GISTarget, true, 100))
         def concat = ""
         h2GISTarget.spatialTable "\"h2gis\"" eachRow { row -> concat += "$row.id $row.the_geom $row.geometry\n" }
         assertEquals("1 POINT (10 10) POINT (10 10)\n2 POINT (1 1) POINT (1 1)\n", concat)

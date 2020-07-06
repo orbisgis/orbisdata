@@ -37,7 +37,6 @@
 package org.orbisgis.orbisdata.datamanager.jdbc
 
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.condition.EnabledIfSystemProperty
 import org.locationtech.jts.geom.Geometry
 import org.locationtech.jts.geom.MultiPolygon
 import org.locationtech.jts.geom.Point
@@ -89,6 +88,9 @@ class GroovyH2GISTest {
     void loadH2GIS() {
         def h2GIS = H2GIS.open([databaseName: './target/loadH2GIS'])
         assertNotNull h2GIS
+        File directory = new File("./target/db_for_test")
+        H2GIS datasource = H2GIS.open(directory.absolutePath + File.separator + "osm_chain_db;AUTO_SERVER=TRUE")
+        assertNotNull datasource
     }
 
     @Test
@@ -754,7 +756,53 @@ class GroovyH2GISTest {
                  boundary GEOMETRY(MULTIPOLYGON, 4326));
                 INSERT INTO forests VALUES(109, 'Green Forest', ST_MPolyFromText( 'MULTIPOLYGON(((28 26,28 0,84 0,
                 84 42,28 26), (52 18,66 23,73 9,48 6,52 18)),((59 18,67 18,67 13,59 13,59 18)))', 4326));"""
-        Geometry geom = h2GIS.getSpatialTable("forests").getEstimatedExtend();
+        Geometry geom = h2GIS.getSpatialTable("forests").getEstimatedExtent();
+        assertEquals 4326, geom.SRID
+        assertEquals("POLYGON ((28 0, 28 42, 84 42, 84 0, 28 0))", geom.toString());
+        h2GIS.execute("drop table forests");
+    }
+
+    @Test
+    void testExtent(){
+        def h2GIS = H2GIS.open('./target/orbisgis')
+        h2GIS.execute"""DROP TABLE  IF EXISTS forests;
+                CREATE TABLE forests ( fid INTEGER NOT NULL PRIMARY KEY, name CHARACTER VARYING(64),
+                 boundary GEOMETRY(MULTIPOLYGON, 4326));
+                INSERT INTO forests VALUES(109, 'Green Forest', ST_MPolyFromText( 'MULTIPOLYGON(((28 26,28 0,84 0,
+                84 42,28 26), (52 18,66 23,73 9,48 6,52 18)),((59 18,67 18,67 13,59 13,59 18)))', 4326));"""
+        Geometry geom = h2GIS.getSpatialTable("forests").getExtent();
+        assertEquals 4326, geom.SRID
+        assertEquals("POLYGON ((28 0, 28 42, 84 42, 84 0, 28 0))", geom.toString());
+        geom = h2GIS.getSpatialTable("forests").getExtent("boundary");
+        assertEquals 4326, geom.SRID
+        assertEquals("POLYGON ((28 0, 28 42, 84 42, 84 0, 28 0))", geom.toString());
+        geom = h2GIS.getSpatialTable("forests").getExtent("ST_Buffer(boundary,0)", "boundary");
+        assertEquals 4326, geom.SRID
+        assertEquals("POLYGON ((28 0, 28 42, 84 42, 84 0, 28 0))", geom.toString());
+        geom = h2GIS.select().from("forests").getSpatialTable().getExtent("boundary");
+        assertEquals 4326, geom.SRID
+        assertEquals("POLYGON ((28 0, 28 42, 84 42, 84 0, 28 0))", geom.toString());
+        h2GIS.execute("drop table forests");
+    }
+
+    @Test
+    void testExtentWithFilter(){
+        def h2GIS = H2GIS.open('./target/orbisgis')
+        h2GIS.execute"""DROP TABLE  IF EXISTS forests;
+                CREATE TABLE forests ( fid INTEGER NOT NULL PRIMARY KEY, name CHARACTER VARYING(64),
+                 boundary GEOMETRY(MULTIPOLYGON, 4326));
+                INSERT INTO forests VALUES(109, 'Green Forest', ST_MPolyFromText( 'MULTIPOLYGON(((28 26,28 0,84 0,
+                84 42,28 26), (52 18,66 23,73 9,48 6,52 18)),((59 18,67 18,67 13,59 13,59 18)))', 4326));"""
+        Geometry geom = h2GIS.getSpatialTable("forests").getExtent();
+        assertEquals 4326, geom.SRID
+        assertEquals("POLYGON ((28 0, 28 42, 84 42, 84 0, 28 0))", geom.toString());
+        geom = h2GIS.getSpatialTable("forests").getExtent(["boundary"] as String[], "limit 1");
+        assertEquals 4326, geom.SRID
+        assertEquals("POLYGON ((28 0, 28 42, 84 42, 84 0, 28 0))", geom.toString());
+        geom = h2GIS.getSpatialTable("forests").getExtent(["ST_Buffer(boundary,0)", "boundary"]as String[],"limit 1");
+        assertEquals 4326, geom.SRID
+        assertEquals("POLYGON ((28 0, 28 42, 84 42, 84 0, 28 0))", geom.toString());
+        geom = h2GIS.select("boundary").from("forests").getSpatialTable().getExtent(["ST_Buffer(boundary,0)", "boundary"]as String[],"limit 1");
         assertEquals 4326, geom.SRID
         assertEquals("POLYGON ((28 0, 28 42, 84 42, 84 0, 28 0))", geom.toString());
         h2GIS.execute("drop table forests");

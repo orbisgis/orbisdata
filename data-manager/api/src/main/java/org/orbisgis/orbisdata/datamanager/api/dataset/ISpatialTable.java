@@ -132,20 +132,47 @@ public interface ISpatialTable<T, U> extends ITable<T, U> {
     List<String> getGeometricColumns();
 
     /**
-     * Return the full extend {@link Geometry} of the first geometry column of the table.
+     * Return the full extent {@link Geometry} of a list of geometry columns.
      *
-     * @return The full extend {@link Geometry} of the first geometry column of the table.
+     * Note that a geometry column can be a geometry function
+     * e.g. ST_Buffer(the_geom, 20)
+     *
+     * @return The full extent {@link Geometry}.
      */
     @Nullable
-    Geometry getExtend();
+    Geometry getExtent(String... geometryColumns);
 
     /**
-     * Return the estimated extend {@link Geometry} of the first geometry column of the table.
+     * Return the full extent {@link Geometry} of a list of geometry columns
+     * and a filter
      *
-     * @return The estimated extend {@link Geometry} of the first geometry column of the table.
+     * The filter depends to the input datasource
+     * e.g. WHERE ID>12 for a SQL database
+     *
+     * Note that a geometry column can be a geometry function
+     * e.g. ST_Buffer(the_geom, 20)
+     *
+     *
+     * @return The full extent {@link Geometry}.
      */
     @Nullable
-    Geometry getEstimatedExtend();
+    Geometry getExtent(String[] geometryColumns, String filter);
+
+    /**
+     * Return the full extent {@link Geometry} of the first geometry column of the table.
+     *
+     * @return The full extent {@link Geometry} of the first geometry column of the table.
+     */
+    @Nullable
+    Geometry getExtent();
+
+    /**
+     * Return the estimated extent {@link Geometry} of the first geometry column of the table.
+     *
+     * @return The estimated extent {@link Geometry} of the first geometry column of the table.
+     */
+    @Nullable
+    Geometry getEstimatedExtent();
 
     /**
      * Return the SRID code of the first geometry column of the {@link ISpatialTable}.

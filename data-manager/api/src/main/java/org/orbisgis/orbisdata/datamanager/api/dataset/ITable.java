@@ -215,9 +215,10 @@ public interface ITable<T, U> extends IMatrix<T, U> {
      * Save the {@link ITable} into a file.
      *
      * @param filePath Path of the file to be saved.
-     * @return True if the file has been saved, false otherwise.
+     * @return the full path of the saved file.
+     * If the file cannot be saved return null.
      */
-    default boolean save(@NotNull String filePath) {
+    default String save(@NotNull String filePath) {
         return save(filePath, null);
     }
 
@@ -226,18 +227,20 @@ public interface ITable<T, U> extends IMatrix<T, U> {
      *
      * @param filePath Path of the file to be saved.
      * @param encoding Encoding of the file.
-     * @return True if the file has been saved, false otherwise.
+     * @return the full path of the saved file.
+     * If the file cannot be saved return null.
      */
-    boolean save(@NotNull String filePath, @Nullable String encoding);
+    String save(@NotNull String filePath, @Nullable String encoding);
 
 
     /**
      * Save the {@link ITable} into another database.
      *
      * @param dataSource Connection to the output database
-     * @return True if the table has been saved, false otherwise.
+     * @return The name of the saved table, formatted according the output datasource
+     * Null is the table cannot be saved.
      */
-    default boolean save(@Nullable IJdbcDataSource dataSource) {
+    default String save(@Nullable IJdbcDataSource dataSource) {
         return save(dataSource, false);
     }
 
@@ -246,18 +249,20 @@ public interface ITable<T, U> extends IMatrix<T, U> {
      *
      * @param dataSource Connection to the output database
      * @param batchSize Number of rows that must be accumulated in memory.
-     * @return True if the file has been saved, false otherwise.
+     * @return The name of the saved table, formatted according the output datasource
+     * Null is the table cannot be saved.
      */
-    boolean save(@Nullable IJdbcDataSource dataSource, int batchSize);
+    String save(@Nullable IJdbcDataSource dataSource, int batchSize);
 
     /**
      * Save the {@link ITable} into another database.
      *
      * @param dataSource Connection to the output database
      * @param deleteTable True to delete the output table is exists
-     * @return True if the file has been saved, false otherwise.
+     * @return The name of the saved table, formatted according the output datasource
+     * Null is the table cannot be saved.
      */
-    boolean save(@Nullable IJdbcDataSource dataSource, boolean deleteTable);
+    String save(@Nullable IJdbcDataSource dataSource, boolean deleteTable);
 
     /**
      * Save the {@link ITable} into another database.
@@ -265,9 +270,10 @@ public interface ITable<T, U> extends IMatrix<T, U> {
      * @param dataSource Connection to the output database
      * @param deleteTable True to delete the output table is exists
      * @param batchSize Number of rows that must be accumulated in memory.
-     * @return True if the file has been saved, false otherwise.
+     * @return The name of the saved table, formatted according the output datasource.
+     * Null is the table cannot be saved.
      */
-    boolean save(@Nullable IJdbcDataSource dataSource, boolean deleteTable, int batchSize);
+    String save(@Nullable IJdbcDataSource dataSource, boolean deleteTable, int batchSize);
 
     /**
      * Save the {@link ITable} into another database.
@@ -275,9 +281,10 @@ public interface ITable<T, U> extends IMatrix<T, U> {
      * @param dataSource Connection to the output database
      * @param outputTableName name of the output table
      * @param deleteTable True to delete the output table is exists
-     * @return True if the file has been saved, false otherwise.
+     * @return The name of the saved table, formatted according the output datasource
+     * Null is the table cannot be saved.
      */
-    boolean save(@Nullable IJdbcDataSource dataSource, @NotNull String outputTableName, boolean deleteTable);
+    String save(@Nullable IJdbcDataSource dataSource, @NotNull String outputTableName, boolean deleteTable);
 
     /**
      * Save the {@link ITable} into another database.
@@ -286,9 +293,10 @@ public interface ITable<T, U> extends IMatrix<T, U> {
      * @param outputTableName name of the output table
      * @param deleteTable True to delete the output table is exists
      * @param batchSize Number of rows that must be accumulated in memory.
-     * @return True if the file has been saved, false otherwise.
+     * @return The name of the saved table, formatted according the output datasource
+     * Null is the table cannot be saved.
      */
-    boolean save(@Nullable IJdbcDataSource dataSource, @NotNull String outputTableName, boolean deleteTable, int batchSize);
+    String save(@Nullable IJdbcDataSource dataSource, @NotNull String outputTableName, boolean deleteTable, int batchSize);
 
     /**
      * Return the values of the first row in a {@link List}. If there is no row, return an empty list.

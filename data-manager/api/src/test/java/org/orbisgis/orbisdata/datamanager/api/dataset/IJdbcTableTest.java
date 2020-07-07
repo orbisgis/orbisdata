@@ -1143,33 +1143,33 @@ public class IJdbcTableTest {
         }
 
         @Override
-        public boolean save(@NotNull String filePath, String encoding) {
-            return false;
+        public String save(@NotNull String filePath, String encoding) {
+            return null;
         }
 
         @Override
-        public boolean save(IJdbcDataSource dataSource, int batchSize) {
-            return false;
+        public String save(IJdbcDataSource dataSource, int batchSize) {
+            return null;
         }
 
         @Override
-        public boolean save(IJdbcDataSource dataSource, boolean deleteTable) {
-            return false;
+        public String save(IJdbcDataSource dataSource, boolean deleteTable) {
+            return null;
         }
 
         @Override
-        public boolean save(IJdbcDataSource dataSource, boolean deleteTable, int batchSize) {
-            return false;
+        public String save(IJdbcDataSource dataSource, boolean deleteTable, int batchSize) {
+            return null;
         }
 
         @Override
-        public boolean save(IJdbcDataSource dataSource, String outputTableName, boolean deleteTable) {
-            return false;
+        public String save(IJdbcDataSource dataSource, String outputTableName, boolean deleteTable) {
+            return null;
         }
 
         @Override
-        public boolean save(IJdbcDataSource dataSource, String outputTableName, boolean deleteTable, int batchSize) {
-            return false;
+        public String save(IJdbcDataSource dataSource, String outputTableName, boolean deleteTable, int batchSize) {
+            return null;
         }
 
         @NotNull

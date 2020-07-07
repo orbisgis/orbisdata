@@ -94,9 +94,9 @@ public class H2gisSpatialTableTest {
         assertNotNull(spr);
         assertThrows(UnsupportedOperationException.class, spr::getSrid);
         assertEquals(2, spr.getRowCount());
-        assertTrue(spr.save("target/reprojected_table.shp"));
+        assertEquals("target/reprojected_table.shp", spr.save("target/reprojected_table.shp"));
 
-        IJdbcTable reprojectedTable = dataSource.load("target/reprojected_table.shp", true);
+        IJdbcTable reprojectedTable = dataSource.getTable(dataSource.load("target/reprojected_table.shp", true));
         assertNotNull(reprojectedTable);
         assertEquals(2, reprojectedTable.getRowCount());
         assertTrue(reprojectedTable instanceof IJdbcSpatialTable);
@@ -123,9 +123,9 @@ public class H2gisSpatialTableTest {
         assertNotNull(sp);
         assertThrows(UnsupportedOperationException.class, sp::getSrid);
         assertEquals(2, sp.getRowCount());
-        assertTrue(sp.save("target/query_table.shp"));
+        assertEquals("target/query_table.shp", sp.save("target/query_table.shp"));
 
-        IJdbcTable queryTable = dataSource.load("target/query_table.shp");
+        IJdbcTable queryTable = dataSource.getTable(dataSource.load("target/query_table.shp"));
         assertNotNull(queryTable);
         assertEquals(2, queryTable.getRowCount());
         assertTrue(queryTable instanceof IJdbcSpatialTable);

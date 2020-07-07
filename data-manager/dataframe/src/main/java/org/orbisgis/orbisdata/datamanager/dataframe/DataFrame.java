@@ -664,17 +664,17 @@ public class DataFrame implements smile.data.DataFrame, ITable<BaseVector, Tuple
     }
 
     @Override
-    public boolean save(@NotNull String filePath, String encoding) {
+    public String save(@NotNull String filePath, String encoding) {
         File f = new File(filePath);
         if (!f.exists()) {
             try {
                 if (!f.createNewFile()) {
                     LOGGER.error("Unable to create the file '" + f.getAbsolutePath() + "'.");
-                    return false;
+                    return null;
                 }
             } catch (IOException e) {
                 LOGGER.error("Unable to create the file '" + f.getAbsolutePath() + "'.", e);
-                return false;
+                return null;
             }
         }
         BufferedWriter writer;
@@ -682,14 +682,14 @@ public class DataFrame implements smile.data.DataFrame, ITable<BaseVector, Tuple
             writer = new BufferedWriter(new FileWriter(f));
         } catch (IOException e) {
             LOGGER.error("Unable to create the FileWriter.", e);
-            return false;
+            return null;
         }
         try {
             writer.write(String.join(",", names()) + "\n");
             writer.flush();
         } catch (IOException e) {
             LOGGER.error("Unable to write in the FileWriter.", e);
-            return false;
+            return null;
         }
         for (int i = 0; i < nrows(); i++) {
             List<String> row = new ArrayList<>();
@@ -702,36 +702,36 @@ public class DataFrame implements smile.data.DataFrame, ITable<BaseVector, Tuple
                 writer.flush();
             } catch (IOException e) {
                 LOGGER.error("Unable to write in the FileWriter.", e);
-                return false;
+                return null;
             }
         }
-        return f.exists();
+        return filePath;
     }
 
     @Override
-    public boolean save(IJdbcDataSource dataSource, int batchSize) {
+    public String save(IJdbcDataSource dataSource, int batchSize) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public boolean save(IJdbcDataSource dataSource, boolean deleteTable) {
+    public String save(IJdbcDataSource dataSource, boolean deleteTable) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public boolean save(IJdbcDataSource dataSource, boolean deleteTable, int batchSize) {
+    public String save(IJdbcDataSource dataSource, boolean deleteTable, int batchSize) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public boolean save(IJdbcDataSource dataSource, String outputTableName, boolean deleteTable) {
+    public String save(IJdbcDataSource dataSource, String outputTableName, boolean deleteTable) {
         return  save(dataSource,  outputTableName,  deleteTable, 1000);
     }
 
     @Override
-    public boolean save(@NotNull  IJdbcDataSource dataSource, @NotNull  String outputTableName, boolean deleteTable, int batchSize) {
+    public String save(@NotNull  IJdbcDataSource dataSource, @NotNull  String outputTableName, boolean deleteTable, int batchSize) {
         if (isEmpty()) {
-            return false;
+            return null;
         }
         String tableName = TableLocation.parse(outputTableName, dataSource.getDataBaseType() == DataBaseType.H2GIS).toString(dataSource.getDataBaseType() == DataBaseType.H2GIS);
         try {
@@ -791,7 +791,7 @@ public class DataFrame implements smile.data.DataFrame, ITable<BaseVector, Tuple
                 }
             } catch (SQLException e) {
                 LOGGER.error("Cannot save the dataframe.\n", e);
-                return false;
+                return null;
             } finally {
                 outputconnection.setAutoCommit(true);
                 if (preparedStatement != null) {
@@ -800,9 +800,9 @@ public class DataFrame implements smile.data.DataFrame, ITable<BaseVector, Tuple
             }
         } catch (SQLException e) {
             LOGGER.error("Cannot save the dataframe.\n", e);
-            return false;
+            return null;
         }
-        return true;
+        return tableName;
     }
 
     @Override

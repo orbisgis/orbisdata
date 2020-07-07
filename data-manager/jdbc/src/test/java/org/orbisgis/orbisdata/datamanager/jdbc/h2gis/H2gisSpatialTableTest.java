@@ -114,7 +114,7 @@ public class H2gisSpatialTableTest {
     void testSaveQueryInFile() throws SQLException {
         new File("target/query_table.shp").delete();
         H2GIS dataSource = H2GIS.open("./target/test");
-        dataSource.execute(" DROP TABLE IF EXISTS orbisgis;" +
+        dataSource.execute(" DROP TABLE IF EXISTS orbisgis, query_table;" +
                 "CREATE TABLE orbisgis (id int, the_geom geometry(point, 4326));" +
                 "INSERT INTO orbisgis VALUES (1, 'SRID=4326;POINT(10 10)'::GEOMETRY), " +
                 "(2, 'SRID=4326;POINT(1 1)'::GEOMETRY); ");

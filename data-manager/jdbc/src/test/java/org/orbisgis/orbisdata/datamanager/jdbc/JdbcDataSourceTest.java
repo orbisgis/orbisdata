@@ -40,27 +40,17 @@ import groovy.lang.Closure;
 import groovy.lang.GString;
 import groovy.lang.MetaClass;
 import groovy.sql.GroovyRowResult;
-import groovy.sql.Sql;
 import org.codehaus.groovy.runtime.GStringImpl;
 import org.codehaus.groovy.runtime.InvokerHelper;
-import org.h2gis.functions.factory.H2GISDBFactory;
-import org.h2gis.utilities.JDBCUtilities;
-import org.h2gis.utilities.wrapper.ConnectionWrapper;
-import org.h2gis.utilities.wrapper.StatementWrapper;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.orbisgis.commons.annotations.NotNull;
-import org.orbisgis.commons.annotations.Nullable;
-import org.orbisgis.orbisdata.datamanager.api.dataset.*;
-import org.orbisgis.orbisdata.datamanager.api.datasource.IJdbcDataSource;
+import org.orbisgis.orbisdata.datamanager.api.dataset.DataBaseType;
+import org.orbisgis.orbisdata.datamanager.api.dataset.ISpatialTable;
+import org.orbisgis.orbisdata.datamanager.api.dataset.ITable;
 import org.orbisgis.orbisdata.datamanager.api.dsl.IFromBuilder;
 import org.orbisgis.orbisdata.datamanager.jdbc.h2gis.H2GIS;
-import org.orbisgis.orbisdata.datamanager.jdbc.h2gis.H2gisSpatialTable;
-import org.orbisgis.orbisdata.datamanager.jdbc.h2gis.H2gisTable;
 import org.orbisgis.orbisdata.datamanager.jdbc.postgis.POSTGIS;
 
-import javax.sql.DataSource;
 import java.io.File;
 import java.io.InputStream;
 import java.lang.reflect.Field;
@@ -68,15 +58,11 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.sql.Connection;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.orbisgis.orbisdata.datamanager.api.datasource.IJdbcDataSource.TableType.*;
 
 /**
  * Test class dedicated to {@link JdbcDataSource} class.

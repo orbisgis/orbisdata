@@ -53,6 +53,7 @@ import org.junit.jupiter.api.Test;
 import org.orbisgis.commons.annotations.NotNull;
 import org.orbisgis.commons.annotations.Nullable;
 import org.orbisgis.orbisdata.datamanager.api.dataset.*;
+import org.orbisgis.orbisdata.datamanager.api.datasource.IJdbcDataSource;
 import org.orbisgis.orbisdata.datamanager.api.dsl.IFromBuilder;
 import org.orbisgis.orbisdata.datamanager.jdbc.h2gis.H2GIS;
 import org.orbisgis.orbisdata.datamanager.jdbc.h2gis.H2gisSpatialTable;
@@ -75,6 +76,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.orbisgis.orbisdata.datamanager.api.datasource.IJdbcDataSource.TableType.*;
 
 /**
  * Test class dedicated to {@link JdbcDataSource} class.
@@ -85,18 +87,8 @@ import static org.junit.jupiter.api.Assertions.*;
 class JdbcDataSourceTest {
 
     private static final String DB_NAME = "./target/JdbcDataSourceTest";
-    private static final String DB_LINK_NAME = "./target/dbToLink";
-    private static final String DB_POSTGRES_MODE = "./target/db_postgresql_mode;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE";
     private static H2GIS h2gis;
     private static POSTGIS postgis;
-
-    @BeforeAll
-    static void beforeAll() throws SQLException {
-        H2GIS h2gis = H2GIS.open(DB_LINK_NAME);
-        h2gis.execute("DROP TABLE IF EXISTS linkedtable");
-        h2gis.execute("CREATE TABLE linkedtable(id int, the_geom GEOMETRY, text varchar)");
-        h2gis.execute("INSERT INTO linkedtable VALUES (1, 'POINT(0 0)', 'toto')");
-    }
 
     /**
      * Initialize three {@link JdbcDataSource} with each constructors.
@@ -821,7 +813,6 @@ class JdbcDataSourceTest {
         assertTrue(h2gis.hasTable("JDBCDATASOURCETEST.PUBLIC.SPATIAL_REF_SYS"));
     }
 
-
     /**
      * Test the {@link JdbcDataSource#getDataSet(String)} method.
      */
@@ -830,91 +821,11 @@ class JdbcDataSourceTest {
         Object dataset = h2gis.getDataSet("TEST_H2GIS");
         assertTrue(dataset instanceof ISpatialTable);
         dataset = h2gis.getDataSet("GEOMETRY_COLUMNS");
-        assertTrue(dataset instanceof ITable);
+        assertNotNull(dataset);
 
         dataset = postgis.getDataSet("test_postgis");
         assertTrue(dataset instanceof ISpatialTable);
         dataset = postgis.getDataSet("geometry_columns");
-        assertTrue(dataset instanceof ITable);
-    }
-
-    /**
-     * Simple extension of {@link JdbcDataSource} for test purpose.
-     */
-    private static class DummyJdbcDataSource extends JdbcDataSource {
-
-        DummyJdbcDataSource(Sql parent, DataBaseType databaseType) {
-            super(parent, databaseType);
-        }
-
-        DummyJdbcDataSource(DataSource dataSource, DataBaseType databaseType) {
-            super(dataSource, databaseType);
-        }
-
-        DummyJdbcDataSource(Connection connection, DataBaseType databaseType) {
-            super(connection, databaseType);
-        }
-
-        @Override
-        public IJdbcTable getTable(@NotNull String s) {
-            ConnectionWrapper connectionWrapper = new ConnectionWrapper(this.getConnection());
-            try {
-                if (!JDBCUtilities.tableExists(connectionWrapper, org.h2gis.utilities.TableLocation.parse(s, true))) {
-                    return null;
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();
-                return null;
-            }
-            try {
-                return new H2gisTable(
-                        new TableLocation(null, s),
-                        "SELECT * FROM " + s,
-                        new StatementWrapper(this.getConnection().createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE), connectionWrapper),
-                        this);
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-            return null;
-        }
-
-        @Override
-        public IJdbcSpatialTable getSpatialTable(@NotNull String s) {
-            ConnectionWrapper connectionWrapper = new ConnectionWrapper(this.getConnection());
-            try {
-                if (!JDBCUtilities.tableExists(connectionWrapper, org.h2gis.utilities.TableLocation.parse(s, true))) {
-                    return null;
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();
-                return null;
-            }
-            try {
-                return new H2gisSpatialTable(
-                        new TableLocation(null, s),
-                        "SELECT * FROM " + s,
-                        new StatementWrapper(this.getConnection().createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE), connectionWrapper),
-                        this);
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-            return null;
-        }
-
-        @Override
-        public boolean hasTable(@NotNull String tableName) {
-            try {
-                ConnectionWrapper connectionWrapper = new ConnectionWrapper(this.getConnection());
-                return JDBCUtilities.tableExists(connectionWrapper, org.h2gis.utilities.TableLocation.parse(tableName, true));
-            } catch (SQLException ex) {
-                return false;
-            }
-        }
-
-        @Nullable
-        @Override
-        public Object asType(@NotNull Class<?> clazz) {
-            return null;
-        }
+        assertNotNull(dataset);
     }
 }

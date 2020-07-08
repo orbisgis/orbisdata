@@ -211,6 +211,42 @@ public class IJdbcDataSourceTest {
             return null;
         }
 
+        @NotNull
+        @Override
+        public Collection<String> getTableNames(@Nullable String namePattern) {
+            return null;
+        }
+
+        @NotNull
+        @Override
+        public Collection<String> getTableNames(@Nullable String namePattern, @Nullable TableType... types) {
+            return null;
+        }
+
+        @NotNull
+        @Override
+        public Collection<String> getTableNames(@Nullable String schemaPattern, @Nullable String namePattern) {
+            return null;
+        }
+
+        @NotNull
+        @Override
+        public Collection<String> getTableNames(@Nullable String schemaPattern, @Nullable String namePattern, @Nullable TableType... types) {
+            return null;
+        }
+
+        @NotNull
+        @Override
+        public Collection<String> getTableNames(@Nullable String catalogPattern, @Nullable String schemaPattern, @Nullable String namePattern) {
+            return null;
+        }
+
+        @NotNull
+        @Override
+        public Collection<String> getTableNames(@Nullable String catalogPattern, @Nullable String schemaPattern, @Nullable String namePattern, @Nullable TableType... types) {
+            return null;
+        }
+
         @Override
         public String load(@NotNull String filePath) {
             return null;

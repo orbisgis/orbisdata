@@ -40,25 +40,17 @@ import groovy.lang.Closure;
 import groovy.lang.GString;
 import groovy.lang.MetaClass;
 import groovy.sql.GroovyRowResult;
-import groovy.sql.Sql;
 import org.codehaus.groovy.runtime.GStringImpl;
 import org.codehaus.groovy.runtime.InvokerHelper;
-import org.h2gis.functions.factory.H2GISDBFactory;
-import org.h2gis.utilities.JDBCUtilities;
-import org.h2gis.utilities.wrapper.ConnectionWrapper;
-import org.h2gis.utilities.wrapper.StatementWrapper;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.orbisgis.commons.annotations.NotNull;
-import org.orbisgis.commons.annotations.Nullable;
-import org.orbisgis.orbisdata.datamanager.api.dataset.*;
+import org.orbisgis.orbisdata.datamanager.api.dataset.DataBaseType;
+import org.orbisgis.orbisdata.datamanager.api.dataset.ISpatialTable;
+import org.orbisgis.orbisdata.datamanager.api.dataset.ITable;
 import org.orbisgis.orbisdata.datamanager.api.dsl.IFromBuilder;
 import org.orbisgis.orbisdata.datamanager.jdbc.h2gis.H2GIS;
-import org.orbisgis.orbisdata.datamanager.jdbc.h2gis.H2gisSpatialTable;
-import org.orbisgis.orbisdata.datamanager.jdbc.h2gis.H2gisTable;
+import org.orbisgis.orbisdata.datamanager.jdbc.postgis.POSTGIS;
 
-import javax.sql.DataSource;
 import java.io.File;
 import java.io.InputStream;
 import java.lang.reflect.Field;
@@ -66,10 +58,7 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.sql.Connection;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -83,19 +72,9 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 class JdbcDataSourceTest {
 
-    private static final String DB_NAME = "target/JdbcDataSourceTest";
-    private static final String DB_LINK_NAME = "./target/dbToLink";
-    private static final String DB_POSTGRES_MODE = "./target/db_postgresql_mode;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE";
-    private static DummyJdbcDataSource ds1;
-    private static DummyJdbcDataSource ds2;
-
-    @BeforeAll
-    static void beforeAll() throws SQLException {
-        H2GIS h2gis = H2GIS.open(DB_LINK_NAME);
-        h2gis.execute("DROP TABLE IF EXISTS linkedtable");
-        h2gis.execute("CREATE TABLE linkedtable(id int, the_geom GEOMETRY, text varchar)");
-        h2gis.execute("INSERT INTO linkedtable VALUES (1, 'POINT(0 0)', 'toto')");
-    }
+    private static final String DB_NAME = "./target/JdbcDataSourceTest";
+    private static H2GIS h2gis;
+    private static POSTGIS postgis;
 
     /**
      * Initialize three {@link JdbcDataSource} with each constructors.
@@ -104,53 +83,24 @@ class JdbcDataSourceTest {
      */
     @BeforeEach
     void init() throws SQLException {
-        DataSource dataSource = H2GISDBFactory.createDataSource(new File(DB_NAME).toURI().toString(), true);
-        Connection connection = dataSource.getConnection();
-        Statement st = dataSource.getConnection().createStatement();
-        st.execute("DROP TABLE IF EXISTS test_h2gis");
-        st.execute("CREATE TABLE test_h2gis(id int, the_geom GEOMETRY, text varchar)");
-        st.execute("INSERT INTO test_h2gis VALUES (1, 'POINT(0 0)', 'toto')");
-        st.execute("INSERT INTO test_h2gis VALUES (2, 'LINESTRING(0 0, 1 1, 2 2)', 'tata')");
-        st.execute("INSERT INTO test_h2gis VALUES (3, 'POINT(4 5)', 'titi')");
-        ds1 = new DummyJdbcDataSource(dataSource, DataBaseType.H2GIS);
-        DataSource ds_postgres = H2GISDBFactory.createDataSource(new File(DB_POSTGRES_MODE).toURI().toString(), true);
-        Connection con_postgres = ds_postgres.getConnection();
-        Statement st_postgres = con_postgres.createStatement();
-        st_postgres.execute("DROP TABLE IF EXISTS test_postgis");
-        st_postgres.execute("CREATE TABLE test_postgis(id int, the_geom GEOMETRY, text varchar)");
-        st_postgres.execute("INSERT INTO test_postgis VALUES (1, 'POINT(0 0)', 'toto')");
-        st_postgres.execute("INSERT INTO test_postgis VALUES (2, 'LINESTRING(0 0, 1 1, 2 2)', 'tata')");
-        st_postgres.execute("INSERT INTO test_postgis VALUES (3, 'POINT(4 5)', 'titi')");
-        ds2 = new DummyJdbcDataSource(con_postgres, DataBaseType.POSTGIS);
-    }
+        h2gis = H2GIS.open(DB_NAME);
+        h2gis.execute("DROP TABLE IF EXISTS test_h2gis");
+        h2gis.execute("CREATE TABLE test_h2gis(id int, the_geom GEOMETRY, text varchar)");
+        h2gis.execute("INSERT INTO test_h2gis VALUES (1, 'POINT(0 0)', 'toto')");
+        h2gis.execute("INSERT INTO test_h2gis VALUES (2, 'LINESTRING(0 0, 1 1, 2 2)', 'tata')");
+        h2gis.execute("INSERT INTO test_h2gis VALUES (3, 'POINT(4 5)', 'titi')");
 
-    /**
-     * Test the methods coming from {@link DataSource}.
-     */
-    @Test
-    void testDataSourceMethods() throws SQLException {
-        assertNotNull(ds1.getDataSource());
-        assertNotNull(ds1.getConnection("sa", "sa"));
-        assertEquals(ds1.getLogWriter(), ds1.getLogWriter());
-        ds1.setLogWriter(null);
-        assertNull(ds1.getLogWriter());
-        assertEquals(ds1.getDataSource().getLoginTimeout(), ds1.getLoginTimeout());
-        ds1.setLoginTimeout(123456);
-        assertEquals(123456, ds1.getLoginTimeout());
-        assertEquals(ds1.getDataSource().unwrap(DataSource.class), ds1.unwrap(DataSource.class));
-        assertEquals(ds1.getDataSource().isWrapperFor(DataSource.class), ds1.isWrapperFor(DataSource.class));
-        assertEquals(ds1.getDataSource().getParentLogger(), ds1.getParentLogger());
-        assertNull(ds2.getDataSource());
-        assertNull(ds2.getConnection("sa", "sa"));
-        assertNull(ds2.getLogWriter());
-        ds2.setLogWriter(null);
-        assertNull(ds2.getLogWriter());
-        assertEquals(-1, ds2.getLoginTimeout());
-        ds2.setLoginTimeout(123456);
-        assertEquals(-1, ds2.getLoginTimeout());
-        assertNull(ds2.unwrap(DataSource.class));
-        assertFalse(ds2.isWrapperFor(DataSource.class));
-        assertNull(ds2.getParentLogger());
+        Map<String, String> pgisProps = new HashMap<>();
+        pgisProps.put("databaseName", "orbisgis_db");
+        pgisProps.put("user", "orbisgis");
+        pgisProps.put("password", "orbisgis");
+        pgisProps.put("url", "jdbc:postgresql://localhost:5432/");
+        postgis = POSTGIS.open(pgisProps);
+        postgis.execute("DROP TABLE IF EXISTS test_postgis");
+        postgis.execute("CREATE TABLE test_postgis(id int, the_geom GEOMETRY, text varchar)");
+        postgis.execute("INSERT INTO test_postgis VALUES (1, 'POINT(0 0)', 'toto')");
+        postgis.execute("INSERT INTO test_postgis VALUES (2, 'LINESTRING(0 0, 1 1, 2 2)', 'tata')");
+        postgis.execute("INSERT INTO test_postgis VALUES (3, 'POINT(4 5)', 'titi')");
     }
 
     /**
@@ -158,8 +108,8 @@ class JdbcDataSourceTest {
      */
     @Test
     void testGetConnection() {
-        assertNotNull(ds1.getConnection());
-        assertNotNull(ds2.getConnection());
+        assertNotNull(h2gis.getConnection());
+        assertNotNull(postgis.getConnection());
     }
 
     /**
@@ -167,8 +117,8 @@ class JdbcDataSourceTest {
      */
     @Test
     void testGetDataBaseType() {
-        assertEquals(DataBaseType.H2GIS, ds1.getDataBaseType());
-        assertEquals(DataBaseType.POSTGIS, ds2.getDataBaseType());
+        assertEquals(DataBaseType.H2GIS, h2gis.getDataBaseType());
+        assertEquals(DataBaseType.POSTGIS, postgis.getDataBaseType());
     }
 
     /**
@@ -180,17 +130,17 @@ class JdbcDataSourceTest {
         GString gstring2 = new GStringImpl(new String[]{"test_h2gis"}, new String[]{"UPDATE ", " SET text='titi' WHERE id=3"});
         GString gstring3 = new GStringImpl(new String[]{}, new String[]{"SELECT * FROM test_h2gis"});
 
-        assertTrue(ds1.execute(gstring1));
-        assertFalse(ds1.execute(gstring2));
-        assertTrue(ds1.execute(gstring3));
+        assertTrue(h2gis.execute(gstring1));
+        assertFalse(h2gis.execute(gstring2));
+        assertTrue(h2gis.execute(gstring3));
 
         gstring1 = new GStringImpl(new String[]{"test_postgis"}, new String[]{"SELECT * FROM "});
         gstring2 = new GStringImpl(new String[]{"test_postgis"}, new String[]{"UPDATE ", " SET text='titi' WHERE id=3"});
         gstring3 = new GStringImpl(new String[]{}, new String[]{"SELECT * FROM test_postgis"});
 
-        assertTrue(ds2.execute(gstring1));
-        assertFalse(ds2.execute(gstring2));
-        assertTrue(ds2.execute(gstring3));
+        assertTrue(postgis.execute(gstring1));
+        assertFalse(postgis.execute(gstring2));
+        assertTrue(postgis.execute(gstring3));
     }
 
     /**
@@ -204,15 +154,15 @@ class JdbcDataSourceTest {
         GString gstring3_postgis = new GStringImpl(new String[]{}, new String[]{"SELECT * FROM test_postgis"});
 
 
-        assertFalse(ds1.firstRow(gstring1_h2gis).isEmpty());
-        assertEquals("{ID=1, THE_GEOM=POINT (0 0), TEXT=toto}", ds1.firstRow(gstring1_h2gis).toString());
-        assertFalse(ds2.firstRow(gstring1_postgis).isEmpty());
-        assertEquals("{id=1, the_geom=POINT (0 0), text=toto}", ds2.firstRow(gstring1_postgis).toString());
+        assertFalse(h2gis.firstRow(gstring1_h2gis).isEmpty());
+        assertEquals("{ID=1, THE_GEOM=POINT (0 0), TEXT=toto}", h2gis.firstRow(gstring1_h2gis).toString());
+        assertFalse(postgis.firstRow(gstring1_postgis).isEmpty());
+        assertEquals("{id=1, the_geom=POINT (0 0), text=toto}", postgis.firstRow(gstring1_postgis).toString());
 
-        assertFalse(ds1.firstRow(gstring3_h2gis).isEmpty());
-        assertEquals("{ID=1, THE_GEOM=POINT (0 0), TEXT=toto}", ds1.firstRow(gstring3_h2gis).toString());
-        assertFalse(ds2.firstRow(gstring3_postgis).isEmpty());
-        assertEquals("{id=1, the_geom=POINT (0 0), text=toto}", ds2.firstRow(gstring3_postgis).toString());
+        assertFalse(h2gis.firstRow(gstring3_h2gis).isEmpty());
+        assertEquals("{ID=1, THE_GEOM=POINT (0 0), TEXT=toto}", h2gis.firstRow(gstring3_h2gis).toString());
+        assertFalse(postgis.firstRow(gstring3_postgis).isEmpty());
+        assertEquals("{id=1, the_geom=POINT (0 0), text=toto}", postgis.firstRow(gstring3_postgis).toString());
     }
 
     /**
@@ -224,10 +174,10 @@ class JdbcDataSourceTest {
         GString gstring3_h2gis = new GStringImpl(new String[]{}, new String[]{"SELECT * FROM test_h2gis"});
         GString gstring1_postgis = new GStringImpl(new String[]{"test_postgis"}, new String[]{"SELECT * FROM "});
         GString gstring3_postgis = new GStringImpl(new String[]{}, new String[]{"SELECT * FROM test_postgis"});
-        testRowsH2GIS(ds1.rows(gstring1_h2gis));
-        testRowsPOSTGIS(ds2.rows(gstring1_postgis));
-        testRowsH2GIS(ds1.rows(gstring3_h2gis));
-        testRowsPOSTGIS(ds2.rows(gstring3_postgis));
+        testRowsH2GIS(h2gis.rows(gstring1_h2gis));
+        testRowsPOSTGIS(postgis.rows(gstring1_postgis));
+        testRowsH2GIS(h2gis.rows(gstring3_h2gis));
+        testRowsPOSTGIS(postgis.rows(gstring3_postgis));
     }
 
     /**
@@ -276,24 +226,24 @@ class JdbcDataSourceTest {
         };
 
         collect[0] = "";
-        ds1.eachRow(gstring1_h2gis, cl);
+        h2gis.eachRow(gstring1_h2gis, cl);
         assertEquals("[ID:1, THE_GEOM:POINT (0 0), TEXT:toto]\n" +
                 "[ID:2, THE_GEOM:LINESTRING (0 0, 1 1, 2 2), TEXT:tata]\n" +
                 "[ID:3, THE_GEOM:POINT (4 5), TEXT:titi]\n", collect[0]);
         collect[0] = "";
-        ds2.eachRow(gstring1_postgis, cl);
+        postgis.eachRow(gstring1_postgis, cl);
         assertEquals("[id:1, the_geom:POINT (0 0), text:toto]\n" +
                 "[id:2, the_geom:LINESTRING (0 0, 1 1, 2 2), text:tata]\n" +
                 "[id:3, the_geom:POINT (4 5), text:titi]\n", collect[0]);
         collect[0] = "";
 
         collect[0] = "";
-        ds1.eachRow(gstring3_h2gis, cl);
+        h2gis.eachRow(gstring3_h2gis, cl);
         assertEquals("[ID:1, THE_GEOM:POINT (0 0), TEXT:toto]\n" +
                 "[ID:2, THE_GEOM:LINESTRING (0 0, 1 1, 2 2), TEXT:tata]\n" +
                 "[ID:3, THE_GEOM:POINT (4 5), TEXT:titi]\n", collect[0]);
         collect[0] = "";
-        ds2.eachRow(gstring3_postgis, cl);
+        postgis.eachRow(gstring3_postgis, cl);
         assertEquals("[id:1, the_geom:POINT (0 0), text:toto]\n" +
                 "[id:2, the_geom:LINESTRING (0 0, 1 1, 2 2), text:tata]\n" +
                 "[id:3, the_geom:POINT (4 5), text:titi]\n", collect[0]);
@@ -305,14 +255,14 @@ class JdbcDataSourceTest {
      */
     @Test
     void testSelect() throws NoSuchFieldException, IllegalAccessException {
-        assertEquals("SELECT *  ", getQuery(ds1.select()));
-        assertEquals("SELECT toto,tata ", getQuery(ds1.select("toto", "tata")));
-        assertEquals("SELECT *  ", getQuery(ds1.select((String[]) null)));
-        assertEquals("SELECT *  ", getQuery(ds1.select()));
-        assertEquals("SELECT *  ", getQuery(ds2.select()));
-        assertEquals("SELECT toto,tata ", getQuery(ds2.select("toto", "tata")));
-        assertEquals("SELECT *  ", getQuery(ds2.select((String[]) null)));
-        assertEquals("SELECT *  ", getQuery(ds2.select()));
+        assertEquals("SELECT *  ", getQuery(h2gis.select()));
+        assertEquals("SELECT toto,tata ", getQuery(h2gis.select("toto", "tata")));
+        assertEquals("SELECT *  ", getQuery(h2gis.select((String[]) null)));
+        assertEquals("SELECT *  ", getQuery(h2gis.select()));
+        assertEquals("SELECT *  ", getQuery(postgis.select()));
+        assertEquals("SELECT toto,tata ", getQuery(postgis.select("toto", "tata")));
+        assertEquals("SELECT *  ", getQuery(postgis.select((String[]) null)));
+        assertEquals("SELECT *  ", getQuery(postgis.select()));
     }
 
     /**
@@ -339,30 +289,30 @@ class JdbcDataSourceTest {
         URL url = this.getClass().getResource("simpleWithArgs.sql");
         File file = new File(url.toURI());
 
-        assertTrue(ds1.executeScript(file.getAbsolutePath(), map));
-        assertFalse(ds1.executeScript("toto", map));
-        String str = ds1.rows("SELECT * FROM script").stream().map(Objects::toString).collect(Collectors.joining("\n"));
+        assertTrue(h2gis.executeScript(file.getAbsolutePath(), map));
+        assertFalse(h2gis.executeScript("toto", map));
+        String str = h2gis.rows("SELECT * FROM script").stream().map(Objects::toString).collect(Collectors.joining("\n"));
         assertEquals("{ID=1}\n{ID=11}\n{ID=51}", str);
-        assertTrue(ds1.executeScript(url.toURI().toString(), map));
-        str = ds1.rows("SELECT * FROM script").stream().map(Objects::toString).collect(Collectors.joining("\n"));
+        assertTrue(h2gis.executeScript(url.toURI().toString(), map));
+        str = h2gis.rows("SELECT * FROM script").stream().map(Objects::toString).collect(Collectors.joining("\n"));
         assertEquals("{ID=1}\n{ID=11}\n{ID=51}", str);
-        assertTrue(ds1.executeScript(url.toString(), map));
-        str = ds1.rows("SELECT * FROM script").stream().map(Objects::toString).collect(Collectors.joining("\n"));
+        assertTrue(h2gis.executeScript(url.toString(), map));
+        str = h2gis.rows("SELECT * FROM script").stream().map(Objects::toString).collect(Collectors.joining("\n"));
         assertEquals("{ID=1}\n{ID=11}\n{ID=51}", str);
 
-        assertTrue(ds2.executeScript(file.getAbsolutePath(), map));
-        assertFalse(ds2.executeScript("toto", map));
-        str = ds2.rows("SELECT * FROM script").stream().map(Objects::toString).collect(Collectors.joining("\n"));
+        assertTrue(postgis.executeScript(file.getAbsolutePath(), map));
+        assertFalse(postgis.executeScript("toto", map));
+        str = postgis.rows("SELECT * FROM script").stream().map(Objects::toString).collect(Collectors.joining("\n"));
         assertEquals("{id=1}\n{id=11}\n{id=51}", str);
-        assertTrue(ds2.executeScript(url.toURI().toString(), map));
-        str = ds2.rows("SELECT * FROM script").stream().map(Objects::toString).collect(Collectors.joining("\n"));
+        assertTrue(postgis.executeScript(url.toURI().toString(), map));
+        str = postgis.rows("SELECT * FROM script").stream().map(Objects::toString).collect(Collectors.joining("\n"));
         assertEquals("{id=1}\n{id=11}\n{id=51}", str);
-        assertTrue(ds2.executeScript(url.toString(), map));
-        str = ds2.rows("SELECT * FROM script").stream().map(Objects::toString).collect(Collectors.joining("\n"));
+        assertTrue(postgis.executeScript(url.toString(), map));
+        str = postgis.rows("SELECT * FROM script").stream().map(Objects::toString).collect(Collectors.joining("\n"));
         assertEquals("{id=1}\n{id=11}\n{id=51}", str);
 
-        assertFalse(ds1.executeScript("notAFile.sql"));
-        assertFalse(ds2.executeScript("notAFile.sql"));
+        assertFalse(h2gis.executeScript("notAFile.sql"));
+        assertFalse(postgis.executeScript("notAFile.sql"));
     }
 
     /**
@@ -373,18 +323,18 @@ class JdbcDataSourceTest {
         Map<String, String> map = new HashMap<>();
         map.put("intArg", "51");
 
-        assertTrue(ds1.executeScript(this.getClass().getResourceAsStream("simpleWithArgs.sql"), map));
-        String str = ds1.rows("SELECT * FROM script").stream().map(Objects::toString).collect(Collectors.joining("\n"));
+        assertTrue(h2gis.executeScript(this.getClass().getResourceAsStream("simpleWithArgs.sql"), map));
+        String str = h2gis.rows("SELECT * FROM script").stream().map(Objects::toString).collect(Collectors.joining("\n"));
         assertEquals("{ID=1}\n{ID=11}\n{ID=51}", str);
 
-        assertTrue(ds2.executeScript(this.getClass().getResourceAsStream("simpleWithArgs.sql"), map));
-        str = ds2.rows("SELECT * FROM script").stream().map(Objects::toString).collect(Collectors.joining("\n"));
+        assertTrue(postgis.executeScript(this.getClass().getResourceAsStream("simpleWithArgs.sql"), map));
+        str = postgis.rows("SELECT * FROM script").stream().map(Objects::toString).collect(Collectors.joining("\n"));
         assertEquals("{id=1}\n{id=11}\n{id=51}", str);
 
-        assertFalse(ds1.executeScript(this.getClass().getResourceAsStream("badSql.sql"), map));
-        assertFalse(ds2.executeScript(this.getClass().getResourceAsStream("badSql.sql"), map));
+        assertFalse(h2gis.executeScript(this.getClass().getResourceAsStream("badSql.sql"), map));
+        assertFalse(postgis.executeScript(this.getClass().getResourceAsStream("badSql.sql"), map));
 
-        ds1.execute("DROP TABLE IF EXISTS script");
+        h2gis.execute("DROP TABLE IF EXISTS script");
     }
 
     /**
@@ -392,13 +342,13 @@ class JdbcDataSourceTest {
      */
     @Test
     void testMetaClassMethods() {
-        assertEquals(InvokerHelper.getMetaClass(DummyJdbcDataSource.class), ds1.getMetaClass());
-        ds1.setMetaClass(InvokerHelper.getMetaClass(this));
-        assertEquals(InvokerHelper.getMetaClass(this), ds1.getMetaClass());
+        assertEquals(InvokerHelper.getMetaClass(H2GIS.class), h2gis.getMetaClass());
+        h2gis.setMetaClass(InvokerHelper.getMetaClass(this));
+        assertEquals(InvokerHelper.getMetaClass(this), h2gis.getMetaClass());
 
-        assertEquals(InvokerHelper.getMetaClass(DummyJdbcDataSource.class), ds2.getMetaClass());
-        ds2.setMetaClass(InvokerHelper.getMetaClass(this));
-        assertEquals(InvokerHelper.getMetaClass(this), ds2.getMetaClass());
+        assertEquals(InvokerHelper.getMetaClass(POSTGIS.class), postgis.getMetaClass());
+        postgis.setMetaClass(InvokerHelper.getMetaClass(this));
+        assertEquals(InvokerHelper.getMetaClass(this), postgis.getMetaClass());
     }
 
     /**
@@ -406,31 +356,31 @@ class JdbcDataSourceTest {
      */
     @Test
     void testSave() throws SQLException, MalformedURLException {
-        ds1.execute("DROP TABLE IF EXISTS load");
-        ds2.execute("DROP TABLE IF EXISTS load");
+        h2gis.execute("DROP TABLE IF EXISTS load");
+        postgis.execute("DROP TABLE IF EXISTS load");
 
-        assertTrue(ds1.save("test_h2gis", "target/save_path_ds1.geojson"));
+        assertTrue(h2gis.save("test_h2gis", "target/save_path_ds1.geojson"));
         assertTrue(new File("target/save_path_ds1.geojson").exists());
 
-        assertTrue(ds1.save("test_h2gis", "target/save_path_enc_ds1.geojson", "UTF8"));
+        assertTrue(h2gis.save("test_h2gis", "target/save_path_enc_ds1.geojson", "UTF8"));
         assertTrue(new File("target/save_path_enc_ds1.geojson").exists());
 
-        assertTrue(ds1.save("test_h2gis", new File("target/save_url_ds1.geojson").toURI().toURL()));
+        assertTrue(h2gis.save("test_h2gis", new File("target/save_url_ds1.geojson").toURI().toURL()));
         assertTrue(new File("target/save_url_ds1.geojson").exists());
 
-        assertTrue(ds1.save("test_h2gis", new File("target/save_url_enc_ds1.geojson").toURI().toURL(), "UTF8"));
+        assertTrue(h2gis.save("test_h2gis", new File("target/save_url_enc_ds1.geojson").toURI().toURL(), "UTF8"));
         assertTrue(new File("target/save_url_enc_ds1.geojson").exists());
 
-        assertTrue(ds1.save("test_h2gis", new File("target/save_uri_ds1.geojson").toURI()));
+        assertTrue(h2gis.save("test_h2gis", new File("target/save_uri_ds1.geojson").toURI()));
         assertTrue(new File("target/save_uri_ds1.geojson").exists());
 
-        assertTrue(ds1.save("test_h2gis", new File("target/save_uri_enc_ds1.geojson").toURI(), "UTF8"));
+        assertTrue(h2gis.save("test_h2gis", new File("target/save_uri_enc_ds1.geojson").toURI(), "UTF8"));
         assertTrue(new File("target/save_uri_enc_ds1.geojson").exists());
 
-        assertTrue(ds1.save("test_h2gis", new File("target/save_file_ds1.geojson")));
+        assertTrue(h2gis.save("test_h2gis", new File("target/save_file_ds1.geojson")));
         assertTrue(new File("target/save_file_ds1.geojson").exists());
 
-        assertTrue(ds1.save("test_h2gis", new File("target/save_file_enc_ds1.geojson"), "UTF8"));
+        assertTrue(h2gis.save("test_h2gis", new File("target/save_file_enc_ds1.geojson"), "UTF8"));
         assertTrue(new File("target/save_file_enc_ds1.geojson").exists());
     }
 
@@ -445,113 +395,113 @@ class JdbcDataSourceTest {
         String path = file.getAbsolutePath();
 
 
-        ds1.execute("DROP TABLE IF EXISTS LINKTABLE");
-        ITable table = ds1.getTable(ds1.link(path));
+        h2gis.execute("DROP TABLE IF EXISTS LINKTABLE");
+        ITable table = h2gis.getTable(h2gis.link(path));
         assertNotNull(table);
         assertEquals("LINKTABLE", table.getName());
-        ds2.execute("DROP TABLE IF EXISTS LINKTABLE");
-        assertEquals("linktable", ds2.link(path));
+        postgis.execute("DROP TABLE IF EXISTS LINKTABLE");
+        assertEquals("linktable", postgis.link(path));
 
-        ds1.execute("DROP TABLE IF EXISTS LINKTABLE");
-        table = ds1.getTable(ds1.link(path, true));
+        h2gis.execute("DROP TABLE IF EXISTS LINKTABLE");
+        table = h2gis.getTable(h2gis.link(path, true));
         assertNotNull(table);
         assertEquals("LINKTABLE", table.getName());
-        ds2.execute("DROP TABLE IF EXISTS LINKTABLE");
-        assertEquals("linktable", ds2.link(path, true));
+        postgis.execute("DROP TABLE IF EXISTS LINKTABLE");
+        assertEquals("linktable", postgis.link(path, true));
 
 
-        ds1.execute("DROP TABLE IF EXISTS LINKTABLE");
-        assertNotNull(ds1.link(path, "LINKTABLE"));
-        ds2.execute("DROP TABLE IF EXISTS LINKTABLE");
-        assertEquals("linktable", ds2.link(path, "LINKTABLE"));
+        h2gis.execute("DROP TABLE IF EXISTS LINKTABLE");
+        assertNotNull(h2gis.link(path, "LINKTABLE"));
+        postgis.execute("DROP TABLE IF EXISTS LINKTABLE");
+        assertEquals("linktable", postgis.link(path, "LINKTABLE"));
 
-        ds1.execute("DROP TABLE IF EXISTS LINKTABLE");
-        assertNotNull(ds1.link(path, "LINKTABLE", true));
-        ds2.execute("DROP TABLE IF EXISTS LINKTABLE");
-        assertEquals("linktable", ds2.link(path, "LINKTABLE", true));
+        h2gis.execute("DROP TABLE IF EXISTS LINKTABLE");
+        assertNotNull(h2gis.link(path, "LINKTABLE", true));
+        postgis.execute("DROP TABLE IF EXISTS LINKTABLE");
+        assertEquals("linktable", postgis.link(path, "LINKTABLE", true));
 
-        ds1.execute("DROP TABLE IF EXISTS LINKTABLE");
-        assertNull(ds1.link("$toto", true));
-        ds2.execute("DROP TABLE IF EXISTS LINKTABLE");
-        assertNull(ds2.link("$toto", true));
+        h2gis.execute("DROP TABLE IF EXISTS LINKTABLE");
+        assertNull(h2gis.link("$toto", true));
+        postgis.execute("DROP TABLE IF EXISTS LINKTABLE");
+        assertNull(postgis.link("$toto", true));
 
 
-        ds1.execute("DROP TABLE IF EXISTS LINKTABLE");
-        table = ds1.getTable(ds1.link(url));
+        h2gis.execute("DROP TABLE IF EXISTS LINKTABLE");
+        table = h2gis.getTable(h2gis.link(url));
         assertNotNull(table);
         assertEquals("LINKTABLE", table.getName());
-        ds2.execute("DROP TABLE IF EXISTS LINKTABLE");
-        assertEquals("linktable", ds2.link(url));
+        postgis.execute("DROP TABLE IF EXISTS LINKTABLE");
+        assertEquals("linktable", postgis.link(url));
 
-        ds1.execute("DROP TABLE IF EXISTS LINKTABLE");
-        table = ds1.getTable(ds1.link(url, true));
+        h2gis.execute("DROP TABLE IF EXISTS LINKTABLE");
+        table = h2gis.getTable(h2gis.link(url, true));
         assertNotNull(table);
         assertEquals("LINKTABLE", table.getName());
-        ds2.execute("DROP TABLE IF EXISTS LINKTABLE");
-        assertEquals("linktable",ds2.link(url, true));
+        postgis.execute("DROP TABLE IF EXISTS LINKTABLE");
+        assertEquals("linktable", postgis.link(url, true));
 
 
-        ds1.execute("DROP TABLE IF EXISTS LINKTABLE");
-        assertNotNull(ds1.link(url, "LINKTABLE"));
-        ds2.execute("DROP TABLE IF EXISTS LINKTABLE");
-        assertEquals("linktable",ds2.link(url, "LINKTABLE"));
+        h2gis.execute("DROP TABLE IF EXISTS LINKTABLE");
+        assertNotNull(h2gis.link(url, "LINKTABLE"));
+        postgis.execute("DROP TABLE IF EXISTS LINKTABLE");
+        assertEquals("linktable", postgis.link(url, "LINKTABLE"));
 
-        ds1.execute("DROP TABLE IF EXISTS LINKTABLE");
-        assertNotNull(ds1.link(url, "LINKTABLE", true));
-        ds2.execute("DROP TABLE IF EXISTS LINKTABLE");
-        assertEquals("linktable",ds2.link(url, "LINKTABLE", true));
+        h2gis.execute("DROP TABLE IF EXISTS LINKTABLE");
+        assertNotNull(h2gis.link(url, "LINKTABLE", true));
+        postgis.execute("DROP TABLE IF EXISTS LINKTABLE");
+        assertEquals("linktable", postgis.link(url, "LINKTABLE", true));
 
 
-        ds1.execute("DROP TABLE IF EXISTS LINKTABLE");
-        table = ds1.getTable(ds1.link(uri));
+        h2gis.execute("DROP TABLE IF EXISTS LINKTABLE");
+        table = h2gis.getTable(h2gis.link(uri));
         assertNotNull(table);
         assertEquals("LINKTABLE", table.getName());
-        ds2.execute("DROP TABLE IF EXISTS LINKTABLE");
-        assertEquals("linktable",ds2.link(uri));
+        postgis.execute("DROP TABLE IF EXISTS LINKTABLE");
+        assertEquals("linktable", postgis.link(uri));
 
-        ds1.execute("DROP TABLE IF EXISTS LINKTABLE");
-        table = ds1.getTable(ds1.link(uri, true));
+        h2gis.execute("DROP TABLE IF EXISTS LINKTABLE");
+        table = h2gis.getTable(h2gis.link(uri, true));
         assertNotNull(table);
         assertEquals("LINKTABLE", table.getName());
-        ds2.execute("DROP TABLE IF EXISTS LINKTABLE");
-        assertEquals("linktable",ds2.link(uri, true));
+        postgis.execute("DROP TABLE IF EXISTS LINKTABLE");
+        assertEquals("linktable", postgis.link(uri, true));
 
 
-        ds1.execute("DROP TABLE IF EXISTS LINKTABLE");
-        assertNotNull(ds1.link(uri, "LINKTABLE"));
-        ds2.execute("DROP TABLE IF EXISTS LINKTABLE");
-        assertEquals("linktable",ds2.link(uri, "LINKTABLE"));
+        h2gis.execute("DROP TABLE IF EXISTS LINKTABLE");
+        assertNotNull(h2gis.link(uri, "LINKTABLE"));
+        postgis.execute("DROP TABLE IF EXISTS LINKTABLE");
+        assertEquals("linktable", postgis.link(uri, "LINKTABLE"));
 
-        ds1.execute("DROP TABLE IF EXISTS LINKTABLE");
-        assertNotNull(ds1.link(uri, "LINKTABLE", true));
-        ds2.execute("DROP TABLE IF EXISTS LINKTABLE");
-        assertEquals("linktable",ds2.link(uri, "LINKTABLE", true));
+        h2gis.execute("DROP TABLE IF EXISTS LINKTABLE");
+        assertNotNull(h2gis.link(uri, "LINKTABLE", true));
+        postgis.execute("DROP TABLE IF EXISTS LINKTABLE");
+        assertEquals("linktable", postgis.link(uri, "LINKTABLE", true));
 
 
-        ds1.execute("DROP TABLE IF EXISTS LINKTABLE");
-        table = ds1.getTable(ds1.link(file));
+        h2gis.execute("DROP TABLE IF EXISTS LINKTABLE");
+        table = h2gis.getTable(h2gis.link(file));
         assertNotNull(table);
         assertEquals("LINKTABLE", table.getName());
-        ds2.execute("DROP TABLE IF EXISTS LINKTABLE");
-        assertEquals("linktable",ds2.link(file));
+        postgis.execute("DROP TABLE IF EXISTS LINKTABLE");
+        assertEquals("linktable", postgis.link(file));
 
-        ds1.execute("DROP TABLE IF EXISTS LINKTABLE");
-        table = ds1.getTable(ds1.link(file, true));
+        h2gis.execute("DROP TABLE IF EXISTS LINKTABLE");
+        table = h2gis.getTable(h2gis.link(file, true));
         assertNotNull(table);
         assertEquals("LINKTABLE", table.getName());
-        ds2.execute("DROP TABLE IF EXISTS LINKTABLE");
-        assertEquals("linktable",ds2.link(file, true));
+        postgis.execute("DROP TABLE IF EXISTS LINKTABLE");
+        assertEquals("linktable", postgis.link(file, true));
 
 
-        ds1.execute("DROP TABLE IF EXISTS LINKTABLE");
-        assertNotNull(ds1.link(file, "LINKTABLE"));
-        ds2.execute("DROP TABLE IF EXISTS LINKTABLE");
-        assertEquals("linktable",ds2.link(file, "LINKTABLE"));
+        h2gis.execute("DROP TABLE IF EXISTS LINKTABLE");
+        assertNotNull(h2gis.link(file, "LINKTABLE"));
+        postgis.execute("DROP TABLE IF EXISTS LINKTABLE");
+        assertEquals("linktable", postgis.link(file, "LINKTABLE"));
 
-        ds1.execute("DROP TABLE IF EXISTS LINKTABLE");
-        assertNotNull(ds1.link(file, "LINKTABLE", true));
-        ds2.execute("DROP TABLE IF EXISTS LINKTABLE");
-        assertEquals("linktable",ds2.link(file, "LINKTABLE", true));
+        h2gis.execute("DROP TABLE IF EXISTS LINKTABLE");
+        assertNotNull(h2gis.link(file, "LINKTABLE", true));
+        postgis.execute("DROP TABLE IF EXISTS LINKTABLE");
+        assertEquals("linktable", postgis.link(file, "LINKTABLE", true));
     }
 
     /**
@@ -562,34 +512,34 @@ class JdbcDataSourceTest {
         String tableNameDS1 = "test_h2gis";
         String tableNameDS2 = "test_postgis";
 
-        ds1.execute("DROP TABLE IF EXISTS " + tableNameDS2);
-        ITable table = ds1.getTable(ds1.load(ds2, tableNameDS2));
+        h2gis.execute("DROP TABLE IF EXISTS " + tableNameDS2);
+        ITable table = h2gis.getTable(h2gis.load(postgis, tableNameDS2));
         assertNotNull(table);
         assertEquals(tableNameDS2.toUpperCase(), table.getName());
-        ds2.execute("DROP TABLE IF EXISTS " + tableNameDS1);
-        table = ds2.getTable(ds2.load(ds1, tableNameDS1));
+        postgis.execute("DROP TABLE IF EXISTS " + tableNameDS1);
+        table = postgis.getTable(postgis.load(h2gis, tableNameDS1));
         assertNotNull(table);
         assertEquals(tableNameDS1, table.getName());
 
-        assertNull(ds1.load(ds2, tableNameDS2, false));
-        assertNull(ds2.load(ds1, tableNameDS1, false));
+        assertNull(h2gis.load(postgis, tableNameDS2, false));
+        assertNull(postgis.load(h2gis, tableNameDS1, false));
 
         String tableNameDS1_new = "test_h2gis_imported";
         String tableNameDS2_new = "test_postgis_imported";
 
-        ds1.execute("DROP TABLE IF EXISTS " + tableNameDS2_new);
-        table = ds1.getTable(ds1.load(ds2, tableNameDS2, tableNameDS2_new));
+        h2gis.execute("DROP TABLE IF EXISTS " + tableNameDS2_new);
+        table = h2gis.getTable(h2gis.load(postgis, tableNameDS2, tableNameDS2_new));
         assertNotNull(table);
         assertEquals(tableNameDS2_new.toUpperCase(), table.getName());
-        ds2.execute("DROP TABLE IF EXISTS " + tableNameDS1_new);
-        table =ds2.getTable(ds2.load(ds1, tableNameDS1, tableNameDS1_new));
+        postgis.execute("DROP TABLE IF EXISTS " + tableNameDS1_new);
+        table = postgis.getTable(postgis.load(h2gis, tableNameDS1, tableNameDS1_new));
         assertNotNull(table);
         assertEquals(tableNameDS1_new, table.getName());
 
-        table = ds1.getTable(ds1.load(ds2, tableNameDS2, tableNameDS2_new, true));
+        table = h2gis.getTable(h2gis.load(postgis, tableNameDS2, tableNameDS2_new, true));
         assertNotNull(table);
         assertEquals(tableNameDS2_new.toUpperCase(), table.getName());
-        table =  ds2.getTable(ds2.load(ds1, tableNameDS1, tableNameDS1_new, true));
+        table =  postgis.getTable(postgis.load(h2gis, tableNameDS1, tableNameDS1_new, true));
         assertNotNull(table);
         assertEquals(tableNameDS1_new, table.getName());
     }
@@ -607,165 +557,165 @@ class JdbcDataSourceTest {
         String name = "NAME";
 
         //Test path
-        ds1.execute("DROP TABLE IF EXISTS LOADTABLE, NAME");
-        ITable table = ds1.getTable(ds1.load(path));
+        h2gis.execute("DROP TABLE IF EXISTS LOADTABLE, NAME");
+        ITable table = h2gis.getTable(h2gis.load(path));
         assertNotNull(table);
         assertEquals("LOADTABLE", table.getName());
-        ds1.execute("DROP TABLE IF EXISTS LOADTABLE, NAME");
-        table = ds1.getTable(ds1.load(path, name));
+        h2gis.execute("DROP TABLE IF EXISTS LOADTABLE, NAME");
+        table = h2gis.getTable(h2gis.load(path, name));
         assertNotNull(table);
         assertEquals(name, table.getName());
-        ds1.execute("DROP TABLE IF EXISTS LOADTABLE, NAME");
-        table = ds1.getTable(ds1.load(path, name, true));
+        h2gis.execute("DROP TABLE IF EXISTS LOADTABLE, NAME");
+        table = h2gis.getTable(h2gis.load(path, name, true));
         assertNotNull(table);
         assertEquals(name, table.getName());
-        ds1.execute("DROP TABLE IF EXISTS LOADTABLE, NAME");
-        table = ds1.getTable(ds1.load(path, name, "UTF8", true));
+        h2gis.execute("DROP TABLE IF EXISTS LOADTABLE, NAME");
+        table = h2gis.getTable(h2gis.load(path, name, "UTF8", true));
         assertNotNull(table);
         assertEquals(name, table.getName());
 
-        ds2.execute("DROP TABLE IF EXISTS LOADTABLE, NAME");
-        table = ds2.getTable(ds2.load(path));
+        postgis.execute("DROP TABLE IF EXISTS LOADTABLE, NAME");
+        table = postgis.getTable(postgis.load(path));
         assertNotNull(table);
         assertEquals("loadtable", table.getName());
-        ds2.execute("DROP TABLE IF EXISTS LOADTABLE, NAME");
-        table = ds2.getTable(ds2.load(path, name));
+        postgis.execute("DROP TABLE IF EXISTS LOADTABLE, NAME");
+        table = postgis.getTable(postgis.load(path, name));
         assertNotNull(table);
         assertEquals(name.toLowerCase(), table.getName());
-        ds2.execute("DROP TABLE IF EXISTS LOADTABLE, NAME");
-        table = ds2.getTable(ds2.load(path, name, true));
+        postgis.execute("DROP TABLE IF EXISTS LOADTABLE, NAME");
+        table = postgis.getTable(postgis.load(path, name, true));
         assertNotNull(table);
         assertEquals(name.toLowerCase(), table.getName());
-        ds2.execute("DROP TABLE IF EXISTS LOADTABLE, NAME");
-        table = ds2.getTable(ds2.load(path, name, "UTF8", true));
+        postgis.execute("DROP TABLE IF EXISTS LOADTABLE, NAME");
+        table = postgis.getTable(postgis.load(path, name, "UTF8", true));
         assertNotNull(table);
         assertEquals(name.toLowerCase(), table.getName());
-        ds2.execute("DROP TABLE IF EXISTS LOADTABLE, NAME");
-        table = ds2.getTable(ds2.load(path, name.toLowerCase(), "UTF8", true));
+        postgis.execute("DROP TABLE IF EXISTS LOADTABLE, NAME");
+        table = postgis.getTable(postgis.load(path, name.toLowerCase(), "UTF8", true));
         assertNotNull(table);
         assertEquals(name.toLowerCase(), table.getName());
 
         //Test URL
-        ds1.execute("DROP TABLE IF EXISTS LOADTABLE, NAME");
-        table = ds1.getTable(ds1.load(url));
+        h2gis.execute("DROP TABLE IF EXISTS LOADTABLE, NAME");
+        table = h2gis.getTable(h2gis.load(url));
         assertNotNull(table);
         assertEquals("LOADTABLE", table.getName());
-        ds1.execute("DROP TABLE IF EXISTS LOADTABLE, NAME");
-        table = ds1.getTable(ds1.load(url, name));
+        h2gis.execute("DROP TABLE IF EXISTS LOADTABLE, NAME");
+        table = h2gis.getTable(h2gis.load(url, name));
         assertNotNull(table);
         assertEquals(name, table.getName());
-        ds1.execute("DROP TABLE IF EXISTS LOADTABLE, NAME");
-        table = ds1.getTable(ds1.load(url, name, true));
+        h2gis.execute("DROP TABLE IF EXISTS LOADTABLE, NAME");
+        table = h2gis.getTable(h2gis.load(url, name, true));
         assertNotNull(table);
         assertEquals(name, table.getName());
-        ds1.execute("DROP TABLE IF EXISTS LOADTABLE, NAME");
-        table = ds1.getTable(ds1.load(url, true));
+        h2gis.execute("DROP TABLE IF EXISTS LOADTABLE, NAME");
+        table = h2gis.getTable(h2gis.load(url, true));
         assertNotNull(table);
         assertEquals("LOADTABLE", table.getName());
-        ds1.execute("DROP TABLE IF EXISTS LOADTABLE, NAME");
-        table = ds1.getTable(ds1.load(url, name, "UTF8", true));
+        h2gis.execute("DROP TABLE IF EXISTS LOADTABLE, NAME");
+        table = h2gis.getTable(h2gis.load(url, name, "UTF8", true));
         assertNotNull(table);
         assertEquals(name, table.getName());
 
-        ds2.execute("DROP TABLE IF EXISTS LOADTABLE, NAME");
-        table = ds2.getTable(ds2.load(url));
+        postgis.execute("DROP TABLE IF EXISTS LOADTABLE, NAME");
+        table = postgis.getTable(postgis.load(url));
         assertNotNull(table);
         assertEquals("loadtable", table.getName());
-        ds2.execute("DROP TABLE IF EXISTS LOADTABLE, NAME");
-        table = ds2.getTable(ds2.load(url, name));
+        postgis.execute("DROP TABLE IF EXISTS LOADTABLE, NAME");
+        table = postgis.getTable(postgis.load(url, name));
         assertNotNull(table);
         assertEquals(name.toLowerCase(), table.getName());
-        ds2.execute("DROP TABLE IF EXISTS LOADTABLE, NAME");
-        table = ds2.getTable(ds2.load(url, true));
+        postgis.execute("DROP TABLE IF EXISTS LOADTABLE, NAME");
+        table = postgis.getTable(postgis.load(url, true));
         assertNotNull(table);
         assertEquals("loadtable", table.getName());
-        ds2.execute("DROP TABLE IF EXISTS LOADTABLE, NAME");
-        table = ds2.getTable(ds2.load(url, name, true));
+        postgis.execute("DROP TABLE IF EXISTS LOADTABLE, NAME");
+        table = postgis.getTable(postgis.load(url, name, true));
         assertNotNull(table);
         assertEquals(name.toLowerCase(), table.getName());
-        ds2.execute("DROP TABLE IF EXISTS LOADTABLE, NAME");
-        table = ds2.getTable(ds2.load(url, name, "UTF8", true));
+        postgis.execute("DROP TABLE IF EXISTS LOADTABLE, NAME");
+        table = postgis.getTable(postgis.load(url, name, "UTF8", true));
         assertNotNull(table);
         assertEquals(name.toLowerCase(), table.getName());
-        ds2.execute("DROP TABLE IF EXISTS LOADTABLE, NAME");
-        table = ds2.getTable(ds2.load(url, name.toLowerCase(), "UTF8", true));
+        postgis.execute("DROP TABLE IF EXISTS LOADTABLE, NAME");
+        table = postgis.getTable(postgis.load(url, name.toLowerCase(), "UTF8", true));
         assertNotNull(table);
         assertEquals(name.toLowerCase(), table.getName());
 
         //Test URI
-        ds1.execute("DROP TABLE IF EXISTS LOADTABLE, NAME");
-        table = ds1.getTable(ds1.load(uri));
+        h2gis.execute("DROP TABLE IF EXISTS LOADTABLE, NAME");
+        table = h2gis.getTable(h2gis.load(uri));
         assertNotNull(table);
         assertEquals("LOADTABLE", table.getName());
-        ds1.execute("DROP TABLE IF EXISTS LOADTABLE, NAME");
-        table = ds1.getTable(ds1.load(uri, name));
+        h2gis.execute("DROP TABLE IF EXISTS LOADTABLE, NAME");
+        table = h2gis.getTable(h2gis.load(uri, name));
         assertNotNull(table);
         assertEquals(name, table.getName());
-        ds1.execute("DROP TABLE IF EXISTS LOADTABLE, NAME");
-        table = ds1.getTable(ds1.load(uri, name, true));
+        h2gis.execute("DROP TABLE IF EXISTS LOADTABLE, NAME");
+        table = h2gis.getTable(h2gis.load(uri, name, true));
         assertNotNull(table);
         assertEquals(name, table.getName());
-        ds1.execute("DROP TABLE IF EXISTS LOADTABLE, NAME");
-        table = ds1.getTable(ds1.load(uri, name, "UTF8", true));
+        h2gis.execute("DROP TABLE IF EXISTS LOADTABLE, NAME");
+        table = h2gis.getTable(h2gis.load(uri, name, "UTF8", true));
         assertNotNull(table);
         assertEquals(name, table.getName());
 
-        ds2.execute("DROP TABLE IF EXISTS LOADTABLE, NAME");
-        table = ds2.getTable(ds2.load(uri));
+        postgis.execute("DROP TABLE IF EXISTS LOADTABLE, NAME");
+        table = postgis.getTable(postgis.load(uri));
         assertNotNull(table);
         assertEquals("loadtable", table.getName());
-        ds2.execute("DROP TABLE IF EXISTS LOADTABLE, NAME");
-        table = ds2.getTable(ds2.load(uri, name));
+        postgis.execute("DROP TABLE IF EXISTS LOADTABLE, NAME");
+        table = postgis.getTable(postgis.load(uri, name));
         assertNotNull(table);
         assertEquals(name.toLowerCase(), table.getName());
-        ds2.execute("DROP TABLE IF EXISTS LOADTABLE, NAME");
-        table = ds2.getTable(ds2.load(uri, name, true));
+        postgis.execute("DROP TABLE IF EXISTS LOADTABLE, NAME");
+        table = postgis.getTable(postgis.load(uri, name, true));
         assertNotNull(table);
         assertEquals(name.toLowerCase(), table.getName());
-        ds2.execute("DROP TABLE IF EXISTS LOADTABLE, NAME");
-        table = ds2.getTable(ds2.load(uri, name, "UTF8", true));
+        postgis.execute("DROP TABLE IF EXISTS LOADTABLE, NAME");
+        table = postgis.getTable(postgis.load(uri, name, "UTF8", true));
         assertNotNull(table);
         assertEquals(name.toLowerCase(), table.getName());
 
         //Test File
-        ds1.execute("DROP TABLE IF EXISTS LOADTABLE, NAME");
-        table = ds1.getTable(ds1.load(file));
+        h2gis.execute("DROP TABLE IF EXISTS LOADTABLE, NAME");
+        table = h2gis.getTable(h2gis.load(file));
         assertNotNull(table);
         assertEquals("LOADTABLE", table.getName());
-        ds1.execute("DROP TABLE IF EXISTS LOADTABLE, NAME");
-        table = ds1.getTable(ds1.load(file, name));
+        h2gis.execute("DROP TABLE IF EXISTS LOADTABLE, NAME");
+        table = h2gis.getTable(h2gis.load(file, name));
         assertNotNull(table);
         assertEquals(name, table.getName());
-        ds1.execute("DROP TABLE IF EXISTS LOADTABLE, NAME");
-        table = ds1.getTable(ds1.load(file, name, true));
+        h2gis.execute("DROP TABLE IF EXISTS LOADTABLE, NAME");
+        table = h2gis.getTable(h2gis.load(file, name, true));
         assertNotNull(table);
         assertEquals(name, table.getName());
-        ds1.execute("DROP TABLE IF EXISTS LOADTABLE, NAME");
-        table = ds1.getTable(ds1.load(file, name, "UTF8", true));
+        h2gis.execute("DROP TABLE IF EXISTS LOADTABLE, NAME");
+        table = h2gis.getTable(h2gis.load(file, name, "UTF8", true));
         assertNotNull(table);
         assertEquals(name, table.getName());
 
-        ds2.execute("DROP TABLE IF EXISTS LOADTABLE, NAME");
-        table = ds2.getTable(ds2.load(file));
+        postgis.execute("DROP TABLE IF EXISTS LOADTABLE, NAME");
+        table = postgis.getTable(postgis.load(file));
         assertNotNull(table);
         assertEquals("loadtable", table.getName());
-        ds2.execute("DROP TABLE IF EXISTS LOADTABLE, NAME");
-        table = ds2.getTable(ds2.load(file, name));
+        postgis.execute("DROP TABLE IF EXISTS LOADTABLE, NAME");
+        table = postgis.getTable(postgis.load(file, name));
         assertNotNull(table);
         assertEquals(name.toLowerCase(), table.getName());
-        ds2.execute("DROP TABLE IF EXISTS LOADTABLE, NAME");
-        table = ds2.getTable(ds2.load(file, name, true));
+        postgis.execute("DROP TABLE IF EXISTS LOADTABLE, NAME");
+        table = postgis.getTable(postgis.load(file, name, true));
         assertNotNull(table);
         assertEquals(name.toLowerCase(), table.getName());
-        ds2.execute("DROP TABLE IF EXISTS LOADTABLE, NAME");
-        table = ds2.getTable(ds2.load(file, name, "UTF8", true));
+        postgis.execute("DROP TABLE IF EXISTS LOADTABLE, NAME");
+        table = postgis.getTable(postgis.load(file, name, "UTF8", true));
         assertNotNull(table);
         assertEquals(name.toLowerCase(), table.getName());
 
         //Test bad name
-        ds1.load("4file.dbf");
+        h2gis.load("4file.dbf");
 
-        ds1.execute("DROP TABLE IF EXISTS LOADTABLE, NAME");
+        h2gis.execute("DROP TABLE IF EXISTS LOADTABLE, NAME");
     }
 
     /**
@@ -773,10 +723,10 @@ class JdbcDataSourceTest {
      */
     @Test
     void testGetLocation() {
-        assertNotNull(ds1.getLocation());
-        assertEquals(new File(DB_NAME).getAbsolutePath(), ds1.getLocation().asType(String.class));
-        assertNotNull(ds2.getLocation());
-        assertEquals(new File(DB_POSTGRES_MODE).getAbsolutePath().split(";")[0], ds2.getLocation().asType(String.class));
+        assertNotNull(h2gis.getLocation());
+        assertEquals(DB_NAME, h2gis.getLocation().toString());
+        assertNotNull(postgis.getLocation());
+        assertTrue(postgis.getLocation().toString().startsWith("5432/"));
     }
 
     /**
@@ -784,19 +734,18 @@ class JdbcDataSourceTest {
      */
     @Test
     void testGetTableNames() {
-        Collection<String> names = ds1.getTableNames();
+        Collection<String> names = h2gis.getTableNames();
         assertNotNull(names);
         assertTrue(names.size()>0);
         assertTrue(names.contains("JDBCDATASOURCETEST.PUBLIC.GEOMETRY_COLUMNS"));
         assertTrue(names.contains("JDBCDATASOURCETEST.PUBLIC.TEST_H2GIS"));
         assertTrue(names.contains("JDBCDATASOURCETEST.PUBLIC.SPATIAL_REF_SYS"));
 
-        names = ds2.getTableNames();
+        names = postgis.getTableNames();
         assertNotNull(names);
         assertTrue(names.size()>0);
-        assertTrue(names.contains("\"db_postgresql_mode\".\"public\".\"geometry_columns\""));//Due to the H2 driver
-        assertTrue(names.contains("\"db_postgresql_mode\".\"public\".\"test_postgis\""));
-        assertTrue(names.contains("\"db_postgresql_mode\".\"public\".\"spatial_ref_sys\""));
+        assertTrue(names.contains("public.test_postgis"));
+        assertTrue(names.contains("public.spatial_ref_sys"));
     }
 
     /**
@@ -804,34 +753,34 @@ class JdbcDataSourceTest {
      */
     @Test
     void testGetColumnNames() {
-        Collection<String> names = ds1.getColumnNames("JDBCDATASOURCETEST.PUBLIC.TEST_H2GIS");
+        Collection<String> names = h2gis.getColumnNames("JDBCDATASOURCETEST.PUBLIC.TEST_H2GIS");
         assertNotNull(names);
         assertEquals(3, names.size());
         assertTrue(names.contains("ID"));
         assertTrue(names.contains("THE_GEOM"));
         assertTrue(names.contains("TEXT"));
-        names = ds1.getColumnNames("PUBLIC.TEST_H2GIS");
+        names = h2gis.getColumnNames("PUBLIC.TEST_H2GIS");
         assertNotNull(names);
         assertEquals(3, names.size());
         assertTrue(names.contains("ID"));
         assertTrue(names.contains("THE_GEOM"));
         assertTrue(names.contains("TEXT"));
-        names = ds1.getColumnNames("TEST_H2GIS");
+        names = h2gis.getColumnNames("TEST_H2GIS");
         assertNotNull(names);
         assertEquals(3, names.size());
         assertTrue(names.contains("ID"));
         assertTrue(names.contains("THE_GEOM"));
         assertTrue(names.contains("TEXT"));
 
-        names = ds2.getColumnNames("db_postgresql_mode.public.test_postgis");
+        names = postgis.getColumnNames("public.test_postgis");
         assertTrue(names.contains("id"));
         assertTrue(names.contains("the_geom"));
         assertTrue(names.contains("text"));
-        names = ds2.getColumnNames("public.test_postgis");
+        names = postgis.getColumnNames("public.test_postgis");
         assertTrue(names.contains("id"));
         assertTrue(names.contains("the_geom"));
         assertTrue(names.contains("text"));
-        names = ds2.getColumnNames("test_postgis");
+        names = postgis.getColumnNames("test_postgis");
         assertTrue(names.contains("id"));
         assertTrue(names.contains("the_geom"));
         assertTrue(names.contains("text"));
@@ -842,108 +791,27 @@ class JdbcDataSourceTest {
      */
     @Test
     void testHasTable() {
-        Collection<String> names = ds1.getTableNames();
+        Collection<String> names = h2gis.getTableNames();
         assertNotNull(names);
         assertTrue(names.size()>0);
-        assertTrue(ds1.hasTable("GEOMETRY_COLUMNS"));
-        assertTrue(ds1.hasTable("TEST_H2GIS"));
-        assertTrue(ds1.hasTable("JDBCDATASOURCETEST.PUBLIC.SPATIAL_REF_SYS"));
+        assertTrue(h2gis.hasTable("GEOMETRY_COLUMNS"));
+        assertTrue(h2gis.hasTable("TEST_H2GIS"));
+        assertTrue(h2gis.hasTable("JDBCDATASOURCETEST.PUBLIC.SPATIAL_REF_SYS"));
     }
-
 
     /**
      * Test the {@link JdbcDataSource#getDataSet(String)} method.
      */
     @Test
     void testGetDataSet() {
-        Object dataset = ds1.getDataSet("TEST_H2GIS");
+        Object dataset = h2gis.getDataSet("TEST_H2GIS");
         assertTrue(dataset instanceof ISpatialTable);
-        dataset = ds1.getDataSet("GEOMETRY_COLUMNS");
-        assertTrue(dataset instanceof ITable);
+        dataset = h2gis.getDataSet("GEOMETRY_COLUMNS");
+        assertNotNull(dataset);
 
-        dataset = ds2.getDataSet("test_postgis");
+        dataset = postgis.getDataSet("test_postgis");
         assertTrue(dataset instanceof ISpatialTable);
-        dataset = ds2.getDataSet("geometry_columns");
-        assertTrue(dataset instanceof ITable);
-    }
-
-    /**
-     * Simple extension of {@link JdbcDataSource} for test purpose.
-     */
-    private static class DummyJdbcDataSource extends JdbcDataSource {
-
-        DummyJdbcDataSource(Sql parent, DataBaseType databaseType) {
-            super(parent, databaseType);
-        }
-
-        DummyJdbcDataSource(DataSource dataSource, DataBaseType databaseType) {
-            super(dataSource, databaseType);
-        }
-
-        DummyJdbcDataSource(Connection connection, DataBaseType databaseType) {
-            super(connection, databaseType);
-        }
-
-        @Override
-        public IJdbcTable getTable(@NotNull String s) {
-            ConnectionWrapper connectionWrapper = new ConnectionWrapper(this.getConnection());
-            try {
-                if (!JDBCUtilities.tableExists(connectionWrapper, org.h2gis.utilities.TableLocation.parse(s, true))) {
-                    return null;
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();
-                return null;
-            }
-            try {
-                return new H2gisTable(
-                        new TableLocation(null, s),
-                        "SELECT * FROM " + s,
-                        new StatementWrapper(this.getConnection().createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE), connectionWrapper),
-                        this);
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-            return null;
-        }
-
-        @Override
-        public IJdbcSpatialTable getSpatialTable(@NotNull String s) {
-            ConnectionWrapper connectionWrapper = new ConnectionWrapper(this.getConnection());
-            try {
-                if (!JDBCUtilities.tableExists(connectionWrapper, org.h2gis.utilities.TableLocation.parse(s, true))) {
-                    return null;
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();
-                return null;
-            }
-            try {
-                return new H2gisSpatialTable(
-                        new TableLocation(null, s),
-                        "SELECT * FROM " + s,
-                        new StatementWrapper(this.getConnection().createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE), connectionWrapper),
-                        this);
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-            return null;
-        }
-
-        @Override
-        public boolean hasTable(@NotNull String tableName) {
-            try {
-                ConnectionWrapper connectionWrapper = new ConnectionWrapper(this.getConnection());
-                return JDBCUtilities.tableExists(connectionWrapper, org.h2gis.utilities.TableLocation.parse(tableName, true));
-            } catch (SQLException ex) {
-                return false;
-            }
-        }
-
-        @Nullable
-        @Override
-        public Object asType(@NotNull Class<?> clazz) {
-            return null;
-        }
+        dataset = postgis.getDataSet("geometry_columns");
+        assertNotNull(dataset);
     }
 }

@@ -32,3 +32,4 @@ make it compatible with `smile` API)
 + Add `setSrid(int)` method to `ISpatialTable` and to `IColumn`.
 + Add to `H2GIS` and `POSTGIS` an `open(java.sql.DataSource)` method.
 + Add to `DataFrame` the method `DataFrame apply(Formula)`.
++ Add to `JdbcDataSource` the méthods `Collection<String> getTableNames(...)` with multiple signatures.

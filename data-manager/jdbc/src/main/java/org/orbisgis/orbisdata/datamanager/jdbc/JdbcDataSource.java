@@ -58,9 +58,11 @@ import org.orbisgis.orbisdata.datamanager.api.dataset.DataBaseType;
 import org.orbisgis.orbisdata.datamanager.api.dataset.IJdbcTable;
 import org.orbisgis.orbisdata.datamanager.api.datasource.IDataSourceLocation;
 import org.orbisgis.orbisdata.datamanager.api.datasource.IJdbcDataSource;
+import org.orbisgis.orbisdata.datamanager.api.datasource.IResultSetBuilder;
 import org.orbisgis.orbisdata.datamanager.api.dsl.IFromBuilder;
 import org.orbisgis.orbisdata.datamanager.api.dsl.ISelectBuilder;
 import org.orbisgis.orbisdata.datamanager.jdbc.dsl.FromBuilder;
+import org.orbisgis.orbisdata.datamanager.jdbc.dsl.ResultSetBuilder;
 import org.orbisgis.orbisdata.datamanager.jdbc.io.IOMethods;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -85,7 +87,7 @@ import java.util.regex.Pattern;
  * @author Erwan Bocher (CNRS)
  * @author Sylvain PALOMINOS (UBS 2019)
  */
-public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, ISelectBuilder {
+public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, ISelectBuilder, IResultSetBuilder {
     /**
      * Logger
      */
@@ -289,6 +291,86 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, ISe
     }
 
     @Override
+    public IResultSetBuilder forwardOnly() {
+        return new ResultSetBuilder(this).forwardOnly();
+    }
+
+    @Override
+    public IResultSetBuilder scrollInsensitive() {
+        return new ResultSetBuilder(this).scrollInsensitive();
+    }
+
+    @Override
+    public IResultSetBuilder scrollSensitive() {
+        return new ResultSetBuilder(this).scrollSensitive();
+    }
+
+    @Override
+    public IResultSetBuilder readOnly() {
+        return new ResultSetBuilder(this).readOnly();
+    }
+
+    @Override
+    public IResultSetBuilder updatable() {
+        return new ResultSetBuilder(this).updatable();
+    }
+
+    @Override
+    public IResultSetBuilder holdCursorOverCommit() {
+        return new ResultSetBuilder(this).holdCursorOverCommit();
+    }
+
+    @Override
+    public IResultSetBuilder closeCursorAtCommit() {
+        return new ResultSetBuilder(this).closeCursorAtCommit();
+    }
+
+    @Override
+    public IResultSetBuilder fetchForward() {
+        return new ResultSetBuilder(this).fetchForward();
+    }
+
+    @Override
+    public IResultSetBuilder fetchReverse() {
+        return new ResultSetBuilder(this).fetchReverse();
+    }
+
+    @Override
+    public IResultSetBuilder fetchUnknown() {
+        return new ResultSetBuilder(this).fetchUnknown();
+    }
+
+    @Override
+    public IResultSetBuilder fetchSize(int size) {
+        return new ResultSetBuilder(this).fetchSize(size);
+    }
+
+    @Override
+    public IResultSetBuilder timeout(int time) {
+        return new ResultSetBuilder(this).timeout(time);
+    }
+
+    @Override
+    public IResultSetBuilder maxRow(int maxRow) {
+        return new ResultSetBuilder(this).maxRow(maxRow);
+    }
+
+    @Override
+    public IResultSetBuilder cursorName(String name) {
+        return new ResultSetBuilder(this).cursorName(name);
+    }
+
+    @Override
+    public IResultSetBuilder poolable() {
+        return new ResultSetBuilder(this).poolable();
+    }
+
+    @Override
+    public IResultSetBuilder maxFieldSize(int size) {
+        return new ResultSetBuilder(this).maxFieldSize(size);
+    }
+
+    @Override
     public boolean execute(GString gstring) throws SQLException {
         try {
             return super.execute(gstring);
@@ -296,6 +378,36 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, ISe
             LOGGER.debug("Unable to execute the request as a GString.\n" + e.getLocalizedMessage());
         }
         return super.execute(gstring.toString());
+    }
+
+    @Override
+    public int[] executeBatch(String[] queries) throws SQLException {
+        return new ResultSetBuilder(this).executeBatch(queries);
+    }
+
+    @Override
+    public int[] executeBatch(GString[] queries) throws SQLException {
+        return new ResultSetBuilder(this).executeBatch(queries);
+    }
+
+    @Override
+    public long[] executeLargeBatch(String[] queries) throws SQLException {
+        return new ResultSetBuilder(this).executeLargeBatch(queries);
+    }
+
+    @Override
+    public long[] executeLargeBatch(GString[] queries) throws SQLException {
+        return new ResultSetBuilder(this).executeLargeBatch(queries);
+    }
+
+    @Override
+    public long executeLargeUpdate(String sql) throws SQLException {
+        return new ResultSetBuilder(this).executeLargeUpdate(sql);
+    }
+
+    @Override
+    public long executeLargeUpdate(GString sql) throws SQLException {
+        return new ResultSetBuilder(this).executeLargeUpdate(sql);
     }
 
     @Override

@@ -51,7 +51,7 @@ import org.orbisgis.orbisdata.datamanager.jdbc.JdbcDataSource;
 public class WhereBuilder extends OptionBuilder implements IWhereBuilderOrOptionBuilder, IBuilderResult {
 
     private final StringBuilder query;
-    private final JdbcDataSource dataSource;
+    private final IJdbcDataSource dataSource;
 
     /**
      * Main constructor.
@@ -59,7 +59,7 @@ public class WhereBuilder extends OptionBuilder implements IWhereBuilderOrOption
      * @param request    String request coming from the ISelectBuilder.
      * @param dataSource {@link IJdbcDataSource} where the request will be executed.
      */
-    public WhereBuilder(String request, JdbcDataSource dataSource) {
+    public WhereBuilder(String request, IJdbcDataSource dataSource) {
         super(request, dataSource);
         query = new StringBuilder();
         query.append(request).append(" ");

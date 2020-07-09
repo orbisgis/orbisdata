@@ -37,6 +37,8 @@
 package org.orbisgis.orbisdata.datamanager.api.datasource;
 
 import groovy.lang.GString;
+import org.orbisgis.orbisdata.datamanager.api.dataset.ISpatialTable;
+import org.orbisgis.orbisdata.datamanager.api.dataset.ITable;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -217,4 +219,19 @@ public interface IResultSetBuilder {
      * See {@link Statement#executeLargeUpdate(String)}
      */
     long executeLargeUpdate(GString sql) throws SQLException;
+
+    /**
+     * Returns a {@link ITable} built from the {@link ResultSet}.
+     *
+     * @param tableName
+     * @return A {@link ITable} built from the {@link ResultSet}.
+     */
+    ITable<?, ?> getTable(String tableName);
+
+    /**
+     * Returns a {@link ISpatialTable} built from the {@link ResultSet}.
+     *
+     * @return A {@link ISpatialTable} built from the {@link ResultSet}.
+     */
+    ISpatialTable<?, ?> getSpatialTable(String tableName);
 }

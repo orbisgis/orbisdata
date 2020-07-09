@@ -100,7 +100,7 @@ public abstract class JdbcTable extends DefaultResultSet implements IJdbcTable<S
     /**
      * DataSource to execute query
      */
-    private final JdbcDataSource jdbcDataSource;
+    private final IJdbcDataSource jdbcDataSource;
     /**
      * Table location
      */
@@ -129,7 +129,7 @@ public abstract class JdbcTable extends DefaultResultSet implements IJdbcTable<S
      * @param statement      Statement used to request the database.
      * @param jdbcDataSource DataSource to use for the creation of the resultSet.
      */
-    public JdbcTable(@NotNull DataBaseType dataBaseType, @NotNull JdbcDataSource jdbcDataSource,
+    public JdbcTable(@NotNull DataBaseType dataBaseType, @NotNull IJdbcDataSource jdbcDataSource,
                      @Nullable  TableLocation tableLocation, @NotNull Statement statement, @NotNull String baseQuery) {
         this.metaClass = InvokerHelper.getMetaClass(getClass());
         this.dataBaseType = dataBaseType;
@@ -228,7 +228,7 @@ public abstract class JdbcTable extends DefaultResultSet implements IJdbcTable<S
      *
      * @return The parent DataSource.
      */
-    protected JdbcDataSource getJdbcDataSource() {
+    protected IJdbcDataSource getJdbcDataSource() {
         return jdbcDataSource;
     }
 

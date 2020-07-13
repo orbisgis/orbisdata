@@ -57,6 +57,7 @@ import org.orbisgis.orbisdata.datamanager.api.dataset.ITable;
 import org.orbisgis.orbisdata.datamanager.api.datasource.IJdbcDataSource;
 import org.orbisgis.orbisdata.datamanager.api.dsl.IConditionOrOptionBuilder;
 import org.orbisgis.orbisdata.datamanager.api.dsl.IOptionBuilder;
+import org.orbisgis.orbisdata.datamanager.api.dsl.IWhereBuilderOrOptionBuilder;
 import org.orbisgis.orbisdata.datamanager.jdbc.dsl.OptionBuilder;
 import org.orbisgis.orbisdata.datamanager.jdbc.dsl.WhereBuilder;
 import org.orbisgis.orbisdata.datamanager.jdbc.io.IOMethods;
@@ -714,6 +715,11 @@ public abstract class JdbcTable extends DefaultResultSet implements IJdbcTable<S
     }
 
     @Override
+    public IWhereBuilderOrOptionBuilder option(String option) {
+        return new WhereBuilder(getQuery(), getJdbcDataSource()).option(option);
+    }
+
+    @Override
     public IOptionBuilder groupBy(String... fields) {
         return new OptionBuilder(getQuery(), getJdbcDataSource()).groupBy(fields);
     }
@@ -741,7 +747,7 @@ public abstract class JdbcTable extends DefaultResultSet implements IJdbcTable<S
     @Override
     @Nullable
     public JdbcTable filter(String filter) {
-        return (JdbcTable)where(filter).getTable();
+        return (JdbcTable)option(filter).getTable();
     }
 
     @Override

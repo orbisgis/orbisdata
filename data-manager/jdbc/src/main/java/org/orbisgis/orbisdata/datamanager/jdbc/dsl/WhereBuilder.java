@@ -72,4 +72,10 @@ public class WhereBuilder extends OptionBuilder implements IWhereBuilderOrOption
         query.append(condition);
         return new ConditionOrOptionBuilder(query.toString(), dataSource);
     }
+
+    @Override
+    public IWhereBuilderOrOptionBuilder option(String option) {
+        query.append(option);
+        return new WhereBuilder(query.toString(), dataSource);
+    }
 }

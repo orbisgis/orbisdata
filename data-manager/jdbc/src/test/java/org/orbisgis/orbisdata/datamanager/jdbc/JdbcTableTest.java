@@ -928,6 +928,7 @@ class JdbcTableTest {
     @Test
     public void filterTest(){
         assertArrayEquals(new int[]{5, 1}, getTable().filter("limit 1").getTable().getSize());
+        assertArrayEquals(new int[]{5, 0}, getTable().filter("where ID=34").filter("limit 1").getTable().getSize());
         assertArrayEquals(new int[]{5, 0}, getTable().filter("where ID=34").getTable().getSize());
         assertArrayEquals(new int[]{5, 1}, getTable().filter("where ID=1").getTable().getSize());
     }

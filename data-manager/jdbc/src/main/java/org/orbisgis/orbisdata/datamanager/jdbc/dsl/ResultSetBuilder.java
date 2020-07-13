@@ -337,7 +337,7 @@ public class ResultSetBuilder implements IResultSetBuilder {
             if (dataSource.getDataBaseType() == DataBaseType.H2GIS) {
                 return new H2gisTable(loc, query, getStatement(), dataSource);
             } else if (dataSource.getDataBaseType() == DataBaseType.POSTGIS) {
-                return new PostgisTable(loc, nameOrQuery, getStatement(), dataSource);
+                return new PostgisTable(loc, query, getStatement(), dataSource);
             }
         }
         catch(Exception e) {

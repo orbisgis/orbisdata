@@ -814,4 +814,19 @@ class JdbcDataSourceTest {
         dataset = postgis.getDataSet("geometry_columns");
         assertNotNull(dataset);
     }
+
+    @Test
+    void resultSetBuilder() {
+        ITable table = h2gis.forwardOnly().readOnly().holdCursorOverCommit().fetchForward()
+                .fetchSize(200).timeout(300).maxRow(400).cursorName("name").poolable()
+                .maxFieldSize(500).getTable("TEST_H2GIS");
+        assertNotNull(table);
+        assertArrayEquals(new int[]{3, 3}, table.getSize());
+
+        table = postgis.forwardOnly().readOnly().holdCursorOverCommit().fetchForward()
+                .fetchSize(200).timeout(300).maxRow(400).cursorName("name").poolable()
+                .maxFieldSize(500).getTable("test_postgis");
+        assertNotNull(table);
+        assertArrayEquals(new int[]{3, 3}, table.getSize());
+    }
 }

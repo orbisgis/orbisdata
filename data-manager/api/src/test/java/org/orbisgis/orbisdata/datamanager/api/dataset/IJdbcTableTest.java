@@ -43,6 +43,7 @@ import org.orbisgis.commons.annotations.Nullable;
 import org.orbisgis.orbisdata.datamanager.api.datasource.IJdbcDataSource;
 import org.orbisgis.orbisdata.datamanager.api.dsl.IConditionOrOptionBuilder;
 import org.orbisgis.orbisdata.datamanager.api.dsl.IOptionBuilder;
+import org.orbisgis.orbisdata.datamanager.api.dsl.IWhereBuilderOrOptionBuilder;
 
 import javax.sql.rowset.RowSetMetaDataImpl;
 import java.io.InputStream;
@@ -1192,6 +1193,11 @@ public class IJdbcTableTest {
 
         @Override
         public IConditionOrOptionBuilder where(String condition) {
+            return null;
+        }
+
+        @Override
+        public IWhereBuilderOrOptionBuilder option(String option) {
             return null;
         }
 

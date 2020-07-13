@@ -51,7 +51,7 @@ import java.util.Map;
 public class OptionBuilder extends BuilderResult implements IOptionBuilder {
 
     private final StringBuilder query;
-    private final JdbcDataSource dataSource;
+    private final IJdbcDataSource dataSource;
 
     /**
      * Main constructor.
@@ -59,7 +59,7 @@ public class OptionBuilder extends BuilderResult implements IOptionBuilder {
      * @param request    String request coming from the ISelectBuilder.
      * @param dataSource {@link IJdbcDataSource} where the request will be executed.
      */
-    public OptionBuilder(String request, JdbcDataSource dataSource) {
+    public OptionBuilder(String request, IJdbcDataSource dataSource) {
         query = new StringBuilder();
         query.append(request).append(" ");
         this.dataSource = dataSource;
@@ -99,7 +99,7 @@ public class OptionBuilder extends BuilderResult implements IOptionBuilder {
     }
 
     @Override
-    protected JdbcDataSource getDataSource() {
+    protected IJdbcDataSource getDataSource() {
         return dataSource;
     }
 

@@ -49,7 +49,7 @@ import org.orbisgis.orbisdata.datamanager.jdbc.JdbcDataSource;
 public class ConditionOrOptionBuilder extends OptionBuilder implements IConditionOrOptionBuilder {
 
     private final StringBuilder query;
-    private final JdbcDataSource dataSource;
+    private final IJdbcDataSource dataSource;
 
     /**
      * Main constructor.
@@ -57,7 +57,7 @@ public class ConditionOrOptionBuilder extends OptionBuilder implements IConditio
      * @param request    String request coming from the ISelectBuilder.
      * @param dataSource {@link IJdbcDataSource} where the request will be executed.
      */
-    public ConditionOrOptionBuilder(String request, JdbcDataSource dataSource) {
+    public ConditionOrOptionBuilder(String request, IJdbcDataSource dataSource) {
         super(request, dataSource);
         query = new StringBuilder();
         query.append(request).append(" ");

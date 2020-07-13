@@ -43,6 +43,7 @@ import org.orbisgis.commons.annotations.NotNull;
 import org.orbisgis.commons.printer.ICustomPrinter;
 import org.orbisgis.orbisdata.datamanager.api.dataset.ISpatialTable;
 import org.orbisgis.orbisdata.datamanager.api.dataset.ITable;
+import org.orbisgis.orbisdata.datamanager.api.datasource.IJdbcDataSource;
 import org.orbisgis.orbisdata.datamanager.api.dsl.IBuilderResult;
 import org.orbisgis.orbisdata.datamanager.jdbc.JdbcDataSource;
 import org.orbisgis.orbisdata.datamanager.jdbc.h2gis.H2gisSpatialTable;
@@ -72,7 +73,7 @@ public abstract class BuilderResult implements IBuilderResult {
      *
      * @return The database to use to execute the query.
      */
-    protected abstract JdbcDataSource getDataSource();
+    protected abstract IJdbcDataSource getDataSource();
 
     /**
      * Return the query to execute.
@@ -98,8 +99,9 @@ public abstract class BuilderResult implements IBuilderResult {
             }
         }
         Statement statement;
+        Connection con;
         try {
-            Connection con = getDataSource().getConnection();
+            con = getDataSource().getConnection();
             if(con == null){
                 LOGGER.error("Unable to create the StatementWrapper.\n");
                 return null;
@@ -114,12 +116,12 @@ public abstract class BuilderResult implements IBuilderResult {
             case H2GIS:
                 if (!(statement instanceof StatementWrapper)) {
                     LOGGER.warn("The statement class not compatible with the database.");
-                    statement = new StatementWrapper(statement, new ConnectionWrapper(getDataSource().getConnection()));
+                    statement = new StatementWrapper(statement, new ConnectionWrapper(con));
                 }
                 if (ISpatialTable.class.isAssignableFrom(clazz)) {
-                    return new H2gisSpatialTable(null, getQuery(), (StatementWrapper) statement, getDataSource());
+                    return new H2gisSpatialTable(null, getQuery(), statement, getDataSource());
                 } else if (ITable.class.isAssignableFrom(clazz)) {
-                    return new H2gisTable(null, getQuery(), (StatementWrapper) statement, getDataSource());
+                    return new H2gisTable(null, getQuery(), statement, getDataSource());
                 }
             case POSTGIS:
                 if (!(statement instanceof org.h2gis.postgis_jts.StatementWrapper)) {

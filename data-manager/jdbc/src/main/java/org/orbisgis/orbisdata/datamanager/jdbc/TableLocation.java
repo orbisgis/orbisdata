@@ -94,6 +94,15 @@ public class TableLocation extends org.h2gis.utilities.TableLocation implements 
         this.dataSource = dataSource;
     }
 
+    /**
+     * @param dataSource    DataSource name
+     * @param tableLocation Table location
+     */
+    public TableLocation(String dataSource, org.h2gis.utilities.TableLocation tableLocation) {
+        super(tableLocation.getCatalog(), tableLocation.getSchema(), tableLocation.getTable());
+        this.dataSource = dataSource;
+    }
+
     @Override
     @NotNull
     public String getDataSource() {

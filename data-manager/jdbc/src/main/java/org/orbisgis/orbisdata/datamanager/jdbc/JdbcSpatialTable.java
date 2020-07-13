@@ -47,6 +47,7 @@ import org.orbisgis.commons.annotations.Nullable;
 import org.orbisgis.orbisdata.datamanager.api.dataset.DataBaseType;
 import org.orbisgis.orbisdata.datamanager.api.dataset.IJdbcSpatialTable;
 import org.orbisgis.orbisdata.datamanager.api.dataset.IRaster;
+import org.orbisgis.orbisdata.datamanager.api.datasource.IJdbcDataSource;
 import org.orbisgis.orbisdata.datamanager.jdbc.dsl.WhereBuilder;
 import org.orbisgis.orbisdata.datamanager.jdbc.resultset.StreamResultSet;
 import org.slf4j.Logger;
@@ -80,7 +81,7 @@ public abstract class JdbcSpatialTable extends JdbcTable implements IJdbcSpatial
      * @param statement      Statement used to request the database.
      * @param jdbcDataSource DataSource to use for the creation of the resultSet.
      */
-    public JdbcSpatialTable(@NotNull DataBaseType dataBaseType, @NotNull JdbcDataSource jdbcDataSource,
+    public JdbcSpatialTable(@NotNull DataBaseType dataBaseType, @NotNull IJdbcDataSource jdbcDataSource,
                             @Nullable TableLocation tableLocation, @NotNull Statement statement,
                             @NotNull String baseQuery) {
         super(dataBaseType, jdbcDataSource, tableLocation, statement, baseQuery);

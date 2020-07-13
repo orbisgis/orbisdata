@@ -76,6 +76,10 @@ class JdbcDataSourceTest {
     private static H2GIS h2gis;
     private static POSTGIS postgis;
 
+    private static final int SIZE = 200;
+    private static final int TIMEOUT = 300;
+    private static final int MAX_ROW = 400;
+    private static final int FIELD_SIZE = 500;
     /**
      * Initialize three {@link JdbcDataSource} with each constructors.
      *
@@ -813,5 +817,20 @@ class JdbcDataSourceTest {
         assertTrue(dataset instanceof ISpatialTable);
         dataset = postgis.getDataSet("geometry_columns");
         assertNotNull(dataset);
+    }
+
+    @Test
+    void resultSetBuilder() {
+        ITable<?, ?> table = h2gis.forwardOnly().readOnly().holdCursorOverCommit().fetchForward()
+                .fetchSize(SIZE).timeout(TIMEOUT).maxRow(MAX_ROW).cursorName("name").poolable()
+                .maxFieldSize(FIELD_SIZE).getTable("TEST_H2GIS");
+        assertNotNull(table);
+        assertArrayEquals(new int[]{3, 3}, table.getSize());
+
+        table = postgis.forwardOnly().readOnly().holdCursorOverCommit().fetchForward()
+                .fetchSize(SIZE).timeout(TIMEOUT).maxRow(MAX_ROW).cursorName("name").poolable()
+                .maxFieldSize(FIELD_SIZE).getTable("test_postgis");
+        assertNotNull(table);
+        assertArrayEquals(new int[]{3, 3}, table.getSize());
     }
 }

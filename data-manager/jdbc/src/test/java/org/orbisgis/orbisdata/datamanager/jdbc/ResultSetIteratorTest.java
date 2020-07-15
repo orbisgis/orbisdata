@@ -34,7 +34,7 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.orbisdata.datamanager.api.dataset;
+package org.orbisgis.orbisdata.datamanager.jdbc;
 
 import org.h2gis.functions.factory.H2GISDBFactory;
 import org.junit.jupiter.api.BeforeAll;
@@ -129,7 +129,7 @@ public class ResultSetIteratorTest {
 
     @Test
     public void emptyResultSetIteratorTest() {
-        ResultSetIterator resultSetIterator = new ResultSetIterator();
+        ResultSetIterator resultSetIterator = new ResultSetIterator(null);
         assertFalse(resultSetIterator.hasNext());
         assertNull(resultSetIterator.next());
     }

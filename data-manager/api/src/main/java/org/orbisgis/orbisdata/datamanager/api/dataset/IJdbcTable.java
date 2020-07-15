@@ -43,7 +43,6 @@ import org.orbisgis.orbisdata.datamanager.api.dsl.IWhereBuilderOrOptionBuilder;
 
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
 import java.util.List;
 
 /**
@@ -117,16 +116,6 @@ public interface IJdbcTable<T> extends ITable<ResultSet, T>, ResultSet, IWhereBu
             return QUERY_LOCATION;
         } else {
             return location.getTable();
-        }
-    }
-
-    @Override
-    @NotNull
-    default ResultSetIterator iterator() {
-        try {
-            return new ResultSetIterator(this);
-        } catch (SQLException e) {
-            return new ResultSetIterator();
         }
     }
 

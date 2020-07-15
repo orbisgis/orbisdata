@@ -903,4 +903,10 @@ public abstract class JdbcTable extends DefaultResultSet implements IJdbcTable<S
         Spliterator<StreamResultSet> spliterator = new ResultSetSpliterator(this.getRowCount(), getResultSet());
         return StreamSupport.stream(spliterator, true);
     }
+
+    @Override
+    @NotNull
+    public ResultSetIterator iterator() {
+        return new ResultSetIterator(this);
+    }
 }

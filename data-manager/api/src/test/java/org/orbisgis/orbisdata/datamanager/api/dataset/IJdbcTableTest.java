@@ -98,59 +98,6 @@ public class IJdbcTableTest {
     }
 
     /**
-     * Test the {@link IJdbcTable#iterator()} method.
-     */
-    @Test
-    public void testIterator() throws SQLException {
-        IJdbcTable table = new DummyJdbcTable(DataBaseType.H2GIS, LOCATION, true);
-        ResultSetIterator it = (ResultSetIterator) table.iterator();
-        assertNotNull(it);
-        assertTrue(it.hasNext());
-        assertEquals("string", it.next().getObject(0));
-        assertTrue(it.hasNext());
-        assertEquals(Double.toString(0.2), it.next().getObject(0).toString());
-        assertFalse(it.hasNext());
-
-        table = new DummyJdbcTable(DataBaseType.H2GIS, LOCATION, false);
-        assertNotNull(table.iterator());
-    }
-
-    /**
-     * Test the {@link IJdbcTable#eachRow(Closure)} method.
-     */
-    @Test
-    public void testEachRow() {
-        IJdbcTable table = new DummyJdbcTable(DataBaseType.H2GIS, LOCATION, true);
-        final String[] result = {""};
-        table.eachRow(new Closure<Object>(this) {
-            @Override
-            public Object call(Object argument) {
-                result[0] += ((DummyJdbcTable) argument).getObject(0);
-                return argument;
-            }
-        });
-        assertEquals("string0.2", result[0]);
-    }
-
-    /**
-     * Test the {@link IJdbcTable} methods with {@link SQLException} thrown.
-     */
-    @Test
-    public void testSQLException() {
-        DummyJdbcTable table = new DummyJdbcTable(DataBaseType.H2GIS, LOCATION, true);
-
-        table.setException(true);
-        Iterator it = table.iterator();
-        assertFalse(it.hasNext());
-
-        table.setException(false);
-        it = table.iterator();
-        table.setException(true);
-        assertFalse(it.hasNext());
-        assertNotNull(it.next());
-    }
-
-    /**
      * Simple implementation of the {@link ITableLocation} interface.
      */
     private static class DummyTableLocation implements ITableLocation {
@@ -218,7 +165,7 @@ public class IJdbcTableTest {
     /**
      * Simple implementation of the {@link IJdbcTable} interface.
      */
-    private static class DummyJdbcTable implements IJdbcTable<ResultSet> {
+    private static class DummyJdbcTable implements IJdbcTable {
 
         /**
          * Fake data location.
@@ -304,6 +251,18 @@ public class IJdbcTableTest {
         @NotNull
         @Override
         public IJdbcTableSummary getSummary() {
+            return null;
+        }
+
+        @NotNull
+        @Override
+        public IJdbcTable columns(@NotNull String... columns) {
+            return null;
+        }
+
+        @NotNull
+        @Override
+        public IJdbcTable columns(@NotNull List columns) {
             return null;
         }
 
@@ -556,13 +515,13 @@ public class IJdbcTableTest {
 
         @Nullable
         @Override
-        public <V> V getObject(int column, @NotNull Class<V> clazz) throws SQLException {
+        public Object getObject(int column, @NotNull Class clazz) throws SQLException {
             return null;
         }
 
         @Nullable
         @Override
-        public <V> V getObject(@NotNull String column, @NotNull Class<V> clazz) throws SQLException {
+        public Object getObject(@NotNull String column, @NotNull Class clazz) throws SQLException {
             return null;
         }
 
@@ -1179,18 +1138,6 @@ public class IJdbcTableTest {
             return null;
         }
 
-        @NotNull
-        @Override
-        public IJdbcTable columns(@NotNull String... columns) {
-            return null;
-        }
-
-        @NotNull
-        @Override
-        public IJdbcTable columns(@NotNull List<String> columns) {
-            return null;
-        }
-
         @Override
         public IConditionOrOptionBuilder where(String condition) {
             return null;
@@ -1238,6 +1185,11 @@ public class IJdbcTableTest {
 
         @Override
         public ISpatialTable getSpatialTable() {
+            return null;
+        }
+
+        @Override
+        public Iterator iterator() {
             return null;
         }
     }

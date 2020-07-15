@@ -34,9 +34,8 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.orbisdata.datamanager.api.dataset;
+package org.orbisgis.orbisdata.datamanager.jdbc;
 
-import org.orbisgis.commons.annotations.NotNull;
 import org.orbisgis.commons.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -61,61 +60,42 @@ public class ResultSetIterator implements Iterator<ResultSet> {
     /**
      * Iterated {@link ResultSet}
      */
+    @Nullable
     private final ResultSet resultSet;
-    /**
-     * Count of {@link ResultSet} row
-     */
-    private int rowCount = 0;
 
-    public ResultSetIterator() {
-        this.resultSet = null;
-        LOGGER.warn("There is no ResultSet so there will no data.");
-    }
+    private boolean nextDone = false;
 
     /**
      * Main constructor.
      *
      * @param resultSet {@link ResultSet} to iterate.
      */
-    public ResultSetIterator(@NotNull ResultSet resultSet) throws SQLException {
+    public ResultSetIterator(@Nullable ResultSet resultSet) {
         this.resultSet = resultSet;
-        try {
-            this.resultSet.last();
-            rowCount = resultSet.getRow();
-            this.resultSet.beforeFirst();
-        } catch (SQLException e) {
-            LOGGER.error("Unable to query the ResultSet.\n" + e.getLocalizedMessage());
-            throw e;
+        if(this.resultSet == null) {
+            LOGGER.warn("There is no ResultSet so there will no data.");
         }
     }
 
     @Override
     public boolean hasNext() {
-        if (resultSet == null) {
-            return false;
-        }
-        int row;
         try {
-            row = resultSet.getRow();
+            nextDone = true;
+            return resultSet != null && resultSet.next();
         } catch (SQLException e) {
-            LOGGER.error("Unable to get ResultSet row.\n" + e.getLocalizedMessage());
+            LOGGER.error("Unable to get next row.\n", e);
+            nextDone = false;
             return false;
         }
-        return row < rowCount;
     }
 
     @Override
     @Nullable
     public ResultSet next() {
-        if (resultSet == null) {
-            return null;
-        }
-        try {
-            if (!resultSet.next()) {
-                LOGGER.error("Unable to move to the next row.");
+        if(!nextDone) {
+            if(!hasNext()) {
+                return null;
             }
-        } catch (SQLException e) {
-            LOGGER.error("Unable to get next row.\n" + e.getLocalizedMessage());
         }
         return resultSet;
     }

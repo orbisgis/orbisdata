@@ -36,6 +36,7 @@
  */
 package org.orbisgis.orbisdata.datamanager.jdbc;
 
+import groovy.lang.Closure;
 import groovy.lang.MetaClass;
 import groovy.lang.MissingMethodException;
 import groovy.lang.MissingPropertyException;
@@ -58,6 +59,7 @@ import org.orbisgis.commons.annotations.Nullable;
 import org.orbisgis.commons.printer.Ascii;
 import org.orbisgis.commons.printer.Html;
 import org.orbisgis.orbisdata.datamanager.api.dataset.*;
+import org.orbisgis.orbisdata.datamanager.api.datasource.IJdbcDataSource;
 import org.orbisgis.orbisdata.datamanager.api.dsl.IOptionBuilder;
 import org.orbisgis.orbisdata.datamanager.jdbc.h2gis.H2gisSpatialTable;
 
@@ -232,7 +234,7 @@ class JdbcTableTest {
     }
 
     /**
-     * Test the {@link JdbcTable#JdbcTable(DataBaseType, JdbcDataSource, TableLocation, Statement, String)} constructor.
+     * Test the {@link JdbcTable#JdbcTable(DataBaseType, IJdbcDataSource, TableLocation, Statement, String)} constructor.
      */
     @Test
     void testConstructor() {
@@ -934,6 +936,45 @@ class JdbcTableTest {
     }
 
     /**
+     * Test the {@link IJdbcTable#iterator()} method.
+     */
+    @Test
+    public void testIterator() throws SQLException {
+        IJdbcTable table = getTable();
+        ResultSetIterator it = (ResultSetIterator) table.iterator();
+        assertNotNull(it);
+        assertTrue(it.hasNext());
+        assertEquals("POINT (0 0)", it.next().getObject(1).toString());
+        assertTrue(it.hasNext());
+        assertEquals("POINT (0 1)", it.next().getObject(1).toString());
+        assertFalse(it.hasNext());
+
+        table = getTable();
+        assertNotNull(table.iterator());
+    }
+
+    /**
+     * Test the {@link IJdbcTable#eachRow(Closure)} method.
+     */
+    @Test
+    public void testEachRow() {
+        IJdbcTable table = getTable();
+        final String[] result = {""};
+        table.eachRow(new Closure<Object>(this) {
+            @Override
+            public Object call(Object argument) {
+                try {
+                    result[0] += ((DummyJdbcTable) argument).getObject(1).toString();
+                } catch (SQLException e) {
+                    fail(e);
+                }
+                return argument;
+            }
+        });
+        assertEquals("POINT (0 0)POINT (0 1)", result[0]);
+    }
+
+    /**
      * Simple implementation of the {@link JdbcDataSource} abstract class for test purpose.
      */
     private static class DummyJdbcDataSource extends JdbcDataSource {
@@ -1054,15 +1095,6 @@ class JdbcTableTest {
 
         public void dupMethod() throws IllegalAccessException {
             throw new IllegalAccessException();
-        }
-
-        @Override
-        public boolean next() throws SQLException {
-            if (!sqlException) {
-                return rowIndex++ < data.length;
-            } else {
-                throw new SQLException();
-            }
         }
 
         @NotNull

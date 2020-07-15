@@ -971,7 +971,7 @@ class JdbcTableTest {
                 return argument;
             }
         });
-        assertEquals("POINT (0 0)POINT (0 1)", result[0]);String s = "Improvement";
+        assertEquals("POINT (0 0)POINT (0 1)", result[0]);
     }
 
     /**

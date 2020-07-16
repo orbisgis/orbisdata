@@ -36,7 +36,6 @@
  */
 package org.orbisgis.orbisdata.datamanager.api.dataset;
 
-import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
 import org.orbisgis.commons.annotations.NotNull;
 import org.orbisgis.commons.annotations.Nullable;

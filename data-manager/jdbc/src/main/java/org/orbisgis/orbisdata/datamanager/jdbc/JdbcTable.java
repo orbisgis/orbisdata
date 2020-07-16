@@ -58,7 +58,6 @@ import org.orbisgis.orbisdata.datamanager.api.datasource.IJdbcDataSource;
 import org.orbisgis.orbisdata.datamanager.api.dsl.IBuilderResult;
 import org.orbisgis.orbisdata.datamanager.api.dsl.IFilterBuilder;
 import org.orbisgis.orbisdata.datamanager.api.dsl.IQueryBuilder;
-import org.orbisgis.orbisdata.datamanager.jdbc.dsl.FilterBuilder;
 import org.orbisgis.orbisdata.datamanager.jdbc.dsl.QueryBuilder;
 import org.orbisgis.orbisdata.datamanager.jdbc.io.IOMethods;
 import org.orbisgis.orbisdata.datamanager.jdbc.resultset.DefaultResultSet;

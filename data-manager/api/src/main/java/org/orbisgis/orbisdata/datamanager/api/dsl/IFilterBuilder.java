@@ -38,8 +38,6 @@ package org.orbisgis.orbisdata.datamanager.api.dsl;
 
 import org.orbisgis.orbisdata.datamanager.api.dataset.ITable;
 
-import java.util.List;
-
 /**
  * The request construction can be continued thanks to the {@link IFilterBuilder} or its result can be get calling
  * 'eachRow' to iterate on the resultSet or 'as ITable' to get the {@link ITable} object.

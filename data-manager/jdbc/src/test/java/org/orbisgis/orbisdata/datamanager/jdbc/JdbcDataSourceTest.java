@@ -52,7 +52,6 @@ import org.orbisgis.orbisdata.datamanager.jdbc.postgis.POSTGIS;
 
 import java.io.File;
 import java.io.InputStream;
-import java.lang.reflect.Field;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;

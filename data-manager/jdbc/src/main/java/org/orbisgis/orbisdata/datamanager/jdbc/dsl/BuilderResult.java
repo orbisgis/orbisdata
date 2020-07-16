@@ -37,26 +37,14 @@
 package org.orbisgis.orbisdata.datamanager.jdbc.dsl;
 
 import groovy.lang.Closure;
-import org.h2gis.utilities.wrapper.ConnectionWrapper;
-import org.h2gis.utilities.wrapper.StatementWrapper;
 import org.orbisgis.commons.annotations.NotNull;
 import org.orbisgis.commons.printer.ICustomPrinter;
 import org.orbisgis.orbisdata.datamanager.api.dataset.ISpatialTable;
 import org.orbisgis.orbisdata.datamanager.api.dataset.ITable;
 import org.orbisgis.orbisdata.datamanager.api.datasource.IJdbcDataSource;
 import org.orbisgis.orbisdata.datamanager.api.dsl.IBuilderResult;
-import org.orbisgis.orbisdata.datamanager.jdbc.JdbcDataSource;
-import org.orbisgis.orbisdata.datamanager.jdbc.h2gis.H2gisSpatialTable;
-import org.orbisgis.orbisdata.datamanager.jdbc.h2gis.H2gisTable;
-import org.orbisgis.orbisdata.datamanager.jdbc.postgis.PostgisSpatialTable;
-import org.orbisgis.orbisdata.datamanager.jdbc.postgis.PostgisTable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
 
 /**
  * Implementation of {@link IBuilderResult}.

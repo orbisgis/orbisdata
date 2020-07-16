@@ -41,7 +41,6 @@ import org.orbisgis.commons.annotations.NotNull;
 import org.orbisgis.commons.annotations.Nullable;
 import org.orbisgis.orbisdata.datamanager.api.datasource.IJdbcDataSource;
 import org.orbisgis.orbisdata.datamanager.api.dsl.IFilterBuilder;
-import org.orbisgis.orbisdata.datamanager.api.dsl.IQueryBuilder;
 
 import javax.sql.rowset.RowSetMetaDataImpl;
 import java.io.InputStream;
@@ -53,7 +52,7 @@ import java.sql.*;
 import java.util.*;
 import java.util.stream.Stream;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Test class dedicated to {@link IJdbcTable} interface.

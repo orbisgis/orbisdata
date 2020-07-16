@@ -47,8 +47,6 @@ import org.orbisgis.orbisdata.datamanager.api.dataset.DataBaseType;
 import org.orbisgis.orbisdata.datamanager.api.dataset.IJdbcSpatialTable;
 import org.orbisgis.orbisdata.datamanager.api.dataset.IRaster;
 import org.orbisgis.orbisdata.datamanager.api.datasource.IJdbcDataSource;
-import org.orbisgis.orbisdata.datamanager.api.dsl.IFilterBuilder;
-import org.orbisgis.orbisdata.datamanager.jdbc.dsl.FilterBuilder;
 import org.orbisgis.orbisdata.datamanager.jdbc.resultset.StreamResultSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

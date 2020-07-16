@@ -43,7 +43,6 @@ import org.orbisgis.orbisdata.datamanager.api.dataset.IDataSet;
 import java.io.File;
 import java.net.URI;
 import java.net.URL;
-import java.util.Map;
 
 /**
  * Raw source of data.

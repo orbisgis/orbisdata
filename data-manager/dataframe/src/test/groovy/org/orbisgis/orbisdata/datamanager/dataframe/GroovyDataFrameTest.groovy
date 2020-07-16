@@ -39,9 +39,7 @@ package org.orbisgis.orbisdata.datamanager.dataframe
 import org.junit.jupiter.api.Test
 import org.orbisgis.orbisdata.datamanager.jdbc.h2gis.H2GIS
 
-import static org.junit.jupiter.api.Assertions.assertEquals
-import static org.junit.jupiter.api.Assertions.assertNotNull
-import static org.junit.jupiter.api.Assertions.assertNull
+import static org.junit.jupiter.api.Assertions.*
 
 class GroovyDataFrameTest {
 

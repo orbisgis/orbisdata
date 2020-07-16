@@ -38,7 +38,6 @@ package org.orbisgis.orbisdata.datamanager.jdbc.h2gis;
 
 
 import org.junit.jupiter.api.Test;
-import org.locationtech.jts.geom.MultiPolygon;
 import org.locationtech.jts.geom.Point;
 import org.orbisgis.orbisdata.datamanager.api.dataset.IJdbcSpatialTable;
 import org.orbisgis.orbisdata.datamanager.api.dataset.IJdbcTable;

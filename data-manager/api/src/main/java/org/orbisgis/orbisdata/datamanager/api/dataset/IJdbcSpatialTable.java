@@ -36,10 +36,7 @@
  */
 package org.orbisgis.orbisdata.datamanager.api.dataset;
 
-import org.orbisgis.commons.annotations.NotNull;
-
 import java.sql.ResultSet;
-import java.util.List;
 
 /**
  * Extension of the {@link IJdbcTable} and {@link ISpatialTable} interfaces.

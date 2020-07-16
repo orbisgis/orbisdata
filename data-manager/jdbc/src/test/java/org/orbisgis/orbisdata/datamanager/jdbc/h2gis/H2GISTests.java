@@ -425,7 +425,7 @@ public class H2GISTests {
     @Test
     public void getTableSelect() throws SQLException {
         Map<String, String> map = new HashMap<>();
-        map.put(DataSourceFactory.JDBC_DATABASE_NAME, "./target/loadH2GIS");
+        map.put(DataSourceFactory.JDBC_DATABASE_NAME, "./target/selectTable");
         H2GIS h2GIS = H2GIS.open(map);
         h2GIS.execute("DROP TABLE IF EXISTS h2gis; CREATE TABLE h2gis (id int, the_geom geometry(point));" +
                 "insert into h2gis values (1, 'POINT(10 10)'::GEOMETRY), (2, 'POINT(1 1)'::GEOMETRY);" );

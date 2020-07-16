@@ -1,6 +1,7 @@
 package org.orbisgis.orbisdata.datamanager.jdbc.dsl;
 
 import org.orbisgis.orbisdata.datamanager.api.datasource.IJdbcDataSource;
+import org.orbisgis.orbisdata.datamanager.api.dsl.IBuilderResult;
 import org.orbisgis.orbisdata.datamanager.api.dsl.IFilterBuilder;
 
 /**
@@ -20,7 +21,7 @@ public class FilterBuilder extends BuilderResult implements IFilterBuilder {
     }
 
     @Override
-    public IFilterBuilder filter(String filter) {
+    public IBuilderResult filter(String filter) {
         if(filter != null) {
             query.append(" ").append(filter);
         }

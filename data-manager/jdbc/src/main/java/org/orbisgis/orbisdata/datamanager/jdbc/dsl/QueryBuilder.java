@@ -2,6 +2,7 @@ package org.orbisgis.orbisdata.datamanager.jdbc.dsl;
 
 import org.orbisgis.commons.annotations.NotNull;
 import org.orbisgis.orbisdata.datamanager.api.datasource.IJdbcDataSource;
+import org.orbisgis.orbisdata.datamanager.api.dsl.IBuilderResult;
 import org.orbisgis.orbisdata.datamanager.api.dsl.IFilterBuilder;
 import org.orbisgis.orbisdata.datamanager.api.dsl.IQueryBuilder;
 import org.orbisgis.orbisdata.datamanager.jdbc.TableLocation;
@@ -34,7 +35,7 @@ public class QueryBuilder extends BuilderResult implements IQueryBuilder {
     }
 
     @Override
-    public IFilterBuilder filter(String filter) {
+    public IBuilderResult filter(String filter) {
         IFilterBuilder filterBuilder = new FilterBuilder(dataSource, getQuery());
         if(filter != null) {
             return filterBuilder.filter(filter);

@@ -55,6 +55,7 @@ import org.orbisgis.orbisdata.datamanager.api.dataset.IJdbcSpatialTable;
 import org.orbisgis.orbisdata.datamanager.api.dataset.IJdbcTable;
 import org.orbisgis.orbisdata.datamanager.api.dataset.ITable;
 import org.orbisgis.orbisdata.datamanager.api.datasource.IJdbcDataSource;
+import org.orbisgis.orbisdata.datamanager.api.dsl.IBuilderResult;
 import org.orbisgis.orbisdata.datamanager.api.dsl.IFilterBuilder;
 import org.orbisgis.orbisdata.datamanager.api.dsl.IQueryBuilder;
 import org.orbisgis.orbisdata.datamanager.jdbc.dsl.FilterBuilder;
@@ -688,7 +689,7 @@ public abstract class JdbcTable extends DefaultResultSet implements IJdbcTable<S
 
     @Override
     @Nullable
-    public IFilterBuilder filter(String filter) {
+    public IBuilderResult filter(String filter) {
         IQueryBuilder builder = new QueryBuilder(getJdbcDataSource(), getTableLocation().toString(getDbType()));
         return builder.filter(filter);
     }

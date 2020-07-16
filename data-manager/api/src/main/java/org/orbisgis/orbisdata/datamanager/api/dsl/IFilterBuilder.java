@@ -55,5 +55,5 @@ public interface IFilterBuilder extends IBuilderResult {
      * @param filter Condition to add for for the selection.
      * @return {@link IFilterBuilder} instance to continue building.
      */
-    IFilterBuilder filter(String filter);
+    IBuilderResult filter(String filter);
 }

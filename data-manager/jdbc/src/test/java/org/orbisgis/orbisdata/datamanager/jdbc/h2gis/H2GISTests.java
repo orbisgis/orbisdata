@@ -251,9 +251,7 @@ public class H2GISTests {
 
         table = ((ITable) h2GIS
                 .getTable("h2gis")
-                .filter("WHERE code=22")
-                .filter("OR code=56")
-                .filter("ORDER BY id DESC")
+                .filter("WHERE code=22 OR code=56 ORDER BY id DESC")
                 .asType(ITable.class));
 
         ArrayList<Integer> values2 = new ArrayList<>();

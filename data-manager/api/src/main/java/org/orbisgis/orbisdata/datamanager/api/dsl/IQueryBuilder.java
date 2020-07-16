@@ -38,32 +38,30 @@ package org.orbisgis.orbisdata.datamanager.api.dsl;
 
 import org.orbisgis.orbisdata.datamanager.api.dataset.ITable;
 
+import java.util.List;
+
 /**
- * Interface defining methods for the SQL 'where' condition building. The request construction can be continued thanks
- * to the {@link IConditionOrOptionBuilder} or its result can be get calling 'eachRow' to iterate on the resultSet or
- * 'as ITable' to get the {@link ITable} object.
- * The methods inherited from IOptionBuilder allow to set option returning an {@link IOptionBuilder} while
- * {@link IConditionOrOptionBuilder} own methods allow to add where condition returning an
- * {@link IConditionOrOptionBuilder}.
+ * The request construction can be continued thanks to the {@link IFilterBuilder} or its result can be get calling
+ * 'eachRow' to iterate on the resultSet or 'as ITable' to get the {@link ITable} object.
  *
  * @author Erwan Bocher (CNRS)
- * @author Sylvain PALOMINOS (Lab-STICC UBS 2019)
+ * @author Sylvain PALOMINOS (UBS Lab-STICC / Chaire GEOTERA 2020)
  */
-public interface IConditionOrOptionBuilder extends IOptionBuilder {
+public interface IQueryBuilder extends IBuilderResult, IFilterBuilder {
 
     /**
-     * Add a 'AND' condition for the selection.
+     * Sets the columns to select.
      *
-     * @param condition Condition to add for for the selection.
-     * @return {@link IConditionOrOptionBuilder} instance to continue building.
+     * @param columns Columns to use fo the selection.
+     * @return {@link IFilterBuilder} instance to continue building.
      */
-    IConditionOrOptionBuilder and(String condition);
+    IFilterBuilder columns(String... columns);
 
     /**
-     * Add a 'OR' condition for the selection.
+     * Sets the columns to select.
      *
-     * @param condition Condition to add for for the selection.
-     * @return {@link IConditionOrOptionBuilder} instance to continue building.
+     * @param columns Columns to use fo the selection.
+     * @return {@link IFilterBuilder} instance to continue building.
      */
-    IConditionOrOptionBuilder or(String condition);
+    IFilterBuilder columns(List<String> columns);
 }

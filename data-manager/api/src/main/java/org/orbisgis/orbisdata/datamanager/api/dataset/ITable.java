@@ -40,6 +40,7 @@ import groovy.lang.Closure;
 import org.orbisgis.commons.annotations.NotNull;
 import org.orbisgis.commons.annotations.Nullable;
 import org.orbisgis.orbisdata.datamanager.api.datasource.IJdbcDataSource;
+import org.orbisgis.orbisdata.datamanager.api.dsl.IQueryBuilder;
 
 import java.math.BigDecimal;
 import java.sql.Date;
@@ -59,7 +60,7 @@ import java.util.stream.Stream;
  * @author Erwan Bocher (CNRS)
  * @author Sylvain PALOMINOS (Lab-STICC UBS 2018-2020)
  */
-public interface ITable<T, U> extends IMatrix<T, U> {
+public interface ITable<T, U> extends IMatrix<T, U>, IQueryBuilder {
 
     /**
      * Apply the given {@link Closure} to each row.
@@ -305,24 +306,6 @@ public interface ITable<T, U> extends IMatrix<T, U> {
      */
     @NotNull
     List<Object> getFirstRow();
-
-    /**
-     * Indicates the columns use for the selection.
-     *
-     * @param columns Array of the columns use for the selection.
-     * @return Filtered {@link ITable}.
-     */
-    @NotNull
-    ITable<T, U> columns(@NotNull String... columns);
-
-    /**
-     * Indicates the columns use for the selection.
-     *
-     * @param columns List of the columns use for the selection.
-     * @return Filtered {@link ITable}.
-     */
-    @NotNull
-    ITable<T, U> columns(@NotNull List<String> columns);
 
     /**
      * Return true if the {@link ITable} is spatial.
@@ -612,9 +595,6 @@ public interface ITable<T, U> extends IMatrix<T, U> {
      */
     @Nullable
     Stream<U> stream();
-
-    @Override
-    ITable<T, U> filter(String filter);
 
     @NotNull
     Map<String, Object> firstRow();

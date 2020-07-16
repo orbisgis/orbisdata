@@ -47,7 +47,6 @@ import org.junit.jupiter.api.Test;
 import org.orbisgis.orbisdata.datamanager.api.dataset.DataBaseType;
 import org.orbisgis.orbisdata.datamanager.api.dataset.ISpatialTable;
 import org.orbisgis.orbisdata.datamanager.api.dataset.ITable;
-import org.orbisgis.orbisdata.datamanager.api.dsl.IFromBuilder;
 import org.orbisgis.orbisdata.datamanager.jdbc.h2gis.H2GIS;
 import org.orbisgis.orbisdata.datamanager.jdbc.postgis.POSTGIS;
 
@@ -252,35 +251,6 @@ class JdbcDataSourceTest {
                 "[id:2, the_geom:LINESTRING (0 0, 1 1, 2 2), text:tata]\n" +
                 "[id:3, the_geom:POINT (4 5), text:titi]\n", collect[0]);
         collect[0] = "";
-    }
-
-    /**
-     * Test the {@link JdbcDataSource#select(String...)} method.
-     */
-    @Test
-    void testSelect() throws NoSuchFieldException, IllegalAccessException {
-        assertEquals("SELECT *  ", getQuery(h2gis.select()));
-        assertEquals("SELECT toto,tata ", getQuery(h2gis.select("toto", "tata")));
-        assertEquals("SELECT *  ", getQuery(h2gis.select((String[]) null)));
-        assertEquals("SELECT *  ", getQuery(h2gis.select()));
-        assertEquals("SELECT *  ", getQuery(postgis.select()));
-        assertEquals("SELECT toto,tata ", getQuery(postgis.select("toto", "tata")));
-        assertEquals("SELECT *  ", getQuery(postgis.select((String[]) null)));
-        assertEquals("SELECT *  ", getQuery(postgis.select()));
-    }
-
-    /**
-     * Return the string query from a {@link IFromBuilder}.
-     *
-     * @param builder {@link IFromBuilder}.
-     * @return The string query.
-     * @throws NoSuchFieldException   Exception thrown if the field doesn't exists.
-     * @throws IllegalAccessException Exception thrown if the access is illegal.
-     */
-    private String getQuery(IFromBuilder builder) throws NoSuchFieldException, IllegalAccessException {
-        Field f = builder.getClass().getDeclaredField("query");
-        f.setAccessible(true);
-        return f.get(builder).toString();
     }
 
     /**

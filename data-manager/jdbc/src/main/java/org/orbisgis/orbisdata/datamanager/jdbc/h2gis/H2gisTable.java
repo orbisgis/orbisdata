@@ -71,10 +71,10 @@ public class H2gisTable extends JdbcTable {
     @Override
     public Object asType(@NotNull Class<?> clazz) {
         if (ISpatialTable.class.isAssignableFrom(clazz)) {
-            return new H2gisSpatialTable(getTableLocation(), getBaseQuery(), (StatementWrapper) getStatement(),
+            return new H2gisSpatialTable(getTableLocation(), getBaseQuery(), getStatement(),
                     getJdbcDataSource());
         } else if (ITable.class.isAssignableFrom(clazz)) {
-            return new H2gisTable(getTableLocation(), getBaseQuery(), (StatementWrapper) getStatement(),
+            return new H2gisTable(getTableLocation(), getBaseQuery(), getStatement(),
                     getJdbcDataSource());
         } else {
             return super.asType(clazz);

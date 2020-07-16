@@ -51,6 +51,7 @@ import java.io.InputStream;
 import java.net.URI;
 import java.net.URL;
 import java.sql.ResultSet;
+import java.sql.Statement;
 import java.util.Collection;
 import java.util.Map;
 
@@ -86,6 +87,17 @@ public interface IJdbcDataSource extends IDataSource<ResultSet>, GroovyObject, D
     IJdbcTable getTable(@NotNull String tableName);
 
     /**
+     * Return the {@link IJdbcTable} contained by the database with the given name. If the table contains a geometric
+     * field, return a {@link ISpatialTable}.
+     *
+     * @param tableName Name of the requested table.
+     * @parem statement {@link Statement} to use.
+     * @return The {@link IJdbcTable} with the given name or null if no table is found.
+     */
+    @Nullable
+    IJdbcTable getTable(@NotNull String tableName, @NotNull Statement statement);
+
+    /**
      * Return a {@link ISpatialTable} contained by the database with the given name. If the table doesn't contains a
      * geometric field, return null;
      *
@@ -95,6 +107,18 @@ public interface IJdbcDataSource extends IDataSource<ResultSet>, GroovyObject, D
      */
     @Nullable
     IJdbcSpatialTable getSpatialTable(@NotNull String tableName);
+
+    /**
+     * Return a {@link ISpatialTable} contained by the database with the given name. If the table doesn't contains a
+     * geometric field, return null;
+     *
+     * @param tableName Name of the requested table.
+     * @parem statement {@link Statement} to use.
+     * @return The {@link ISpatialTable} with the given name or null if no table is found or if the table doesn't
+     * contains a geometric field.
+     */
+    @Nullable
+    IJdbcSpatialTable getSpatialTable(@NotNull String tableName, @NotNull Statement statement);
 
     /**
      * Get all table names from the underlying database.

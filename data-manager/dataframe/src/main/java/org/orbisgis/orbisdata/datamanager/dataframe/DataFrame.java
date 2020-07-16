@@ -45,8 +45,10 @@ import org.orbisgis.commons.printer.Html;
 import org.orbisgis.commons.printer.ICustomPrinter;
 import org.orbisgis.orbisdata.datamanager.api.dataset.DataBaseType;
 import org.orbisgis.orbisdata.datamanager.api.dataset.IJdbcTable;
+import org.orbisgis.orbisdata.datamanager.api.dataset.ISpatialTable;
 import org.orbisgis.orbisdata.datamanager.api.dataset.ITable;
 import org.orbisgis.orbisdata.datamanager.api.datasource.IJdbcDataSource;
+import org.orbisgis.orbisdata.datamanager.api.dsl.IFilterBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import smile.data.Tuple;
@@ -833,7 +835,7 @@ public class DataFrame implements smile.data.DataFrame, ITable<BaseVector, Tuple
 
     @Override
     @Nullable
-    public ITable filter(String filter) {
+    public DataFrame filter(String filter) {
         throw new UnsupportedOperationException();
     }
 
@@ -912,6 +914,18 @@ public class DataFrame implements smile.data.DataFrame, ITable<BaseVector, Tuple
             return printer;
         }
         return null;
+    }
+
+    @Nullable
+    @Override
+    public ITable<?, ?> getTable() {
+        return this;
+    }
+
+    @Nullable
+    @Override
+    public ISpatialTable<?, ?> getSpatialTable() {
+        throw new UnsupportedOperationException();
     }
 
     /**

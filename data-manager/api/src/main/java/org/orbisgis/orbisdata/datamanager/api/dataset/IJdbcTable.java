@@ -39,7 +39,6 @@ package org.orbisgis.orbisdata.datamanager.api.dataset;
 import groovy.lang.Closure;
 import org.orbisgis.commons.annotations.NotNull;
 import org.orbisgis.commons.annotations.Nullable;
-import org.orbisgis.orbisdata.datamanager.api.dsl.IWhereBuilderOrOptionBuilder;
 
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
@@ -47,12 +46,12 @@ import java.util.List;
 
 /**
  * Extension of the {@link ITable} specially dedicated to the JDBC databases thanks to the extension of the
- * {@link ResultSet} interface. It also extends the {@link IWhereBuilderOrOptionBuilder} for the SQL requesting.
+ * {@link ResultSet} interface.
  *
  * @author Erwan Bocher (CNRS)
  * @author Sylvain Palominos (Lab-STICC UBS 2019)
  */
-public interface IJdbcTable<T> extends ITable<ResultSet, T>, ResultSet, IWhereBuilderOrOptionBuilder {
+public interface IJdbcTable<T> extends ITable<ResultSet, T>, ResultSet {
 
     /**
      * {@link String} location/name of the query built table
@@ -127,15 +126,4 @@ public interface IJdbcTable<T> extends ITable<ResultSet, T>, ResultSet, IWhereBu
     @Override
     @NotNull
     IJdbcTableSummary getSummary();
-
-    @Override
-    @NotNull
-    IJdbcTable columns(@NotNull String... columns);
-
-    @Override
-    @NotNull
-    IJdbcTable columns(@NotNull List<String> columns);
-
-    @Override
-    IJdbcTable filter(String filter);
 }

@@ -40,7 +40,7 @@ import groovy.lang.GString;
 import org.orbisgis.orbisdata.datamanager.api.dataset.DataBaseType;
 import org.orbisgis.orbisdata.datamanager.api.dataset.ISpatialTable;
 import org.orbisgis.orbisdata.datamanager.api.datasource.IJdbcDataSource;
-import org.orbisgis.orbisdata.datamanager.api.datasource.IResultSetBuilder;
+import org.orbisgis.orbisdata.datamanager.api.dsl.IResultSetBuilder;
 import org.orbisgis.orbisdata.datamanager.jdbc.JdbcTable;
 import org.orbisgis.orbisdata.datamanager.jdbc.TableLocation;
 import org.orbisgis.orbisdata.datamanager.jdbc.h2gis.H2gisSpatialTable;

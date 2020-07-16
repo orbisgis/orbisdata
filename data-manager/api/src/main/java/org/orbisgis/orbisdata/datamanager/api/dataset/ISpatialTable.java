@@ -205,15 +205,4 @@ public interface ISpatialTable<T, U> extends ITable<T, U> {
      */
     @Nullable
     ISpatialTable<T, U> reproject(int srid);
-
-    @Override
-    ISpatialTable<T, U> filter(String filter);
-
-    @NotNull
-    @Override
-    ISpatialTable<T, U> columns(@NotNull String... columns);
-
-    @NotNull
-    @Override
-    ISpatialTable<T, U> columns(@NotNull List<String> columns);
 }

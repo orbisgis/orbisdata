@@ -48,15 +48,4 @@ import java.util.List;
  * @author Sylvain PALOMINOS (Lab-STICC UBS 2019)
  */
 public interface IJdbcSpatialTable<T> extends IJdbcTable<T>, ISpatialTable<ResultSet, T> {
-
-    @Override
-    IJdbcSpatialTable filter(String filter);
-
-    @Override
-    @NotNull
-    IJdbcSpatialTable columns(@NotNull String... columns);
-
-    @Override
-    @NotNull
-    IJdbcSpatialTable columns(@NotNull List<String> columns);
 }

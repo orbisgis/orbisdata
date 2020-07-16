@@ -60,10 +60,7 @@ import javax.sql.DataSource;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.DatabaseMetaData;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -250,45 +247,90 @@ public class H2GIS extends JdbcDataSource {
 
     @Override
     @Nullable
-    public IJdbcTable getTable(@NotNull String tableName) {
+    public IJdbcTable getTable(@NotNull String tableName, @NotNull Statement statement) {
         Connection connection = getConnection();
-        org.h2gis.utilities.TableLocation inputLocation = TableLocation.parse(tableName, true);
-        try {
-            if (!JDBCUtilities.tableExists(connection, inputLocation)) {
-                LOGGER.error("Unable to find table "+ tableName);
+        String query;
+        TableLocation location;
+        if(!tableName.startsWith("(") && !tableName.endsWith(")")) {
+            org.h2gis.utilities.TableLocation inputLocation = TableLocation.parse(tableName, true);
+            try {
+                if (!JDBCUtilities.tableExists(connection, inputLocation)) {
+                    LOGGER.error("Unable to find table " + tableName);
+                    return null;
+                }
+            } catch (SQLException e) {
+                LOGGER.error("Unable to find table.\n" + e.getLocalizedMessage());
                 return null;
             }
-        } catch (SQLException e) {
-            LOGGER.error("Unable to find table.\n" + e.getLocalizedMessage());
-            return null;
+            query = String.format("SELECT * FROM %s", inputLocation);
+            location = new TableLocation(Objects.requireNonNull(getLocation()).toString(), inputLocation.getCatalog(), inputLocation.getSchema(), inputLocation.getTable());
         }
-        StatementWrapper statement;
-        try {
-            DatabaseMetaData dbdm = connection.getMetaData();
-            int type = ResultSet.TYPE_FORWARD_ONLY;
-            if(dbdm.supportsResultSetType(ResultSet.TYPE_SCROLL_SENSITIVE)){
-                type = ResultSet.TYPE_SCROLL_SENSITIVE;
-            }
-            else if(dbdm.supportsResultSetType(ResultSet.TYPE_SCROLL_INSENSITIVE)){
-                type = ResultSet.TYPE_SCROLL_INSENSITIVE;
-            }
-            statement = (StatementWrapper) connection.createStatement(type, ResultSet.CONCUR_UPDATABLE);
-        } catch (SQLException e) {
-            LOGGER.error("Unable to create Statement.\n" + e.getLocalizedMessage());
-            return null;
+        else {
+            query = tableName;
+            location = null;
         }
-        String query = String.format("SELECT * FROM %s", inputLocation);
-        TableLocation location = new TableLocation(Objects.requireNonNull(getLocation()).toString(), inputLocation.getCatalog(), inputLocation.getSchema(), inputLocation.getTable());
         try {
             Connection con = getConnection();
-            if(con != null && GeometryTableUtilities.hasGeometryColumn(con, inputLocation)) {
-                return new H2gisSpatialTable(location, query, statement, this);
+            if(con != null){
+                if(location != null){
+                    if(GeometryTableUtilities.hasGeometryColumn(con, location)) {
+                        return new H2gisSpatialTable(location, query, statement, this);
+                    }
+                    else {
+                        return new H2gisTable(location, query, statement, this);
+                    }
+                }
+                else {
+                    if(GeometryTableUtilities.hasGeometryColumn(statement.executeQuery(query))) {
+                        return new H2gisSpatialTable(location, query, statement, this);
+                    }
+                    else {
+                        return new H2gisTable(location, query, statement, this);
+                    }
+                }
             }
         } catch (SQLException e) {
             LOGGER.error("Unable to check if table '" + location + "' contains geometric fields.\n" +
                     e.getLocalizedMessage());
         }
-        return new H2gisTable(location, query, statement, this);
+        return null;
+    }
+
+    @Override
+    @Nullable
+    public IJdbcTable getTable(@NotNull String tableName) {
+        Connection connection = getConnection();
+        Statement statement;
+        try {
+            DatabaseMetaData dbdm = connection.getMetaData();
+            int type = ResultSet.TYPE_FORWARD_ONLY;
+            if (dbdm.supportsResultSetType(ResultSet.TYPE_SCROLL_SENSITIVE)) {
+                type = ResultSet.TYPE_SCROLL_SENSITIVE;
+            } else if (dbdm.supportsResultSetType(ResultSet.TYPE_SCROLL_INSENSITIVE)) {
+                type = ResultSet.TYPE_SCROLL_INSENSITIVE;
+            }
+            statement = connection.createStatement(type, ResultSet.CONCUR_UPDATABLE);
+        } catch (SQLException e) {
+            LOGGER.error("Unable to create Statement.\n" + e.getLocalizedMessage());
+            return null;
+        }
+        return getTable(tableName, statement);
+    }
+
+    @Override
+    @Nullable
+    public IJdbcSpatialTable getSpatialTable(@NotNull String tableName, @NotNull Statement statement) {
+        IJdbcTable table = getTable(tableName, statement);
+        if (table instanceof ISpatialTable) {
+            return (JdbcSpatialTable) table;
+        } else {
+            String name = "";
+            if(table != null){
+                name = "'" + table.getName() + "' ";
+            }
+            LOGGER.error("The table " + name + "is not a spatial table.");
+            return null;
+        }
     }
 
     @Override

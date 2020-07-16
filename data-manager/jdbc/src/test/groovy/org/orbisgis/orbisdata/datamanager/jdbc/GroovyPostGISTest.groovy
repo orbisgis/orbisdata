@@ -293,7 +293,7 @@ class GroovyPostGISTest {
                 CREATE TABLE orbisgis (id int, the_geom geometry(point, 4326));
                 INSERT INTO orbisgis VALUES (1, 'SRID=4326;POINT(10 10)'::GEOMETRY), (2, 'SRID=4326;POINT(1 1)'::GEOMETRY);
         """)
-        def sp = postGIS.select("ST_BUFFER(THE_GEOM, 10) AS THE_GEOM").from("orbisgis").spatialTable
+        def sp = postGIS.getSpatialTable("orbisgis").columns("ST_BUFFER(THE_GEOM, 10) AS THE_GEOM").spatialTable
         sp.save("target/query_table_postgis.shp")
         def queryTable = postGIS.getSpatialTable(postGIS.load("target/query_table_postgis.shp", true))
         assertEquals 2, queryTable.rowCount

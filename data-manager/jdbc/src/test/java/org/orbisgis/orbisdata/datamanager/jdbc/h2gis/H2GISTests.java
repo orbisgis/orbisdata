@@ -55,7 +55,6 @@ import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.orbisgis.orbisdata.datamanager.api.dsl.IOptionBuilder.Order.DESC;
 
 /**
  * Test class dedicated to the {@link H2GIS} class.
@@ -160,26 +159,6 @@ public class H2GISTests {
     }
 
     @Test
-    public void querySpatialTableWhere() throws SQLException {
-        Map<String, String> map = new HashMap<>();
-        map.put(DataSourceFactory.JDBC_DATABASE_NAME, "./target/loadH2GIS2");
-        H2GIS h2GIS = H2GIS.open(map);
-        h2GIS.execute("DROP TABLE IF EXISTS h2gis; CREATE TABLE h2gis (id int, the_geom geometry(point));" +
-                "insert into h2gis values (1, 'POINT(10 10)'::GEOMETRY), (2, 'POINT(1 1)'::GEOMETRY);");
-
-        ArrayList<String> values = new ArrayList<>();
-        ((IJdbcTable) h2GIS.getSpatialTable("h2gis")).where("id=2").eachRow(new Closure(null) {
-            @Override
-            public Object call(Object argument) {
-                values.add(((ISpatialTable) argument).getGeometry().toString());
-                return argument;
-            }
-        });
-        assertEquals(1, values.size());
-        assertEquals("POINT (1 1)", values.get(0));
-    }
-
-    @Test
     public void queryTableNames() throws SQLException {
         Map<String, String> map = new HashMap<>();
         map.put(DataSourceFactory.JDBC_DATABASE_NAME, "./target/loadH2GIS");
@@ -248,11 +227,9 @@ public class H2GISTests {
                 "insert into h2gis values (5,22, 'POINT(20 10)'::GEOMETRY);");
 
         ITable table = ((ITable) h2GIS
-                .select("COUNT(id)", "code", "the_geom")
-                .from("h2gis")
-                .where("code=22")
-                .and("id<5")
-                .groupBy("code")
+                .getTable("h2gis")
+                .columns("COUNT(id)", "code", "the_geom")
+                .filter("WHERE code=22 AND id<5 GROUP BY code")
                 .asType(ITable.class));
 
         ArrayList<Integer> values = new ArrayList<>();
@@ -273,11 +250,10 @@ public class H2GISTests {
         assertEquals(22, (int) values.get(1));
 
         table = ((ITable) h2GIS
-                .select("*")
-                .from("h2gis")
-                .where("code=22")
-                .or("code=56")
-                .orderBy("id", DESC)
+                .getTable("h2gis")
+                .filter("WHERE code=22")
+                .filter("OR code=56")
+                .filter("ORDER BY id DESC")
                 .asType(ITable.class));
 
         ArrayList<Integer> values2 = new ArrayList<>();
@@ -300,9 +276,8 @@ public class H2GISTests {
         assertEquals(1, (int) values2.get(4));
 
         table = ((ITable) h2GIS
-                .select("*")
-                .from("h2gis")
-                .orderBy("id", DESC)
+                .getTable("h2gis")
+                .filter("ORDER BY id DESC")
                 .asType(ITable.class));
 
         ArrayList<Integer> values3 = new ArrayList<>();

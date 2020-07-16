@@ -40,7 +40,9 @@ import groovy.lang.Closure;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.orbisgis.commons.annotations.NotNull;
+import org.orbisgis.commons.annotations.Nullable;
 import org.orbisgis.orbisdata.datamanager.api.datasource.IJdbcDataSource;
+import org.orbisgis.orbisdata.datamanager.api.dsl.IFilterBuilder;
 
 import java.math.BigDecimal;
 import java.sql.Date;
@@ -413,18 +415,6 @@ public class ITableTest {
             return null;
         }
 
-        @NotNull
-        @Override
-        public ITable columns(@NotNull String... columns) {
-            return null;
-        }
-
-        @NotNull
-        @Override
-        public ITable columns(@NotNull List<String> columns) {
-            return null;
-        }
-
         @Override
         public boolean isSpatial() {
             return false;
@@ -585,11 +575,6 @@ public class ITableTest {
             return null;
         }
 
-        @Override
-        public ITable<ResultSet, ResultSet> filter(String filter) {
-            return null;
-        }
-
         @NotNull
         @Override
         public Map<String, Object> firstRow() {
@@ -642,6 +627,33 @@ public class ITableTest {
 
         @Override
         public String getColumnType(@NotNull String columnName) {
+            return null;
+        }
+
+        @Nullable
+        @Override
+        public ITable<?, ?> getTable() {
+            return null;
+        }
+
+        @Nullable
+        @Override
+        public ISpatialTable<?, ?> getSpatialTable() {
+            return null;
+        }
+
+        @Override
+        public IFilterBuilder filter(String filter) {
+            return null;
+        }
+
+        @Override
+        public IFilterBuilder columns(String... columns) {
+            return null;
+        }
+
+        @Override
+        public IFilterBuilder columns(List<String> columns) {
             return null;
         }
     }

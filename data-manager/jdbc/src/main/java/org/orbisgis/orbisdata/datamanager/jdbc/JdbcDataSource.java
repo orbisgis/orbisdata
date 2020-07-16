@@ -58,10 +58,7 @@ import org.orbisgis.orbisdata.datamanager.api.dataset.DataBaseType;
 import org.orbisgis.orbisdata.datamanager.api.dataset.IJdbcTable;
 import org.orbisgis.orbisdata.datamanager.api.datasource.IDataSourceLocation;
 import org.orbisgis.orbisdata.datamanager.api.datasource.IJdbcDataSource;
-import org.orbisgis.orbisdata.datamanager.api.datasource.IResultSetBuilder;
-import org.orbisgis.orbisdata.datamanager.api.dsl.IFromBuilder;
-import org.orbisgis.orbisdata.datamanager.api.dsl.ISelectBuilder;
-import org.orbisgis.orbisdata.datamanager.jdbc.dsl.FromBuilder;
+import org.orbisgis.orbisdata.datamanager.api.dsl.IResultSetBuilder;
 import org.orbisgis.orbisdata.datamanager.jdbc.dsl.ResultSetBuilder;
 import org.orbisgis.orbisdata.datamanager.jdbc.io.IOMethods;
 import org.slf4j.Logger;
@@ -87,7 +84,7 @@ import java.util.regex.Pattern;
  * @author Erwan Bocher (CNRS)
  * @author Sylvain PALOMINOS (UBS 2019)
  */
-public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, ISelectBuilder, IResultSetBuilder {
+public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, IResultSetBuilder {
     /**
      * Logger
      */
@@ -440,18 +437,6 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, ISe
             LOGGER.debug("Unable to execute the request as a GString.\n" + e.getLocalizedMessage());
             super.eachRow(gstring.toString(), closure);
         }
-    }
-
-    @Override
-    public IFromBuilder select(String... fields) {
-        StringBuilder query = new StringBuilder();
-        query.append("SELECT ");
-        if (fields != null && fields.length > 0) {
-            query.append(String.join(",", fields));
-        } else {
-            query.append("* ");
-        }
-        return new FromBuilder(query.toString(), this);
     }
 
     @Override

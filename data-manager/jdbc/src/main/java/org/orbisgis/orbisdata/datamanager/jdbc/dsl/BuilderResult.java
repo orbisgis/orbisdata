@@ -98,43 +98,10 @@ public abstract class BuilderResult implements IBuilderResult {
                 return table.asType(clazz);
             }
         }
-        Statement statement;
-        Connection con;
-        try {
-            con = getDataSource().getConnection();
-            if(con == null){
-                LOGGER.error("Unable to create the StatementWrapper.\n");
-                return null;
-            }
-            statement = con.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);
-        } catch (SQLException e) {
-            LOGGER.error("Unable to create the StatementWrapper.\n", e);
-            return null;
-        }
-        switch (getDataSource().getDataBaseType()) {
-            default:
-            case H2GIS:
-                if (!(statement instanceof StatementWrapper)) {
-                    LOGGER.warn("The statement class not compatible with the database.");
-                    statement = new StatementWrapper(statement, new ConnectionWrapper(con));
-                }
-                if (ISpatialTable.class.isAssignableFrom(clazz)) {
-                    return new H2gisSpatialTable(null, getQuery(), statement, getDataSource());
-                } else if (ITable.class.isAssignableFrom(clazz)) {
-                    return new H2gisTable(null, getQuery(), statement, getDataSource());
-                }
-            case POSTGIS:
-                if (!(statement instanceof org.h2gis.postgis_jts.StatementWrapper)) {
-                    LOGGER.error("The statement class not compatible with the database.");
-                    break;
-                }
-                if (ISpatialTable.class.isAssignableFrom(clazz)) {
-                    return new PostgisSpatialTable(null, getQuery(),
-                            (org.h2gis.postgis_jts.StatementWrapper) statement, getDataSource());
-                } else if (ITable.class.isAssignableFrom(clazz)) {
-                    return new PostgisTable(null, getQuery(),
-                            (org.h2gis.postgis_jts.StatementWrapper) statement, getDataSource());
-                }
+        if (ISpatialTable.class.isAssignableFrom(clazz)) {
+            return getSpatialTable();
+        } else if (ITable.class.isAssignableFrom(clazz)) {
+            return getTable();
         }
         return null;
     }
@@ -142,16 +109,16 @@ public abstract class BuilderResult implements IBuilderResult {
     @NotNull
     @Override
     public String toString() {
-        return getQuery();
+        return "(" + getQuery() + ")";
     }
 
     @Override
     public ITable getTable() {
-        return (ITable) this.asType(ITable.class);
+        return getDataSource().getTable(toString());
     }
 
     @Override
     public ISpatialTable getSpatialTable() {
-        return (ISpatialTable) this.asType(ISpatialTable.class);
+        return getDataSource().getSpatialTable(toString());
     }
 }

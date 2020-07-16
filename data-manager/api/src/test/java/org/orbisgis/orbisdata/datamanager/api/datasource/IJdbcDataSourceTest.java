@@ -56,6 +56,7 @@ import java.net.URL;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
+import java.sql.Statement;
 import java.util.Collection;
 import java.util.Map;
 import java.util.logging.Logger;
@@ -200,8 +201,20 @@ public class IJdbcDataSourceTest {
             return null;
         }
 
+        @Nullable
+        @Override
+        public IJdbcTable getTable(@NotNull String tableName, @NotNull Statement statement) {
+            return null;
+        }
+
         @Override
         public IJdbcSpatialTable getSpatialTable(@NotNull String tableName) {
+            return null;
+        }
+
+        @Nullable
+        @Override
+        public IJdbcSpatialTable getSpatialTable(@NotNull String tableName, @NotNull Statement statement) {
             return null;
         }
 

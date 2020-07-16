@@ -298,6 +298,12 @@ public class JdbcSpatialTableTest {
             return null;
         }
 
+        @Nullable
+        @Override
+        public IJdbcTable getTable(@NotNull String tableName, @NotNull Statement statement) {
+            return null;
+        }
+
         @Override
         public IJdbcSpatialTable getSpatialTable(@NotNull String tableName) {
             String name = TableLocation.parse(tableName, getDataBaseType().equals(DataBaseType.H2GIS)).toString(getDataBaseType().equals(DataBaseType.H2GIS));
@@ -316,6 +322,12 @@ public class JdbcSpatialTableTest {
             }
             String query = String.format("SELECT * FROM %s", name);
             return new DummyJdbcSpatialTable(new TableLocation(null, name), query, statement, this);
+        }
+
+        @Nullable
+        @Override
+        public IJdbcSpatialTable getSpatialTable(@NotNull String tableName, @NotNull Statement statement) {
+            return null;
         }
 
         @NotNull

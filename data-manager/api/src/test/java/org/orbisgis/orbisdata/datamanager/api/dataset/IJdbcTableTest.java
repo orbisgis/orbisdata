@@ -36,14 +36,11 @@
  */
 package org.orbisgis.orbisdata.datamanager.api.dataset;
 
-import groovy.lang.Closure;
 import org.junit.jupiter.api.Test;
 import org.orbisgis.commons.annotations.NotNull;
 import org.orbisgis.commons.annotations.Nullable;
 import org.orbisgis.orbisdata.datamanager.api.datasource.IJdbcDataSource;
-import org.orbisgis.orbisdata.datamanager.api.dsl.IConditionOrOptionBuilder;
-import org.orbisgis.orbisdata.datamanager.api.dsl.IOptionBuilder;
-import org.orbisgis.orbisdata.datamanager.api.dsl.IWhereBuilderOrOptionBuilder;
+import org.orbisgis.orbisdata.datamanager.api.dsl.IFilterBuilder;
 
 import javax.sql.rowset.RowSetMetaDataImpl;
 import java.io.InputStream;
@@ -55,7 +52,7 @@ import java.sql.*;
 import java.util.*;
 import java.util.stream.Stream;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Test class dedicated to {@link IJdbcTable} interface.
@@ -254,26 +251,9 @@ public class IJdbcTableTest {
             return null;
         }
 
-        @NotNull
-        @Override
-        public IJdbcTable columns(@NotNull String... columns) {
-            return null;
-        }
-
-        @NotNull
-        @Override
-        public IJdbcTable columns(@NotNull List columns) {
-            return null;
-        }
-
         @Override
         public boolean reload() {
             return false;
-        }
-
-        @Override
-        public IJdbcTable filter(String filter) {
-            return null;
         }
 
         @NotNull
@@ -1139,41 +1119,6 @@ public class IJdbcTableTest {
         }
 
         @Override
-        public IConditionOrOptionBuilder where(String condition) {
-            return null;
-        }
-
-        @Override
-        public IWhereBuilderOrOptionBuilder option(String option) {
-            return null;
-        }
-
-        @Override
-        public IOptionBuilder groupBy(String... fields) {
-            return null;
-        }
-
-        @Override
-        public IOptionBuilder orderBy(Map<String, Order> orderByMap) {
-            return null;
-        }
-
-        @Override
-        public IOptionBuilder orderBy(String field, Order order) {
-            return null;
-        }
-
-        @Override
-        public IOptionBuilder orderBy(String field) {
-            return null;
-        }
-
-        @Override
-        public IOptionBuilder limit(int limitCount) {
-            return null;
-        }
-
-        @Override
         public Object asType(@NotNull Class clazz) {
             return null;
         }
@@ -1190,6 +1135,21 @@ public class IJdbcTableTest {
 
         @Override
         public Iterator iterator() {
+            return null;
+        }
+
+        @Override
+        public IFilterBuilder filter(String filter) {
+            return null;
+        }
+
+        @Override
+        public IFilterBuilder columns(String... columns) {
+            return null;
+        }
+
+        @Override
+        public IFilterBuilder columns(List<String> columns) {
             return null;
         }
     }

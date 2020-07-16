@@ -43,7 +43,6 @@ import org.locationtech.jts.geom.Point
 import org.orbisgis.commons.printer.Ascii
 import org.orbisgis.commons.printer.Html
 import org.orbisgis.orbisdata.datamanager.api.dataset.ISpatialTable
-import org.orbisgis.orbisdata.datamanager.api.dataset.ITable
 import org.orbisgis.orbisdata.datamanager.jdbc.h2gis.H2GIS
 import org.orbisgis.orbisdata.datamanager.jdbc.postgis.POSTGIS
 
@@ -52,7 +51,6 @@ import java.sql.Time
 import java.util.stream.Collectors
 
 import static org.junit.jupiter.api.Assertions.*
-import static org.orbisgis.orbisdata.datamanager.api.dsl.IOptionBuilder.Order.DESC
 
 class GroovyH2GISTest {
 
@@ -287,7 +285,7 @@ class GroovyH2GISTest {
         """)
 
         def values = new ArrayList<>()
-        h2GIS.getSpatialTable "h2gis" where "id=2" eachRow { row ->
+        h2GIS.getSpatialTable "h2gis" filter "where id=2" eachRow { row ->
             values.add "$row.the_geom"
         }
         assertEquals(1, values.size())
@@ -489,7 +487,7 @@ class GroovyH2GISTest {
                 insert into h2gis values (4,22, 'POINT(10 10)'::GEOMETRY);
                 insert into h2gis values (5,22, 'POINT(20 10)'::GEOMETRY);"""
 
-        def table = h2GIS.select "COUNT(id)", "code", "the_geom" from "h2gis" where "code=22" and "id<5" groupBy "code" spatialTable
+        def table = h2GIS.spatialTable "h2gis" columns "COUNT(id)", "code", "the_geom" filter "where code=22" filter "and id<5" filter "group By code" spatialTable
 
         def values = new ArrayList<>()
         table.eachRow { row ->
@@ -502,7 +500,7 @@ class GroovyH2GISTest {
 
         values = new ArrayList<>()
 
-        h2GIS.select("*") from "h2gis" where "code=22" or "code=56" orderBy "id", DESC eachRow { row ->
+        h2GIS.table "h2gis" filter "where code=22" filter "or code=56" filter "order By id DESC" eachRow { row ->
             values.add row.getInt(1)
         }
         assertEquals(5, values.size())
@@ -514,7 +512,7 @@ class GroovyH2GISTest {
 
         values = new ArrayList<>()
 
-        h2GIS.select("*") from "h2gis" orderBy "id", DESC eachRow { row ->
+        h2GIS.table "h2gis" filter "order By id DESC" eachRow { row ->
             values.add row.getInt(1)
         }
         assertEquals(5, values.size())
@@ -623,7 +621,7 @@ class GroovyH2GISTest {
                         "+--------------------+--------------------+--------------------+\n" +
                         "|                   1|POINT (10 10)       |just a string a b...|\n" +
                         "+--------------------+--------------------+--------------------+\n",
-                (h2GIS.getSpatialTable("orbisgis").limit(1) as Ascii).toString())
+                (h2GIS.getSpatialTable("orbisgis").filter("limit 1") as Ascii).toString())
         assertEquals "<table>\n" +
                 "<caption>ORBISGIS</caption>\n" +
                 "<tr></tr>\n" +
@@ -691,7 +689,7 @@ class GroovyH2GISTest {
                 CREATE TABLE orbisgis (id int, the_geom geometry(point, 4326));
                 INSERT INTO orbisgis VALUES (1, 'SRID=4326;POINT(10 10)'::GEOMETRY), (2, 'SRID=4326;POINT(1 1)'::GEOMETRY);
         """)
-        ISpatialTable sp = h2GIS.select("ST_BUFFER(THE_GEOM, 10) AS THE_GEOM").from("ORBISGIS").getSpatialTable()
+        ISpatialTable sp = h2GIS.getSpatialTable("ORBISGIS").columns("ST_BUFFER(THE_GEOM, 10) AS THE_GEOM").getSpatialTable()
         assertNotNull(sp)
         ISpatialTable spr = sp.reproject(2154)
         assertNotNull(spr)
@@ -712,7 +710,7 @@ class GroovyH2GISTest {
                 CREATE TABLE orbisgis (id int, the_geom geometry(point, 4326));
                 INSERT INTO orbisgis VALUES (1, 'SRID=4326;POINT(10 10)'::GEOMETRY), (2, 'SRID=4326;POINT(1 1)'::GEOMETRY);
         """)
-        def sp = h2GIS.select("ST_BUFFER(THE_GEOM, 10) AS THE_GEOM").from("ORBISGIS").getSpatialTable()
+        def sp = h2GIS.getSpatialTable("ORBISGIS").columns("ST_BUFFER(THE_GEOM, 10) AS THE_GEOM").getSpatialTable()
         sp.save("target/query_table.shp")
         def queryTable = h2GIS.getTable(h2GIS.load("target/query_table.shp"))
         assertEquals 2, queryTable.rowCount
@@ -780,7 +778,7 @@ class GroovyH2GISTest {
         geom = h2GIS.getSpatialTable("forests").getExtent("ST_Buffer(boundary,0)", "boundary");
         assertEquals 4326, geom.SRID
         assertEquals("POLYGON ((28 0, 28 42, 84 42, 84 0, 28 0))", geom.toString());
-        geom = h2GIS.select().from("forests").getSpatialTable().getExtent("boundary");
+        geom = h2GIS.getSpatialTable("forests").getExtent("boundary");
         assertEquals 4326, geom.SRID
         assertEquals("POLYGON ((28 0, 28 42, 84 42, 84 0, 28 0))", geom.toString());
         h2GIS.execute("drop table forests");
@@ -803,7 +801,7 @@ class GroovyH2GISTest {
         geom = h2GIS.getSpatialTable("forests").getExtent(["ST_Buffer(boundary,0)", "boundary"]as String[],"limit 1");
         assertEquals 4326, geom.SRID
         assertEquals("POLYGON ((28 0, 28 42, 84 42, 84 0, 28 0))", geom.toString());
-        geom = h2GIS.select("boundary").from("forests").getSpatialTable().getExtent(["ST_Buffer(boundary,0)", "boundary"]as String[],"limit 1");
+        geom = h2GIS.getSpatialTable("forests").getExtent(["ST_Buffer(boundary,0)", "boundary"]as String[],"limit 1");
         assertEquals 4326, geom.SRID
         assertEquals("POLYGON ((28 0, 28 42, 84 42, 84 0, 28 0))", geom.toString());
         h2GIS.execute("drop table forests");
@@ -869,8 +867,8 @@ class GroovyH2GISTest {
         ]
         def  postGIS = POSTGIS.open(dbProperties)
         if(postGIS){
-        assertNull(h2GIS.select().from( "h2gis").getSpatialTable().save(postGIS, true))
-        h2GIS.select().from( "h2gis").getSpatialTable().save(postGIS, "H2GIS",true )
+        assertEquals("\"H2GIS\"", h2GIS.getSpatialTable("h2gis").save(postGIS, true))
+        h2GIS.getSpatialTable("h2gis").save(postGIS, "H2GIS",true )
         def concat = ""
         postGIS.spatialTable "H2GIS" eachRow { row -> concat += "$row.id $row.the_geom $row.geometry\n" }
         assertEquals("1 POINT (10 10) POINT (10 10)\n2 POINT (1 1) POINT (1 1)\n", concat)

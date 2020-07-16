@@ -38,7 +38,7 @@ package org.orbisgis.orbisdata.datamanager.jdbc.h2gis;
 
 
 import org.junit.jupiter.api.Test;
-import org.locationtech.jts.geom.MultiPolygon;
+import org.locationtech.jts.geom.Point;
 import org.orbisgis.orbisdata.datamanager.api.dataset.IJdbcSpatialTable;
 import org.orbisgis.orbisdata.datamanager.api.dataset.IJdbcTable;
 import org.orbisgis.orbisdata.datamanager.api.dataset.ISpatialTable;
@@ -119,9 +119,8 @@ public class H2gisSpatialTableTest {
                 "INSERT INTO orbisgis VALUES (1, 'SRID=4326;POINT(10 10)'::GEOMETRY), " +
                 "(2, 'SRID=4326;POINT(1 1)'::GEOMETRY); ");
 
-        ISpatialTable sp = dataSource.select("ST_BUFFER(THE_GEOM, 10) AS THE_GEOM").from("ORBISGIS").getSpatialTable();
+        ISpatialTable sp = dataSource.getSpatialTable("ORBISGIS");
         assertNotNull(sp);
-        assertThrows(UnsupportedOperationException.class, sp::getSrid);
         assertEquals(2, sp.getRowCount());
         assertEquals("target/query_table.shp", sp.save("target/query_table.shp"));
 
@@ -136,6 +135,6 @@ public class H2gisSpatialTableTest {
         IJdbcSpatialTable spLoaded = dataSource.getSpatialTable("QUERY_TABLE");
         assertEquals(2, spLoaded.getRowCount());
         assertEquals(4326, spLoaded.getSrid());
-        assertTrue(spLoaded.getFirstRow().get(1) instanceof MultiPolygon);
+        assertTrue(spLoaded.getFirstRow().get(1) instanceof Point);
     }
 }

@@ -36,14 +36,12 @@
  */
 package org.orbisgis.orbisdata.datamanager.jdbc.h2gis;
 
-import org.h2gis.utilities.wrapper.StatementWrapper;
 import org.orbisgis.commons.annotations.NotNull;
 import org.orbisgis.commons.annotations.Nullable;
 import org.orbisgis.orbisdata.datamanager.api.dataset.DataBaseType;
 import org.orbisgis.orbisdata.datamanager.api.dataset.ISpatialTable;
 import org.orbisgis.orbisdata.datamanager.api.dataset.ITable;
 import org.orbisgis.orbisdata.datamanager.api.datasource.IJdbcDataSource;
-import org.orbisgis.orbisdata.datamanager.jdbc.JdbcDataSource;
 import org.orbisgis.orbisdata.datamanager.jdbc.JdbcTable;
 import org.orbisgis.orbisdata.datamanager.jdbc.TableLocation;
 
@@ -71,10 +69,10 @@ public class H2gisTable extends JdbcTable {
     @Override
     public Object asType(@NotNull Class<?> clazz) {
         if (ISpatialTable.class.isAssignableFrom(clazz)) {
-            return new H2gisSpatialTable(getTableLocation(), getBaseQuery(), (StatementWrapper) getStatement(),
+            return new H2gisSpatialTable(getTableLocation(), getBaseQuery(), getStatement(),
                     getJdbcDataSource());
         } else if (ITable.class.isAssignableFrom(clazz)) {
-            return new H2gisTable(getTableLocation(), getBaseQuery(), (StatementWrapper) getStatement(),
+            return new H2gisTable(getTableLocation(), getBaseQuery(), getStatement(),
                     getJdbcDataSource());
         } else {
             return super.asType(clazz);

@@ -39,9 +39,7 @@ package org.orbisgis.orbisdata.datamanager.dataframe
 import org.junit.jupiter.api.Test
 import org.orbisgis.orbisdata.datamanager.jdbc.h2gis.H2GIS
 
-import static org.junit.jupiter.api.Assertions.assertEquals
-import static org.junit.jupiter.api.Assertions.assertNotNull
-import static org.junit.jupiter.api.Assertions.assertNull
+import static org.junit.jupiter.api.Assertions.*
 
 class GroovyDataFrameTest {
 
@@ -97,7 +95,7 @@ class GroovyDataFrameTest {
                 CREATE TABLE geotable (id int, the_geom geometry(point), type varchar,temperature int, baby_jeje_weight double);
                 INSERT INTO geotable VALUES (1, 'POINT(10 10)'::GEOMETRY, 'grass', -12, 4.780), (2, 'POINT(1 1)'::GEOMETRY, 'corn', 22, 5.500);
         """)
-        DataFrame df = DataFrame.of(h2GIS.select().from("GEOTABLE").where("type = 'grass'").getSpatialTable())
+        DataFrame df = DataFrame.of(h2GIS.getSpatialTable("GEOTABLE").filter("where type = 'grass'").getSpatialTable())
         assertNotNull df
         assertNotNull df.schema()
         assertEquals 5, df.ncols()
@@ -128,7 +126,7 @@ class GroovyDataFrameTest {
                 CREATE TABLE geotable (id int,  type varchar,temperature int, baby_jeje_weight double, orbisgis boolean);
                 INSERT INTO geotable VALUES (1,  'grass', -12, 4.780, false), (2,  'corn', 22, null, null);
         """)
-        DataFrame df = DataFrame.of(h2GIS.select().from("GEOTABLE").where("type = 'corn'").getSpatialTable())
+        DataFrame df = DataFrame.of(h2GIS.getTable("geotable").filter("where type = 'corn'").getTable())
         assertNotNull df
         assertEquals(2,df.get(0, 0))
         assertEquals("corn",df.get(0, 1))

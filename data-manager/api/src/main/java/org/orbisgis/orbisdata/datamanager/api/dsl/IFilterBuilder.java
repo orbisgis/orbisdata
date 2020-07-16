@@ -39,20 +39,19 @@ package org.orbisgis.orbisdata.datamanager.api.dsl;
 import org.orbisgis.orbisdata.datamanager.api.dataset.ITable;
 
 /**
- * Interface defining methods for the SQL 'from' building. The request construction can be continued thanks to the
- * {@link IWhereBuilderOrOptionBuilder} or its result can be get calling 'eachRow' to iterate on the resultSet or
- * 'as ITable' to get the {@link ITable} object
+ * The request construction can be continued thanks to the {@link IFilterBuilder} or its result can be get calling
+ * 'eachRow' to iterate on the resultSet or 'as ITable' to get the {@link ITable} object.
  *
  * @author Erwan Bocher (CNRS)
- * @author Sylvain PALOMINOS (Lab-STICC UBS 2019)
+ * @author Sylvain PALOMINOS (UBS Lab-STICC / Chaire GEOTERA 2020)
  */
-public interface IFromBuilder {
+public interface IFilterBuilder extends IBuilderResult {
 
     /**
-     * Indicates the table use for the selection.
+     * Add a filter to the query.
      *
-     * @param tables Array of the table use for the selection.
-     * @return {@link IWhereBuilderOrOptionBuilder} instance to continue building.
+     * @param filter Condition to add for for the selection.
+     * @return {@link IFilterBuilder} instance to continue building.
      */
-    IWhereBuilderOrOptionBuilder from(String... tables);
+    IBuilderResult filter(String filter);
 }

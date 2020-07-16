@@ -36,6 +36,7 @@
  */
 package org.orbisgis.orbisdata.datamanager.jdbc.h2gis;
 
+import org.h2gis.utilities.wrapper.ConnectionWrapper;
 import org.h2gis.utilities.wrapper.SpatialResultSetImpl;
 import org.h2gis.utilities.wrapper.StatementWrapper;
 import org.orbisgis.commons.annotations.NotNull;
@@ -44,7 +45,6 @@ import org.orbisgis.orbisdata.datamanager.api.dataset.DataBaseType;
 import org.orbisgis.orbisdata.datamanager.api.dataset.ISpatialTable;
 import org.orbisgis.orbisdata.datamanager.api.dataset.ITable;
 import org.orbisgis.orbisdata.datamanager.api.datasource.IJdbcDataSource;
-import org.orbisgis.orbisdata.datamanager.jdbc.JdbcDataSource;
 import org.orbisgis.orbisdata.datamanager.jdbc.JdbcSpatialTable;
 import org.orbisgis.orbisdata.datamanager.jdbc.TableLocation;
 import org.slf4j.Logger;
@@ -94,7 +94,12 @@ public class H2gisSpatialTable extends JdbcSpatialTable {
                 return null;
             }
         }
-        return new SpatialResultSetImpl(resultSet, (StatementWrapper) getStatement());
+        try {
+            return new SpatialResultSetImpl(resultSet, new StatementWrapper(getStatement(), new ConnectionWrapper(getJdbcDataSource().getConnection())));
+        } catch (SQLException e) {
+            LOGGER.error("Unable to get the connection.", e);
+            return null;
+        }
     }
 
 

@@ -33,3 +33,5 @@ make it compatible with `smile` API)
 + Add to `H2GIS` and `POSTGIS` an `open(java.sql.DataSource)` method.
 + Add to `DataFrame` the method `DataFrame apply(Formula)`.
 + Add to `JdbcDataSource` the méthods `Collection<String> getTableNames(...)` with multiple signatures.
++ Change the request building from a `ITable`, only use `columns(String...)` (optional) followed by `filter(String)` (optional) to make request.
+  A sub request can be made by calling `getTable()` after calling again `columns(String...)` and `filter(String)`.

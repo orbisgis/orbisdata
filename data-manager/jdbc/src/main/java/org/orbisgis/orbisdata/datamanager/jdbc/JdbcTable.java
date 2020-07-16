@@ -55,11 +55,10 @@ import org.orbisgis.orbisdata.datamanager.api.dataset.IJdbcSpatialTable;
 import org.orbisgis.orbisdata.datamanager.api.dataset.IJdbcTable;
 import org.orbisgis.orbisdata.datamanager.api.dataset.ITable;
 import org.orbisgis.orbisdata.datamanager.api.datasource.IJdbcDataSource;
-import org.orbisgis.orbisdata.datamanager.api.dsl.IConditionOrOptionBuilder;
-import org.orbisgis.orbisdata.datamanager.api.dsl.IOptionBuilder;
-import org.orbisgis.orbisdata.datamanager.api.dsl.IWhereBuilderOrOptionBuilder;
-import org.orbisgis.orbisdata.datamanager.jdbc.dsl.OptionBuilder;
-import org.orbisgis.orbisdata.datamanager.jdbc.dsl.WhereBuilder;
+import org.orbisgis.orbisdata.datamanager.api.dsl.IBuilderResult;
+import org.orbisgis.orbisdata.datamanager.api.dsl.IFilterBuilder;
+import org.orbisgis.orbisdata.datamanager.api.dsl.IQueryBuilder;
+import org.orbisgis.orbisdata.datamanager.jdbc.dsl.QueryBuilder;
 import org.orbisgis.orbisdata.datamanager.jdbc.io.IOMethods;
 import org.orbisgis.orbisdata.datamanager.jdbc.resultset.DefaultResultSet;
 import org.orbisgis.orbisdata.datamanager.jdbc.resultset.ResultSetSpliterator;
@@ -688,66 +687,26 @@ public abstract class JdbcTable extends DefaultResultSet implements IJdbcTable<S
     }
 
     @Override
-    @NotNull
-    public JdbcTable columns(@NotNull String... columns) {
-        WhereBuilder builder = new WhereBuilder(getQuery(columns), getJdbcDataSource());
-        if (isSpatial()) {
-            return (JdbcTable) builder.getSpatialTable();
-        } else {
-            return (JdbcTable) builder.getTable();
-        }
-    }
-
-    @Override
-    @NotNull
-    public IJdbcTable columns(@NotNull List<String> columns) {
-        WhereBuilder builder = new WhereBuilder(getQuery(columns.toArray(new String[0])), getJdbcDataSource());
-        if (isSpatial()) {
-            return (IJdbcTable) builder.getSpatialTable();
-        } else {
-            return (IJdbcTable) builder.getTable();
-        }
-    }
-
-    @Override
-    public IConditionOrOptionBuilder where(String condition) {
-        return new WhereBuilder(getQuery(), getJdbcDataSource()).where(condition);
-    }
-
-    @Override
-    public IWhereBuilderOrOptionBuilder option(String option) {
-        return new WhereBuilder(getQuery(), getJdbcDataSource()).option(option);
-    }
-
-    @Override
-    public IOptionBuilder groupBy(String... fields) {
-        return new OptionBuilder(getQuery(), getJdbcDataSource()).groupBy(fields);
-    }
-
-    @Override
-    public IOptionBuilder orderBy(Map<String, Order> orderByMap) {
-        return new OptionBuilder(getQuery(), getJdbcDataSource()).orderBy(orderByMap);
-    }
-
-    @Override
-    public IOptionBuilder orderBy(String field, Order order) {
-        return new OptionBuilder(getQuery(), getJdbcDataSource()).orderBy(field, order);
-    }
-
-    @Override
-    public IOptionBuilder orderBy(String field) {
-        return new OptionBuilder(getQuery(), getJdbcDataSource()).orderBy(field);
-    }
-
-    @Override
-    public IOptionBuilder limit(int limitCount) {
-        return new OptionBuilder(getQuery(), getJdbcDataSource()).limit(limitCount);
-    }
-
-    @Override
     @Nullable
-    public JdbcTable filter(String filter) {
-        return (JdbcTable)option(filter).getTable();
+    public IBuilderResult filter(String filter) {
+        IQueryBuilder builder = new QueryBuilder(getJdbcDataSource(), getTableLocation().toString(getDbType()));
+        return builder.filter(filter);
+    }
+
+    @Override
+    @NotNull
+    public IFilterBuilder columns(@NotNull String... columns) {
+        String loc = getTableLocation() != null ? getTableLocation().toString(getDbType()) : getBaseQuery();
+        IQueryBuilder builder = new QueryBuilder(getJdbcDataSource(), loc);
+        return builder.columns(columns);
+    }
+
+    @Override
+    @NotNull
+    public IFilterBuilder columns(@NotNull List<String> columns) {
+        String loc = getTableLocation() != null ? getTableLocation().toString(getDbType()) : null;
+        IQueryBuilder builder = new QueryBuilder(getJdbcDataSource(), loc);
+        return builder.columns(columns);
     }
 
     @Override

@@ -421,4 +421,22 @@ public class H2GISTests {
         assertEquals("POLYGON ((28 0, 28 42, 84 42, 84 0, 28 0))", geom.toString());
         h2GIS.execute("drop table forests");
     }
+
+    @Test
+    public void getTableSelect() throws SQLException {
+        Map<String, String> map = new HashMap<>();
+        map.put(DataSourceFactory.JDBC_DATABASE_NAME, "./target/selectTable");
+        H2GIS h2GIS = H2GIS.open(map);
+        h2GIS.execute("DROP TABLE IF EXISTS h2gis; CREATE TABLE h2gis (id int, the_geom geometry(point));" +
+                "insert into h2gis values (1, 'POINT(10 10)'::GEOMETRY), (2, 'POINT(1 1)'::GEOMETRY);" );
+        ISpatialTable sp = h2GIS.getSpatialTable("SELECT * FROM h2gis");
+        assertNull(sp);
+        sp = h2GIS.getSpatialTable("(SELECT * FROM h2gis)");
+        assertNotNull(sp);
+        assertEquals(2, sp.getRowCount());
+        sp = h2GIS.getSpatialTable("(SELECT ST_BUFFER(ST_PointOnSurface('SRID=4326;POINT(0 0)'::GEOMETRY), 10) as the_geom)");
+        assertNotNull(sp);
+        assertEquals(1, sp.getRowCount());
+        assertTrue(((Geometry)sp.firstRow().get("THE_GEOM")).getArea()>0);
+    }
 }

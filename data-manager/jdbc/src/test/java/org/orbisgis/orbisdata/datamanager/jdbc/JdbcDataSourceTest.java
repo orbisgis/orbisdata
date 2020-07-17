@@ -796,7 +796,7 @@ class JdbcDataSourceTest {
         assertNotNull(table);
         assertArrayEquals(new int[]{3, 3}, table.getSize());
 
-        table = postgis.forwardOnly().readOnly().holdCursorOverCommit().fetchForward()
+        table = postgis.scrollInsensitive().readOnly().holdCursorOverCommit().fetchReverse()
                 .fetchSize(SIZE).timeout(TIMEOUT).maxRow(MAX_ROW).cursorName("name").poolable()
                 .maxFieldSize(FIELD_SIZE).getTable("test_postgis");
         assertNotNull(table);

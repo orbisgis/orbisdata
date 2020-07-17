@@ -38,6 +38,7 @@ package org.orbisgis.orbisdata.datamanager.jdbc.dsl;
 
 import groovy.lang.GString;
 import org.orbisgis.orbisdata.datamanager.api.dataset.DataBaseType;
+import org.orbisgis.orbisdata.datamanager.api.dataset.IJdbcTable;
 import org.orbisgis.orbisdata.datamanager.api.dataset.ISpatialTable;
 import org.orbisgis.orbisdata.datamanager.api.datasource.IJdbcDataSource;
 import org.orbisgis.orbisdata.datamanager.api.dsl.IResultSetBuilder;
@@ -126,13 +127,13 @@ public class ResultSetBuilder implements IResultSetBuilder {
 
     @Override
     public IResultSetBuilder scrollInsensitive() {
-        type = ResultSet.TYPE_FORWARD_ONLY;
+        type = ResultSet.TYPE_SCROLL_INSENSITIVE;
         return this;
     }
 
     @Override
     public IResultSetBuilder scrollSensitive() {
-        type = ResultSet.TYPE_FORWARD_ONLY;
+        type = ResultSet.TYPE_SCROLL_SENSITIVE;
         return this;
     }
 
@@ -322,52 +323,22 @@ public class ResultSetBuilder implements IResultSetBuilder {
     }
 
     @Override
-    public JdbcTable getTable(String nameOrQuery) {
-        String query;
-        TableLocation loc;
-        if (nameOrQuery.startsWith("(") && nameOrQuery.endsWith(")")) {
-            query = nameOrQuery;
-            loc = null;
-        } else {
-            query = "SELECT * FROM " + nameOrQuery;
-            loc = new TableLocation(null,
-                    TableLocation.parse(nameOrQuery, dataSource.getDataBaseType() == DataBaseType.H2GIS));
-        }
+    public IJdbcTable getTable(String nameOrQuery) {
         try {
-            if (dataSource.getDataBaseType() == DataBaseType.H2GIS) {
-                return new H2gisTable(loc, query, getStatement(), dataSource);
-            } else if (dataSource.getDataBaseType() == DataBaseType.POSTGIS) {
-                return new PostgisTable(loc, query, getStatement(), dataSource);
-            }
+            return dataSource.getTable(nameOrQuery, getStatement());
+        } catch (SQLException e) {
+            LOGGER.error("Unable to get the statement.", e);
+            return dataSource.getTable(nameOrQuery);
         }
-        catch(Exception e) {
-            LOGGER.error("Unable to get the statement from the dayabase.", e);
-        }
-        return null;
     }
 
     @Override
     public ISpatialTable<?, ?> getSpatialTable(String nameOrQuery) {
-        String query;
-        TableLocation loc;
-        if (nameOrQuery.startsWith("(") && nameOrQuery.endsWith(")")) {
-            query = nameOrQuery;
-            loc = null;
-        } else {
-            query = "SELECT * FROM " + nameOrQuery;
-            loc = new TableLocation(null,
-                    TableLocation.parse(nameOrQuery, dataSource.getDataBaseType() == DataBaseType.H2GIS));
-        }
         try {
-            if (dataSource.getDataBaseType() == DataBaseType.H2GIS) {
-                return new H2gisSpatialTable(loc, query, getStatement(), dataSource);
-            } else if (dataSource.getDataBaseType() == DataBaseType.POSTGIS) {
-                return new PostgisSpatialTable(loc, nameOrQuery, getStatement(), dataSource);
-            }
+            return dataSource.getSpatialTable(nameOrQuery, getStatement());
+        } catch (SQLException e) {
+            LOGGER.error("Unable to get the statement.", e);
+            return dataSource.getSpatialTable(nameOrQuery);
         }
-        catch(Exception e) {
-            LOGGER.error("Unable to get the statement from the dayabase.", e);
-        }
-        return null;
     }
 }

@@ -46,10 +46,11 @@ import org.orbisgis.orbisdata.datamanager.jdbc.JdbcTable;
 import org.orbisgis.orbisdata.datamanager.jdbc.TableLocation;
 
 import java.sql.Statement;
+import java.util.List;
 
 /**
  * @author Erwan Bocher (CNRS)
- * @author Sylvain PALOMINOS (UBS 2018-2019)
+ * @author Sylvain PALOMINOS (UBS Lab-STICC 2018-2019 / Chaire GEOTERA 2020)
  */
 public class H2gisTable extends JdbcTable {
 
@@ -57,22 +58,24 @@ public class H2gisTable extends JdbcTable {
      * Main constructor.
      *
      * @param tableLocation  {@link TableLocation} that identify the represented table.
-     * @param baseQuery      Query for the creation of the ResultSet
-     * @param statement      Statement used to request the database.
+     * @param baseQuery      Query for the creation of the ResultSet.
+     * @param statement  PreparedStatement used to request the database.
+     * @param params         Map containing the parameters for the query.
      * @param jdbcDataSource DataSource to use for the creation of the resultSet.
      */
     public H2gisTable(@Nullable TableLocation tableLocation, @NotNull String baseQuery,
-                      @NotNull Statement statement, @NotNull IJdbcDataSource jdbcDataSource) {
-        super(DataBaseType.H2GIS, jdbcDataSource, tableLocation, statement, baseQuery);
+                      @NotNull Statement statement, @Nullable List<Object> params,
+                      @NotNull IJdbcDataSource jdbcDataSource) {
+        super(DataBaseType.H2GIS, jdbcDataSource, tableLocation, statement, params, baseQuery);
     }
 
     @Override
     public Object asType(@NotNull Class<?> clazz) {
         if (ISpatialTable.class.isAssignableFrom(clazz)) {
-            return new H2gisSpatialTable(getTableLocation(), getBaseQuery(), getStatement(),
+            return new H2gisSpatialTable(getTableLocation(), getBaseQuery(), getStatement(), getParams(),
                     getJdbcDataSource());
         } else if (ITable.class.isAssignableFrom(clazz)) {
-            return new H2gisTable(getTableLocation(), getBaseQuery(), getStatement(),
+            return new H2gisTable(getTableLocation(), getBaseQuery(), getStatement(), getParams(),
                     getJdbcDataSource());
         } else {
             return super.asType(clazz);

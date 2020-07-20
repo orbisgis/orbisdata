@@ -47,7 +47,7 @@ import org.h2gis.functions.io.kml.KMLDriverFunction;
 import org.h2gis.functions.io.osm.OSMDriverFunction;
 import org.h2gis.functions.io.shp.SHPDriverFunction;
 import org.h2gis.functions.io.tsv.TSVDriverFunction;
-import org.h2gis.functions.io.utility.FileUtil;
+import org.h2gis.utilities.FileUtilities;
 import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.TableLocation;
 import org.h2gis.utilities.URIUtilities;
@@ -144,7 +144,7 @@ public class IOMethods {
         File fileToSave = URIUtilities.fileFromString(filePath);
         DriverFunction driverFunction = getDriverFromFile(fileToSave);
         try {
-            if (FileUtil.isExtensionWellFormated(fileToSave, "csv")) {
+            if (FileUtilities.isExtensionWellFormated(fileToSave, "csv")) {
                 if (enc == null) {
                     enc = ENCODING_OPTION + UTF_ENCODING;
                 }

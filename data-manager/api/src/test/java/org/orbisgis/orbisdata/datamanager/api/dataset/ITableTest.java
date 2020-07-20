@@ -37,11 +37,13 @@
 package org.orbisgis.orbisdata.datamanager.api.dataset;
 
 import groovy.lang.Closure;
+import groovy.lang.GString;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.orbisgis.commons.annotations.NotNull;
 import org.orbisgis.commons.annotations.Nullable;
 import org.orbisgis.orbisdata.datamanager.api.datasource.IJdbcDataSource;
+import org.orbisgis.orbisdata.datamanager.api.dsl.IBuilderResult;
 import org.orbisgis.orbisdata.datamanager.api.dsl.IFilterBuilder;
 
 import java.math.BigDecimal;
@@ -643,17 +645,27 @@ public class ITableTest {
         }
 
         @Override
+        public List<Object> getParams() {
+            return null;
+        }
+
+        @Override
         public IFilterBuilder filter(String filter) {
             return null;
         }
 
         @Override
-        public IFilterBuilder columns(String... columns) {
+        public IBuilderResult filter(GString filter) {
             return null;
         }
 
         @Override
-        public IFilterBuilder columns(List<String> columns) {
+        public IBuilderResult filter(String filter, List<Object> params) {
+            return null;
+        }
+
+        @Override
+        public IFilterBuilder columns(String... columns) {
             return null;
         }
     }

@@ -36,6 +36,7 @@
  */
 package org.orbisgis.orbisdata.datamanager.api.datasource;
 
+import groovy.lang.GString;
 import groovy.lang.MetaClass;
 import groovy.lang.MissingMethodException;
 import groovy.lang.MissingPropertyException;
@@ -58,6 +59,7 @@ import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
 import java.sql.Statement;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
@@ -203,7 +205,31 @@ public class IJdbcDataSourceTest {
 
         @Nullable
         @Override
+        public IJdbcTable getTable(@NotNull GString nameOrQuery) {
+            return null;
+        }
+
+        @Nullable
+        @Override
+        public IJdbcTable getTable(@NotNull String nameOrQuery, List<Object> params) {
+            return null;
+        }
+
+        @Nullable
+        @Override
         public IJdbcTable getTable(@NotNull String tableName, @NotNull Statement statement) {
+            return null;
+        }
+
+        @Nullable
+        @Override
+        public IJdbcTable getTable(@NotNull GString nameOrQuery, @NotNull Statement statement) {
+            return null;
+        }
+
+        @Nullable
+        @Override
+        public IJdbcTable getTable(@NotNull String nameOrQuery, @Nullable List<Object> params, @NotNull Statement statement) {
             return null;
         }
 
@@ -214,7 +240,31 @@ public class IJdbcDataSourceTest {
 
         @Nullable
         @Override
+        public IJdbcSpatialTable getSpatialTable(@NotNull GString nameOrQuery) {
+            return null;
+        }
+
+        @Nullable
+        @Override
+        public IJdbcSpatialTable getSpatialTable(@NotNull String nameOrQuery, List<Object> params) {
+            return null;
+        }
+
+        @Nullable
+        @Override
         public IJdbcSpatialTable getSpatialTable(@NotNull String tableName, @NotNull Statement statement) {
+            return null;
+        }
+
+        @Nullable
+        @Override
+        public IJdbcSpatialTable getSpatialTable(@NotNull GString nameOrQuery, @NotNull Statement statement) {
+            return null;
+        }
+
+        @Nullable
+        @Override
+        public IJdbcSpatialTable getSpatialTable(@NotNull String nameOrQuery, @Nullable List<Object> params, @NotNull Statement statement) {
             return null;
         }
 
@@ -533,6 +583,16 @@ public class IJdbcDataSourceTest {
 
         @Override
         public IJdbcTable getDataSet(@NotNull String name) {
+            return null;
+        }
+
+        @Override
+        public List<Object> getParameters(GString gString) {
+            return null;
+        }
+
+        @Override
+        public String asSql(GString gString, List<Object> params) {
             return null;
         }
 

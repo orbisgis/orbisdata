@@ -36,6 +36,7 @@
  */
 package org.orbisgis.orbisdata.datamanager.dataframe;
 
+import groovy.lang.GString;
 import org.h2gis.utilities.TableLocation;
 import org.locationtech.jts.geom.Geometry;
 import org.orbisgis.commons.annotations.NotNull;
@@ -48,6 +49,7 @@ import org.orbisgis.orbisdata.datamanager.api.dataset.IJdbcTable;
 import org.orbisgis.orbisdata.datamanager.api.dataset.ISpatialTable;
 import org.orbisgis.orbisdata.datamanager.api.dataset.ITable;
 import org.orbisgis.orbisdata.datamanager.api.datasource.IJdbcDataSource;
+import org.orbisgis.orbisdata.datamanager.api.dsl.IBuilderResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import smile.data.Tuple;
@@ -825,16 +827,18 @@ public class DataFrame implements smile.data.DataFrame, ITable<BaseVector, Tuple
     }
 
     @Override
-    @NotNull
-    public DataFrame columns(@NotNull List<String> columns) {
-        List<String> col = new ArrayList<>(getColumns());
-        col.removeAll(columns);
-        return of(drop(col.toArray(new String[0])));
+    @Nullable
+    public DataFrame filter(String filter) {
+        throw new UnsupportedOperationException();
     }
 
     @Override
-    @Nullable
-    public DataFrame filter(String filter) {
+    public IBuilderResult filter(GString filter) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public IBuilderResult filter(String filter, List<Object> params) {
         throw new UnsupportedOperationException();
     }
 
@@ -1064,6 +1068,10 @@ public class DataFrame implements smile.data.DataFrame, ITable<BaseVector, Tuple
         return getInternalDataFrame().toString();
     }
 
+    @Override
+    public List<Object> getParams() {
+        throw new UnsupportedOperationException();
+    }
 
     /* Override methods from SMILE API */
 

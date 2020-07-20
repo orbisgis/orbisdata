@@ -36,10 +36,12 @@
  */
 package org.orbisgis.orbisdata.datamanager.api.dataset;
 
+import groovy.lang.GString;
 import org.junit.jupiter.api.Test;
 import org.orbisgis.commons.annotations.NotNull;
 import org.orbisgis.commons.annotations.Nullable;
 import org.orbisgis.orbisdata.datamanager.api.datasource.IJdbcDataSource;
+import org.orbisgis.orbisdata.datamanager.api.dsl.IBuilderResult;
 import org.orbisgis.orbisdata.datamanager.api.dsl.IFilterBuilder;
 
 import javax.sql.rowset.RowSetMetaDataImpl;
@@ -248,6 +250,12 @@ public class IJdbcTableTest {
         @NotNull
         @Override
         public IJdbcTableSummary getSummary() {
+            return null;
+        }
+
+        @NotNull
+        @Override
+        public List<Object> getParams() {
             return null;
         }
 
@@ -1144,12 +1152,17 @@ public class IJdbcTableTest {
         }
 
         @Override
-        public IFilterBuilder columns(String... columns) {
+        public IBuilderResult filter(GString filter) {
             return null;
         }
 
         @Override
-        public IFilterBuilder columns(List<String> columns) {
+        public IBuilderResult filter(String filter, List<Object> params) {
+            return null;
+        }
+
+        @Override
+        public IFilterBuilder columns(String... columns) {
             return null;
         }
     }

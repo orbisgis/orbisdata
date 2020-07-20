@@ -36,6 +36,7 @@
  */
 package org.orbisgis.orbisdata.datamanager.api.datasource;
 
+import groovy.lang.GString;
 import groovy.lang.GroovyObject;
 import groovy.lang.MissingMethodException;
 import org.orbisgis.commons.annotations.NotNull;
@@ -50,16 +51,18 @@ import java.io.File;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URL;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 /**
  * Extension of the {@link IDataSource} interface dedicated to the usage of a JDBC database as a data source.
  *
  * @author Erwan Bocher (CNRS)
- * @author Sylvain PALOMINOS (Lab-STICC UBS 2018-2019)
+ * @author Sylvain PALOMINOS (Lab-STICC UBS 2018-2019 / Chaire GEOTERA 2020)
  */
 public interface IJdbcDataSource extends IDataSource<ResultSet>, GroovyObject, DataSource {
 
@@ -80,45 +83,134 @@ public interface IJdbcDataSource extends IDataSource<ResultSet>, GroovyObject, D
      * Return the {@link IJdbcTable} contained by the database with the given name. If the table contains a geometric
      * field, return a {@link ISpatialTable}.
      *
-     * @param tableName Name of the requested table.
+     * @param nameOrQuery Name of the requested table.
      * @return The {@link IJdbcTable} with the given name or null if no table is found.
      */
     @Nullable
-    IJdbcTable getTable(@NotNull String tableName);
+    IJdbcTable getTable(@NotNull String nameOrQuery);
 
     /**
      * Return the {@link IJdbcTable} contained by the database with the given name. If the table contains a geometric
      * field, return a {@link ISpatialTable}.
      *
-     * @param tableName Name of the requested table.
-     * @parem statement {@link Statement} to use.
+     * @param nameOrQuery Name of the requested table.
      * @return The {@link IJdbcTable} with the given name or null if no table is found.
      */
     @Nullable
-    IJdbcTable getTable(@NotNull String tableName, @NotNull Statement statement);
+    IJdbcTable getTable(@NotNull GString nameOrQuery);
+
+    /**
+     * Return the {@link IJdbcTable} contained by the database with the given name. If the table contains a geometric
+     * field, return a {@link ISpatialTable}.
+     *
+     * @param nameOrQuery Name of the requested table.
+     * @return The {@link IJdbcTable} with the given name or null if no table is found.
+     */
+    @Nullable
+    IJdbcTable getTable(@NotNull String nameOrQuery, List<Object> params);
+
+    /**
+     * Return the {@link IJdbcTable} contained by the database with the given name. If the table contains a geometric
+     * field, return a {@link ISpatialTable}.
+     *
+     * @param nameOrQuery Name of the requested table.
+     * @param statement {@link Statement} to use.
+     * @return The {@link IJdbcTable} with the given name or null if no table is found.
+     */
+    @Nullable
+    IJdbcTable getTable(@NotNull String nameOrQuery, @NotNull Statement statement);
+
+    /**
+     * Return the {@link IJdbcTable} contained by the database with the given name. If the table contains a geometric
+     * field, return a {@link ISpatialTable}.
+     *
+     * @param nameOrQuery Name of the requested table.
+     * @param statement {@link Statement} to use.
+     * @return The {@link IJdbcTable} with the given name or null if no table is found.
+     */
+    @Nullable
+    IJdbcTable getTable(@NotNull GString nameOrQuery, @NotNull Statement statement);
+
+    /**
+     * Return the {@link IJdbcTable} contained by the database with the given name. If the table contains a geometric
+     * field, return a {@link ISpatialTable}.
+     *
+     * @param nameOrQuery   Name of the requested table.
+     * @param params        Parameters to use with the {@link PreparedStatement}.
+     * @param statement {@link Statement} to use.
+     * @return The {@link IJdbcTable} with the given name or null if no table is found.
+     */
+    @Nullable
+    IJdbcTable getTable(@NotNull String nameOrQuery, @Nullable List<Object> params, @NotNull Statement statement);
 
     /**
      * Return a {@link ISpatialTable} contained by the database with the given name. If the table doesn't contains a
      * geometric field, return null;
      *
-     * @param tableName Name of the requested table.
+     * @param nameOrQuery Name of the requested table.
      * @return The {@link ISpatialTable} with the given name or null if no table is found or if the table doesn't
      * contains a geometric field.
      */
     @Nullable
-    IJdbcSpatialTable getSpatialTable(@NotNull String tableName);
+    IJdbcSpatialTable getSpatialTable(@NotNull String nameOrQuery);
 
     /**
      * Return a {@link ISpatialTable} contained by the database with the given name. If the table doesn't contains a
      * geometric field, return null;
      *
-     * @param tableName Name of the requested table.
-     * @parem statement {@link Statement} to use.
+     * @param nameOrQuery Name of the requested table.
      * @return The {@link ISpatialTable} with the given name or null if no table is found or if the table doesn't
      * contains a geometric field.
      */
     @Nullable
-    IJdbcSpatialTable getSpatialTable(@NotNull String tableName, @NotNull Statement statement);
+    IJdbcSpatialTable getSpatialTable(@NotNull GString nameOrQuery);
+
+    /**
+     * Return a {@link ISpatialTable} contained by the database with the given name. If the table doesn't contains a
+     * geometric field, return null;
+     *
+     * @param nameOrQuery Name of the requested table.
+     * @return The {@link ISpatialTable} with the given name or null if no table is found or if the table doesn't
+     * contains a geometric field.
+     */
+    @Nullable
+    IJdbcSpatialTable getSpatialTable(@NotNull String nameOrQuery, List<Object> params);
+
+    /**
+     * Return a {@link ISpatialTable} contained by the database with the given name. If the table doesn't contains a
+     * geometric field, return null;
+     *
+     * @param nameOrQuery Name of the requested table.
+     * @param statement {@link Statement} to use.
+     * @return The {@link ISpatialTable} with the given name or null if no table is found or if the table doesn't
+     * contains a geometric field.
+     */
+    @Nullable
+    IJdbcSpatialTable getSpatialTable(@NotNull String nameOrQuery, @NotNull Statement statement);
+
+    /**
+     * Return a {@link ISpatialTable} contained by the database with the given name. If the table doesn't contains a
+     * geometric field, return null;
+     *
+     * @param nameOrQuery Name of the requested table.
+     * @param statement {@link Statement} to use.
+     * @return The {@link ISpatialTable} with the given name or null if no table is found or if the table doesn't
+     * contains a geometric field.
+     */
+    @Nullable
+    IJdbcSpatialTable getSpatialTable(@NotNull GString nameOrQuery, @NotNull Statement statement);
+
+    /**
+     * Return the {@link IJdbcTable} contained by the database with the given name. If the table contains a geometric
+     * field, return a {@link ISpatialTable}.
+     *
+     * @param nameOrQuery Name of the requested table.
+     * @param params      Parameters to use with the {@link PreparedStatement}.
+     * @param statement   {@link Statement} to use.
+     * @return The {@link IJdbcTable} with the given name or null if no table is found.
+     */
+    @Nullable
+    IJdbcSpatialTable getSpatialTable(@NotNull String nameOrQuery, @Nullable List<Object> params, @NotNull Statement statement);
 
     /**
      * Get all table names from the underlying database.
@@ -903,4 +995,21 @@ public interface IJdbcDataSource extends IDataSource<ResultSet>, GroovyObject, D
     default void setProperty(String propertyName, Object newValue) {
         getMetaClass().setProperty(this, propertyName, newValue);
     }
+
+    /**
+     * Get the parametrized query parameters from the given {@link GString}.
+     *
+     * @param gString {@link GString} parametrized query.
+     * @return List of the parameters of the query.
+     */
+    List<Object> getParameters(GString gString);
+
+    /**
+     * Get the parametrized SQL query from the given GString and its parameters.
+     *
+     * @param gString {@link GString} parametrized query.
+     * @param params  List of the parameters of the query.
+     * @return String SQL query.
+     */
+    String asSql(GString gString, List<Object> params);
 }

@@ -55,7 +55,7 @@ class GroovyPostGISTest {
                                password    : 'orbisgis',
                                url         : 'jdbc:postgresql://localhost:5432/'
     ]
-    def static postGIS;
+    static POSTGIS postGIS;
 
 
     @BeforeAll
@@ -385,5 +385,56 @@ class GroovyPostGISTest {
         assertEquals(1, postGIS.getSpatialTable("query_table").getRowCount())
         assertEquals(1, postGIS.getSpatialTable("query_table").getColumnCount())
         assertEquals("the_geom", postGIS.getSpatialTable("query_table").getColumns().first())
+    }
+
+    @Test
+    void preparedQueryTest() {
+        postGIS.execute("""
+                DROP TABLE IF EXISTS postgis;
+                CREATE TABLE postgis (id int, the_geom geometry(point));
+                INSERT INTO postgis VALUES (1, 'POINT(10 10)'::GEOMETRY), (2, 'POINT(1 1)'::GEOMETRY);
+        """)
+        def val = 2
+        def String[] arr = []
+
+        def table = postGIS.getTable("(SELECT * FROM postgis where id=$val)")
+        assert 2 == table.firstRow[0]
+        table = postGIS.getSpatialTable("(SELECT * FROM postgis where id=$val)")
+        assert 2 == table.firstRow[0]
+
+        table = postGIS.getTable("(SELECT * FROM postgis where id=?)", [val])
+        assert 2 == table.firstRow[0]
+        table = postGIS.getSpatialTable("(SELECT * FROM postgis where id=?)", [val])
+        assert 2 == table.firstRow[0]
+
+        table = postGIS.getTable("postgis").columns("*").filter("where id=$val").getTable()
+        assert 2 == table.firstRow[0]
+        table = postGIS.getSpatialTable("postgis").columns("*").filter("where id=$val").getSpatialTable()
+        assert 2 == table.firstRow[0]
+
+        table = postGIS.getTable("postgis").columns(null).filter("where id=$val").getTable()
+        assert 2 == table.firstRow[0]
+        table = postGIS.getSpatialTable("postgis").columns(null).filter("where id=$val").getSpatialTable()
+        assert 2 == table.firstRow[0]
+
+        table = postGIS.getTable("postgis").columns(null, "").filter("where id=$val").getTable()
+        assert 2 == table.firstRow[0]
+        table = postGIS.getSpatialTable("postgis").columns("", null).filter("where id=$val").getSpatialTable()
+        assert 2 == table.firstRow[0]
+
+        table = postGIS.getTable("postgis").columns("*").filter(null).getTable()
+        assert 1 == table.firstRow[0]
+        table = postGIS.getSpatialTable("postgis").columns("*").filter(null).getSpatialTable()
+        assert 1 == table.firstRow[0]
+
+        table = postGIS.getTable("postgis").columns(arr).filter("where id=$val").getTable()
+        assert 2 == table.firstRow[0]
+        table = postGIS.getSpatialTable("postgis").columns(arr).filter("where id=$val").getSpatialTable()
+        assert 2 == table.firstRow[0]
+
+        table = postGIS.getTable("postgis").columns("*").filter("where id=?", [val]).getTable()
+        assert 2 == table.firstRow[0]
+        table = postGIS.getSpatialTable("postgis").columns("*").filter("where id=?", [val]).getSpatialTable()
+        assert 2 == table.firstRow[0]
     }
 }

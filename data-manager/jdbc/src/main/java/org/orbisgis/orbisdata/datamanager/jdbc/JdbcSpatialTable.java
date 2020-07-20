@@ -76,13 +76,14 @@ public abstract class JdbcSpatialTable extends JdbcTable implements IJdbcSpatial
      * @param dataBaseType   Type of the DataBase where this table comes from.
      * @param tableLocation  TableLocation that identify the represented table.
      * @param baseQuery      Query for the creation of the ResultSet
+     * @param params         Parameters fo the query.
      * @param statement      Statement used to request the database.
      * @param jdbcDataSource DataSource to use for the creation of the resultSet.
      */
     public JdbcSpatialTable(@NotNull DataBaseType dataBaseType, @NotNull IJdbcDataSource jdbcDataSource,
                             @Nullable TableLocation tableLocation, @NotNull Statement statement,
-                            @NotNull String baseQuery) {
-        super(dataBaseType, jdbcDataSource, tableLocation, statement, baseQuery);
+                            @NotNull String baseQuery, @Nullable List <Object> params) {
+        super(dataBaseType, jdbcDataSource, tableLocation, statement, params, baseQuery);
     }
 
     @Override

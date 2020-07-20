@@ -40,6 +40,7 @@ import groovy.lang.GString;
 import org.orbisgis.orbisdata.datamanager.api.dataset.DataBaseType;
 import org.orbisgis.orbisdata.datamanager.api.dataset.IJdbcTable;
 import org.orbisgis.orbisdata.datamanager.api.dataset.ISpatialTable;
+import org.orbisgis.orbisdata.datamanager.api.dataset.ITable;
 import org.orbisgis.orbisdata.datamanager.api.datasource.IJdbcDataSource;
 import org.orbisgis.orbisdata.datamanager.api.dsl.IResultSetBuilder;
 import org.orbisgis.orbisdata.datamanager.jdbc.JdbcTable;
@@ -54,6 +55,7 @@ import org.slf4j.LoggerFactory;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.List;
 
 /**
  * Implementation of the {@link IResultSetBuilder} interface.
@@ -339,6 +341,46 @@ public class ResultSetBuilder implements IResultSetBuilder {
         } catch (SQLException e) {
             LOGGER.error("Unable to get the statement.", e);
             return dataSource.getSpatialTable(nameOrQuery);
+        }
+    }
+
+    @Override
+    public ITable<?, ?> getTable(GString nameOrQuery) {
+        try {
+            return dataSource.getTable(nameOrQuery, getStatement());
+        } catch (SQLException e) {
+            LOGGER.error("Unable to get the statement.", e);
+            return dataSource.getTable(nameOrQuery);
+        }
+    }
+
+    @Override
+    public ISpatialTable<?, ?> getSpatialTable(GString nameOrQuery) {
+        try {
+            return dataSource.getSpatialTable(nameOrQuery, getStatement());
+        } catch (SQLException e) {
+            LOGGER.error("Unable to get the statement.", e);
+            return dataSource.getSpatialTable(nameOrQuery);
+        }
+    }
+
+    @Override
+    public ITable<?, ?> getTable(String query, List<Object> params) {
+        try {
+            return dataSource.getTable(query, params, getStatement());
+        } catch (SQLException e) {
+            LOGGER.error("Unable to get the statement.", e);
+            return dataSource.getTable(query, params);
+        }
+    }
+
+    @Override
+    public ISpatialTable<?, ?> getSpatialTable(String query, List<Object> params) {
+        try {
+            return dataSource.getSpatialTable(query, params, getStatement());
+        } catch (SQLException e) {
+            LOGGER.error("Unable to get the statement.", e);
+            return dataSource.getSpatialTable(query, params);
         }
     }
 }

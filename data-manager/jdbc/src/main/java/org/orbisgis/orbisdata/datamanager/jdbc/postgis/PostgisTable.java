@@ -46,6 +46,7 @@ import org.orbisgis.orbisdata.datamanager.jdbc.JdbcTable;
 import org.orbisgis.orbisdata.datamanager.jdbc.TableLocation;
 
 import java.sql.Statement;
+import java.util.List;
 
 /**
  * Implementation of {@link ITable} for PostGIG.
@@ -64,17 +65,18 @@ public class PostgisTable extends JdbcTable {
      * @param jdbcDataSource DataSource to use for the creation of the resultSet.
      */
     public PostgisTable(@Nullable TableLocation tableLocation, @NotNull String baseQuery,
-                        @NotNull Statement statement, @NotNull IJdbcDataSource jdbcDataSource) {
-        super(DataBaseType.H2GIS, jdbcDataSource, tableLocation, statement, baseQuery);
+                        @NotNull Statement statement, @Nullable List<Object> params,
+                        @NotNull IJdbcDataSource jdbcDataSource) {
+        super(DataBaseType.H2GIS, jdbcDataSource, tableLocation, statement, params, baseQuery);
     }
 
     @Override
     public Object asType(@NotNull Class<?> clazz) {
         if (ISpatialTable.class.isAssignableFrom(clazz)) {
-            return new PostgisSpatialTable(getTableLocation(), getBaseQuery(), getStatement(),
+            return new PostgisSpatialTable(getTableLocation(), getBaseQuery(), getStatement(), getParams(),
                     getJdbcDataSource());
         } else if (ITable.class.isAssignableFrom(clazz)) {
-            return new PostgisTable(getTableLocation(), getBaseQuery(), getStatement(),
+            return new PostgisTable(getTableLocation(), getBaseQuery(), getStatement(), getParams(),
                     getJdbcDataSource());
         } else {
             return super.asType(clazz);

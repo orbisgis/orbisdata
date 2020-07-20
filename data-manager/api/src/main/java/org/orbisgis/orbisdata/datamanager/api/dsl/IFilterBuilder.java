@@ -36,7 +36,11 @@
  */
 package org.orbisgis.orbisdata.datamanager.api.dsl;
 
+import groovy.lang.GString;
 import org.orbisgis.orbisdata.datamanager.api.dataset.ITable;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * The request construction can be continued thanks to the {@link IFilterBuilder} or its result can be get calling
@@ -54,4 +58,21 @@ public interface IFilterBuilder extends IBuilderResult {
      * @return {@link IFilterBuilder} instance to continue building.
      */
     IBuilderResult filter(String filter);
+
+    /**
+     * Add a filter to the query.
+     *
+     * @param filter Condition to add for for the selection.
+     * @return {@link IFilterBuilder} instance to continue building.
+     */
+    IBuilderResult filter(GString filter);
+
+    /**
+     * Add a filter to the query.
+     *
+     * @param filter Condition to add for for the selection.
+     * @param params Parameters of the query.
+     * @return {@link IFilterBuilder} instance to continue building.
+     */
+    IBuilderResult filter(String filter, List<Object> params);
 }

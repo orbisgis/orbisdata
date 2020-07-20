@@ -36,6 +36,7 @@
  */
 package org.orbisgis.orbisdata.datamanager.jdbc;
 
+import groovy.lang.GString;
 import groovy.lang.GroovyObject;
 import groovy.lang.MetaClass;
 import groovy.lang.MissingMethodException;
@@ -107,9 +108,13 @@ public abstract class JdbcTable extends DefaultResultSet implements IJdbcTable<S
     @Nullable
     private final TableLocation tableLocation;
     /**
-     * Statement
+     * PreparedStatement
      */
     private final Statement statement;
+    /**
+     * PreparedStatement
+     */
+    private final List<Object> params;
     /**
      * Base SQL query for the creation of the ResultSet
      */
@@ -125,17 +130,20 @@ public abstract class JdbcTable extends DefaultResultSet implements IJdbcTable<S
      *
      * @param dataBaseType   Type of the DataBase where this table comes from.
      * @param tableLocation  TableLocation that identify the represented table.
-     * @param baseQuery      Query for the creation of the ResultSet
-     * @param statement      Statement used to request the database.
+     * @param baseQuery      Query for the creation of the ResultSet.
+     * @param statement  PreparedStatement used to request the database.
+     * @param params         Map containing the parameters for the query.
      * @param jdbcDataSource DataSource to use for the creation of the resultSet.
      */
     public JdbcTable(@NotNull DataBaseType dataBaseType, @NotNull IJdbcDataSource jdbcDataSource,
-                     @Nullable  TableLocation tableLocation, @NotNull Statement statement, @NotNull String baseQuery) {
+                     @Nullable TableLocation tableLocation, @NotNull Statement statement,
+                     @Nullable List <Object> params, @NotNull String baseQuery) {
         this.metaClass = InvokerHelper.getMetaClass(getClass());
         this.dataBaseType = dataBaseType;
         this.jdbcDataSource = jdbcDataSource;
         this.tableLocation = tableLocation;
         this.statement = statement;
+        this.params = params;
         this.baseQuery = baseQuery;
     }
 
@@ -687,10 +695,27 @@ public abstract class JdbcTable extends DefaultResultSet implements IJdbcTable<S
     }
 
     @Override
-    @Nullable
+    @NotNull
     public IBuilderResult filter(String filter) {
-        IQueryBuilder builder = new QueryBuilder(getJdbcDataSource(), getTableLocation().toString(getDbType()));
+        String loc = getTableLocation() != null ? getTableLocation().toString(getDbType()) : getBaseQuery();
+        IQueryBuilder builder = new QueryBuilder(getJdbcDataSource(), loc);
         return builder.filter(filter);
+    }
+
+    @Override
+    @NotNull
+    public IBuilderResult filter(GString filter) {
+        String loc = getTableLocation() != null ? getTableLocation().toString(getDbType()) : getBaseQuery();
+        IQueryBuilder builder = new QueryBuilder(getJdbcDataSource(), loc);
+        return builder.filter(filter);
+    }
+
+    @Override
+    @NotNull
+    public IBuilderResult filter(String filter, List<Object> params) {
+        String loc = getTableLocation() != null ? getTableLocation().toString(getDbType()) : getBaseQuery();
+        IQueryBuilder builder = new QueryBuilder(getJdbcDataSource(), loc);
+        return builder.filter(filter, params);
     }
 
     @Override
@@ -703,10 +728,18 @@ public abstract class JdbcTable extends DefaultResultSet implements IJdbcTable<S
 
     @Override
     @NotNull
-    public IFilterBuilder columns(@NotNull List<String> columns) {
-        String loc = getTableLocation() != null ? getTableLocation().toString(getDbType()) : null;
+    public IFilterBuilder columns(GString... columns){
+        String loc = getTableLocation() != null ? getTableLocation().toString(getDbType()) : getBaseQuery();
         IQueryBuilder builder = new QueryBuilder(getJdbcDataSource(), loc);
         return builder.columns(columns);
+    }
+
+    @Override
+    @NotNull
+    public IFilterBuilder columns(String[] columns, List<Object> params){
+        String loc = getTableLocation() != null ? getTableLocation().toString(getDbType()) : getBaseQuery();
+        IQueryBuilder builder = new QueryBuilder(getJdbcDataSource(), loc);
+        return builder.columns(columns, params);
     }
 
     @Override
@@ -867,5 +900,10 @@ public abstract class JdbcTable extends DefaultResultSet implements IJdbcTable<S
     @NotNull
     public ResultSetIterator iterator() {
         return new ResultSetIterator(this);
+    }
+
+    @NotNull
+    public List<Object> getParams() {
+        return params;
     }
 }

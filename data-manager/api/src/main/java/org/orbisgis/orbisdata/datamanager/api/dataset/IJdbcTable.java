@@ -42,6 +42,7 @@ import org.orbisgis.commons.annotations.Nullable;
 
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
+import java.util.List;
 
 /**
  * Extension of the {@link ITable} specially dedicated to the JDBC databases thanks to the extension of the
@@ -125,4 +126,7 @@ public interface IJdbcTable<T> extends ITable<ResultSet, T>, ResultSet {
     @Override
     @NotNull
     IJdbcTableSummary getSummary();
+
+    @NotNull
+    List<Object> getParams();
 }

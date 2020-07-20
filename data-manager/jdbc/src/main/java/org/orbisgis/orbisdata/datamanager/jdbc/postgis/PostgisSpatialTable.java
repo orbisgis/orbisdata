@@ -52,6 +52,7 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.List;
 
 /**
  * Implementation of {@link ISpatialTable} for PostGIG.
@@ -69,11 +70,13 @@ public class PostgisSpatialTable extends JdbcSpatialTable {
      * @param tableLocation  {@link TableLocation} that identify the represented table.
      * @param baseQuery      Query for the creation of the ResultSet
      * @param statement      Statement used to request the database.
+     * @param params         Parameters fo the query.
      * @param jdbcDataSource DataSource to use for the creation of the resultSet.
      */
     public PostgisSpatialTable(@Nullable TableLocation tableLocation, @NotNull String baseQuery,
-                               @NotNull Statement statement, @NotNull IJdbcDataSource jdbcDataSource) {
-        super(DataBaseType.POSTGIS, jdbcDataSource, tableLocation, statement, baseQuery);
+                               @NotNull Statement statement, @Nullable List<Object> params,
+                               @NotNull IJdbcDataSource jdbcDataSource) {
+        super(DataBaseType.POSTGIS, jdbcDataSource, tableLocation, statement, baseQuery, params);
     }
 
     @Override
@@ -98,10 +101,10 @@ public class PostgisSpatialTable extends JdbcSpatialTable {
     @Override
     public Object asType(@NotNull Class<?> clazz) {
         if (ISpatialTable.class.isAssignableFrom(clazz)) {
-            return new PostgisSpatialTable(getTableLocation(), getBaseQuery(), getStatement(),
+            return new PostgisSpatialTable(getTableLocation(), getBaseQuery(), getStatement(), getParams(),
                     getJdbcDataSource());
         } else if (ITable.class.isAssignableFrom(clazz)) {
-            return new PostgisTable(getTableLocation(), getBaseQuery(), getStatement(),
+            return new PostgisTable(getTableLocation(), getBaseQuery(), getStatement(), getParams(),
                     getJdbcDataSource());
         } else {
             return super.asType(clazz);
@@ -132,7 +135,7 @@ public class PostgisSpatialTable extends JdbcSpatialTable {
                 return null;
             }
             String query = "SELECT " + String.join(",", fieldNames) + " FROM " + location.toString(false);
-            return new PostgisSpatialTable(null, query, (StatementWrapper) getStatement(), getJdbcDataSource());
+            return new PostgisSpatialTable(null, query, (StatementWrapper) getStatement(),  getParams(), getJdbcDataSource());
         } catch (SQLException e) {
             LOGGER.error("Cannot reproject the table '" + getLocation() + "' in the SRID '" + srid + "'.\n", e);
             return null;

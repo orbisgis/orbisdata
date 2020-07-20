@@ -43,6 +43,8 @@ import org.orbisgis.orbisdata.datamanager.api.dataset.ITable;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Interface defining method use for the configuration and building of a {@link java.sql.ResultSet} which can be used
@@ -223,15 +225,50 @@ public interface IResultSetBuilder {
     /**
      * Returns a {@link ITable} built from the {@link ResultSet}.
      *
-     * @param tableName
+     * @param nameOrQuery Name or query of the table to get.
      * @return A {@link ITable} built from the {@link ResultSet}.
      */
-    ITable<?, ?> getTable(String tableName);
+    ITable<?, ?> getTable(String nameOrQuery);
 
     /**
      * Returns a {@link ISpatialTable} built from the {@link ResultSet}.
      *
+     * @param nameOrQuery Name or query of the table to get.
      * @return A {@link ISpatialTable} built from the {@link ResultSet}.
      */
-    ISpatialTable<?, ?> getSpatialTable(String tableName);
+    ISpatialTable<?, ?> getSpatialTable(String nameOrQuery);
+
+    /**
+     * Returns a {@link ITable} built from the {@link ResultSet}.
+     *
+     * @param nameOrQuery Name or query of the table to get.
+     * @return A {@link ITable} built from the {@link ResultSet}.
+     */
+    ITable<?, ?> getTable(GString nameOrQuery);
+
+    /**
+     * Returns a {@link ISpatialTable} built from the {@link ResultSet}.
+     *
+     * @param nameOrQuery Name or query of the table to get.
+     * @return A {@link ISpatialTable} built from the {@link ResultSet}.
+     */
+    ISpatialTable<?, ?> getSpatialTable(GString nameOrQuery);
+
+    /**
+     * Returns a {@link ITable} built from the {@link ResultSet}.
+     *
+     * @param query Query of the table to get.
+     * @param params Parameters of the query.
+     * @return A {@link ITable} built from the {@link ResultSet}.
+     */
+    ITable<?, ?> getTable(String query, List<Object> params);
+
+    /**
+     * Returns a {@link ISpatialTable} built from the {@link ResultSet}.
+     *
+     * @param query Query of the table to get.
+     * @param params Parameters of the query.
+     * @return A {@link ISpatialTable} built from the {@link ResultSet}.
+     */
+    ISpatialTable<?, ?> getSpatialTable(String query, List<Object> params);
 }

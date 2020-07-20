@@ -1,5 +1,6 @@
 package org.orbisgis.orbisdata.datamanager.jdbc.dsl;
 
+import groovy.lang.GString;
 import org.orbisgis.commons.annotations.NotNull;
 import org.orbisgis.orbisdata.datamanager.api.datasource.IJdbcDataSource;
 import org.orbisgis.orbisdata.datamanager.api.dsl.IBuilderResult;
@@ -8,6 +9,7 @@ import org.orbisgis.orbisdata.datamanager.api.dsl.IQueryBuilder;
 import org.orbisgis.orbisdata.datamanager.jdbc.TableLocation;
 
 import java.util.List;
+import java.util.Map;
 
 import static org.orbisgis.orbisdata.datamanager.api.dataset.DataBaseType.H2GIS;
 
@@ -46,9 +48,29 @@ public class QueryBuilder extends BuilderResult implements IQueryBuilder {
     }
 
     @Override
+    public IBuilderResult filter(GString filter) {
+        return null;
+    }
+
+    @Override
+    public IBuilderResult filter(String filter, Map<String, String> params) {
+        return null;
+    }
+
+    @Override
     public IFilterBuilder columns(String... columns) {
         this.columns = String.join(", ", columns);
         return new FilterBuilder(dataSource, getQuery());
+    }
+
+    @Override
+    public IFilterBuilder columns(GString... columns) {
+        return null;
+    }
+
+    @Override
+    public IFilterBuilder columns(String[] columns, Map<String, String> params) {
+        return null;
     }
 
     @Override

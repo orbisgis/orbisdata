@@ -54,6 +54,7 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.List;
 
 /**
  * Implementation of {@link ISpatialTable} for H2GIS.
@@ -74,8 +75,9 @@ public class H2gisSpatialTable extends JdbcSpatialTable {
      * @param jdbcDataSource DataSource to use for the creation of the resultSet.
      */
     public H2gisSpatialTable(@Nullable TableLocation tableLocation, @NotNull String baseQuery,
-                             @NotNull Statement statement, @NotNull IJdbcDataSource jdbcDataSource) {
-        super(DataBaseType.H2GIS, jdbcDataSource, tableLocation, statement, baseQuery);
+                             @NotNull Statement statement, @Nullable List<Object> params,
+                             @NotNull IJdbcDataSource jdbcDataSource) {
+        super(DataBaseType.H2GIS, jdbcDataSource, tableLocation, statement, baseQuery, params);
     }
 
     @Override
@@ -106,10 +108,10 @@ public class H2gisSpatialTable extends JdbcSpatialTable {
     @Override
     public Object asType(@NotNull Class<?> clazz) {
         if (ISpatialTable.class.isAssignableFrom(clazz)) {
-            return new H2gisSpatialTable(getTableLocation(), getBaseQuery(), getStatement(),
+            return new H2gisSpatialTable(getTableLocation(), getBaseQuery(), getStatement(), getParams(),
                     getJdbcDataSource());
         } else if (ITable.class.isAssignableFrom(clazz)) {
-            return new H2gisTable(getTableLocation(), getBaseQuery(), getStatement(),
+            return new H2gisTable(getTableLocation(), getBaseQuery(), getStatement(), getParams(),
                     getJdbcDataSource());
         } else {
             return super.asType(clazz);
@@ -135,7 +137,7 @@ public class H2gisSpatialTable extends JdbcSpatialTable {
             }
             String query = "SELECT " + String.join(",", fieldNames) + " FROM " +
                     (getTableLocation() == null ? "(" + getBaseQuery() + ")" : getTableLocation().toString(true));
-            return new H2gisSpatialTable(null, query, (StatementWrapper) getStatement(), getJdbcDataSource());
+            return new H2gisSpatialTable(null, query, (StatementWrapper) getStatement(), getParams(), getJdbcDataSource());
         } catch (SQLException e) {
             LOGGER.error("Cannot reproject the table '" + getLocation() + "' in the SRID '" + srid + "'.\n", e);
             return null;

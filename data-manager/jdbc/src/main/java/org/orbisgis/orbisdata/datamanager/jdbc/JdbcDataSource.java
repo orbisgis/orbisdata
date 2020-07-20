@@ -964,4 +964,14 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, IRe
     public int call(GString gstring) throws Exception {
         return super.call(gstring.toString());
     }
+
+    @Override
+    public List<Object> getParameters(GString gString) {
+        return super.getParameters(gString);
+    }
+
+    @Override
+    public String asSql(GString gString, List<Object> params) {
+        return super.asSql(gString, params);
+    }
 }

@@ -36,9 +36,11 @@
  */
 package org.orbisgis.orbisdata.datamanager.api.dsl;
 
+import groovy.lang.GString;
 import org.orbisgis.orbisdata.datamanager.api.dataset.ITable;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * The request construction can be continued thanks to the {@link IFilterBuilder} or its result can be get calling
@@ -63,5 +65,14 @@ public interface IQueryBuilder extends IBuilderResult, IFilterBuilder {
      * @param columns Columns to use fo the selection.
      * @return {@link IFilterBuilder} instance to continue building.
      */
-    IFilterBuilder columns(List<String> columns);
+    IFilterBuilder columns(GString... columns);
+
+    /**
+     * Sets the columns to select.
+     *
+     * @param columns Columns to use fo the selection.
+     * @param params Parameters of the query.
+     * @return {@link IFilterBuilder} instance to continue building.
+     */
+    IFilterBuilder columns(String[] columns, List<Object> params);
 }

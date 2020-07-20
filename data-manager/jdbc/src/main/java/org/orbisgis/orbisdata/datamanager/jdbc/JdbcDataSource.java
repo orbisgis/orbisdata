@@ -79,7 +79,7 @@ import java.util.regex.Pattern;
  * JdbcDataSource implementations.
  *
  * @author Erwan Bocher (CNRS)
- * @author Sylvain PALOMINOS (UBS 2019)
+ * @author Sylvain PALOMINOS (UBS Lab-STICC 2019 / Chaire GEOTERA 2020)
  */
 public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, IResultSetBuilder {
     /**
@@ -972,6 +972,13 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, IRe
         return super.asSql(gString, params);
     }
 
+    /**
+     * Set the given {@link PreparedStatement} with the given parameters.
+     *
+     * @param preparedStatement {@link PreparedStatement} to set.
+     * @param params            List of the parameters.
+     * @throws SQLException Exception thrown when problem occurs on setting the parameters.
+     */
     public void setStatementParameters(PreparedStatement preparedStatement, List<Object> params) throws SQLException {
         for (int i = 1; i <= params.size(); i++) {
             Object param = params.get(i-1);

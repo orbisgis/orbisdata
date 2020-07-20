@@ -925,6 +925,7 @@ class GroovyH2GISTest {
                 INSERT INTO h2gis VALUES (1, 'POINT(10 10)'::GEOMETRY), (2, 'POINT(1 1)'::GEOMETRY);
         """)
         def val = 2
+        def String[] arr = []
 
         def table = h2GIS.getTable("(SELECT * FROM h2gis where id=$val)")
         assert 2 == table.firstRow[0]
@@ -939,6 +940,26 @@ class GroovyH2GISTest {
         table = h2GIS.getTable("h2gis").columns("*").filter("where id=$val").getTable()
         assert 2 == table.firstRow[0]
         table = h2GIS.getSpatialTable("h2gis").columns("*").filter("where id=$val").getSpatialTable()
+        assert 2 == table.firstRow[0]
+
+        table = h2GIS.getTable("h2gis").columns(null).filter("where id=$val").getTable()
+        assert 2 == table.firstRow[0]
+        table = h2GIS.getSpatialTable("h2gis").columns(null).filter("where id=$val").getSpatialTable()
+        assert 2 == table.firstRow[0]
+
+        table = h2GIS.getTable("h2gis").columns(null, "").filter("where id=$val").getTable()
+        assert 2 == table.firstRow[0]
+        table = h2GIS.getSpatialTable("h2gis").columns("", null).filter("where id=$val").getSpatialTable()
+        assert 2 == table.firstRow[0]
+
+        table = h2GIS.getTable("h2gis").columns("*").filter(null).getTable()
+        assert 1 == table.firstRow[0]
+        table = h2GIS.getSpatialTable("h2gis").columns("*").filter(null).getSpatialTable()
+        assert 1 == table.firstRow[0]
+
+        table = h2GIS.getTable("h2gis").columns(arr).filter("where id=$val").getTable()
+        assert 2 == table.firstRow[0]
+        table = h2GIS.getSpatialTable("h2gis").columns(arr).filter("where id=$val").getSpatialTable()
         assert 2 == table.firstRow[0]
 
         table = h2GIS.getTable("h2gis").columns("*").filter("where id=?", [val]).getTable()

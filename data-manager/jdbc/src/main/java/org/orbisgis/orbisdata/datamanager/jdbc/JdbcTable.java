@@ -80,7 +80,7 @@ import static org.orbisgis.commons.printer.ICustomPrinter.CellPosition.*;
  * Implements the {@link GroovyObject} to simplify the methods calling (i.e. .tableLocation instead of
  * .getTableLocation() ).
  *
- * @author Sylvain Palominos (Lab-STICC UBS 2019)
+ * @author Sylvain Palominos (Lab-STICC UBS 2019 / Chaire GEOTERA 2020)
  */
 public abstract class JdbcTable extends DefaultResultSet implements IJdbcTable<StreamResultSet>, GroovyObject {
 

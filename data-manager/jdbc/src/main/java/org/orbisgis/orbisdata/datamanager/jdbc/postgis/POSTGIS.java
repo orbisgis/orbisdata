@@ -29,7 +29,7 @@ import java.util.*;
  * Implementation of the IJdbcDataSource interface dedicated to the usage of an postgres/postgis database.
  *
  * @author Erwan Bocher (CNRS)
- * @author Sylvain PALOMINOS (UBS 2018)
+ * @author Sylvain PALOMINOS (UBS Lab-STICC 2018 / Chaire GEOTERA 2020)
  */
 public class POSTGIS extends JdbcDataSource {
 
@@ -224,7 +224,11 @@ public class POSTGIS extends JdbcDataSource {
                     }
                 }
                 else {
-                    if(GeometryTableUtilities.hasGeometryColumn(statement.executeQuery(query))) {
+                    ResultSet rs = statement instanceof PreparedStatement ?
+                            ((PreparedStatement)statement).executeQuery() :
+                            statement.executeQuery(query);
+                    boolean hasGeom = GeometryTableUtilities.hasGeometryColumn(rs);
+                    if(hasGeom) {
                         return new PostgisSpatialTable(location, query, statement, params, this);
                     }
                     else {
@@ -295,11 +299,12 @@ public class POSTGIS extends JdbcDataSource {
                 concur = ResultSet.CONCUR_UPDATABLE;
             }
             prepStatement = connection.prepareStatement(query, type, concur);
+            setStatementParameters(prepStatement, params);
         } catch (SQLException e) {
             LOGGER.error("Unable to create the prepared statement.", e);
             return null;
         }
-        return new PostgisTable(null, query, prepStatement, params, this);
+        return getTable(query, params, prepStatement);
     }
 
     @Override

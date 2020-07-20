@@ -62,7 +62,7 @@ import java.util.Map;
  * Extension of the {@link IDataSource} interface dedicated to the usage of a JDBC database as a data source.
  *
  * @author Erwan Bocher (CNRS)
- * @author Sylvain PALOMINOS (Lab-STICC UBS 2018-2019)
+ * @author Sylvain PALOMINOS (Lab-STICC UBS 2018-2019 / Chaire GEOTERA 2020)
  */
 public interface IJdbcDataSource extends IDataSource<ResultSet>, GroovyObject, DataSource {
 
@@ -996,6 +996,20 @@ public interface IJdbcDataSource extends IDataSource<ResultSet>, GroovyObject, D
         getMetaClass().setProperty(this, propertyName, newValue);
     }
 
+    /**
+     * Get the parametrized query parameters from the given {@link GString}.
+     *
+     * @param gString {@link GString} parametrized query.
+     * @return List of the parameters of the query.
+     */
     List<Object> getParameters(GString gString);
+
+    /**
+     * Get the parametrized SQL query from the given GString and its parameters.
+     *
+     * @param gString {@link GString} parametrized query.
+     * @param params  List of the parameters of the query.
+     * @return String SQL query.
+     */
     String asSql(GString gString, List<Object> params);
 }

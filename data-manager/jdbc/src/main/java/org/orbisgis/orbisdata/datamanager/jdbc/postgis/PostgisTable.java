@@ -52,7 +52,7 @@ import java.util.List;
  * Implementation of {@link ITable} for PostGIG.
  *
  * @author Erwan Bocher (CNRS)
- * @author Sylvain PALOMINOS (UBS 2018-2019)
+ * @author Sylvain PALOMINOS (UBS Lab-STICC 2018-2019 / Chaire GEOTERA 2020)
  */
 public class PostgisTable extends JdbcTable {
 

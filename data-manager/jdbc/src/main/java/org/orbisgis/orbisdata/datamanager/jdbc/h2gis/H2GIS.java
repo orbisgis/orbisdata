@@ -67,7 +67,7 @@ import java.util.*;
  * Implementation of the {@link JdbcDataSource} interface dedicated to the usage of an H2/H2GIS database.
  *
  * @author Erwan Bocher (CNRS)
- * @author Sylvain PALOMINOS (UBS 2018-2019)
+ * @author Sylvain PALOMINOS (UBS Lab-STICC 2018-2019 / Chaire GEOTERA 2020)
  */
 public class H2GIS extends JdbcDataSource {
 

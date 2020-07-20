@@ -36,7 +36,9 @@
  */
 package org.orbisgis.orbisdata.datamanager.jdbc.postgis;
 
+import org.h2gis.postgis_jts.ConnectionWrapper;
 import org.h2gis.postgis_jts.StatementWrapper;
+import org.h2gis.utilities.wrapper.SpatialResultSetImpl;
 import org.orbisgis.commons.annotations.NotNull;
 import org.orbisgis.commons.annotations.Nullable;
 import org.orbisgis.orbisdata.datamanager.api.dataset.DataBaseType;
@@ -55,7 +57,7 @@ import java.util.List;
  * Implementation of {@link ISpatialTable} for PostGIG.
  *
  * @author Erwan Bocher (CNRS)
- * @author Sylvain PALOMINOS (UBS 2018-2019)
+ * @author Sylvain PALOMINOS (UBS Lab-STICC 2018-2019 / Chaire GEOTERA 2020)
  */
 public class PostgisSpatialTable extends JdbcSpatialTable {
 
@@ -98,7 +100,12 @@ public class PostgisSpatialTable extends JdbcSpatialTable {
                 return null;
             }
         }
-        return new SpatialResultSetWrapper(resultSet, (StatementWrapper) getStatement());
+        try {
+            return new SpatialResultSetWrapper(resultSet, new StatementWrapper(new ConnectionWrapper(getJdbcDataSource().getConnection()), getStatement()));
+        } catch (SQLException e) {
+            LOGGER.error("Unable to get the connection.", e);
+            return null;
+        }
     }
 
     @Override

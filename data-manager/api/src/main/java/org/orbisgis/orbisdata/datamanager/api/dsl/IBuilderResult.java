@@ -50,7 +50,7 @@ import java.util.List;
  * package interfaces.
  *
  * @author Erwan Bocher (CNRS)
- * @author Sylvain PALOMINOS (Lab-STICC UBS 2019)
+ * @author Sylvain PALOMINOS (Lab-STICC UBS 2019 / Chaire GEOTERA 2020)
  */
 public interface IBuilderResult {
 

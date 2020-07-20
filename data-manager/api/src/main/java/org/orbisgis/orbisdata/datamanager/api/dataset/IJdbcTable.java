@@ -49,7 +49,7 @@ import java.util.List;
  * {@link ResultSet} interface.
  *
  * @author Erwan Bocher (CNRS)
- * @author Sylvain Palominos (Lab-STICC UBS 2019)
+ * @author Sylvain Palominos (UBS Lab-STICC 2019 / Chaire GEOTERA 2020)
  */
 public interface IJdbcTable<T> extends ITable<ResultSet, T>, ResultSet {
 
@@ -127,6 +127,11 @@ public interface IJdbcTable<T> extends ITable<ResultSet, T>, ResultSet {
     @NotNull
     IJdbcTableSummary getSummary();
 
+    /**
+     * Returns the parameters of the parametrized query.
+     *
+     * @return The list of the parametrized query.
+     */
     @NotNull
     List<Object> getParams();
 }

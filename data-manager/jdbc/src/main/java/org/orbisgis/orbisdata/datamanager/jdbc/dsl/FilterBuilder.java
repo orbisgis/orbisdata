@@ -69,4 +69,9 @@ public class FilterBuilder extends BuilderResult implements IFilterBuilder {
     public String toString() {
         return "(" + getQuery() + ")";
     }
+
+    @Override
+    public List<Object> getParams() {
+        return params;
+    }
 }

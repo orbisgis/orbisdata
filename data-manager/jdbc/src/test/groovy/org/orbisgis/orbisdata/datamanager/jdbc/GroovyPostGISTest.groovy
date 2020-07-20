@@ -386,4 +386,35 @@ class GroovyPostGISTest {
         assertEquals(1, postGIS.getSpatialTable("query_table").getColumnCount())
         assertEquals("the_geom", postGIS.getSpatialTable("query_table").getColumns().first())
     }
+
+    @Test
+    void preparedQueryTest() {
+        def h2GIS = H2GIS.open([databaseName: './target/loadH2GIS'])
+        h2GIS.execute("""
+                DROP TABLE IF EXISTS h2gis;
+                CREATE TABLE h2gis (id int, the_geom geometry(point));
+                INSERT INTO h2gis VALUES (1, 'POINT(10 10)'::GEOMETRY), (2, 'POINT(1 1)'::GEOMETRY);
+        """)
+        def val = 2
+
+        def table = h2GIS.getTable("(SELECT * FROM h2gis where id=$val)")
+        assert 2 == table.firstRow[0]
+        table = h2GIS.getSpatialTable("(SELECT * FROM h2gis where id=$val)")
+        assert 2 == table.firstRow[0]
+
+        table = h2GIS.getTable("(SELECT * FROM h2gis where id=?)", [val])
+        assert 2 == table.firstRow[0]
+        table = h2GIS.getSpatialTable("(SELECT * FROM h2gis where id=?)", [val])
+        assert 2 == table.firstRow[0]
+
+        table = h2GIS.getTable("h2gis").columns("*").filter("where id=$val").getTable()
+        assert 2 == table.firstRow[0]
+        table = h2GIS.getSpatialTable("h2gis").columns("*").filter("where id=$val").getSpatialTable()
+        assert 2 == table.firstRow[0]
+
+        table = h2GIS.getTable("h2gis").columns("*").filter("where id=?", [val]).getTable()
+        assert 2 == table.firstRow[0]
+        table = h2GIS.getSpatialTable("h2gis").columns("*").filter("where id=?", [val]).getSpatialTable()
+        assert 2 == table.firstRow[0]
+    }
 }

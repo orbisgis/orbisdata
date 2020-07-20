@@ -63,12 +63,12 @@ import org.slf4j.LoggerFactory;
 
 import javax.sql.DataSource;
 import java.io.*;
+import java.math.BigDecimal;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.sql.SQLFeatureNotSupportedException;
+import java.sql.*;
+import java.sql.Date;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.regex.Matcher;
@@ -970,5 +970,89 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, IRe
     @Override
     public String asSql(GString gString, List<Object> params) {
         return super.asSql(gString, params);
+    }
+
+    public void setStatementParameters(PreparedStatement preparedStatement, List<Object> params) throws SQLException {
+        for (int i = 1; i <= params.size(); i++) {
+            Object param = params.get(i-1);
+            if(param instanceof Array) {
+                preparedStatement.setArray(i, (Array)param);
+            }
+            /*else if(param instanceof InputStream) {
+                preparedStatement.setAsciiStream(i, (InputStream) param);
+            }*/
+            else if(param instanceof BigDecimal) {
+                preparedStatement.setBigDecimal(i, (BigDecimal) param);
+            }
+            /*else if(param instanceof InputStream) {
+                preparedStatement.set(i, (InputStream) param);
+            }*/
+            else if(param instanceof Blob) {
+                preparedStatement.setBlob(i, (Blob) param);
+            }
+            /*else if(param instanceof InputStream) {
+                preparedStatement.setBinaryStream(i, (InputStream) param);
+            }*/
+            else if(param instanceof Boolean) {
+                preparedStatement.setBoolean(i, (Boolean) param);
+            }
+            else if(param instanceof Byte) {
+                preparedStatement.setByte(i, (Byte) param);
+            }
+            else if(param instanceof byte[]) {
+                preparedStatement.setBytes(i, (byte[]) param);
+            }
+            /*else if(param instanceof Reader) {
+                preparedStatement.setCharacterStream(i, (Reader) param);
+            }*/
+            else if(param instanceof Clob) {
+                preparedStatement.setClob(i, (Clob) param);
+            }
+            else if(param instanceof Date) {
+                preparedStatement.setDate(i, (Date) param);
+            }
+            else if(param instanceof Double) {
+                preparedStatement.setDouble(i, (Double) param);
+            }
+            else if(param instanceof Float) {
+                preparedStatement.setFloat(i, (Float) param);
+            }
+            else if(param instanceof Integer) {
+                preparedStatement.setInt(i, (Integer) param);
+            }
+            else if(param instanceof Long) {
+                preparedStatement.setLong(i, (Long) param);
+            }
+            /*else if(param instanceof Reader) {
+                preparedStatement.setNCharacterStream(i, (Reader) param);
+            }*/
+            else if(param instanceof NClob) {
+                preparedStatement.setNClob(i, (NClob) param);
+            }
+            else if(param instanceof Ref) {
+                preparedStatement.setRef(i, (Ref) param);
+            }
+            else if(param instanceof Short) {
+                preparedStatement.setShort(i, (Short) param);
+            }
+            else if(param instanceof SQLXML) {
+                preparedStatement.setSQLXML(i, (SQLXML) param);
+            }
+            else if(param instanceof String) {
+                preparedStatement.setString(i, (String) param);
+            }
+            else if(param instanceof Time) {
+                preparedStatement.setTime(i, (Time) param);
+            }
+            else if(param instanceof Timestamp) {
+                preparedStatement.setTimestamp(i, (Timestamp) param);
+            }
+            else if(param instanceof URL) {
+                preparedStatement.setURL(i, (URL) param);
+            }
+            else {
+                preparedStatement.setObject(i, param);
+            }
+        }
     }
 }

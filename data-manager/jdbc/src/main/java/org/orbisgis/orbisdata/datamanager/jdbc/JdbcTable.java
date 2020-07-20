@@ -167,7 +167,13 @@ public abstract class JdbcTable extends DefaultResultSet implements IJdbcTable<S
     protected ResultSet getResultSet() {
         if (resultSet == null) {
             try {
-                resultSet = getStatement().executeQuery(getBaseQuery());
+                Statement st = getStatement();
+                if(st instanceof PreparedStatement) {
+                    resultSet = ((PreparedStatement)st).executeQuery();
+                }
+                else {
+                    resultSet = getStatement().executeQuery(getBaseQuery());
+                }
             } catch (SQLException e) {
                 LOGGER.error("Unable to execute the query '" + getBaseQuery() + "'.\n" + e.getLocalizedMessage());
                 return null;
@@ -724,22 +730,6 @@ public abstract class JdbcTable extends DefaultResultSet implements IJdbcTable<S
         String loc = getTableLocation() != null ? getTableLocation().toString(getDbType()) : getBaseQuery();
         IQueryBuilder builder = new QueryBuilder(getJdbcDataSource(), loc);
         return builder.columns(columns);
-    }
-
-    @Override
-    @NotNull
-    public IFilterBuilder columns(GString... columns){
-        String loc = getTableLocation() != null ? getTableLocation().toString(getDbType()) : getBaseQuery();
-        IQueryBuilder builder = new QueryBuilder(getJdbcDataSource(), loc);
-        return builder.columns(columns);
-    }
-
-    @Override
-    @NotNull
-    public IFilterBuilder columns(String[] columns, List<Object> params){
-        String loc = getTableLocation() != null ? getTableLocation().toString(getDbType()) : getBaseQuery();
-        IQueryBuilder builder = new QueryBuilder(getJdbcDataSource(), loc);
-        return builder.columns(columns, params);
     }
 
     @Override

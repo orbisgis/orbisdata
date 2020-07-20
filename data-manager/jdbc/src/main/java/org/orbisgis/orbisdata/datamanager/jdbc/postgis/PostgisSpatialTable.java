@@ -48,10 +48,7 @@ import org.orbisgis.orbisdata.datamanager.jdbc.TableLocation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.List;
 
 /**
@@ -83,7 +80,13 @@ public class PostgisSpatialTable extends JdbcSpatialTable {
     protected ResultSet getResultSet() {
         if (resultSet == null) {
             try {
-                resultSet = getStatement().executeQuery(getBaseQuery());
+                Statement st = getStatement();
+                if(st instanceof PreparedStatement) {
+                    resultSet = ((PreparedStatement)st).executeQuery();
+                }
+                else {
+                    resultSet = getStatement().executeQuery(getBaseQuery());
+                }
             } catch (SQLException e) {
                 LOGGER.error("Unable to execute the query '" + getBaseQuery() + "'.\n" + e.getLocalizedMessage());
                 return null;

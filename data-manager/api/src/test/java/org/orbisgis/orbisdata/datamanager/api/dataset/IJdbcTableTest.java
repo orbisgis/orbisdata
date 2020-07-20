@@ -1165,15 +1165,5 @@ public class IJdbcTableTest {
         public IFilterBuilder columns(String... columns) {
             return null;
         }
-
-        @Override
-        public IFilterBuilder columns(GString... columns) {
-            return null;
-        }
-
-        @Override
-        public IFilterBuilder columns(String[] columns, List<Object> params) {
-            return null;
-        }
     }
 }

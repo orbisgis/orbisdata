@@ -294,7 +294,11 @@ public class H2GIS extends JdbcDataSource {
                     }
                 }
                 else {
-                    if(GeometryTableUtilities.hasGeometryColumn(statement.executeQuery(query))) {
+                    ResultSet rs = statement instanceof PreparedStatement ?
+                            ((PreparedStatement)statement).executeQuery() :
+                            statement.executeQuery(query);
+                    boolean hasGeom = GeometryTableUtilities.hasGeometryColumn(rs);
+                    if(hasGeom) {
                         return new H2gisSpatialTable(location, query, statement, params, this);
                     }
                     else {
@@ -365,11 +369,12 @@ public class H2GIS extends JdbcDataSource {
                 concur = ResultSet.CONCUR_UPDATABLE;
             }
             prepStatement = connection.prepareStatement(query, type, concur);
+            setStatementParameters(prepStatement, params);
         } catch (SQLException e) {
             LOGGER.error("Unable to create the prepared statement.", e);
             return null;
         }
-        return new H2gisTable(null, query, prepStatement, params, this);
+        return getTable(query, params, prepStatement);
     }
 
     @Override

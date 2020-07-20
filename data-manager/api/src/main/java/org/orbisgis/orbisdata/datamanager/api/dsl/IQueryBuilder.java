@@ -58,21 +58,4 @@ public interface IQueryBuilder extends IBuilderResult, IFilterBuilder {
      * @return {@link IFilterBuilder} instance to continue building.
      */
     IFilterBuilder columns(String... columns);
-
-    /**
-     * Sets the columns to select.
-     *
-     * @param columns Columns to use fo the selection.
-     * @return {@link IFilterBuilder} instance to continue building.
-     */
-    IFilterBuilder columns(GString... columns);
-
-    /**
-     * Sets the columns to select.
-     *
-     * @param columns Columns to use fo the selection.
-     * @param params Parameters of the query.
-     * @return {@link IFilterBuilder} instance to continue building.
-     */
-    IFilterBuilder columns(String[] columns, List<Object> params);
 }

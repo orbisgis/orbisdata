@@ -102,11 +102,11 @@ public abstract class BuilderResult implements IBuilderResult {
 
     @Override
     public ITable getTable() {
-        return getDataSource().getTable(toString());
+        return getDataSource().getTable(toString(), getParams());
     }
 
     @Override
     public ISpatialTable getSpatialTable() {
-        return getDataSource().getSpatialTable(toString());
+        return getDataSource().getSpatialTable(toString(), getParams());
     }
 }

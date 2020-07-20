@@ -78,23 +78,6 @@ public class QueryBuilder extends BuilderResult implements IQueryBuilder {
     }
 
     @Override
-    public IFilterBuilder columns(GString... columns) {
-        GString concat = GString.EMPTY;
-        for(GString s : columns) {
-            concat.plus(s);
-        }
-        List<Object> params = dataSource.getParameters(concat);
-        this.columns = dataSource.asSql(concat, params);
-        return new FilterBuilder(dataSource, getQuery(), params);
-    }
-
-    @Override
-    public IFilterBuilder columns(String[] columns, List<Object> params) {
-        this.columns = String.join(", ", columns);
-        return new FilterBuilder(dataSource, getQuery(), params);
-    }
-
-    @Override
     protected IJdbcDataSource getDataSource() {
         return dataSource;
     }
@@ -107,5 +90,10 @@ public class QueryBuilder extends BuilderResult implements IQueryBuilder {
     @Override
     public String toString() {
         return "(" + getQuery() + ")";
+    }
+
+    @Override
+    public List<Object> getParams() {
+        return null;
     }
 }

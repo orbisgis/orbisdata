@@ -43,6 +43,8 @@ import org.orbisgis.commons.annotations.Nullable;
 import org.orbisgis.orbisdata.datamanager.api.dataset.ISpatialTable;
 import org.orbisgis.orbisdata.datamanager.api.dataset.ITable;
 
+import java.util.List;
+
 /**
  * Define the methods use to get the result of a SQL request built throw the {@link org.orbisgis.orbisdata.datamanager.api.dsl}
  * package interfaces.
@@ -87,4 +89,6 @@ public interface IBuilderResult {
     @Override
     @NotNull
     String toString();
+
+    List<Object> getParams();
 }

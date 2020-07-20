@@ -828,20 +828,6 @@ public class DataFrame implements smile.data.DataFrame, ITable<BaseVector, Tuple
     }
 
     @Override
-    public IFilterBuilder columns(GString... columns) {
-        List<String> col = new ArrayList<>(getColumns());
-        col.removeAll(Arrays.stream(columns).map(Object::toString).collect(Collectors.toList()));
-        return of(drop(col.toArray(new String[0])));
-    }
-
-    @Override
-    public IFilterBuilder columns(String[] columns, List<Object> params) {
-        List<String> col = new ArrayList<>(getColumns());
-        col.removeAll(Arrays.asList(columns));
-        return of(drop(col.toArray(new String[0])));
-    }
-
-    @Override
     @Nullable
     public DataFrame filter(String filter) {
         throw new UnsupportedOperationException();
@@ -1083,6 +1069,10 @@ public class DataFrame implements smile.data.DataFrame, ITable<BaseVector, Tuple
         return getInternalDataFrame().toString();
     }
 
+    @Override
+    public List<Object> getParams() {
+        throw new UnsupportedOperationException();
+    }
 
     /* Override methods from SMILE API */
 

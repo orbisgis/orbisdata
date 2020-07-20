@@ -45,12 +45,12 @@ import java.sql.SQLException;
 import java.util.Iterator;
 
 /**
- * Iterator dedicated to the iteration on a {@link ResultSet}.
+ * Iterator dedicated to the iteration on a {@link T}.
  *
  * @author Erwan Bocher (CNRS)
  * @author Sylvain PALOMINOS (Lab-STICC UBS 2018-2019)
  */
-public class ResultSetIterator implements Iterator<ResultSet> {
+public class ResultSetIterator<T extends ResultSet> implements Iterator<T> {
 
     /**
      * Class {@link Logger}
@@ -61,7 +61,7 @@ public class ResultSetIterator implements Iterator<ResultSet> {
      * Iterated {@link ResultSet}
      */
     @Nullable
-    private final ResultSet resultSet;
+    private final T resultSet;
 
     private boolean nextDone = false;
 
@@ -70,7 +70,7 @@ public class ResultSetIterator implements Iterator<ResultSet> {
      *
      * @param resultSet {@link ResultSet} to iterate.
      */
-    public ResultSetIterator(@Nullable ResultSet resultSet) {
+    public ResultSetIterator(@Nullable T resultSet) {
         this.resultSet = resultSet;
         if(this.resultSet == null) {
             LOGGER.warn("There is no ResultSet so there will no data.");
@@ -91,7 +91,7 @@ public class ResultSetIterator implements Iterator<ResultSet> {
 
     @Override
     @Nullable
-    public ResultSet next() {
+    public T next() {
         if(!nextDone) {
             if(!hasNext()) {
                 return null;

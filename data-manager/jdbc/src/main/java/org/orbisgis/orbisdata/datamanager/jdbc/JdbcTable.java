@@ -64,6 +64,7 @@ import org.orbisgis.orbisdata.datamanager.jdbc.io.IOMethods;
 import org.orbisgis.orbisdata.datamanager.jdbc.resultset.DefaultResultSet;
 import org.orbisgis.orbisdata.datamanager.jdbc.resultset.ResultSetSpliterator;
 import org.orbisgis.orbisdata.datamanager.jdbc.resultset.StreamResultSet;
+import org.orbisgis.orbisdata.datamanager.jdbc.resultset.StreamSpatialResultSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -82,7 +83,7 @@ import static org.orbisgis.commons.printer.ICustomPrinter.CellPosition.*;
  *
  * @author Sylvain Palominos (Lab-STICC UBS 2019 / Chaire GEOTERA 2020)
  */
-public abstract class JdbcTable extends DefaultResultSet implements IJdbcTable<StreamResultSet>, GroovyObject {
+public abstract class JdbcTable<T extends ResultSet, U> extends DefaultResultSet implements IJdbcTable<T, U>, GroovyObject {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(JdbcTable.class);
 
@@ -733,12 +734,12 @@ public abstract class JdbcTable extends DefaultResultSet implements IJdbcTable<S
     }
 
     @Override
-    public IJdbcTable getTable() {
+    public IJdbcTable<ResultSet, StreamResultSet> getTable() {
         return (IJdbcTable) asType(IJdbcTable.class);
     }
 
     @Override
-    public IJdbcSpatialTable getSpatialTable() {
+    public IJdbcSpatialTable<StreamSpatialResultSet> getSpatialTable() {
         if (isSpatial()) {
             return (IJdbcSpatialTable) asType(IJdbcSpatialTable.class);
         } else {
@@ -878,18 +879,6 @@ public abstract class JdbcTable extends DefaultResultSet implements IJdbcTable<S
     @NotNull
     public JdbcTableSummary getSummary() {
         return new JdbcTableSummary(getTableLocation(), getColumnCount(), getRowCount());
-    }
-
-    @Override
-    public Stream<StreamResultSet> stream() {
-        Spliterator<StreamResultSet> spliterator = new ResultSetSpliterator(this.getRowCount(), getResultSet());
-        return StreamSupport.stream(spliterator, true);
-    }
-
-    @Override
-    @NotNull
-    public ResultSetIterator iterator() {
-        return new ResultSetIterator(this);
     }
 
     @NotNull

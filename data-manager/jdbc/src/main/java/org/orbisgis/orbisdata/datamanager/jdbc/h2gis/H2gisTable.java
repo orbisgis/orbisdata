@@ -43,16 +43,23 @@ import org.orbisgis.orbisdata.datamanager.api.dataset.ISpatialTable;
 import org.orbisgis.orbisdata.datamanager.api.dataset.ITable;
 import org.orbisgis.orbisdata.datamanager.api.datasource.IJdbcDataSource;
 import org.orbisgis.orbisdata.datamanager.jdbc.JdbcTable;
+import org.orbisgis.orbisdata.datamanager.jdbc.ResultSetIterator;
 import org.orbisgis.orbisdata.datamanager.jdbc.TableLocation;
+import org.orbisgis.orbisdata.datamanager.jdbc.resultset.ResultSetSpliterator;
+import org.orbisgis.orbisdata.datamanager.jdbc.resultset.StreamResultSet;
 
+import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.List;
+import java.util.Spliterator;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 /**
  * @author Erwan Bocher (CNRS)
  * @author Sylvain PALOMINOS (UBS Lab-STICC 2018-2019 / Chaire GEOTERA 2020)
  */
-public class H2gisTable extends JdbcTable {
+public class H2gisTable extends JdbcTable<ResultSet, StreamResultSet> {
 
     /**
      * Main constructor.
@@ -80,5 +87,17 @@ public class H2gisTable extends JdbcTable {
         } else {
             return super.asType(clazz);
         }
+    }
+
+    @Override
+    public Stream<StreamResultSet> stream() {
+        Spliterator<StreamResultSet> spliterator = new ResultSetSpliterator<StreamResultSet>(this.getRowCount(), new StreamResultSet(getResultSet()));
+        return StreamSupport.stream(spliterator, true);
+    }
+
+    @Override
+    @NotNull
+    public ResultSetIterator iterator() {
+        return new ResultSetIterator(this);
     }
 }

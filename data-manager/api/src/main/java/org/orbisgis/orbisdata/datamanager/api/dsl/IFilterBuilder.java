@@ -40,7 +40,6 @@ import groovy.lang.GString;
 import org.orbisgis.orbisdata.datamanager.api.dataset.ITable;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * The request construction can be continued thanks to the {@link IFilterBuilder} or its result can be get calling

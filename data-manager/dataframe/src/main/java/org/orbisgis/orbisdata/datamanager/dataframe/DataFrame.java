@@ -50,7 +50,6 @@ import org.orbisgis.orbisdata.datamanager.api.dataset.ISpatialTable;
 import org.orbisgis.orbisdata.datamanager.api.dataset.ITable;
 import org.orbisgis.orbisdata.datamanager.api.datasource.IJdbcDataSource;
 import org.orbisgis.orbisdata.datamanager.api.dsl.IBuilderResult;
-import org.orbisgis.orbisdata.datamanager.api.dsl.IFilterBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import smile.data.Tuple;

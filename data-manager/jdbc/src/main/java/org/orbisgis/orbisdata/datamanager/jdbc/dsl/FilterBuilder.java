@@ -7,7 +7,6 @@ import org.orbisgis.orbisdata.datamanager.api.dsl.IFilterBuilder;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Implementation of {@link IFilterBuilder}.

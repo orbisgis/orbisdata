@@ -1,8 +1,6 @@
 package org.orbisgis.orbisdata.datamanager.jdbc.dsl;
 
 import groovy.lang.GString;
-import org.apache.lucene.search.spans.SpanPositionRangeQuery;
-import org.codehaus.groovy.runtime.GStringImpl;
 import org.orbisgis.commons.annotations.NotNull;
 import org.orbisgis.orbisdata.datamanager.api.datasource.IJdbcDataSource;
 import org.orbisgis.orbisdata.datamanager.api.dsl.IBuilderResult;
@@ -11,7 +9,6 @@ import org.orbisgis.orbisdata.datamanager.api.dsl.IQueryBuilder;
 import org.orbisgis.orbisdata.datamanager.jdbc.TableLocation;
 
 import java.util.List;
-import java.util.Map;
 
 import static org.orbisgis.orbisdata.datamanager.api.dataset.DataBaseType.H2GIS;
 

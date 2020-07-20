@@ -970,7 +970,7 @@ public class DataFrame implements smile.data.DataFrame, ITable<BaseVector, Tuple
     }
 
     @Nullable
-    private static StructType getStructure(@NotNull IJdbcTable<?> table) {
+    private static StructType getStructure(@NotNull IJdbcTable<?, ?> table) {
         ResultSetMetaData metadata = table.getMetaData();
         try {
             int columnCount = metadata.getColumnCount();

@@ -36,6 +36,7 @@
  */
 package org.orbisgis.orbisdata.datamanager.jdbc.postgis;
 
+import org.h2gis.utilities.SpatialResultSet;
 import org.orbisgis.commons.annotations.NotNull;
 import org.orbisgis.commons.annotations.Nullable;
 import org.orbisgis.orbisdata.datamanager.api.dataset.DataBaseType;
@@ -43,10 +44,18 @@ import org.orbisgis.orbisdata.datamanager.api.dataset.ISpatialTable;
 import org.orbisgis.orbisdata.datamanager.api.dataset.ITable;
 import org.orbisgis.orbisdata.datamanager.api.datasource.IJdbcDataSource;
 import org.orbisgis.orbisdata.datamanager.jdbc.JdbcTable;
+import org.orbisgis.orbisdata.datamanager.jdbc.ResultSetIterator;
 import org.orbisgis.orbisdata.datamanager.jdbc.TableLocation;
+import org.orbisgis.orbisdata.datamanager.jdbc.resultset.ResultSetSpliterator;
+import org.orbisgis.orbisdata.datamanager.jdbc.resultset.StreamResultSet;
+import org.orbisgis.orbisdata.datamanager.jdbc.resultset.StreamSpatialResultSet;
 
+import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.List;
+import java.util.Spliterator;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 /**
  * Implementation of {@link ITable} for PostGIG.
@@ -54,7 +63,7 @@ import java.util.List;
  * @author Erwan Bocher (CNRS)
  * @author Sylvain PALOMINOS (UBS Lab-STICC 2018-2019 / Chaire GEOTERA 2020)
  */
-public class PostgisTable extends JdbcTable {
+public class PostgisTable extends JdbcTable<ResultSet, StreamResultSet> {
 
     /**
      * Main constructor.
@@ -81,5 +90,18 @@ public class PostgisTable extends JdbcTable {
         } else {
             return super.asType(clazz);
         }
+    }
+
+    @Override
+    @NotNull
+    public ResultSetIterator iterator() {
+        return new ResultSetIterator(this);
+    }
+
+    @Nullable
+    @Override
+    public Stream<? extends StreamResultSet> stream() {
+        Spliterator<StreamResultSet> spliterator = new ResultSetSpliterator<>(this.getRowCount(), new StreamResultSet(getResultSet()));
+        return StreamSupport.stream(spliterator, true);
     }
 }

@@ -47,7 +47,9 @@ import org.orbisgis.orbisdata.datamanager.api.dataset.DataBaseType;
 import org.orbisgis.orbisdata.datamanager.api.dataset.IJdbcSpatialTable;
 import org.orbisgis.orbisdata.datamanager.api.dataset.IRaster;
 import org.orbisgis.orbisdata.datamanager.api.datasource.IJdbcDataSource;
+import org.orbisgis.orbisdata.datamanager.jdbc.resultset.ResultSetSpliterator;
 import org.orbisgis.orbisdata.datamanager.jdbc.resultset.StreamResultSet;
+import org.orbisgis.orbisdata.datamanager.jdbc.resultset.StreamSpatialResultSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -55,10 +57,9 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 /**
  * Contains the methods which are in common to all the IJdbcTable subclasses.
@@ -66,7 +67,7 @@ import java.util.Map;
  * @author Erwan Bocher (CNRS)
  * @author Sylvain PALOMINOS (UBS 2019)
  */
-public abstract class JdbcSpatialTable extends JdbcTable implements IJdbcSpatialTable<StreamResultSet> {
+public abstract class JdbcSpatialTable extends JdbcTable<SpatialResultSet, StreamSpatialResultSet> implements IJdbcSpatialTable<StreamSpatialResultSet> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(JdbcTable.class);
 
@@ -399,5 +400,17 @@ public abstract class JdbcSpatialTable extends JdbcTable implements IJdbcSpatial
             LOGGER.error("Unable to get the metadata.", e);
             return null;
         }
+    }
+
+    @Override
+    public Iterator<SpatialResultSet> iterator() {
+        return new ResultSetIterator(this);
+    }
+
+    @Nullable
+    @Override
+    public Stream<StreamSpatialResultSet> stream() {
+        Spliterator<StreamSpatialResultSet> spliterator = new ResultSetSpliterator<>(this.getRowCount(), new StreamSpatialResultSet((SpatialResultSet)getResultSet()));
+        return StreamSupport.stream(spliterator, true);
     }
 }

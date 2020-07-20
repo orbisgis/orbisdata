@@ -36,7 +36,8 @@
  */
 package org.orbisgis.orbisdata.datamanager.api.dataset;
 
-import java.sql.ResultSet;
+
+import org.h2gis.utilities.SpatialResultSet;
 
 /**
  * Extension of the {@link IJdbcTable} and {@link ISpatialTable} interfaces.
@@ -44,5 +45,5 @@ import java.sql.ResultSet;
  * @author Erwan Bocher (CNRS)
  * @author Sylvain PALOMINOS (Lab-STICC UBS 2019)
  */
-public interface IJdbcSpatialTable<T> extends IJdbcTable<T>, ISpatialTable<ResultSet, T> {
+public interface IJdbcSpatialTable<T> extends IJdbcTable<SpatialResultSet, T>, ISpatialTable<SpatialResultSet, T> {
 }

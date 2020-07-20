@@ -40,8 +40,8 @@ import groovy.lang.GString;
 import org.h2.Driver;
 import org.h2.util.OsgiDataSourceFactory;
 import org.h2gis.functions.factory.H2GISFunctions;
-import org.h2gis.functions.io.utility.FileUtil;
 import org.h2gis.network.functions.NetworkFunctions;
+import org.h2gis.utilities.FileUtilities;
 import org.h2gis.utilities.GeometryTableUtilities;
 import org.h2gis.utilities.JDBCUtilities;
 import org.orbisgis.commons.annotations.NotNull;
@@ -98,7 +98,7 @@ public class H2GIS extends JdbcDataSource {
     @Nullable
     public static H2GIS open(@NotNull File file) {
         try {
-            if (FileUtil.isExtensionWellFormated(file, "properties")) {
+            if (FileUtilities.isExtensionWellFormated(file, "properties")) {
                 Properties prop = new Properties();
                 FileInputStream fous = new FileInputStream(file);
                 prop.load(fous);

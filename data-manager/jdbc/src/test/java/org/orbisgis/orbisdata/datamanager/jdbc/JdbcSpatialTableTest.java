@@ -36,6 +36,7 @@
  */
 package org.orbisgis.orbisdata.datamanager.jdbc;
 
+import groovy.lang.GString;
 import groovy.sql.Sql;
 import org.h2gis.functions.factory.H2GISDBFactory;
 import org.h2gis.utilities.JDBCUtilities;
@@ -58,6 +59,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -253,8 +255,8 @@ public class JdbcSpatialTableTest {
          * @param baseQuery      Query for the creation of the ResultSet
          */
         public DummyJdbcSpatialTable(TableLocation tableLocation, String baseQuery, Statement statement,
-                                     JdbcDataSource jdbcDataSource) {
-            super(DataBaseType.H2GIS, jdbcDataSource, tableLocation, statement, baseQuery);
+                                     JdbcDataSource jdbcDataSource, List<Object> params) {
+            super(DataBaseType.H2GIS, jdbcDataSource, tableLocation, statement, baseQuery, params);
         }
 
 
@@ -300,7 +302,31 @@ public class JdbcSpatialTableTest {
 
         @Nullable
         @Override
+        public IJdbcTable getTable(@NotNull GString nameOrQuery) {
+            return null;
+        }
+
+        @Nullable
+        @Override
+        public IJdbcTable getTable(@NotNull String nameOrQuery, List<Object> params) {
+            return null;
+        }
+
+        @Nullable
+        @Override
         public IJdbcTable getTable(@NotNull String tableName, @NotNull Statement statement) {
+            return null;
+        }
+
+        @Nullable
+        @Override
+        public IJdbcTable getTable(@NotNull GString nameOrQuery, @NotNull Statement statement) {
+            return null;
+        }
+
+        @Nullable
+        @Override
+        public IJdbcTable getTable(@NotNull String nameOrQuery, @Nullable List<Object> params, @NotNull Statement statement) {
             return null;
         }
 
@@ -321,12 +347,36 @@ public class JdbcSpatialTableTest {
                 return null;
             }
             String query = String.format("SELECT * FROM %s", name);
-            return new DummyJdbcSpatialTable(new TableLocation(null, name), query, statement, this);
+            return new DummyJdbcSpatialTable(new TableLocation(null, name), query, statement, this, null);
+        }
+
+        @Nullable
+        @Override
+        public IJdbcSpatialTable getSpatialTable(@NotNull GString nameOrQuery) {
+            return null;
+        }
+
+        @Nullable
+        @Override
+        public IJdbcSpatialTable getSpatialTable(@NotNull String nameOrQuery, List<Object> params) {
+            return null;
         }
 
         @Nullable
         @Override
         public IJdbcSpatialTable getSpatialTable(@NotNull String tableName, @NotNull Statement statement) {
+            return null;
+        }
+
+        @Nullable
+        @Override
+        public IJdbcSpatialTable getSpatialTable(@NotNull GString nameOrQuery, @NotNull Statement statement) {
+            return null;
+        }
+
+        @Nullable
+        @Override
+        public IJdbcSpatialTable getSpatialTable(@NotNull String nameOrQuery, @Nullable List<Object> params, @NotNull Statement statement) {
             return null;
         }
 

@@ -21,6 +21,12 @@ public class FilterBuilder extends BuilderResult implements IFilterBuilder {
     private final List<Object> params;
     private final IJdbcDataSource dataSource;
 
+    public FilterBuilder(IJdbcDataSource dataSource, String query, List<Object> params) {
+        this.dataSource = dataSource;
+        this.query = new StringBuilder(query == null ? "" : query);
+        this.params = new LinkedList<>(params);
+    }
+
     public FilterBuilder(IJdbcDataSource dataSource, String query) {
         this.dataSource = dataSource;
         this.query = new StringBuilder(query == null ? "" : query);
@@ -44,8 +50,8 @@ public class FilterBuilder extends BuilderResult implements IFilterBuilder {
 
     @Override
     public IBuilderResult filter(String filter, List<Object> params) {
-        params.addAll(params);
-        query.append(" ").append(filter);
+        this.params.addAll(params);
+        this.query.append(" ").append(filter);
         return this;
     }
 

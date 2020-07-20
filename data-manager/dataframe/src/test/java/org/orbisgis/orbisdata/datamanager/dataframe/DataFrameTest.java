@@ -314,7 +314,6 @@ public class DataFrameTest {
         assertEquals(5, dataFrame.column(0).size());
 
         assertArrayEquals(new String[]{"COL1", "COL2", "COL3"}, dataFrame.columns("COL1", "COL2", "COL3").names());
-        assertArrayEquals(new String[]{"COL1", "COL2", "COL3"}, dataFrame.columns(Arrays.asList("COL1", "COL2", "COL3")).names());
 
         assertNull(dataFrame.getColumnType("COL"));
 

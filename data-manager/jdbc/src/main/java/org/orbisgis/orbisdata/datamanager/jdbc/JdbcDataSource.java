@@ -47,11 +47,8 @@ import groovy.transform.stc.ClosureParams;
 import groovy.transform.stc.SimpleType;
 import org.codehaus.groovy.runtime.InvokerHelper;
 import org.h2.util.ScriptReader;
-import org.h2gis.functions.io.utility.FileUtil;
-import org.h2gis.utilities.GeometryTableUtilities;
-import org.h2gis.utilities.JDBCUtilities;
+import org.h2gis.utilities.*;
 import org.h2gis.utilities.TableLocation;
-import org.h2gis.utilities.URIUtilities;
 import org.orbisgis.commons.annotations.NotNull;
 import org.orbisgis.commons.annotations.Nullable;
 import org.orbisgis.orbisdata.datamanager.api.dataset.DataBaseType;
@@ -443,7 +440,7 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, IRe
     public boolean executeScript(@NotNull String fileName, Map<String, String> bindings) {
         File file = URIUtilities.fileFromString(fileName);
         try {
-            if (FileUtil.isExtensionWellFormated(file, "sql")) {
+            if (FileUtilities.isExtensionWellFormated(file, "sql")) {
                 return executeScript(new FileInputStream(file), bindings);
             }
         } catch (IOException e) {

@@ -55,7 +55,7 @@ class GroovyPostGISTest {
                                password    : 'orbisgis',
                                url         : 'jdbc:postgresql://localhost:5432/'
     ]
-    def static postGIS;
+    static POSTGIS postGIS;
 
 
     @BeforeAll

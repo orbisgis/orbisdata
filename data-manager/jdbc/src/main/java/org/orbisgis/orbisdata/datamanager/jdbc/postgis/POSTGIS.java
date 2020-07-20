@@ -1,8 +1,8 @@
 package org.orbisgis.orbisdata.datamanager.jdbc.postgis;
 
 import groovy.lang.GString;
-import org.h2gis.functions.io.utility.FileUtil;
 import org.h2gis.postgis_jts_osgi.DataSourceFactoryImpl;
+import org.h2gis.utilities.FileUtilities;
 import org.h2gis.utilities.GeometryTableUtilities;
 import org.h2gis.utilities.JDBCUtilities;
 import org.orbisgis.commons.annotations.NotNull;
@@ -94,7 +94,7 @@ public class POSTGIS extends JdbcDataSource {
     @Nullable
     public static POSTGIS open(@NotNull File file) {
         try {
-            if (FileUtil.isExtensionWellFormated(file, "properties")) {
+            if (FileUtilities.isExtensionWellFormated(file, "properties")) {
                 Properties prop = new Properties();
                 FileInputStream fous = new FileInputStream(file);
                 prop.load(fous);
@@ -195,7 +195,7 @@ public class POSTGIS extends JdbcDataSource {
         String query;
         TableLocation location;
         if(!nameOrQuery.startsWith("(") && !nameOrQuery.endsWith(")")) {
-            org.h2gis.utilities.TableLocation inputLocation = TableLocation.parse(nameOrQuery, true);
+            org.h2gis.utilities.TableLocation inputLocation = TableLocation.parse(nameOrQuery, false);
             try {
                 if (!JDBCUtilities.tableExists(connection, inputLocation)) {
                     LOGGER.error("Unable to find table " + nameOrQuery);

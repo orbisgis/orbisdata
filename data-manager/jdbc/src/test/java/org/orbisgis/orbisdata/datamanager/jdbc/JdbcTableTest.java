@@ -192,7 +192,7 @@ class JdbcTableTest {
      * @return A {@link IJdbcTable} for test purpose.
      */
     private JdbcTable getTable() {
-        return new H2gisTable(tableLocation, BASE_QUERY, statement, dataSource);
+        return new H2gisTable(tableLocation, BASE_QUERY, statement, null, dataSource);
     }
 
     /**
@@ -201,7 +201,7 @@ class JdbcTableTest {
      * @return A linked {@link IJdbcTable} for test purpose.
      */
     private JdbcTable getLinkedTable() {
-        return new H2gisTable(linkedLocation, LINKED_QUERY, statement, dataSource);
+        return new H2gisTable(linkedLocation, LINKED_QUERY, statement, null, dataSource);
     }
 
     /**
@@ -210,7 +210,7 @@ class JdbcTableTest {
      * @return A temporary {@link IJdbcTable} for test purpose.
      */
     private JdbcTable getTempTable() {
-        return new H2gisTable(tempLocation, TEMP_QUERY, statement, dataSource);
+        return new H2gisTable(tempLocation, TEMP_QUERY, statement, null, dataSource);
     }
 
     /**
@@ -219,7 +219,7 @@ class JdbcTableTest {
      * @return An empty {@link IJdbcTable} for test purpose.
      */
     private JdbcTable getEmptyTable() {
-        return new H2gisTable(emptyLocation, EMPTY_QUERY, statement, dataSource);
+        return new H2gisTable(emptyLocation, EMPTY_QUERY, statement, null, dataSource);
     }
 
     /**
@@ -234,7 +234,7 @@ class JdbcTableTest {
     }
 
     /**
-     * Test the {@link JdbcTable#JdbcTable(DataBaseType, IJdbcDataSource, TableLocation, Statement, String)} constructor.
+     * Test the {@link JdbcTable#JdbcTable(DataBaseType, IJdbcDataSource, TableLocation, Statement, List, String)} constructor.
      */
     @Test
     void testConstructor() {
@@ -329,10 +329,10 @@ class JdbcTableTest {
     public void testGetLocation() throws SQLException {
         assertEquals("\"catalog\".\"schema\".\"table\"", new PostgisTable(
                 new TableLocation(BASE_DATABASE, "catalog", "schema", "table"),
-                "not a request", dataSource.getConnection().createStatement(), dataSource).getLocation());
+                "not a request", dataSource.getConnection().createStatement(), null, dataSource).getLocation());
         assertEquals("\"catalog\".\"schema\".\"table\"", new H2gisTable(
                 new TableLocation(BASE_DATABASE, "catalog", "schema", "table"),
-                "not a request", dataSource.getConnection().createStatement(), dataSource).getLocation());
+                "not a request", dataSource.getConnection().createStatement(), null, dataSource).getLocation());
         assertEquals(BASE_DATABASE, new TableLocation(BASE_DATABASE, "catalog", "schema", "table").getDataSource());
 
         assertEquals("\"ORBISGIS\"", getTable().getLocation());
@@ -353,7 +353,7 @@ class JdbcTableTest {
         assertNotNull(getEmptyTable().getResultSet());
         assertNotNull(getBuiltTable().getResultSet());
         JdbcTable table = new H2gisTable(new TableLocation(BASE_DATABASE, "tab"), "not a request",
-                dataSource.getConnection().createStatement(), dataSource);
+                dataSource.getConnection().createStatement(), null, dataSource);
         assertNull(table.getResultSet());
     }
 
@@ -368,7 +368,7 @@ class JdbcTableTest {
         assertNotNull(getEmptyTable().getMetaData());
         assertNotNull(getBuiltTable().getMetaData());
         JdbcTable table = new H2gisTable(new TableLocation(BASE_DATABASE, "tab"), "not a request",
-                dataSource.getConnection().createStatement(), dataSource);
+                dataSource.getConnection().createStatement(), null, dataSource);
         assertNull(table.getMetaData());
     }
 
@@ -726,22 +726,15 @@ class JdbcTableTest {
     }
 
     /**
-     * Test the {@link JdbcTable#columns(String...)} and {@link JdbcTable#columns(List)} methods.
+     * Test the {@link JdbcTable#columns(String...)} methods.
      */
     @Test
     void testColumns() {
         JdbcTable table = getTable();
         JdbcSpatialTable spatialTable = (JdbcSpatialTable) dataSource.getSpatialTable(TABLE_NAME);
 
-        List<String> columns = new ArrayList<>();
-        columns.add("TOTO");
-        columns.add("tata");
-        columns.add("TIti");
-
         assertEquals("(SELECT TOTO, tata, TIti FROM ORBISGIS WHERE toto)", table.columns("TOTO", "tata", "TIti").filter("WHERE toto").toString().trim());
-        assertEquals("(SELECT TOTO, tata, TIti FROM ORBISGIS WHERE toto)", table.columns(columns).filter("WHERE toto").toString().trim());
         assertEquals("(SELECT TOTO, tata, TIti FROM ORBISGIS WHERE toto)", spatialTable.columns("TOTO", "tata", "TIti").filter("WHERE toto").toString().trim());
-        assertEquals("(SELECT TOTO, tata, TIti FROM ORBISGIS WHERE toto)", spatialTable.columns(columns).filter("WHERE toto").toString().trim());
     }
 
     /**

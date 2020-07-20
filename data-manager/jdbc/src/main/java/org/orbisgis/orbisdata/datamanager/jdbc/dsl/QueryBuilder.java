@@ -1,6 +1,8 @@
 package org.orbisgis.orbisdata.datamanager.jdbc.dsl;
 
 import groovy.lang.GString;
+import org.apache.lucene.search.spans.SpanPositionRangeQuery;
+import org.codehaus.groovy.runtime.GStringImpl;
 import org.orbisgis.commons.annotations.NotNull;
 import org.orbisgis.orbisdata.datamanager.api.datasource.IJdbcDataSource;
 import org.orbisgis.orbisdata.datamanager.api.dsl.IBuilderResult;
@@ -49,12 +51,24 @@ public class QueryBuilder extends BuilderResult implements IQueryBuilder {
 
     @Override
     public IBuilderResult filter(GString filter) {
-        return null;
+        IFilterBuilder filterBuilder = new FilterBuilder(dataSource, getQuery());
+        if(filter != null) {
+            return filterBuilder.filter(filter);
+        }
+        else {
+            return filterBuilder;
+        }
     }
 
     @Override
-    public IBuilderResult filter(String filter, Map<String, String> params) {
-        return null;
+    public IBuilderResult filter(String filter, List<Object> params) {
+        IFilterBuilder filterBuilder = new FilterBuilder(dataSource, getQuery());
+        if(filter != null) {
+            return filterBuilder.filter(filter, params);
+        }
+        else {
+            return filterBuilder;
+        }
     }
 
     @Override
@@ -65,18 +79,19 @@ public class QueryBuilder extends BuilderResult implements IQueryBuilder {
 
     @Override
     public IFilterBuilder columns(GString... columns) {
-        return null;
+        GString concat = GString.EMPTY;
+        for(GString s : columns) {
+            concat.plus(s);
+        }
+        List<Object> params = dataSource.getParameters(concat);
+        this.columns = dataSource.asSql(concat, params);
+        return new FilterBuilder(dataSource, getQuery(), params);
     }
 
     @Override
-    public IFilterBuilder columns(String[] columns, Map<String, String> params) {
-        return null;
-    }
-
-    @Override
-    public IFilterBuilder columns(List<String> columns) {
+    public IFilterBuilder columns(String[] columns, List<Object> params) {
         this.columns = String.join(", ", columns);
-        return new FilterBuilder(dataSource, getQuery());
+        return new FilterBuilder(dataSource, getQuery(), params);
     }
 
     @Override

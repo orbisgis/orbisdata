@@ -206,12 +206,12 @@ public class JdbcColumn implements IJdbcColumn, GroovyObject {
                         " in(select attrelid as pg_class_oid from pg_catalog.pg_attribute " +
                         " where attname = ? and attrelid in " +
                         "(select b.oid from pg_catalog.pg_indexes a, pg_catalog.pg_class b  where a.schemaname =? and a.tablename =? " +
-                        "and a.indexname = b.relname)) where am.amname in('btree', 'hash', 'gin', 'brin', 'gist', 'spgist') ;";
-                Map<?, ?> map =  dataSource.firstRow(query, new Object[]{name, tableName.getTable(), tableName.getSchema("public"), name});
+                        "and a.indexname = b.relname)) and am.amname in('btree', 'hash', 'gin', 'brin', 'gist', 'spgist') ;";
+                Map<?, ?> map =  dataSource.firstRow(query, new Object[]{name, tableName.getSchema("public"), tableName.getTable()});
                 return map != null;
             }
         } catch (SQLException e) {
-            LOGGER.error("Unable to get the type of the column '" + name + "' in the table '" + tableName + "'.\n" +
+            LOGGER.error("Unable to check if the column '" + name + "' from the table '" + tableName + "' is indexed.\n" +
                     e.getLocalizedMessage());
         }
         return false;
@@ -240,12 +240,12 @@ public class JdbcColumn implements IJdbcColumn, GroovyObject {
                         " in(select attrelid as pg_class_oid from pg_catalog.pg_attribute " +
                         " where attname = ? and attrelid in " +
                         "(select b.oid from pg_catalog.pg_indexes a, pg_catalog.pg_class b  where a.schemaname =? and a.tablename =? " +
-                        "and a.indexname = b.relname)) where am.amname = 'gist' ;";
-                Map<?, ?> map =  dataSource.firstRow(query, new Object[]{name, tableName.getTable(), tableName.getSchema("public"), name});
+                        "and a.indexname = b.relname)) and am.amname = 'gist' ;";
+                Map<?, ?> map =  dataSource.firstRow(query, new Object[]{name, tableName.getSchema("public"), tableName.getTable()});
                 return map != null;
             }
         } catch (SQLException e) {
-            LOGGER.error("Unable to get the type of the column '" + name + "' in the table '" + tableName + "'.\n" +
+            LOGGER.error("Unable to check if the column '" + name + "' from the table '" + tableName + "' is indexed.\n" +
                     e.getLocalizedMessage());
         }
         return false;

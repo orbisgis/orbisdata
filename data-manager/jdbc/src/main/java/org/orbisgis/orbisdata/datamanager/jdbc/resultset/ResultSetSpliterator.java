@@ -50,20 +50,19 @@ import java.util.function.Consumer;
  * @author Erwan Bocher (CNRS)
  * @author Sylvain PALOMINOS (UBS Lab-STICC 2020)
  */
-public class ResultSetSpliterator implements Spliterator<StreamResultSet> {
-    private static final Logger LOGGER = LoggerFactory.getLogger(ResultSetSpliterator.class);
+public class ResultSetSpliterator<T extends StreamResultSet> implements Spliterator<T> {
 
     private final long size;
-    private StreamResultSet rs;
+    private T rs;
 
-    public ResultSetSpliterator(long size, ResultSet rs){
+    public ResultSetSpliterator(long size, T rs){
         this.size = size;
-        this.rs = new StreamResultSet(rs);
+        this.rs = rs;
         this.rs.first();
     }
 
     @Override
-    public boolean tryAdvance(Consumer<? super StreamResultSet> consumer) {
+    public boolean tryAdvance(Consumer<? super T> consumer) {
         if(size == 0){
             return false;
         }
@@ -73,7 +72,7 @@ public class ResultSetSpliterator implements Spliterator<StreamResultSet> {
 
     @Override
     @Nullable
-    public Spliterator<StreamResultSet> trySplit() {
+    public Spliterator<T> trySplit() {
         return null;
     }
 

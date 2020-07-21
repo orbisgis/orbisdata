@@ -40,6 +40,7 @@ import groovy.lang.GString;
 import groovy.sql.Sql;
 import org.h2gis.functions.factory.H2GISDBFactory;
 import org.h2gis.utilities.JDBCUtilities;
+import org.h2gis.utilities.SpatialResultSet;
 import org.h2gis.utilities.wrapper.SpatialResultSetImpl;
 import org.h2gis.utilities.wrapper.StatementWrapper;
 import org.junit.jupiter.api.BeforeAll;
@@ -59,6 +60,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -141,8 +143,8 @@ public class JdbcSpatialTableTest {
     public void testGetGeometry() {
         ISpatialTable table = dataSource.getSpatialTable(TABLE_NAME);
         assertNull(table.getGeometry());
+        assertNull(table.getGeometry(1));
         assertNull(table.getGeometry(2));
-        assertNull(table.getGeometry(3));
         assertNull(table.getGeometry(COL_THE_GEOM));
         assertNull(table.getGeometry(COL_THE_GEOM2));
 

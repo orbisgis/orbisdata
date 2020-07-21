@@ -128,13 +128,24 @@ public class JdbcColumn implements IJdbcColumn, GroovyObject {
             return null;
         }
         try {
-            Map<?, ?> map = dataSource.firstRow("SELECT TYPE_NAME FROM INFORMATION_SCHEMA.COLUMNS " +
-                            "WHERE INFORMATION_SCHEMA.COLUMNS.TABLE_NAME=? " +
-                            "AND INFORMATION_SCHEMA.COLUMNS.TABLE_SCHEMA=? " +
-                            "AND INFORMATION_SCHEMA.COLUMNS.COLUMN_NAME=?;",
-                    new Object[]{tableName.getTable(), tableName.getSchema("PUBLIC"), name});
-            if (map != null && map.containsKey("TYPE_NAME")) {
-                return map.get("TYPE_NAME").toString();
+            if(isH2) {
+                Map<?, ?> map = dataSource.firstRow("SELECT TYPE_NAME FROM INFORMATION_SCHEMA.COLUMNS " +
+                                "WHERE INFORMATION_SCHEMA.COLUMNS.TABLE_NAME=? " +
+                                "AND INFORMATION_SCHEMA.COLUMNS.TABLE_SCHEMA=? " +
+                                "AND INFORMATION_SCHEMA.COLUMNS.COLUMN_NAME=?;",
+                        new Object[]{tableName.getTable(), tableName.getSchema("PUBLIC"), name});
+                if (map != null && map.containsKey("TYPE_NAME")) {
+                    return map.get("TYPE_NAME").toString();
+                }
+            }else {
+                Map<?, ?> map = dataSource.firstRow("SELECT udt_name FROM INFORMATION_SCHEMA.COLUMNS " +
+                                "WHERE INFORMATION_SCHEMA.COLUMNS.TABLE_NAME=? " +
+                                "AND INFORMATION_SCHEMA.COLUMNS.TABLE_SCHEMA=? " +
+                                "AND INFORMATION_SCHEMA.COLUMNS.COLUMN_NAME=?;",
+                        new Object[]{tableName.getTable(), tableName.getSchema("PUBLIC"), name});
+                if (map != null && map.containsKey("udt_name")) {
+                    return map.get("udt_name").toString();
+                }
             }
         } catch (SQLException e) {
             LOGGER.error("Unable to get the type of the column '" + name + "' in the table '" + tableName + "'.\n" +
@@ -174,13 +185,31 @@ public class JdbcColumn implements IJdbcColumn, GroovyObject {
 
     @Override
     public boolean isIndexed() {
+        if(dataSource == null || name == null || tableName == null){
+            LOGGER.error("Unable to find an index");
+        }
+        if(tableName==null){
+            LOGGER.error("Unable to find an index on a query");
+        }
         try {
-            Map<?, ?> map = dataSource.firstRow("SELECT * FROM INFORMATION_SCHEMA.INDEXES " +
-                            "WHERE INFORMATION_SCHEMA.INDEXES.TABLE_NAME=? " +
-                            "AND INFORMATION_SCHEMA.INDEXES.TABLE_SCHEMA=? " +
-                            "AND INFORMATION_SCHEMA.INDEXES.COLUMN_NAME=?;",
-                    new Object[]{tableName.getTable(), tableName.getSchema("PUBLIC"), name});
-            return map != null;
+            if(isH2) {
+                Map<?, ?> map = dataSource.firstRow("SELECT * FROM INFORMATION_SCHEMA.INDEXES " +
+                                "WHERE INFORMATION_SCHEMA.INDEXES.TABLE_NAME=? " +
+                                "AND INFORMATION_SCHEMA.INDEXES.TABLE_SCHEMA=? " +
+                                "AND INFORMATION_SCHEMA.INDEXES.COLUMN_NAME=?;",
+                        new Object[]{tableName.getTable(), tableName.getSchema("PUBLIC"), name});
+                return map != null;
+            }else {
+               String query =  "SELECT  cls.relname, am.amname " +
+                        "FROM  pg_class cls " +
+                        "JOIN pg_am am ON am.oid=cls.relam where cls.oid " +
+                        " in(select attrelid as pg_class_oid from pg_catalog.pg_attribute " +
+                        " where attname = ? and attrelid in " +
+                        "(select b.oid from pg_catalog.pg_indexes a, pg_catalog.pg_class b  where a.schemaname =? and a.tablename =? " +
+                        "and a.indexname = b.relname)) where am.amname in('btree', 'hash', 'gin', 'brin', 'gist', 'spgist') ;";
+                Map<?, ?> map =  dataSource.firstRow(query, new Object[]{name, tableName.getTable(), tableName.getSchema("public"), name});
+                return map != null;
+            }
         } catch (SQLException e) {
             LOGGER.error("Unable to get the type of the column '" + name + "' in the table '" + tableName + "'.\n" +
                     e.getLocalizedMessage());
@@ -190,13 +219,31 @@ public class JdbcColumn implements IJdbcColumn, GroovyObject {
 
     @Override
     public boolean isSpatialIndexed() {
+        if(dataSource == null || name == null || tableName == null){
+            LOGGER.error("Unable to find a spatial index");
+        }
+        if(tableName==null){
+            LOGGER.error("Unable to find a spatial index on a query");
+        }
         try {
-            Map<?, ?> map = dataSource.firstRow("SELECT * FROM INFORMATION_SCHEMA.INDEXES " +
-                            "WHERE INFORMATION_SCHEMA.INDEXES.TABLE_NAME=? " +
-                            "AND INFORMATION_SCHEMA.INDEXES.TABLE_SCHEMA=? " +
-                            "AND INFORMATION_SCHEMA.INDEXES.COLUMN_NAME=?;",
-                    new Object[]{tableName.getTable(), tableName.getSchema("PUBLIC"), name});
-            return map != null && map.get("INDEX_TYPE_NAME").toString().contains("SPATIAL");
+            if(isH2) {
+                Map<?, ?> map = dataSource.firstRow("SELECT * FROM INFORMATION_SCHEMA.INDEXES " +
+                                "WHERE INFORMATION_SCHEMA.INDEXES.TABLE_NAME=? " +
+                                "AND INFORMATION_SCHEMA.INDEXES.TABLE_SCHEMA=? " +
+                                "AND INFORMATION_SCHEMA.INDEXES.COLUMN_NAME=?;",
+                        new Object[]{tableName.getTable(), tableName.getSchema("PUBLIC"), name});
+                return map != null && map.get("INDEX_TYPE_NAME").toString().contains("SPATIAL");
+            }else{
+                String query =  "SELECT  cls.relname, am.amname " +
+                        "FROM  pg_class cls " +
+                        "JOIN pg_am am ON am.oid=cls.relam where cls.oid " +
+                        " in(select attrelid as pg_class_oid from pg_catalog.pg_attribute " +
+                        " where attname = ? and attrelid in " +
+                        "(select b.oid from pg_catalog.pg_indexes a, pg_catalog.pg_class b  where a.schemaname =? and a.tablename =? " +
+                        "and a.indexname = b.relname)) where am.amname = 'gist' ;";
+                Map<?, ?> map =  dataSource.firstRow(query, new Object[]{name, tableName.getTable(), tableName.getSchema("public"), name});
+                return map != null;
+            }
         } catch (SQLException e) {
             LOGGER.error("Unable to get the type of the column '" + name + "' in the table '" + tableName + "'.\n" +
                     e.getLocalizedMessage());
@@ -206,38 +253,43 @@ public class JdbcColumn implements IJdbcColumn, GroovyObject {
 
     @Override
     public boolean createSpatialIndex() {
-        if(!isSpatial()){
-            return false;
+        if(dataSource == null || name == null || tableName == null){
+            LOGGER.error("Unable to create a spatial index");
         }
-        return createIndex();
+        if(tableName==null){
+            LOGGER.error("Unable to create a spatial index on a query");
+        }
+        try {
+            if (isH2) {
+                dataSource.execute("CREATE INDEX IF NOT EXISTS " +  tableName.toString(isH2)+"_"+name+ " ON " + tableName.toString(isH2)
+                        + " USING RTREE (" + TableLocation.quoteIdentifier(name, isH2)  + ")");
+            } else {
+                dataSource.execute("CREATE INDEX IF NOT EXISTS "+  tableName.toString(isH2)+"_"+name+ " ON "  + tableName.toString(isH2)
+                        + " USING GIST (" + TableLocation.quoteIdentifier(name, isH2)  + ")");
+            }
+            return true;
+        } catch (SQLException e) {
+            LOGGER.error("Unable to create a spatial index on the column '" + name + "' in the table '" + tableName + "'.\n" +
+                    e.getLocalizedMessage());
+        }
+        return false;
     }
 
     @Override
     public boolean createIndex() {
-        if (!isIndexed()) {
-            if(isSpatial()){
-                try {
-                    if (isH2) {
-                        dataSource.execute("CREATE INDEX ON " + tableName.toString(isH2) + " USING RTREE (" + name + ")");
-                    } else {
-                        dataSource.execute("CREATE INDEX ON " + tableName.toString(isH2) + " USING GIST (" + name + ")");
-                    }
-                    return true;
-                } catch (SQLException e) {
-                    LOGGER.error("Unable to create a spatial index on the column '" + name + "' in the table '" + tableName + "'.\n" +
-                            e.getLocalizedMessage());
-                }
-            }
-            else {
-                try {
-                    dataSource.execute("CREATE INDEX ON " + tableName.toString(isH2) + " USING BTREE (" +
-                            TableLocation.quoteIdentifier(name, isH2) + ")");
-                    return true;
-                } catch (SQLException e) {
-                    LOGGER.error("Unable to create an index on the column '" + name + "' in the table '" + tableName + "'.\n" +
-                            e.getLocalizedMessage());
-                }
-            }
+        if(dataSource == null || name == null || tableName == null){
+            LOGGER.error("Unable to create an index");
+        }
+        if(tableName==null){
+            LOGGER.error("Unable to create an index on a query");
+        }
+        try {
+            dataSource.execute("CREATE INDEX IF NOT EXISTS "+  tableName.toString(isH2)+"_"+name+ " ON "  + tableName.toString(isH2) + " USING BTREE (" +
+                    TableLocation.quoteIdentifier(name, isH2) + ")");
+            return true;
+        } catch (SQLException e) {
+            LOGGER.error("Unable to create an index on the column '" + name + "' in the table '" + tableName + "'.\n" +
+                    e.getLocalizedMessage());
         }
         return false;
     }

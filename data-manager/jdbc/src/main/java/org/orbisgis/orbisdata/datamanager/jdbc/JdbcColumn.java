@@ -193,7 +193,7 @@ public class JdbcColumn implements IJdbcColumn, GroovyObject {
         }
         try {
             if(isH2) {
-                Map<?, ?> map = dataSource.firstRow("SELECT * FROM INFORMATION_SCHEMA.INDEXES " +
+                Map<?, ?> map = dataSource.firstRow("SELECT INDEX_TYPE_NAME FROM INFORMATION_SCHEMA.INDEXES " +
                                 "WHERE INFORMATION_SCHEMA.INDEXES.TABLE_NAME=? " +
                                 "AND INFORMATION_SCHEMA.INDEXES.TABLE_SCHEMA=? " +
                                 "AND INFORMATION_SCHEMA.INDEXES.COLUMN_NAME=?;",
@@ -227,7 +227,7 @@ public class JdbcColumn implements IJdbcColumn, GroovyObject {
         }
         try {
             if(isH2) {
-                Map<?, ?> map = dataSource.firstRow("SELECT * FROM INFORMATION_SCHEMA.INDEXES " +
+                Map<?, ?> map = dataSource.firstRow("SELECT INDEX_TYPE_NAME FROM INFORMATION_SCHEMA.INDEXES " +
                                 "WHERE INFORMATION_SCHEMA.INDEXES.TABLE_NAME=? " +
                                 "AND INFORMATION_SCHEMA.INDEXES.TABLE_SCHEMA=? " +
                                 "AND INFORMATION_SCHEMA.INDEXES.COLUMN_NAME=?;",

@@ -450,5 +450,10 @@ class GroovyPostGISTest {
         """)
         postGIS.getSpatialTable("orbisgis").the_geom.createSpatialIndex()
         assertTrue(postGIS.getSpatialTable("orbisgis").the_geom.isIndexed())
+        assertFalse(postGIS.getSpatialTable("orbisgis").id.isIndexed())
+        postGIS.getSpatialTable("orbisgis").id.createIndex()
+        assertTrue(postGIS.getSpatialTable("orbisgis").id.isIndexed())
+        postGIS.getSpatialTable("orbisgis").the_geom.dropIndex();
+        assertFalse(postGIS.getSpatialTable("orbisgis").the_geom.isIndexed())
     }
 }

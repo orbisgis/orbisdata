@@ -296,15 +296,35 @@ public class JdbcColumn implements IJdbcColumn, GroovyObject {
 
     @Override
     public void dropIndex() {
+        if(dataSource == null || name == null || tableName == null){
+            LOGGER.error("Unable to drop index");
+        }
+        if(tableName==null){
+            LOGGER.error("Unable to drop index on a query");
+        }
         List<String> indexes = new ArrayList<>();
         try {
-            List<GroovyRowResult> list = dataSource.rows("SELECT INDEX_NAME FROM INFORMATION_SCHEMA.INDEXES " +
-                            "WHERE INFORMATION_SCHEMA.INDEXES.TABLE_NAME=? " +
-                            "AND INFORMATION_SCHEMA.INDEXES.TABLE_SCHEMA=? " +
-                            "AND INFORMATION_SCHEMA.INDEXES.COLUMN_NAME=?;",
-                    new Object[]{tableName.getTable(), tableName.getSchema("PUBLIC"), name});
-            for (GroovyRowResult rowResult : list) {
-                indexes.add(rowResult.get("INDEX_NAME").toString());
+            if (isH2) {
+                List<GroovyRowResult> list = dataSource.rows("SELECT INDEX_NAME FROM INFORMATION_SCHEMA.INDEXES " +
+                                "WHERE INFORMATION_SCHEMA.INDEXES.TABLE_NAME=? " +
+                                "AND INFORMATION_SCHEMA.INDEXES.TABLE_SCHEMA=? " +
+                                "AND INFORMATION_SCHEMA.INDEXES.COLUMN_NAME=?;",
+                        new Object[]{tableName.getTable(), tableName.getSchema("PUBLIC"), name});
+                for (GroovyRowResult rowResult : list) {
+                    indexes.add(rowResult.get("INDEX_NAME").toString());
+                }
+            }else {
+                String query =  "SELECT  cls.relname as index_name " +
+                        "FROM  pg_class cls " +
+                        "JOIN pg_am am ON am.oid=cls.relam where cls.oid " +
+                        " in(select attrelid as pg_class_oid from pg_catalog.pg_attribute " +
+                        " where attname = ? and attrelid in " +
+                        "(select b.oid from pg_catalog.pg_indexes a, pg_catalog.pg_class b  where a.schemaname =? and a.tablename =? " +
+                        "and a.indexname = b.relname)) and am.amname in('btree', 'hash', 'gin', 'brin', 'gist', 'spgist') ;";
+                List<GroovyRowResult> list  =  dataSource.rows(query, new Object[]{name, tableName.getSchema("public"), tableName.getTable()});
+                for (GroovyRowResult rowResult : list) {
+                    indexes.add(rowResult.get("index_name").toString());
+                }
             }
         } catch (SQLException e) {
             LOGGER.error("Unable to get the indexes of the column '" + name + "' in the table '" + tableName + "'.\n" +

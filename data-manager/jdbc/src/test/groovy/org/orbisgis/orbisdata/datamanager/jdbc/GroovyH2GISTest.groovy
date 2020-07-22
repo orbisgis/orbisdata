@@ -967,4 +967,24 @@ class GroovyH2GISTest {
         table = h2GIS.getSpatialTable("h2gis").columns("*").filter("where id=?", [val]).getSpatialTable()
         assert 2 == table.firstRow[0]
     }
+
+    @Test
+    void filterTest() {
+        def h2GIS = H2GIS.open([databaseName: './target/loadH2GIS'])
+        h2GIS.execute("""
+                DROP TABLE IF EXISTS postgis;
+                CREATE TABLE postgis (id int, the_geom geometry(point));
+                INSERT INTO postgis VALUES (1, 'POINT(10 10)'::GEOMETRY), (2, 'POINT(1 1)'::GEOMETRY);
+        """)
+
+        def table = h2GIS.getTable("postgis").columns("id").filter("limit 1").getTable()
+        assert 1 == table.getRowCount()
+        assert 1 == table.firstRow[0]
+        table = h2GIS.getTable("postgis").columns("id").filter("limit 2").getTable()
+        assert 2 == table.getRowCount()
+        table = h2GIS.getTable("postgis").columns("id").filter("limit 2").getTable().filter("where id=2").getTable().filter("where id=2").getTable()
+        assert 1 == table.getRowCount()
+        assert 2 == table.firstRow[0]
+
+    }
 }

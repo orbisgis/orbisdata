@@ -64,7 +64,7 @@ public class QueryBuilder extends BuilderResult implements IQueryBuilder {
     public QueryBuilder(IJdbcDataSource dataSource, @NotNull String nameOrQuery) {
         this.dataSource = dataSource;
         if(nameOrQuery.startsWith("(") && nameOrQuery.endsWith(")")) {
-            location = nameOrQuery;
+            location = nameOrQuery + " as foo";
         }
         else {
             boolean isH2 = H2GIS == dataSource.getDataBaseType();

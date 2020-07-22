@@ -59,12 +59,18 @@ public class FilterBuilder extends BuilderResult implements IFilterBuilder {
     public FilterBuilder(IJdbcDataSource dataSource, String query, List<Object> params) {
         this.dataSource = dataSource;
         this.query = new StringBuilder(query == null ? "" : query);
+        if(query != null && query.startsWith("(") && query.endsWith(")")) {
+            this.query.append(" as foo");
+        }
         this.params = new LinkedList<>(params);
     }
 
     public FilterBuilder(IJdbcDataSource dataSource, String query) {
         this.dataSource = dataSource;
         this.query = new StringBuilder(query == null ? "" : query);
+        if(query != null && query.startsWith("(") && query.endsWith(")")) {
+            this.query.append(" as foo");
+        }
         this.params = new LinkedList<>();
     }
 

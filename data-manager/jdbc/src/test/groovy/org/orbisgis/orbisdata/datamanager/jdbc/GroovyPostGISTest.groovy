@@ -437,4 +437,23 @@ class GroovyPostGISTest {
         table = postGIS.getSpatialTable("postgis").columns("*").filter("where id=?", [val]).getSpatialTable()
         assert 2 == table.firstRow[0]
     }
+
+    @Test
+    void filterTest() {
+        postGIS.execute("""
+                DROP TABLE IF EXISTS postgis;
+                CREATE TABLE postgis (id int, the_geom geometry(point));
+                INSERT INTO postgis VALUES (1, 'POINT(10 10)'::GEOMETRY), (2, 'POINT(1 1)'::GEOMETRY);
+        """)
+
+        def table = postGIS.getTable("postgis").columns("id").filter("limit 1").getTable()
+        assert 1 == table.getRowCount()
+        assert 1 == table.firstRow[0]
+        table = postGIS.getTable("postgis").columns("id").filter("limit 2").getTable()
+        assert 2 == table.getRowCount()
+        table = postGIS.getTable("postgis").columns("id").filter("limit 2").getTable().filter("where id=2").getTable().filter("where id=2").getTable()
+        assert 1 == table.getRowCount()
+        assert 2 == table.firstRow[0]
+
+    }
 }

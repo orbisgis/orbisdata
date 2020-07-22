@@ -392,7 +392,7 @@ class JdbcTableTest {
         assertEquals(EMPTY_QUERY, getEmptyTable().getBaseQuery());
         assertEquals("(SELECT THE_GEOM, the_geom2, ID, VAL, MEANING FROM ORBISGIS LIMIT 2)",
                 getBuiltTable().getBaseQuery().trim());
-        assertEquals("(SELECT geom as g, st_area(geom) as area FROM (SELECT the_geom AS geom FROM ORBISGIS where id=1))",
+        assertEquals("(SELECT geom as g, st_area(geom) as area FROM (SELECT the_geom AS geom FROM ORBISGIS where id=1) as foo)",
                 getTable().columns("the_geom AS geom").filter("where id=1").getTable().columns("geom as g", "st_area(geom) as area").toString());
     }
 

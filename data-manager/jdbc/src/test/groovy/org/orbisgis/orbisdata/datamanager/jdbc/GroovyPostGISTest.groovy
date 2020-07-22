@@ -437,4 +437,23 @@ class GroovyPostGISTest {
         table = postGIS.getSpatialTable("postgis").columns("*").filter("where id=?", [val]).getSpatialTable()
         assert 2 == table.firstRow[0]
     }
+
+
+    @Test
+    @EnabledIfSystemProperty(named = "test.postgis", matches = "true")
+    void testCreateSpatialIndex() {
+        new File("target/query_table_postgis.shp").delete()
+        postGIS.execute("""
+                DROP TABLE IF EXISTS orbisgis;
+                CREATE TABLE orbisgis (id int, the_geom geometry(point, 4326));
+                INSERT INTO orbisgis VALUES (1, 'SRID=4326;POINT(10 10)'::GEOMETRY), (2, 'SRID=4326;POINT(1 1)'::GEOMETRY);
+        """)
+        postGIS.getSpatialTable("orbisgis").the_geom.createSpatialIndex()
+        assertTrue(postGIS.getSpatialTable("orbisgis").the_geom.isIndexed())
+        assertFalse(postGIS.getSpatialTable("orbisgis").id.isIndexed())
+        postGIS.getSpatialTable("orbisgis").id.createIndex()
+        assertTrue(postGIS.getSpatialTable("orbisgis").id.isIndexed())
+        postGIS.getSpatialTable("orbisgis").the_geom.dropIndex();
+        assertFalse(postGIS.getSpatialTable("orbisgis").the_geom.isIndexed())
+    }
 }

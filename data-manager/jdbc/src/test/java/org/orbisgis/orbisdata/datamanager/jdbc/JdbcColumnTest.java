@@ -225,22 +225,14 @@ public class JdbcColumnTest {
         testNoIndexes();
 
         //Test standard index creation
-        assertTrue(getColumn(COL_THE_GEOM).createIndex());
-        assertTrue(getColumn(COL_THE_GEOM2).createIndex());
+        assertTrue(getColumn(COL_THE_GEOM).createSpatialIndex());
+        assertTrue(getColumn(COL_THE_GEOM2).createSpatialIndex());
         assertTrue(getColumn(COL_ID).createIndex());
         assertTrue(getColumn(COL_VALUE).createIndex());
         assertTrue(getColumn(COL_MEANING).createIndex());
         assertFalse(getColumn(COL_NO_COL).createIndex());
         assertFalse(getColumn(COL_NO_TAB).createIndex());
 
-        //Test no index re-creation
-        assertFalse(getColumn(COL_THE_GEOM).createIndex());
-        assertFalse(getColumn(COL_THE_GEOM2).createIndex());
-        assertFalse(getColumn(COL_ID).createIndex());
-        assertFalse(getColumn(COL_VALUE).createIndex());
-        assertFalse(getColumn(COL_MEANING).createIndex());
-        assertFalse(getColumn(COL_NO_COL).createIndex());
-        assertFalse(getColumn(COL_NO_TAB).createIndex());
 
         //Test index
         assertTrue(getColumn(COL_THE_GEOM).isIndexed());
@@ -289,15 +281,6 @@ public class JdbcColumnTest {
         assertFalse(getColumn(COL_MEANING).isSpatialIndexed());
         assertFalse(getColumn(COL_NO_COL).isSpatialIndexed());
         assertFalse(getColumn(COL_NO_TAB).isIndexed());
-
-        //Test no index re-creation
-        assertFalse(getColumn(COL_THE_GEOM).createIndex());
-        assertFalse(getColumn(COL_THE_GEOM2).createIndex());
-        assertTrue(getColumn(COL_ID).createIndex());
-        assertTrue(getColumn(COL_VALUE).createIndex());
-        assertTrue(getColumn(COL_MEANING).createIndex());
-        assertFalse(getColumn(COL_NO_COL).createIndex());
-        assertFalse(getColumn(COL_NO_TAB).createIndex());
     }
 
     /**

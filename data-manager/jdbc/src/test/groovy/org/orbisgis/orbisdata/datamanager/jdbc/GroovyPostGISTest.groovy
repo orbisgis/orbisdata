@@ -46,9 +46,6 @@ import org.locationtech.jts.io.WKTReader
 import org.orbisgis.orbisdata.datamanager.jdbc.h2gis.H2GIS
 import org.orbisgis.orbisdata.datamanager.jdbc.postgis.POSTGIS
 
-import java.sql.ResultSet
-import java.sql.Statement
-
 import static org.junit.jupiter.api.Assertions.*
 
 class GroovyPostGISTest {
@@ -485,6 +482,6 @@ class GroovyPostGISTest {
         """)
         def spatialTable = postGIS.autoCommit(false).fetchSize(100).getSpatialTable("(select * from big_geo)");
         assertEquals(100000, spatialTable.getRowCount());
+        postGIS.autoCommit(true)
     }
-
     }

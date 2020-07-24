@@ -173,14 +173,6 @@ public interface IResultSetBuilder {
 
 
     /**
-     * Enables auto-commit mode, which means that each statement is once again
-     * committed automatically when it is completed.
-     * @param autoCommit false to disable auto-commit mode
-     * @return  This builder.
-     */
-    IResultSetBuilder autoCommit(boolean autoCommit);
-
-    /**
      * See {@link java.sql.Statement#execute(String)}
      */
     boolean execute(String sql) throws SQLException;

@@ -340,11 +340,6 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, IRe
     }
 
     @Override
-    public IResultSetBuilder autoCommit(boolean autoCommit) {
-        return new ResultSetBuilder(this).autoCommit(autoCommit);
-    }
-
-    @Override
     public IResultSetBuilder timeout(int time) {
         return new ResultSetBuilder(this).timeout(time);
     }
@@ -1066,5 +1061,22 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, IRe
                 preparedStatement.setObject(i, param);
             }
         }
+    }
+
+    @Override
+    public JdbcDataSource autoCommit(boolean autoCommit) {
+        try {
+            Connection con = getConnection();
+            if(con != null){
+                con.setAutoCommit(autoCommit);
+                return this;
+            }
+            else {
+                LOGGER.error("Unable to get the connection.");
+            }
+        } catch (SQLException e) {
+            LOGGER.error("Unable to set the auto-commit mode.\n" + e.getLocalizedMessage());
+        }
+        return this;
     }
 }

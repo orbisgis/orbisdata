@@ -67,11 +67,11 @@ public class ResultSetBuilder implements IResultSetBuilder {
     /**
      * {@link ResultSet} type.
      */
-    private int type = ResultSet.TYPE_FORWARD_ONLY;
+    private int type = -1;
     /**
      * {@link ResultSet} concurrency.
      */
-    private int concur = ResultSet.CONCUR_READ_ONLY;
+    private int concur = -1;
     /**
      * {@link ResultSet} holdability.
      */
@@ -104,7 +104,6 @@ public class ResultSetBuilder implements IResultSetBuilder {
      * Maximum size of the fields.
      */
     private int maxFieldSize = -1;
-    private boolean autoCommit =false;
 
     /**
      * Main constructor.
@@ -211,16 +210,8 @@ public class ResultSetBuilder implements IResultSetBuilder {
         return this;
     }
 
-    @Override
-    public IResultSetBuilder autoCommit(boolean autoCommit) {
-        this.autoCommit=autoCommit;
-        return this;
-    }
-
     private Statement getStatement() throws SQLException {
         Statement st;
-        dataSource.getConnection().setAutoCommit(autoCommit);
-
         if(type != -1 && concur != -1 && hold != -1) {
             st = dataSource.getConnection().createStatement(type, concur, hold);
         }
@@ -236,6 +227,7 @@ public class ResultSetBuilder implements IResultSetBuilder {
         else {
             st = dataSource.getConnection().createStatement();
         }
+
         if(direction != -1) {
             st.setFetchDirection(direction);
         }

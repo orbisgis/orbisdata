@@ -97,7 +97,7 @@ public abstract class BuilderResult implements IBuilderResult {
     @NotNull
     @Override
     public String toString() {
-        return "(" + getQuery() + ")";
+        return "(" + getQuery() + ") as foo";
     }
 
     @Override

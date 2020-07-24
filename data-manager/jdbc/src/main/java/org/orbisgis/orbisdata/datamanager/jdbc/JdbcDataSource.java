@@ -340,6 +340,11 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, IRe
     }
 
     @Override
+    public IResultSetBuilder autoCommit(boolean autoCommit) {
+        return new ResultSetBuilder(this).autoCommit(autoCommit);
+    }
+
+    @Override
     public IResultSetBuilder timeout(int time) {
         return new ResultSetBuilder(this).timeout(time);
     }

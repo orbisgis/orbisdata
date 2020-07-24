@@ -492,51 +492,26 @@ public abstract class JdbcTable<T extends ResultSet, U> extends DefaultResultSet
 
     @Override
     public int getRowCount() {
-        ResultSet rs = getResultSet();
-        if(rs == null){
+        Connection con = null;
+        try {
+            con = jdbcDataSource.getConnection();
+        } catch (SQLException e) {
+            LOGGER.error("Unable to get the connection.");
             return -1;
         }
+        String query = "";
         if (tableLocation == null) {
-            try {
-                rs.last();
-                return rs.getRow();
-            } catch (SQLException e) {
-                LOGGER.error("Unable to reach the end of the resultset.", e);
-            }
+           query = getBaseQuery();
+        } else  {
+           query =  tableLocation.toString(getDbType());
+        }
+        try {
+            ResultSet rowCountRs = con.createStatement().executeQuery("SELECT COUNT(*) FROM (" + query + ") as foo");
+            rowCountRs.next();
+            return rowCountRs.getInt(1);
+        } catch (SQLException e) {
+            LOGGER.error("Unable to get the number of rows.");
             return -1;
-        } else if (tableLocation.getTable().isEmpty()) {
-            int count = 0;
-            try {
-                rs.beforeFirst();
-            } catch (SQLException e) {
-                LOGGER.error("Unable to get the row count on " + tableLocation.toString() + ".\n", e);
-                return -1;
-            }
-            try {
-                while (rs.next()) {
-                    count++;
-                }
-            } catch (SQLException e) {
-                LOGGER.error("Unable to iterate on " + tableLocation.toString() + ".\n", e);
-                return -1;
-            }
-            return count;
-        } else {
-            try {
-                Connection con = jdbcDataSource.getConnection();
-                if(con == null){
-                    LOGGER.error("Unable to get the connection.");
-                    return -1;
-                }
-                TableLocation loc = getTableLocation();
-                if(loc == null){
-                    return -1;
-                }
-                return JDBCUtilities.getRowCount(con, loc.toString(getDbType()));
-            } catch (SQLException e) {
-                LOGGER.error("Unable to get the row count on " + tableLocation.toString() + ".\n", e);
-                return -1;
-            }
         }
     }
 

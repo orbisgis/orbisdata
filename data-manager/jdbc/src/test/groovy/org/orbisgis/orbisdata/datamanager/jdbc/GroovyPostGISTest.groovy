@@ -46,6 +46,9 @@ import org.locationtech.jts.io.WKTReader
 import org.orbisgis.orbisdata.datamanager.jdbc.h2gis.H2GIS
 import org.orbisgis.orbisdata.datamanager.jdbc.postgis.POSTGIS
 
+import java.sql.ResultSet
+import java.sql.Statement
+
 import static org.junit.jupiter.api.Assertions.*
 
 class GroovyPostGISTest {
@@ -473,4 +476,15 @@ class GroovyPostGISTest {
         postGIS.getSpatialTable("orbisgis").the_geom.dropIndex();
         assertFalse(postGIS.getSpatialTable("orbisgis").the_geom.isIndexed())
     }
-}
+
+    @Test
+    void preparedQueryTestWithFetch() {
+        postGIS.execute("""
+                DROP TABLE IF EXISTS big_geo;
+                CREATE TABLE big_geo as select st_makepoint(-60 + n*random()/500.00, 30 + n*random()/500.00), n as id from generate_series(1,100000) as n;
+        """)
+        def spatialTable = postGIS.autoCommit(false).fetchSize(100).getSpatialTable("(select * from big_geo)");
+        assertEquals(100000, spatialTable.getRowCount());
+    }
+
+    }

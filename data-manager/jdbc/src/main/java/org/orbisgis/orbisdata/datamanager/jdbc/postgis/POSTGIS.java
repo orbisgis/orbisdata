@@ -213,10 +213,9 @@ public class POSTGIS extends JdbcDataSource {
             location = null;
         }
         try {
-            Connection con = getConnection();
-            if(con != null){
+            if(connection != null){
                 if(location != null){
-                    if(GeometryTableUtilities.hasGeometryColumn(con, location)) {
+                    if(GeometryTableUtilities.hasGeometryColumn(connection, location)) {
                         return new PostgisSpatialTable(location, query, statement, params, this);
                     }
                     else {

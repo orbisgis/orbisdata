@@ -596,6 +596,11 @@ public class IJdbcDataSourceTest {
             return null;
         }
 
+        @Override
+        public IJdbcDataSource autoCommit(boolean autoCommit) {
+            return this;
+        }
+
         @NotNull
         @Override
         public IDataSourceLocation getLocation() {

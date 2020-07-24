@@ -840,14 +840,14 @@ class GroovyH2GISTest {
         ]
         def postGIS = POSTGIS.open(dbProperties)
         if(postGIS) {
-            h2GIS.getSpatialTable("H2GIS").save(postGIS, true);
+            h2GIS.getSpatialTable("h2gis").save(postGIS, true);
             def concat = ""
-            postGIS.spatialTable "h2gis" eachRow { row -> concat += "$row.id $row.the_geom $row.geometry\n" }
+            postGIS.spatialTable "\"H2GIS\"" eachRow { row -> concat += "$row.id $row.the_geom $row.geometry\n" }
             assertEquals("1 POINT (10 10) POINT (10 10)\n2 POINT (1 1) POINT (1 1)\n", concat)
             concat = ""
-            postGIS.execute("DROP TABLE IF EXISTS \"H2GIS\" ")
+            postGIS.execute("DROP TABLE IF EXISTS \"H2GIS\"")
             h2GIS.getSpatialTable("h2gis").save(postGIS)
-            postGIS.spatialTable "h2gis" eachRow { row -> concat += "$row.id $row.the_geom $row.geometry\n" }
+            postGIS.spatialTable "\"H2GIS\"" eachRow { row -> concat += "$row.id $row.the_geom $row.geometry\n" }
             assertEquals("1 POINT (10 10) POINT (10 10)\n2 POINT (1 1) POINT (1 1)\n", concat)
         }
     }

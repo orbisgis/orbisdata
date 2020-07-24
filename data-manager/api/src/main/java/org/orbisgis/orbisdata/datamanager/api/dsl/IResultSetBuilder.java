@@ -171,6 +171,7 @@ public interface IResultSetBuilder {
      */
     IResultSetBuilder maxFieldSize(int size);
 
+
     /**
      * See {@link java.sql.Statement#execute(String)}
      */

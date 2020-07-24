@@ -1062,4 +1062,21 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, IRe
             }
         }
     }
+
+    @Override
+    public JdbcDataSource autoCommit(boolean autoCommit) {
+        try {
+            Connection con = getConnection();
+            if(con != null){
+                con.setAutoCommit(autoCommit);
+                return this;
+            }
+            else {
+                LOGGER.error("Unable to get the connection.");
+            }
+        } catch (SQLException e) {
+            LOGGER.error("Unable to set the auto-commit mode.\n" + e.getLocalizedMessage());
+        }
+        return this;
+    }
 }

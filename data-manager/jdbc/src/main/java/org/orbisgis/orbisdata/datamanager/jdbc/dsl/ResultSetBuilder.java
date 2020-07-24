@@ -227,6 +227,7 @@ public class ResultSetBuilder implements IResultSetBuilder {
         else {
             st = dataSource.getConnection().createStatement();
         }
+
         if(direction != -1) {
             st.setFetchDirection(direction);
         }

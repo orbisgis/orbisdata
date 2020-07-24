@@ -45,6 +45,7 @@ import org.orbisgis.orbisdata.datamanager.api.dataset.DataBaseType;
 import org.orbisgis.orbisdata.datamanager.api.dataset.IJdbcSpatialTable;
 import org.orbisgis.orbisdata.datamanager.api.dataset.IJdbcTable;
 import org.orbisgis.orbisdata.datamanager.api.dataset.ISpatialTable;
+import org.orbisgis.orbisdata.datamanager.api.dsl.IResultSetBuilder;
 
 import javax.sql.DataSource;
 import java.io.File;
@@ -1012,4 +1013,12 @@ public interface IJdbcDataSource extends IDataSource<ResultSet>, GroovyObject, D
      * @return String SQL query.
      */
     String asSql(GString gString, List<Object> params);
+
+
+    /**
+     * Enables auto-commit mode, which means that each statement is once again
+     * committed automatically when it is completed.
+     * @param autoCommit false to disable auto-commit mode
+     */
+    IJdbcDataSource autoCommit(boolean autoCommit);
 }

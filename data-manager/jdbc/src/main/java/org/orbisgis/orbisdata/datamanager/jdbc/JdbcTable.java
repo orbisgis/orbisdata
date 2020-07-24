@@ -503,7 +503,7 @@ public abstract class JdbcTable<T extends ResultSet, U> extends DefaultResultSet
         if (tableLocation == null) {
            query = getBaseQuery();
         } else  {
-           query =  tableLocation.toString(getDbType());
+           query =  "SELECT * FROM "+tableLocation.toString(getDbType());
         }
         try {
             ResultSet rowCountRs = con.createStatement().executeQuery("SELECT COUNT(*) FROM (" + query + ") as foo");

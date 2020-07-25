@@ -47,10 +47,8 @@ import org.orbisgis.orbisdata.datamanager.api.dsl.IBuilderResult;
 import org.orbisgis.orbisdata.datamanager.api.dsl.IFilterBuilder;
 
 import java.math.BigDecimal;
+import java.sql.*;
 import java.sql.Date;
-import java.sql.ResultSet;
-import java.sql.Time;
-import java.sql.Timestamp;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -647,6 +645,16 @@ public class ITableTest {
         @Override
         public List<Object> getParams() {
             return null;
+        }
+
+        @Override
+        public Statement getStatement() {
+            return null;
+        }
+
+        @Override
+        public void setStatement(Statement statement) {
+
         }
 
         @Override

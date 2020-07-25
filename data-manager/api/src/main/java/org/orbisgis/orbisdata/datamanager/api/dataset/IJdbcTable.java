@@ -134,4 +134,5 @@ public interface IJdbcTable<T, U> extends ITable<T, U>, ResultSet {
      */
     @NotNull
     List<Object> getParams();
+
 }

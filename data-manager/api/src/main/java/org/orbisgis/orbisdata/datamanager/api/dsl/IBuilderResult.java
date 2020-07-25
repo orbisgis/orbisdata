@@ -43,6 +43,7 @@ import org.orbisgis.commons.annotations.Nullable;
 import org.orbisgis.orbisdata.datamanager.api.dataset.ISpatialTable;
 import org.orbisgis.orbisdata.datamanager.api.dataset.ITable;
 
+import java.sql.Statement;
 import java.util.List;
 
 /**
@@ -91,4 +92,12 @@ public interface IBuilderResult {
     String toString();
 
     List<Object> getParams();
+
+    /**
+     * Get statement or null
+     * @return
+     */
+    Statement getStatement();
+
+    void setStatement(Statement statement);
 }

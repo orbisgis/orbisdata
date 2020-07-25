@@ -112,7 +112,7 @@ public class TableLocation extends org.h2gis.utilities.TableLocation implements 
     @Override
     @NotNull
     public String toString(@NotNull DataBaseType type) {
-        return super.toString();
+        return super.toString(type==DataBaseType.H2GIS);
     }
 
     @Nullable

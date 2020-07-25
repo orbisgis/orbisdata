@@ -42,13 +42,16 @@ import org.orbisgis.orbisdata.datamanager.api.dataset.ISpatialTable;
 import org.orbisgis.orbisdata.datamanager.api.dataset.ITable;
 import org.orbisgis.orbisdata.datamanager.api.datasource.IJdbcDataSource;
 import org.orbisgis.orbisdata.datamanager.api.dsl.IResultSetBuilder;
+import org.orbisgis.orbisdata.datamanager.jdbc.JdbcDataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Implementation of the {@link IResultSetBuilder} interface.
@@ -63,7 +66,7 @@ public class ResultSetBuilder implements IResultSetBuilder {
     /**
      * {@link IJdbcDataSource} to use to get the {@link ResultSet}.
      */
-    private IJdbcDataSource dataSource;
+    private JdbcDataSource dataSource;
     /**
      * {@link ResultSet} type.
      */
@@ -110,7 +113,7 @@ public class ResultSetBuilder implements IResultSetBuilder {
      *
      * @param dataSource {@link IJdbcDataSource} used to get the {@link ResultSet}.
      */
-    public ResultSetBuilder(IJdbcDataSource dataSource) {
+    public ResultSetBuilder(JdbcDataSource dataSource) {
         this.dataSource = dataSource;
     }
 
@@ -210,43 +213,73 @@ public class ResultSetBuilder implements IResultSetBuilder {
         return this;
     }
 
+    /**
+     *
+     * @param sql
+     * @return
+     * @throws SQLException
+     */
+    private Statement getStatement(String sql) throws SQLException {
+        Statement stmt = null;
+        Map<String, Statement> statementCache = null;
+        if (dataSource.isCacheStatements()) {
+            statementCache = dataSource.statementCache;
+            synchronized (statementCache) { // checking for existence without sync can cause leak if object needs close().
+                stmt = statementCache.get(sql);
+                if (stmt == null) {
+                    try {
+                        stmt = getStatement();
+                        statementCache.put(sql, stmt);
+                    } catch (SQLException e) {
+                        LOGGER.error("Unable to create Statement.\n" + e.getLocalizedMessage());
+                    }
+                    statementCache.put(sql, stmt);
+                }
+            }
+        } else {
+            try {
+                stmt = getStatement();
+                statementCache.put(sql, stmt);
+            } catch (SQLException e) {
+                LOGGER.error("Unable to create Statement.\n" + e.getLocalizedMessage());
+            }
+        }
+        return stmt;
+    }
+
     private Statement getStatement() throws SQLException {
         Statement st;
-        if(type != -1 && concur != -1 && hold != -1) {
+        if (type != -1 && concur != -1 && hold != -1) {
             st = dataSource.getConnection().createStatement(type, concur, hold);
-        }
-        else if(type != -1 && concur != -1) {
+        } else if (type != -1 && concur != -1) {
             st = dataSource.getConnection().createStatement(type, concur);
-        }
-        else if(type != -1) {
+        } else if (type != -1) {
             st = dataSource.getConnection().createStatement(type, ResultSet.CONCUR_READ_ONLY);
-        }
-        else if(concur != -1) {
+        } else if (concur != -1) {
             st = dataSource.getConnection().createStatement(ResultSet.TYPE_FORWARD_ONLY, concur);
-        }
-        else {
+        } else {
             st = dataSource.getConnection().createStatement();
         }
 
-        if(direction != -1) {
+        if (direction != -1) {
             st.setFetchDirection(direction);
         }
-        if(size > -1) {
+        if (size > -1) {
             st.setFetchSize(size);
         }
-        if(timeout > -1) {
+        if (timeout > -1) {
             st.setQueryTimeout(timeout);
         }
-        if(maxRow > -1) {
+        if (maxRow > -1) {
             st.setMaxRows(maxRow);
         }
-        if(cursorName != null) {
+        if (cursorName != null) {
             st.setCursorName(cursorName);
         }
-        if(poolable) {
+        if (poolable) {
             st.setPoolable(poolable);
         }
-        if(maxFieldSize > -1) {
+        if (maxFieldSize > -1) {
             st.setMaxFieldSize(maxFieldSize);
         }
         return st;
@@ -321,7 +354,7 @@ public class ResultSetBuilder implements IResultSetBuilder {
     @Override
     public IJdbcTable getTable(String nameOrQuery) {
         try {
-            return dataSource.getTable(nameOrQuery, getStatement());
+            return dataSource.getTable(nameOrQuery, getStatement(nameOrQuery));
         } catch (SQLException e) {
             LOGGER.error("Unable to get the statement.", e);
             return dataSource.getTable(nameOrQuery);
@@ -331,7 +364,7 @@ public class ResultSetBuilder implements IResultSetBuilder {
     @Override
     public ISpatialTable<?, ?> getSpatialTable(String nameOrQuery) {
         try {
-            return dataSource.getSpatialTable(nameOrQuery, getStatement());
+            return dataSource.getSpatialTable(nameOrQuery, getStatement(nameOrQuery));
         } catch (SQLException e) {
             LOGGER.error("Unable to get the statement.", e);
             return dataSource.getSpatialTable(nameOrQuery);

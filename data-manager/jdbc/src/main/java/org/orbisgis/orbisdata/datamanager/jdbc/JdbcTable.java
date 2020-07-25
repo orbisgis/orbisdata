@@ -62,7 +62,6 @@ import org.orbisgis.orbisdata.datamanager.api.dsl.IQueryBuilder;
 import org.orbisgis.orbisdata.datamanager.jdbc.dsl.QueryBuilder;
 import org.orbisgis.orbisdata.datamanager.jdbc.io.IOMethods;
 import org.orbisgis.orbisdata.datamanager.jdbc.resultset.DefaultResultSet;
-import org.orbisgis.orbisdata.datamanager.jdbc.resultset.ResultSetSpliterator;
 import org.orbisgis.orbisdata.datamanager.jdbc.resultset.StreamResultSet;
 import org.orbisgis.orbisdata.datamanager.jdbc.resultset.StreamSpatialResultSet;
 import org.slf4j.Logger;
@@ -71,8 +70,6 @@ import org.slf4j.LoggerFactory;
 import java.sql.*;
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
 
 import static org.orbisgis.commons.printer.ICustomPrinter.CellPosition.*;
 
@@ -109,9 +106,9 @@ public abstract class JdbcTable<T extends ResultSet, U> extends DefaultResultSet
     @Nullable
     private final TableLocation tableLocation;
     /**
-     * PreparedStatement
+     * Any kind of statement
      */
-    private final Statement statement;
+    private  Statement statement;
     /**
      * PreparedStatement
      */
@@ -661,7 +658,6 @@ public abstract class JdbcTable<T extends ResultSet, U> extends DefaultResultSet
         }
     }
 
-
     @NotNull
     private String getQuery() {
         return baseQuery.trim();
@@ -681,6 +677,8 @@ public abstract class JdbcTable<T extends ResultSet, U> extends DefaultResultSet
     public IBuilderResult filter(String filter) {
         String loc = getTableLocation() != null ? getTableLocation().toString(getDbType()) : getBaseQuery();
         IQueryBuilder builder = new QueryBuilder(getJdbcDataSource(), loc);
+        String sql = getTableLocation() != null ? getTableLocation().toString() : getBaseQuery();
+        builder.setStatement(getJdbcDataSource().getStatement(sql));
         return builder.filter(filter);
     }
 
@@ -689,6 +687,7 @@ public abstract class JdbcTable<T extends ResultSet, U> extends DefaultResultSet
     public IBuilderResult filter(GString filter) {
         String loc = getTableLocation() != null ? getTableLocation().toString(getDbType()) : getBaseQuery();
         IQueryBuilder builder = new QueryBuilder(getJdbcDataSource(), loc);
+        builder.setStatement(getJdbcDataSource().getStatement(loc));
         return builder.filter(filter);
     }
 
@@ -697,6 +696,7 @@ public abstract class JdbcTable<T extends ResultSet, U> extends DefaultResultSet
     public IBuilderResult filter(String filter, List<Object> params) {
         String loc = getTableLocation() != null ? getTableLocation().toString(getDbType()) : getBaseQuery();
         IQueryBuilder builder = new QueryBuilder(getJdbcDataSource(), loc);
+        builder.setStatement(getJdbcDataSource().getStatement(loc));
         return builder.filter(filter, params);
     }
 
@@ -705,6 +705,7 @@ public abstract class JdbcTable<T extends ResultSet, U> extends DefaultResultSet
     public IFilterBuilder columns(@NotNull String... columns) {
         String loc = getTableLocation() != null ? getTableLocation().toString(getDbType()) : getBaseQuery();
         IQueryBuilder builder = new QueryBuilder(getJdbcDataSource(), loc);
+        builder.setStatement(getJdbcDataSource().getStatement(loc));
         return builder.columns(columns);
     }
 
@@ -860,4 +861,10 @@ public abstract class JdbcTable<T extends ResultSet, U> extends DefaultResultSet
     public List<Object> getParams() {
         return params;
     }
+
+    @Override
+    public void setStatement(Statement statement) {
+        this.statement = statement;
+    }
+
 }

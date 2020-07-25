@@ -767,6 +767,10 @@ public class IJdbcTableTest {
         }
 
         @Override
+        public void setStatement(Statement statement) {
+        }
+
+        @Override
         public Object getObject(int i, Map<String, Class<?>> map) {
             return null;
         }

@@ -99,6 +99,10 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, IRe
      */
     private final DataSource dataSource;
 
+    public final Map<String, Statement> statementCache = new HashMap<String, Statement>();
+
+    private boolean cacheStatements = true;
+
     /**
      * Constructor to create a {@link JdbcDataSource} from a {@link Sql} object.
      *
@@ -1078,5 +1082,168 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, IRe
             LOGGER.error("Unable to set the auto-commit mode.\n" + e.getLocalizedMessage());
         }
         return this;
+    }
+
+    /**
+     * Enables statement caching.<br>
+     * if <i>cacheStatements</i> is true, cache is created and all created prepared statements will be cached.
+     * if <i>cacheStatements</i> is false, all cached statements will be properly closed.
+     *
+     * @param cacheStatements the new value
+     */
+    public synchronized void setCacheStatements(boolean cacheStatements) {
+        this.cacheStatements = cacheStatements;
+        if (!cacheStatements) {
+            clearStatementCache();
+        }
+    }
+
+    private void clearStatementCache() {
+        Statement statements[];
+        synchronized (statementCache) {
+            if (statementCache.isEmpty())
+                return;
+            // Arrange to call close() outside synchronized block, since
+            // the close may involve server requests.
+            statements = new Statement[statementCache.size()];
+            statementCache.values().toArray(statements);
+            statementCache.clear();
+        }
+        for (Statement s : statements) {
+            try {
+                s.close();
+            } catch (Exception e) {
+                // It's normally safe to ignore exceptions during cleanup but here if there is
+                // a closed statement in the cache, the cache is possibly corrupted, hence log
+                // at slightly elevated level than similar cases.
+                LOGGER.info("Failed to close statement. Already closed? Exception message: " + e.getMessage());
+            }
+        }
+    }
+
+    /**
+     * Return a statement
+     * @param sql
+     * @return
+     * @throws SQLException
+     */
+    public Statement getStatement(String sql) {
+        Connection connection = getConnection();
+        if(connection==null){
+            LOGGER.error("Unable to get the connection.\n" );
+        }
+        Statement stmt = null;
+        if (cacheStatements) {
+            synchronized (statementCache) { // checking for existence without sync can cause leak if object needs close().
+                stmt = statementCache.get(sql);
+                if (stmt == null) {
+                    try {
+                        DatabaseMetaData dbdm = connection.getMetaData();
+                        int type = ResultSet.TYPE_FORWARD_ONLY;
+                        if (dbdm.supportsResultSetType(ResultSet.TYPE_SCROLL_SENSITIVE)) {
+                            type = ResultSet.TYPE_SCROLL_SENSITIVE;
+                        } else if (dbdm.supportsResultSetType(ResultSet.TYPE_SCROLL_INSENSITIVE)) {
+                            type = ResultSet.TYPE_SCROLL_INSENSITIVE;
+                        }
+                        int concur = ResultSet.CONCUR_READ_ONLY;
+                        if (dbdm.supportsResultSetConcurrency(type, ResultSet.CONCUR_UPDATABLE)) {
+                            concur = ResultSet.CONCUR_UPDATABLE;
+                        }
+                        stmt = connection.createStatement(type, concur);
+                        statementCache.put(sql, stmt);
+                    } catch (SQLException e) {
+                        LOGGER.error("Unable to create Statement.\n" + e.getLocalizedMessage());
+                    }
+                    statementCache.put(sql, stmt);
+                }
+            }
+        } else {
+            try {
+                DatabaseMetaData dbdm = connection.getMetaData();
+                int type = ResultSet.TYPE_FORWARD_ONLY;
+                if (dbdm.supportsResultSetType(ResultSet.TYPE_SCROLL_SENSITIVE)) {
+                    type = ResultSet.TYPE_SCROLL_SENSITIVE;
+                } else if (dbdm.supportsResultSetType(ResultSet.TYPE_SCROLL_INSENSITIVE)) {
+                    type = ResultSet.TYPE_SCROLL_INSENSITIVE;
+                }
+                int concur = ResultSet.CONCUR_READ_ONLY;
+                if (dbdm.supportsResultSetConcurrency(type, ResultSet.CONCUR_UPDATABLE)) {
+                    concur = ResultSet.CONCUR_UPDATABLE;
+                }
+                stmt = connection.createStatement(type, concur);
+                statementCache.put(sql, stmt);
+            } catch (SQLException e) {
+                LOGGER.error("Unable to create Statement.\n" + e.getLocalizedMessage());
+            }
+        }
+        return stmt;
+    }
+
+    /**
+     * Return a statement
+     * @param sql
+     * @return
+     * @throws SQLException
+     */
+    public Statement getPreparedStatement(String sql) {
+        Connection connection = getConnection();
+        if(connection==null){
+            LOGGER.error("Unable to get the connection.\n" );
+        }
+        PreparedStatement stmt = null;
+        if (cacheStatements) {
+            synchronized (statementCache) { // checking for existence without sync can cause leak if object needs close().
+                stmt = (PreparedStatement) statementCache.get(sql);
+                if (stmt == null) {
+                    try {
+                        DatabaseMetaData dbdm = connection.getMetaData();
+                        int type = ResultSet.TYPE_FORWARD_ONLY;
+                        if (dbdm.supportsResultSetType(ResultSet.TYPE_SCROLL_SENSITIVE)) {
+                            type = ResultSet.TYPE_SCROLL_SENSITIVE;
+                        } else if (dbdm.supportsResultSetType(ResultSet.TYPE_SCROLL_INSENSITIVE)) {
+                            type = ResultSet.TYPE_SCROLL_INSENSITIVE;
+                        }
+                        int concur = ResultSet.CONCUR_READ_ONLY;
+                        if (dbdm.supportsResultSetConcurrency(type, ResultSet.CONCUR_UPDATABLE)) {
+                            concur = ResultSet.CONCUR_UPDATABLE;
+                        }
+                        stmt = connection.prepareStatement(sql,type, concur);
+                        statementCache.put(sql, stmt);
+                    } catch (SQLException e) {
+                        LOGGER.error("Unable to create Statement.\n" + e.getLocalizedMessage());
+                    }
+                    statementCache.put(sql, stmt);
+                }
+            }
+        } else {
+            try {
+                DatabaseMetaData dbdm = connection.getMetaData();
+                int type = ResultSet.TYPE_FORWARD_ONLY;
+                if (dbdm.supportsResultSetType(ResultSet.TYPE_SCROLL_SENSITIVE)) {
+                    type = ResultSet.TYPE_SCROLL_SENSITIVE;
+                } else if (dbdm.supportsResultSetType(ResultSet.TYPE_SCROLL_INSENSITIVE)) {
+                    type = ResultSet.TYPE_SCROLL_INSENSITIVE;
+                }
+                int concur = ResultSet.CONCUR_READ_ONLY;
+                if (dbdm.supportsResultSetConcurrency(type, ResultSet.CONCUR_UPDATABLE)) {
+                    concur = ResultSet.CONCUR_UPDATABLE;
+                }
+                stmt = connection.prepareStatement(sql,type, concur);
+                statementCache.put(sql, stmt);
+            } catch (SQLException e) {
+                LOGGER.error("Unable to create Statement.\n" + e.getLocalizedMessage());
+            }
+        }
+        return stmt;
+    }
+
+    public boolean isCacheStatements() {
+        return this.cacheStatements;
+    }
+
+    @Override
+    public void close() {
+        super.close();
+        clearStatementCache();
     }
 }

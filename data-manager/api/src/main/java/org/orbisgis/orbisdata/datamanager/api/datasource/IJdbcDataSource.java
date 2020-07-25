@@ -52,9 +52,7 @@ import java.io.File;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URL;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -66,6 +64,7 @@ import java.util.Map;
  * @author Sylvain PALOMINOS (Lab-STICC UBS 2018-2019 / Chaire GEOTERA 2020)
  */
 public interface IJdbcDataSource extends IDataSource<ResultSet>, GroovyObject, DataSource {
+
 
     enum TableType{
         TABLE, VIEW, FOREIGN_TABLE, TEMPORARY, TABLE_LINK, UNKOWN, SYSTEM_TABLE;
@@ -1021,4 +1020,12 @@ public interface IJdbcDataSource extends IDataSource<ResultSet>, GroovyObject, D
      * @param autoCommit false to disable auto-commit mode
      */
     IJdbcDataSource autoCommit(boolean autoCommit);
+
+
+    /**
+     * Return a cache statement or create a new one
+     * @param loc
+     * @return
+     */
+    Statement getStatement(String loc);
 }

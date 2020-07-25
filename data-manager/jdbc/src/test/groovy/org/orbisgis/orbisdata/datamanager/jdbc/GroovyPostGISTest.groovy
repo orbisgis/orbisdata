@@ -478,10 +478,16 @@ class GroovyPostGISTest {
     void preparedQueryTestWithFetch() {
         postGIS.execute("""
                 DROP TABLE IF EXISTS big_geo;
-                CREATE TABLE big_geo as select st_makepoint(-60 + n*random()/500.00, 30 + n*random()/500.00), n as id from generate_series(1,100000) as n;
+                CREATE TABLE big_geo as select st_makepoint(-60 + n*random()/500.00, 30 + n*random()/500.00) as the_geom, n as id from generate_series(1,100000) as n;
         """)
         def spatialTable = postGIS.autoCommit(false).fetchSize(100).getSpatialTable("(select * from big_geo)");
-        assertEquals(100000, spatialTable.getRowCount());
+        assertEquals(100000, spatialTable.getRowCount())
+        postGIS.autoCommit(true)
+        def table = postGIS.autoCommit(false).fetchSize(100).getSpatialTable("(select * from big_geo)").filter("limit 10").getTable();
+        assertEquals(10, table.getRowCount())
+        postGIS.autoCommit(true)
+        table = postGIS.autoCommit(false).fetchSize(100).getSpatialTable("(select * from big_geo)").columns("the_geom").filter("limit 10").getTable();
+        assertEquals(10, table.getRowCount())
         postGIS.autoCommit(true)
     }
     }

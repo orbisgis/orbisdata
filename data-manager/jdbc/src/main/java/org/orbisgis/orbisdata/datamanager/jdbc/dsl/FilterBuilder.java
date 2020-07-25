@@ -41,6 +41,7 @@ import org.orbisgis.orbisdata.datamanager.api.datasource.IJdbcDataSource;
 import org.orbisgis.orbisdata.datamanager.api.dsl.IBuilderResult;
 import org.orbisgis.orbisdata.datamanager.api.dsl.IFilterBuilder;
 
+import java.sql.Statement;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -55,6 +56,7 @@ public class FilterBuilder extends BuilderResult implements IFilterBuilder {
     private final StringBuilder query;
     private final List<Object> params;
     private final IJdbcDataSource dataSource;
+    private Statement statement;
 
     public FilterBuilder(IJdbcDataSource dataSource, String query, List<Object> params) {
         this.dataSource = dataSource;
@@ -114,5 +116,15 @@ public class FilterBuilder extends BuilderResult implements IFilterBuilder {
     @Override
     public List<Object> getParams() {
         return params;
+    }
+
+    @Override
+    public Statement getStatement() {
+        return statement;
+    }
+
+    @Override
+    public void setStatement(Statement statement) {
+        this.statement=statement;
     }
 }

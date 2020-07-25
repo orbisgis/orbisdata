@@ -44,6 +44,7 @@ import org.orbisgis.orbisdata.datamanager.api.dsl.IFilterBuilder;
 import org.orbisgis.orbisdata.datamanager.api.dsl.IQueryBuilder;
 import org.orbisgis.orbisdata.datamanager.jdbc.TableLocation;
 
+import java.sql.Statement;
 import java.util.Arrays;
 import java.util.List;
 
@@ -60,6 +61,7 @@ public class QueryBuilder extends BuilderResult implements IQueryBuilder {
     private String columns = "*";
     private final String location;
     private final IJdbcDataSource dataSource;
+    private Statement statement;
 
     public QueryBuilder(IJdbcDataSource dataSource, @NotNull String nameOrQuery) {
         this.dataSource = dataSource;
@@ -75,6 +77,7 @@ public class QueryBuilder extends BuilderResult implements IQueryBuilder {
     @Override
     public IBuilderResult filter(String filter) {
         IFilterBuilder filterBuilder = new FilterBuilder(dataSource, getQuery());
+        filterBuilder.setStatement(statement);
         if(filter != null) {
             return filterBuilder.filter(filter);
         }
@@ -86,6 +89,7 @@ public class QueryBuilder extends BuilderResult implements IQueryBuilder {
     @Override
     public IBuilderResult filter(GString filter) {
         IFilterBuilder filterBuilder = new FilterBuilder(dataSource, getQuery());
+        filterBuilder.setStatement(statement);
         if(filter != null) {
             return filterBuilder.filter(filter);
         }
@@ -97,6 +101,7 @@ public class QueryBuilder extends BuilderResult implements IQueryBuilder {
     @Override
     public IBuilderResult filter(String filter, List<Object> params) {
         IFilterBuilder filterBuilder = new FilterBuilder(dataSource, getQuery());
+        filterBuilder.setStatement(statement);
         if(filter != null) {
             return filterBuilder.filter(filter, params);
         }
@@ -113,7 +118,9 @@ public class QueryBuilder extends BuilderResult implements IQueryBuilder {
         else {
             this.columns = String.join(", ", columns);
         }
-        return new FilterBuilder(dataSource, getQuery());
+        IFilterBuilder filterBuilder =  new FilterBuilder(dataSource, getQuery());
+        filterBuilder.setStatement(statement);
+        return filterBuilder;
     }
 
     @Override
@@ -134,5 +141,15 @@ public class QueryBuilder extends BuilderResult implements IQueryBuilder {
     @Override
     public List<Object> getParams() {
         return null;
+    }
+
+    @Override
+    public Statement getStatement() {
+        return statement;
+    }
+
+    @Override
+    public void setStatement(Statement statement) {
+        this.statement=statement;
     }
 }

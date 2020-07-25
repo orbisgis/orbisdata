@@ -319,26 +319,7 @@ public class H2GIS extends JdbcDataSource {
     @Override
     @Nullable
     public IJdbcTable getTable(@NotNull String tableName) {
-        Connection connection = getConnection();
-        Statement statement;
-        try {
-            DatabaseMetaData dbdm = connection.getMetaData();
-            int type = ResultSet.TYPE_FORWARD_ONLY;
-            if (dbdm.supportsResultSetType(ResultSet.TYPE_SCROLL_SENSITIVE)) {
-                type = ResultSet.TYPE_SCROLL_SENSITIVE;
-            } else if (dbdm.supportsResultSetType(ResultSet.TYPE_SCROLL_INSENSITIVE)) {
-                type = ResultSet.TYPE_SCROLL_INSENSITIVE;
-            }
-            int concur = ResultSet.CONCUR_READ_ONLY;
-            if (dbdm.supportsResultSetConcurrency(type, ResultSet.CONCUR_UPDATABLE)) {
-                concur = ResultSet.CONCUR_UPDATABLE;
-            }
-            statement = connection.createStatement(type, concur);
-        } catch (SQLException e) {
-            LOGGER.error("Unable to create Statement.\n" + e.getLocalizedMessage());
-            return null;
-        }
-        return getTable(tableName, statement);
+        return getTable(tableName, getStatement(TableLocation.parse(tableName, true).toString(true)));
     }
 
     @Override
@@ -359,19 +340,7 @@ public class H2GIS extends JdbcDataSource {
         }
         PreparedStatement prepStatement;
         try {
-            Connection connection = getConnection();
-            DatabaseMetaData dbdm = connection.getMetaData();
-            int type = ResultSet.TYPE_FORWARD_ONLY;
-            if (dbdm.supportsResultSetType(ResultSet.TYPE_SCROLL_SENSITIVE)) {
-                type = ResultSet.TYPE_SCROLL_SENSITIVE;
-            } else if (dbdm.supportsResultSetType(ResultSet.TYPE_SCROLL_INSENSITIVE)) {
-                type = ResultSet.TYPE_SCROLL_INSENSITIVE;
-            }
-            int concur = ResultSet.CONCUR_READ_ONLY;
-            if (dbdm.supportsResultSetConcurrency(type, ResultSet.CONCUR_UPDATABLE)) {
-                concur = ResultSet.CONCUR_UPDATABLE;
-            }
-            prepStatement = connection.prepareStatement(query, type, concur);
+            prepStatement = (PreparedStatement) getPreparedStatement(query);
             setStatementParameters(prepStatement, params);
         } catch (SQLException e) {
             LOGGER.error("Unable to create the prepared statement.", e);
@@ -411,7 +380,7 @@ public class H2GIS extends JdbcDataSource {
     @Nullable
     @Override
     public IJdbcSpatialTable getSpatialTable(@NotNull String nameOrQuery, @Nullable List<Object> params, @NotNull Statement statement) {
-        IJdbcTable table = getSpatialTable(nameOrQuery, params, statement);
+        IJdbcTable table = getTable(nameOrQuery, params, statement);
         if (table instanceof ISpatialTable) {
             return (JdbcSpatialTable) table;
         } else {

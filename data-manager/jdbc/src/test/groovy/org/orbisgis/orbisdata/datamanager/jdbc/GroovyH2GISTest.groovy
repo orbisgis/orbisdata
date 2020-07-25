@@ -867,7 +867,7 @@ class GroovyH2GISTest {
         ]
         def  postGIS = POSTGIS.open(dbProperties)
         if(postGIS){
-        assertEquals("\"H2GIS\"", h2GIS.getSpatialTable("h2gis").save(postGIS, true))
+        assertEquals("H2GIS", h2GIS.getSpatialTable("h2gis").save(postGIS, true))
         h2GIS.getSpatialTable("h2gis").save(postGIS, "H2GIS",true )
         def concat = ""
         postGIS.spatialTable "h2gis" eachRow { row -> concat += "$row.id $row.the_geom $row.geometry\n" }

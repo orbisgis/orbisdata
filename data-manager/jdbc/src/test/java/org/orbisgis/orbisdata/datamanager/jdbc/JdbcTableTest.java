@@ -344,10 +344,10 @@ class JdbcTableTest {
                 "not a request", dataSource.getConnection().createStatement(), null, dataSource).getLocation());
         assertEquals(BASE_DATABASE, new TableLocation(BASE_DATABASE, "catalog", "schema", "table").getDataSource());
 
-        assertEquals("\"ORBISGIS\"", getTable().getLocation());
-        assertEquals("\"LINKEDTABLE\"", getLinkedTable().getLocation());
-        assertEquals("\"TEMPTABLE\"", getTempTable().getLocation());
-        assertEquals("\"ORBISGIS_EMPTY\"", getEmptyTable().getLocation());
+        assertEquals("ORBISGIS", getTable().getLocation());
+        assertEquals("LINKEDTABLE", getLinkedTable().getLocation());
+        assertEquals("TEMPTABLE", getTempTable().getLocation());
+        assertEquals("ORBISGIS_EMPTY", getEmptyTable().getLocation());
         assertEquals(IJdbcTable.QUERY_LOCATION, getBuiltTable().getLocation());
     }
 

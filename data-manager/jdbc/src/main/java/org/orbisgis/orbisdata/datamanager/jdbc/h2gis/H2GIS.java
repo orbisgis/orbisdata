@@ -411,7 +411,7 @@ public class H2GIS extends JdbcDataSource {
     @Nullable
     @Override
     public IJdbcSpatialTable getSpatialTable(@NotNull String nameOrQuery, @Nullable List<Object> params, @NotNull Statement statement) {
-        IJdbcTable table = getSpatialTable(nameOrQuery, params, statement);
+        IJdbcTable table = getTable(nameOrQuery, params, statement);
         if (table instanceof ISpatialTable) {
             return (JdbcSpatialTable) table;
         } else {

@@ -46,7 +46,7 @@ import org.orbisgis.orbisdata.datamanager.jdbc.h2gis.H2GIS;
 import smile.data.formula.Formula;
 import smile.data.type.DataType;
 import smile.data.vector.BaseVector;
-import smile.math.matrix.DenseMatrix;
+import smile.math.matrix.Matrix;
 
 import java.io.File;
 import java.io.IOException;
@@ -417,7 +417,7 @@ public class DataFrameTest {
     @Test
     void asTypeTest(){
         assertNotNull(dataFrame.asType(String.class));
-        assertNotNull(dataFrame.asType(DenseMatrix.class));
+        assertNotNull(dataFrame.asType(Matrix.class));
         assertNotNull(dataFrame.asType(DataFrame.class));
         assertNotNull(dataFrame.asType(Ascii.class));
         assertNotNull(dataFrame.asType(Html.class));

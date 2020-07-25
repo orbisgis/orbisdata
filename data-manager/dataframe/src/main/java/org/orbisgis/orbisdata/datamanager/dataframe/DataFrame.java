@@ -60,7 +60,6 @@ import smile.data.type.StructField;
 import smile.data.type.StructType;
 import smile.data.vector.Vector;
 import smile.data.vector.*;
-import smile.math.matrix.DenseMatrix;
 import smile.math.matrix.Matrix;
 
 import java.io.*;
@@ -127,7 +126,7 @@ public class DataFrame implements smile.data.DataFrame, ITable<BaseVector, Tuple
      */
     public DataFrame apply(@Nullable Formula formula) {
         if(formula != null) {
-            return DataFrame.of(formula.apply(getInternalDataFrame()));
+            return DataFrame.of(formula.frame(getInternalDataFrame()));
         }
         else {
             return this;
@@ -260,7 +259,7 @@ public class DataFrame implements smile.data.DataFrame, ITable<BaseVector, Tuple
 
     @Override
     @NotNull
-    public DenseMatrix toMatrix() {
+    public Matrix toMatrix() {
         return getInternalDataFrame().toMatrix();
     }
 

@@ -65,45 +65,9 @@ public class ResultSetBuilder implements IResultSetBuilder {
      */
     private IJdbcDataSource dataSource;
     /**
-     * {@link ResultSet} type.
+     * {@link ResultSet} properties.
      */
-    private int type = -1;
-    /**
-     * {@link ResultSet} concurrency.
-     */
-    private int concur = -1;
-    /**
-     * {@link ResultSet} holdability.
-     */
-    private int hold = -1;
-    /**
-     * {@link ResultSet} holdability.
-     */
-    private int direction = -1;
-    /**
-     * Maximum request size.
-     */
-    private int size = -1;
-    /**
-     * Request timeout.
-     */
-    private int timeout = -1;
-    /**
-     * Maximum row count of the request.
-     */
-    private int maxRow = -1;
-    /**
-     * Name of the cursor.
-     */
-    private String cursorName = null;
-    /**
-     * Request the {@link Statement} to be poolable.
-     */
-    private boolean poolable = false;
-    /**
-     * Maximum size of the fields.
-     */
-    private int maxFieldSize = -1;
+    private ResultSetProperties rsp = new ResultSetProperties();
 
     /**
      * Main constructor.
@@ -116,138 +80,138 @@ public class ResultSetBuilder implements IResultSetBuilder {
 
     @Override
     public IResultSetBuilder forwardOnly() {
-        type = ResultSet.TYPE_FORWARD_ONLY;
+        rsp.setType(ResultSet.TYPE_FORWARD_ONLY);
         return this;
     }
 
     @Override
     public IResultSetBuilder scrollInsensitive() {
-        type = ResultSet.TYPE_SCROLL_INSENSITIVE;
+        rsp.setType(ResultSet.TYPE_SCROLL_INSENSITIVE);
         return this;
     }
 
     @Override
     public IResultSetBuilder scrollSensitive() {
-        type = ResultSet.TYPE_SCROLL_SENSITIVE;
+        rsp.setType(ResultSet.TYPE_SCROLL_SENSITIVE);
         return this;
     }
 
     @Override
     public IResultSetBuilder readOnly() {
-        concur = ResultSet.CONCUR_READ_ONLY;
+        rsp.setConcurrency(ResultSet.CONCUR_READ_ONLY);
         return this;
     }
 
     @Override
     public IResultSetBuilder updatable() {
-        concur = ResultSet.CONCUR_READ_ONLY;
+        rsp.setConcurrency(ResultSet.CONCUR_READ_ONLY);
         return this;
     }
 
     @Override
     public IResultSetBuilder holdCursorOverCommit() {
-        hold = ResultSet.HOLD_CURSORS_OVER_COMMIT;
+        rsp.setHoldability(ResultSet.HOLD_CURSORS_OVER_COMMIT);
         return this;
     }
 
     @Override
     public IResultSetBuilder closeCursorAtCommit() {
-        hold = ResultSet.CLOSE_CURSORS_AT_COMMIT;
+        rsp.setHoldability(ResultSet.CLOSE_CURSORS_AT_COMMIT);
         return this;
     }
 
     @Override
     public IResultSetBuilder fetchForward() {
-        direction = ResultSet.FETCH_FORWARD;
+        rsp.setFetchDirection(ResultSet.FETCH_FORWARD);
         return this;
     }
 
     @Override
     public IResultSetBuilder fetchReverse() {
-        direction = ResultSet.FETCH_REVERSE;
+        rsp.setFetchDirection(ResultSet.FETCH_REVERSE);
         return this;
     }
 
     @Override
     public IResultSetBuilder fetchUnknown() {
-        direction = ResultSet.FETCH_UNKNOWN;
+        rsp.setFetchDirection(ResultSet.FETCH_UNKNOWN);
         return this;
     }
 
     @Override
     public IResultSetBuilder fetchSize(int size) {
-        this.size = size;
+        rsp.setFetchSize(size);
         return this;
     }
 
     @Override
-    public IResultSetBuilder timeout(int time) {
-        this.timeout = timeout;
+    public IResultSetBuilder timeout(int timeout) {
+        rsp.setTimeout(timeout);
         return this;
     }
 
     @Override
     public IResultSetBuilder maxRow(int maxRow) {
-        this.maxRow = maxRow;
+        rsp.setMaxRows(maxRow);
         return this;
     }
 
     @Override
     public IResultSetBuilder cursorName(String name) {
-        this.cursorName = name;
+        rsp.setCursorName(name);
         return this;
     }
 
     @Override
     public IResultSetBuilder poolable() {
-        this.poolable = poolable;
+        rsp.setPoolable(true);
         return this;
     }
 
     @Override
     public IResultSetBuilder maxFieldSize(int size) {
-        this.maxFieldSize = size;
+        rsp.setMaxFieldSize(size);
         return this;
     }
 
     private Statement getStatement() throws SQLException {
         Statement st;
-        if(type != -1 && concur != -1 && hold != -1) {
-            st = dataSource.getConnection().createStatement(type, concur, hold);
+        if(rsp.getType() != -1 && rsp.getConcurrency() != -1 && rsp.getHoldability() != -1) {
+            st = dataSource.getConnection().createStatement(rsp.getType(), rsp.getConcurrency(), rsp.getHoldability());
         }
-        else if(type != -1 && concur != -1) {
-            st = dataSource.getConnection().createStatement(type, concur);
+        else if(rsp.getType() != -1 && rsp.getConcurrency() != -1) {
+            st = dataSource.getConnection().createStatement(rsp.getType(), rsp.getConcurrency());
         }
-        else if(type != -1) {
-            st = dataSource.getConnection().createStatement(type, ResultSet.CONCUR_READ_ONLY);
+        else if(rsp.getType() != -1) {
+            st = dataSource.getConnection().createStatement(rsp.getType(), ResultSet.CONCUR_READ_ONLY);
         }
-        else if(concur != -1) {
-            st = dataSource.getConnection().createStatement(ResultSet.TYPE_FORWARD_ONLY, concur);
+        else if(rsp.getConcurrency() != -1) {
+            st = dataSource.getConnection().createStatement(ResultSet.TYPE_FORWARD_ONLY, rsp.getConcurrency());
         }
         else {
             st = dataSource.getConnection().createStatement();
         }
 
-        if(direction != -1) {
-            st.setFetchDirection(direction);
+        if(rsp.getFetchDirection() != -1) {
+            st.setFetchDirection(rsp.getFetchDirection());
         }
-        if(size > -1) {
-            st.setFetchSize(size);
+        if(rsp.getFetchSize() > -1) {
+            st.setFetchSize(rsp.getFetchSize());
         }
-        if(timeout > -1) {
-            st.setQueryTimeout(timeout);
+        if(rsp.getTimeout() > -1) {
+            st.setQueryTimeout(rsp.getTimeout());
         }
-        if(maxRow > -1) {
-            st.setMaxRows(maxRow);
+        if(rsp.getMaxRows() > -1) {
+            st.setMaxRows(rsp.getMaxRows());
         }
-        if(cursorName != null) {
-            st.setCursorName(cursorName);
+        if(rsp.getCursorName() != null) {
+            st.setCursorName(rsp.getCursorName());
         }
-        if(poolable) {
-            st.setPoolable(poolable);
+        if(rsp.isPoolable()) {
+            st.setPoolable(true);
         }
-        if(maxFieldSize > -1) {
-            st.setMaxFieldSize(maxFieldSize);
+        if(rsp.getMaxFieldSize() > -1) {
+            st.setMaxFieldSize(rsp.getMaxFieldSize());
         }
         return st;
     }

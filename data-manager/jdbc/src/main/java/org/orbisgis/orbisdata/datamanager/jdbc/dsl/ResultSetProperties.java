@@ -1,10 +1,58 @@
+/*
+ * Bundle DataManager is part of the OrbisGIS platform
+ *
+ * OrbisGIS is a java GIS application dedicated to research in GIScience.
+ * OrbisGIS is developed by the GIS group of the DECIDE team of the
+ * Lab-STICC CNRS laboratory, see <http://www.lab-sticc.fr/>.
+ *
+ * The GIS group of the DECIDE team is located at :
+ *
+ * Laboratoire Lab-STICC – CNRS UMR 6285
+ * Equipe DECIDE
+ * UNIVERSITÉ DE BRETAGNE-SUD
+ * Institut Universitaire de Technologie de Vannes
+ * 8, Rue Montaigne - BP 561 56017 Vannes Cedex
+ *
+ * DataManager is distributed under LGPL 3 license.
+ *
+ * Copyright (C) 2018 CNRS (Lab-STICC UMR CNRS 6285)
+ *
+ *
+ * DataManager is free software: you can redistribute it and/or modify it under the
+ * terms of the GNU General Public License as published by the Free Software
+ * Foundation, either version 3 of the License, or (at your option) any later
+ * version.
+ *
+ * DataManager is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+ * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * DataManager. If not, see <http://www.gnu.org/licenses/>.
+ *
+ * For more information, please consult: <http://www.orbisgis.org/>
+ * or contact directly:
+ * info_at_ orbisgis.org
+ */
 package org.orbisgis.orbisdata.datamanager.jdbc.dsl;
 
+import org.orbisgis.orbisdata.datamanager.api.dsl.IResultSetBuilder;
 import org.orbisgis.orbisdata.datamanager.api.dsl.IResultSetProperties;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.sql.ResultSet;
 
+/**
+ * Implementation of the {@link IResultSetBuilder} interface.
+ *
+ * @author Erwan Bocher (CNRS)
+ * @author Sylvain PALOMINOS (UBS Lab-STICC / Chaire GEOTERA 2020)
+ */
 public class ResultSetProperties implements IResultSetProperties {
+
+    /** Logger. */
+    private static final Logger LOGGER = LoggerFactory.getLogger(ResultSetProperties.class);
 
     /** Type of the {@link java.sql.ResultSet}. */
     private int type = -1;
@@ -25,11 +73,20 @@ public class ResultSetProperties implements IResultSetProperties {
     /** {@link java.sql.Statement} poolable status. */
     private boolean poolable = false;
     /** {@link java.sql.Statement} maximum field size. */
-    private int fieldSize = -1;
+    private int maxFieldSize = -1;
 
     @Override
     public void setType(int type) {
-        this.type = type;
+        if(type != ResultSet.TYPE_FORWARD_ONLY &&
+                type != ResultSet.TYPE_SCROLL_INSENSITIVE &&
+                type != ResultSet.TYPE_SCROLL_SENSITIVE &&
+                type != -1) {
+            LOGGER.warn("ResultSet type should be 'TYPE_FORWARD_ONLY' or 'TYPE_SCROLL_INSENSITIVE' or 'TYPE_SCROLL_SENSITIVE'.");
+            this.type = -1;
+        }
+        else {
+            this.type = type;
+        }
     }
 
     @Override
@@ -39,7 +96,15 @@ public class ResultSetProperties implements IResultSetProperties {
 
     @Override
     public void setConcurrency(int concurrency) {
-        this.concurrency = concurrency;
+        if(concurrency != ResultSet.CONCUR_READ_ONLY &&
+                concurrency != ResultSet.CONCUR_UPDATABLE &&
+                concurrency != -1) {
+                LOGGER.warn("ResultSet concurrency should be 'CONCUR_READ_ONLY' or 'CONCUR_UPDATABLE'.");
+            this.concurrency = -1;
+        }
+        else {
+            this.concurrency = concurrency;
+        }
     }
 
     @Override
@@ -49,7 +114,15 @@ public class ResultSetProperties implements IResultSetProperties {
 
     @Override
     public void setHoldability(int holdability) {
-        this.holdability = holdability;
+        if(holdability != ResultSet.HOLD_CURSORS_OVER_COMMIT &&
+                holdability != ResultSet.CLOSE_CURSORS_AT_COMMIT &&
+                holdability != -1) {
+            LOGGER.warn("ResultSet holdability should be 'HOLD_CURSORS_OVER_COMMIT' or 'CLOSE_CURSORS_AT_COMMIT'.");
+            this.holdability = -1;
+        }
+        else {
+            this.holdability = holdability;
+        }
     }
 
     @Override
@@ -59,7 +132,16 @@ public class ResultSetProperties implements IResultSetProperties {
 
     @Override
     public void setFetchDirection(int fetchDirection) {
-        this.fetchDirection = fetchDirection;
+        if(fetchDirection != ResultSet.FETCH_FORWARD &&
+                fetchDirection != ResultSet.FETCH_REVERSE &&
+                fetchDirection != ResultSet.FETCH_UNKNOWN &&
+                fetchDirection != -1) {
+            LOGGER.warn("ResultSet holdability should be 'FETCH_FORWARD' or 'FETCH_REVERSE' or 'FETCH_UNKNOWN'.");
+            this.fetchDirection = -1;
+        }
+        else {
+            this.fetchDirection = fetchDirection;
+        }
     }
 
     @Override
@@ -69,7 +151,13 @@ public class ResultSetProperties implements IResultSetProperties {
 
     @Override
     public void setFetchSize(int fetchSize) {
-        this.fetchSize = fetchSize;
+        if(fetchSize < -1) {
+            LOGGER.warn("The fetch size cannot be under 0 so it will be disabled.");
+            this.fetchSize = -1;
+        }
+        else {
+            this.fetchSize = fetchSize;
+        }
     }
 
     @Override
@@ -79,7 +167,13 @@ public class ResultSetProperties implements IResultSetProperties {
 
     @Override
     public void setTimeout(int timeout) {
-        this.timeout = timeout;
+        if(timeout < -1) {
+            LOGGER.warn("The timeout cannot be under 0 so it will be disabled.");
+            this.timeout = -1;
+        }
+        else {
+            this.timeout = timeout;
+        }
     }
 
     @Override
@@ -89,7 +183,13 @@ public class ResultSetProperties implements IResultSetProperties {
 
     @Override
     public void setMaxRows(int maxRows) {
-        this.maxRows = maxRows;
+        if(maxRows < -1) {
+            LOGGER.warn("The max rows count cannot be under 0 so it will be disabled.");
+            this.maxRows = -1;
+        }
+        else {
+            this.maxRows = maxRows;
+        }
     }
 
     @Override
@@ -109,21 +209,27 @@ public class ResultSetProperties implements IResultSetProperties {
 
     @Override
     public void setPoolable(boolean poolable) {
-
+        this.poolable = poolable;
     }
 
     @Override
     public boolean isPoolable() {
-        return false;
+        return poolable;
     }
 
     @Override
     public void setMaxFieldSize(int maxFieldSize) {
-
+        if(maxFieldSize < -1) {
+            LOGGER.warn("The max field size cannot be under 0 so it will be disabled.");
+            this.maxFieldSize = -1;
+        }
+        else {
+            this.maxFieldSize = maxFieldSize;
+        }
     }
 
     @Override
     public int getMaxFieldSize() {
-        return 0;
+        return maxFieldSize;
     }
 }

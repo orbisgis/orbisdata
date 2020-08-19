@@ -215,4 +215,11 @@ public interface IResultSetProperties {
      * @see Statement#getMaxFieldSize()
      */
     int getMaxFieldSize();
+
+    /**
+     * Return a deep copy of this object.
+     *
+     * @return A deep copy of this object.
+     */
+    IResultSetProperties copy();
 }

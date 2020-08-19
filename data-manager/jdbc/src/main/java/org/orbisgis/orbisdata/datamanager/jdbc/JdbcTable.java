@@ -59,7 +59,9 @@ import org.orbisgis.orbisdata.datamanager.api.datasource.IJdbcDataSource;
 import org.orbisgis.orbisdata.datamanager.api.dsl.IBuilderResult;
 import org.orbisgis.orbisdata.datamanager.api.dsl.IFilterBuilder;
 import org.orbisgis.orbisdata.datamanager.api.dsl.IQueryBuilder;
+import org.orbisgis.orbisdata.datamanager.api.dsl.IResultSetProperties;
 import org.orbisgis.orbisdata.datamanager.jdbc.dsl.QueryBuilder;
+import org.orbisgis.orbisdata.datamanager.jdbc.dsl.ResultSetProperties;
 import org.orbisgis.orbisdata.datamanager.jdbc.io.IOMethods;
 import org.orbisgis.orbisdata.datamanager.jdbc.resultset.DefaultResultSet;
 import org.orbisgis.orbisdata.datamanager.jdbc.resultset.ResultSetSpliterator;
@@ -125,6 +127,10 @@ public abstract class JdbcTable<T extends ResultSet, U> extends DefaultResultSet
      */
     @Nullable
     protected ResultSet resultSet;
+    /**
+     * {@link ResultSet} properties.
+     */
+    private IResultSetProperties rsp;
 
     /**
      * Main constructor.
@@ -146,6 +152,7 @@ public abstract class JdbcTable<T extends ResultSet, U> extends DefaultResultSet
         this.statement = statement;
         this.params = params;
         this.baseQuery = baseQuery;
+        this.rsp = new ResultSetProperties();
     }
 
     /**
@@ -859,5 +866,18 @@ public abstract class JdbcTable<T extends ResultSet, U> extends DefaultResultSet
     @NotNull
     public List<Object> getParams() {
         return params;
+    }
+
+    @Override
+    public void setResultSetProperties(@Nullable IResultSetProperties properties) {
+        if(properties != null) {
+            this.rsp = properties.copy();
+        }
+    }
+
+    @Override
+    @NotNull
+    public IResultSetProperties getResultSetProperties() {
+        return rsp;
     }
 }

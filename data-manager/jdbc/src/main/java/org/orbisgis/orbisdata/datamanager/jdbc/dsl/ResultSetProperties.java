@@ -232,4 +232,20 @@ public class ResultSetProperties implements IResultSetProperties {
     public int getMaxFieldSize() {
         return maxFieldSize;
     }
+
+    @Override
+    public IResultSetProperties copy() {
+        ResultSetProperties rsp = new ResultSetProperties();
+        rsp.type = this.type;
+        rsp.concurrency = this.concurrency;
+        rsp.holdability = this.holdability;
+        rsp.fetchDirection = this.fetchDirection;
+        rsp.fetchSize = this.fetchSize;
+        rsp.timeout = this.timeout;
+        rsp.maxRows = this.maxRows;
+        rsp.cursorName = this.cursorName;
+        rsp.poolable = this.poolable;
+        rsp.maxFieldSize = this.maxFieldSize;
+        return rsp;
+    }
 }

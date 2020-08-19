@@ -38,6 +38,8 @@ package org.orbisgis.orbisdata.datamanager.dataframe
 
 import org.junit.jupiter.api.Test
 import org.orbisgis.orbisdata.datamanager.jdbc.h2gis.H2GIS
+import smile.data.measure.NominalScale
+import smile.data.type.StructField
 
 import static org.junit.jupiter.api.Assertions.*
 
@@ -107,15 +109,15 @@ class GroovyDataFrameTest {
         df.save(h2GIS, "output_dataframe", true)
         def table = h2GIS.getTable("OUTPUT_DATAFRAME")
         assertNotNull(table)
-        assertEquals(5,table.getColumnCount())
-        assertEquals(1,table.getRowCount())
+        assertEquals(5, table.getColumnCount())
+        assertEquals(1, table.getRowCount())
         table.next();
         def row = table.firstRow()
-        assertEquals(1,row.ID)
-        assertEquals("POINT (10 10)",row.THE_GEOM)
-        assertEquals("grass",row.TYPE)
-        assertEquals(-12,row.TEMPERATURE)
-        assertEquals(4.780,row.BABY_JEJE_WEIGHT)
+        assertEquals(1, row.ID)
+        assertEquals("POINT (10 10)", row.THE_GEOM)
+        assertEquals("grass", row.TYPE)
+        assertEquals(-12, row.TEMPERATURE)
+        assertEquals(4.780, row.BABY_JEJE_WEIGHT)
     }
 
     @Test
@@ -128,10 +130,68 @@ class GroovyDataFrameTest {
         """)
         DataFrame df = DataFrame.of(h2GIS.getTable("geotable").filter("where type = 'corn'").getTable())
         assertNotNull df
-        assertEquals(2,df.get(0, 0))
-        assertEquals("corn",df.get(0, 1))
-        assertEquals(22,df.get(0, 2))
+        assertEquals(2, df.get(0, 0))
+        assertEquals("corn", df.get(0, 1))
+        assertEquals(22, df.get(0, 2))
         assertNull(df.get(0, 3))
         assertNull(df.get(0, 4))
+    }
+
+
+    @Test
+    void testFactoryDF() {
+        def h2GIS = RANDOM_DS();
+        h2GIS.execute("""
+                DROP TABLE IF EXISTS geotable;
+                CREATE TABLE geotable (id int,  type varchar, orbisgis boolean);
+                INSERT INTO geotable VALUES (1,  'grass', false), (2,  'corn', null), (3,  'corn', null)
+                , (4,  'grass', null), (5,  'corn', null), (6,  'grass', null), (7,  'forest', null);
+        """)
+        DataFrame df = DataFrame.of(h2GIS.getTable("geotable"))
+        assertNotNull df
+        StructField field = df.schema().field(1);
+        assertFalse(field.measure instanceof  NominalScale)
+        def dfFactorized = df.factorize("TYPE")
+        field = dfFactorized.schema().field(1);
+        assertTrue(field.measure instanceof  NominalScale)
+        assertEquals ("nominal[corn, forest, grass]", field.measure.toString())
+    }
+
+    @Test
+    void testCreateDFFromArray() {
+        def data = [
+                [100, 5, 20],
+                [50, 2.5, 10],
+                [110, 6, 22],
+        ]
+
+        def df = DataFrame.of(data, "name", "age", "size")
+        println(df)
+
+        data = [
+                ["A", "B", "C", "D"],
+                ["A1", "B1", "C1", "D1"],
+                ["A2", "B2", "C2", "D2"],
+        ]
+        df = DataFrame.of(data, "name", "age", "size", "task")
+        println(df)
+
+        data = [
+                ["A", 5, true, "D"],
+                ["A1", 6, false, "D1"],
+                ["A2", 7, true, "D2"],
+        ]
+        df = DataFrame.of(data, "name", "age", "size", "task")
+        println(df)
+
+        //Create dataframe with vector
+        /*data = ['angles' : [0, 3, 4],
+                'degrees': [360, 180, 360]]
+
+        println(data.class)
+
+        //df = DataFrame.of(data,
+        //        index=['circle', 'triangle', 'rectangle'])
+    */
     }
 }

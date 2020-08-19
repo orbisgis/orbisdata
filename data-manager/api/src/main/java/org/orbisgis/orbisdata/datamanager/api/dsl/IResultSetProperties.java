@@ -46,7 +46,7 @@ import java.sql.Statement;
  * @author Erwan Bocher (CNRS)
  * @author Sylvain PALOMINOS (UBS Lab-STICC / Chaire GEOTERA 2020)
  */
-public interface ResultSetProperties {
+public interface IResultSetProperties {
 
     /**
      * Sets the {@link ResultSet} type.
@@ -155,10 +155,10 @@ public interface ResultSetProperties {
     /**
      * Sets the {@link Statement} max row count.
      *
-     * @param maxRow Max row count.
+     * @param maxRows Max row count.
      * @see Statement#setMaxRows(int)
      */
-    void setMaxRows(int maxRow);
+    void setMaxRows(int maxRows);
 
     /**
      * Returns the {@link Statement} max row count.

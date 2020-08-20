@@ -572,20 +572,4 @@ public class DataFrameTest {
         assertThrows(UnsupportedOperationException.class, () -> dataFrame.filter("tata"));
     }
 
-    @Test
-    public void test() throws SQLException {
-        H2GIS h2GIS = RANDOM_DS();
-        h2GIS.execute("DROP TABLE IF EXISTS h2gis;" +
-                "CREATE TABLE h2gis (id INT, the_man VARCHAR);" +
-                "INSERT INTO h2gis values (1, 'lcz2'),  (2, 'lcz2'), (3, 'lcz1')");
-        DataFrame df = DataFrame.of(h2GIS.getTable("H2GIS"));
-
-
-        System.out.println(df.summary());
-        DataFrame dfP = df.factorize(df.names());
-        System.out.println(dfP.summary());
-        //DataFrame dfProut = DataFrame.of(, df.names());
-        //System.out.println(dfProut.summary());
-
-    }
 }

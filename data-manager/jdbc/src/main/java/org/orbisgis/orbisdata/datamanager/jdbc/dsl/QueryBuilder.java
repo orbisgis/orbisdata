@@ -38,10 +38,13 @@ package org.orbisgis.orbisdata.datamanager.jdbc.dsl;
 
 import groovy.lang.GString;
 import org.orbisgis.commons.annotations.NotNull;
+import org.orbisgis.orbisdata.datamanager.api.dataset.ISpatialTable;
+import org.orbisgis.orbisdata.datamanager.api.dataset.ITable;
 import org.orbisgis.orbisdata.datamanager.api.datasource.IJdbcDataSource;
 import org.orbisgis.orbisdata.datamanager.api.dsl.IBuilderResult;
 import org.orbisgis.orbisdata.datamanager.api.dsl.IFilterBuilder;
 import org.orbisgis.orbisdata.datamanager.api.dsl.IQueryBuilder;
+import org.orbisgis.orbisdata.datamanager.api.dsl.IResultSetProperties;
 import org.orbisgis.orbisdata.datamanager.jdbc.TableLocation;
 
 import java.util.Arrays;
@@ -60,8 +63,9 @@ public class QueryBuilder extends BuilderResult implements IQueryBuilder {
     private String columns = "*";
     private final String location;
     private final IJdbcDataSource dataSource;
+    private final IResultSetProperties rsp;
 
-    public QueryBuilder(IJdbcDataSource dataSource, @NotNull String nameOrQuery) {
+    public QueryBuilder(IJdbcDataSource dataSource, @NotNull String nameOrQuery, IResultSetProperties properties) {
         this.dataSource = dataSource;
         if(nameOrQuery.startsWith("(") && nameOrQuery.endsWith(")")) {
             location = nameOrQuery + " as foo";
@@ -70,11 +74,12 @@ public class QueryBuilder extends BuilderResult implements IQueryBuilder {
             boolean isH2 = H2GIS == dataSource.getDataBaseType();
             location = TableLocation.parse(nameOrQuery, isH2).toString(isH2);
         }
+        rsp = properties.copy();
     }
 
     @Override
     public IBuilderResult filter(String filter) {
-        IFilterBuilder filterBuilder = new FilterBuilder(dataSource, getQuery());
+        IFilterBuilder filterBuilder = new FilterBuilder(dataSource, getQuery(), getResultSetProperties());
         if(filter != null) {
             return filterBuilder.filter(filter);
         }
@@ -85,7 +90,7 @@ public class QueryBuilder extends BuilderResult implements IQueryBuilder {
 
     @Override
     public IBuilderResult filter(GString filter) {
-        IFilterBuilder filterBuilder = new FilterBuilder(dataSource, getQuery());
+        IFilterBuilder filterBuilder = new FilterBuilder(dataSource, getQuery(), getResultSetProperties());
         if(filter != null) {
             return filterBuilder.filter(filter);
         }
@@ -96,7 +101,7 @@ public class QueryBuilder extends BuilderResult implements IQueryBuilder {
 
     @Override
     public IBuilderResult filter(String filter, List<Object> params) {
-        IFilterBuilder filterBuilder = new FilterBuilder(dataSource, getQuery());
+        IFilterBuilder filterBuilder = new FilterBuilder(dataSource, getQuery(), getResultSetProperties());
         if(filter != null) {
             return filterBuilder.filter(filter, params);
         }
@@ -113,7 +118,7 @@ public class QueryBuilder extends BuilderResult implements IQueryBuilder {
         else {
             this.columns = String.join(", ", columns);
         }
-        return new FilterBuilder(dataSource, getQuery());
+        return new FilterBuilder(dataSource, getQuery(), getResultSetProperties());
     }
 
     @Override
@@ -134,5 +139,21 @@ public class QueryBuilder extends BuilderResult implements IQueryBuilder {
     @Override
     public List<Object> getParams() {
         return null;
+    }
+
+    public IResultSetProperties getResultSetProperties(){
+        return rsp;
+    }
+
+    @Override
+    public ITable<?, ?> getTable() {
+        ResultSetBuilder rsb = new ResultSetBuilder(getDataSource(), rsp);
+        return rsb.getTable(toString(), getParams());
+    }
+
+    @Override
+    public ISpatialTable<?, ?> getSpatialTable() {
+        ResultSetBuilder rsb = new ResultSetBuilder(getDataSource(), rsp);
+        return rsb.getSpatialTable(toString(), getParams());
     }
 }

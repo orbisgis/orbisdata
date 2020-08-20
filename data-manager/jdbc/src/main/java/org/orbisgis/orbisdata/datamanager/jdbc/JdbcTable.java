@@ -687,7 +687,7 @@ public abstract class JdbcTable<T extends ResultSet, U> extends DefaultResultSet
     @NotNull
     public IBuilderResult filter(String filter) {
         String loc = getTableLocation() != null ? getTableLocation().toString(getDbType()) : getBaseQuery();
-        IQueryBuilder builder = new QueryBuilder(getJdbcDataSource(), loc);
+        IQueryBuilder builder = new QueryBuilder(getJdbcDataSource(), loc, getResultSetProperties());
         return builder.filter(filter);
     }
 
@@ -695,7 +695,7 @@ public abstract class JdbcTable<T extends ResultSet, U> extends DefaultResultSet
     @NotNull
     public IBuilderResult filter(GString filter) {
         String loc = getTableLocation() != null ? getTableLocation().toString(getDbType()) : getBaseQuery();
-        IQueryBuilder builder = new QueryBuilder(getJdbcDataSource(), loc);
+        IQueryBuilder builder = new QueryBuilder(getJdbcDataSource(), loc, getResultSetProperties());
         return builder.filter(filter);
     }
 
@@ -703,7 +703,7 @@ public abstract class JdbcTable<T extends ResultSet, U> extends DefaultResultSet
     @NotNull
     public IBuilderResult filter(String filter, List<Object> params) {
         String loc = getTableLocation() != null ? getTableLocation().toString(getDbType()) : getBaseQuery();
-        IQueryBuilder builder = new QueryBuilder(getJdbcDataSource(), loc);
+        IQueryBuilder builder = new QueryBuilder(getJdbcDataSource(), loc, getResultSetProperties());
         return builder.filter(filter, params);
     }
 
@@ -711,7 +711,7 @@ public abstract class JdbcTable<T extends ResultSet, U> extends DefaultResultSet
     @NotNull
     public IFilterBuilder columns(@NotNull String... columns) {
         String loc = getTableLocation() != null ? getTableLocation().toString(getDbType()) : getBaseQuery();
-        IQueryBuilder builder = new QueryBuilder(getJdbcDataSource(), loc);
+        IQueryBuilder builder = new QueryBuilder(getJdbcDataSource(), loc, getResultSetProperties());
         return builder.columns(columns);
     }
 
@@ -736,7 +736,18 @@ public abstract class JdbcTable<T extends ResultSet, U> extends DefaultResultSet
         ResultSet rs = getResultSet();
         if(rs != null) {
             try {
-                rs.first();
+                if(rs.isBeforeFirst()) {
+                    if(!rs.next()) {
+                        LOGGER.error("Unable go to the first row.");
+                        return list;
+                    }
+                }
+                if(!rs.isFirst()) {
+                    if(!rs.first()){
+                        LOGGER.error("Unable go to the first row.");
+                        return list;
+                    }
+                }
                 for (int i = 1; i <= getColumnCount(); i++) {
                     list.add(rs.getObject(i));
                 }

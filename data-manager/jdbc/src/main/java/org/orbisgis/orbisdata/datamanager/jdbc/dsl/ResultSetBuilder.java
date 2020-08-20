@@ -43,9 +43,11 @@ import org.orbisgis.orbisdata.datamanager.api.dataset.ISpatialTable;
 import org.orbisgis.orbisdata.datamanager.api.dataset.ITable;
 import org.orbisgis.orbisdata.datamanager.api.datasource.IJdbcDataSource;
 import org.orbisgis.orbisdata.datamanager.api.dsl.IResultSetBuilder;
+import org.orbisgis.orbisdata.datamanager.api.dsl.IResultSetProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -68,7 +70,7 @@ public class ResultSetBuilder implements IResultSetBuilder {
     /**
      * {@link ResultSet} properties.
      */
-    private ResultSetProperties rsp = new ResultSetProperties();
+    private IResultSetProperties rsp = new ResultSetProperties();
 
     /**
      * Main constructor.
@@ -77,6 +79,16 @@ public class ResultSetBuilder implements IResultSetBuilder {
      */
     public ResultSetBuilder(IJdbcDataSource dataSource) {
         this.dataSource = dataSource;
+    }
+
+    /**
+     * Main constructor.
+     *
+     * @param dataSource {@link IJdbcDataSource} used to get the {@link ResultSet}.
+     */
+    public ResultSetBuilder(IJdbcDataSource dataSource, IResultSetProperties properties) {
+        this.dataSource = dataSource;
+        this.rsp = properties.copy();
     }
 
     @Override
@@ -174,7 +186,6 @@ public class ResultSetBuilder implements IResultSetBuilder {
         rsp.setMaxFieldSize(size);
         return this;
     }
-
     private Statement getStatement() throws SQLException {
         Statement st;
         if(rsp.getType() != -1 && rsp.getConcurrency() != -1 && rsp.getHoldability() != -1) {
@@ -191,6 +202,51 @@ public class ResultSetBuilder implements IResultSetBuilder {
         }
         else {
             st = dataSource.getConnection().createStatement();
+        }
+
+        if(rsp.getFetchDirection() != -1) {
+            st.setFetchDirection(rsp.getFetchDirection());
+        }
+        if(rsp.getFetchSize() > -1) {
+            st.setFetchSize(rsp.getFetchSize());
+        }
+        if(rsp.getTimeout() > -1) {
+            st.setQueryTimeout(rsp.getTimeout());
+        }
+        if(rsp.getMaxRows() > -1) {
+            st.setMaxRows(rsp.getMaxRows());
+        }
+        if(rsp.getCursorName() != null) {
+            st.setCursorName(rsp.getCursorName());
+        }
+        if(rsp.isPoolable()) {
+            st.setPoolable(true);
+        }
+        if(rsp.getMaxFieldSize() > -1) {
+            st.setMaxFieldSize(rsp.getMaxFieldSize());
+        }
+        return st;
+    }
+
+    private PreparedStatement getStatement(String query, List<Object> params) throws SQLException {
+        PreparedStatement st;
+        if(rsp.getType() != -1 && rsp.getConcurrency() != -1 && rsp.getHoldability() != -1) {
+            st = dataSource.getConnection().prepareStatement(query, rsp.getType(), rsp.getConcurrency(), rsp.getHoldability());
+        }
+        else if(rsp.getType() != -1 && rsp.getConcurrency() != -1) {
+            st = dataSource.getConnection().prepareStatement(query, rsp.getType(), rsp.getConcurrency());
+        }
+        else if(rsp.getType() != -1) {
+            st = dataSource.getConnection().prepareStatement(query, rsp.getType(), ResultSet.CONCUR_READ_ONLY);
+        }
+        else if(rsp.getConcurrency() != -1) {
+            st = dataSource.getConnection().prepareStatement(query, ResultSet.TYPE_FORWARD_ONLY, rsp.getConcurrency());
+        }
+        else {
+            st = dataSource.getConnection().prepareStatement(query);
+        }
+        for (int i = 0; i < params.size(); i++) {
+            st.setObject(i, params.get(i));
         }
 
         if(rsp.getFetchDirection() != -1) {
@@ -334,7 +390,7 @@ public class ResultSetBuilder implements IResultSetBuilder {
     @Override
     public ITable<?, ?> getTable(String query, List<Object> params) {
         try {
-            IJdbcTable<?, ?> table = dataSource.getTable(query, params, getStatement());
+            IJdbcTable<?, ?> table = dataSource.getTable(query, params, getStatement(query, params));
             table.setResultSetProperties(rsp);
             return table;
         } catch (SQLException e) {
@@ -346,7 +402,7 @@ public class ResultSetBuilder implements IResultSetBuilder {
     @Override
     public ISpatialTable<?, ?> getSpatialTable(String query, List<Object> params) {
         try {
-            IJdbcSpatialTable<?> table = dataSource.getSpatialTable(query, params, getStatement());
+            IJdbcSpatialTable<?> table = dataSource.getSpatialTable(query, params, getStatement(query, params));
             table.setResultSetProperties(rsp);
             return table;
         } catch (SQLException e) {

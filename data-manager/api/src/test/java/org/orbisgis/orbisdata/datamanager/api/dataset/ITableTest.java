@@ -45,6 +45,7 @@ import org.orbisgis.commons.annotations.Nullable;
 import org.orbisgis.orbisdata.datamanager.api.datasource.IJdbcDataSource;
 import org.orbisgis.orbisdata.datamanager.api.dsl.IBuilderResult;
 import org.orbisgis.orbisdata.datamanager.api.dsl.IFilterBuilder;
+import org.orbisgis.orbisdata.datamanager.api.dsl.IResultSetProperties;
 
 import java.math.BigDecimal;
 import java.sql.Date;

@@ -37,9 +37,12 @@
 package org.orbisgis.orbisdata.datamanager.jdbc.dsl;
 
 import groovy.lang.GString;
+import org.orbisgis.orbisdata.datamanager.api.dataset.ISpatialTable;
+import org.orbisgis.orbisdata.datamanager.api.dataset.ITable;
 import org.orbisgis.orbisdata.datamanager.api.datasource.IJdbcDataSource;
 import org.orbisgis.orbisdata.datamanager.api.dsl.IBuilderResult;
 import org.orbisgis.orbisdata.datamanager.api.dsl.IFilterBuilder;
+import org.orbisgis.orbisdata.datamanager.api.dsl.IResultSetProperties;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -55,23 +58,26 @@ public class FilterBuilder extends BuilderResult implements IFilterBuilder {
     private final StringBuilder query;
     private final List<Object> params;
     private final IJdbcDataSource dataSource;
+    private final IResultSetProperties rsp;
 
-    public FilterBuilder(IJdbcDataSource dataSource, String query, List<Object> params) {
+    public FilterBuilder(IJdbcDataSource dataSource, String query, List<Object> params, IResultSetProperties properties) {
         this.dataSource = dataSource;
         this.query = new StringBuilder(query == null ? "" : query);
         if(query != null && query.startsWith("(") && query.endsWith(")")) {
             this.query.append(" as foo");
         }
         this.params = new LinkedList<>(params);
+        this.rsp = properties;
     }
 
-    public FilterBuilder(IJdbcDataSource dataSource, String query) {
+    public FilterBuilder(IJdbcDataSource dataSource, String query, IResultSetProperties properties) {
         this.dataSource = dataSource;
         this.query = new StringBuilder(query == null ? "" : query);
         if(query != null && query.startsWith("(") && query.endsWith(")")) {
             this.query.append(" as foo");
         }
         this.params = new LinkedList<>();
+        this.rsp = properties;
     }
 
     @Override
@@ -114,5 +120,17 @@ public class FilterBuilder extends BuilderResult implements IFilterBuilder {
     @Override
     public List<Object> getParams() {
         return params;
+    }
+
+    @Override
+    public ITable<?, ?> getTable() {
+        ResultSetBuilder rsb = new ResultSetBuilder(getDataSource(), rsp);
+        return rsb.getTable(toString(), getParams());
+    }
+
+    @Override
+    public ISpatialTable<?, ?> getSpatialTable() {
+        ResultSetBuilder rsb = new ResultSetBuilder(getDataSource(), rsp);
+        return rsb.getSpatialTable(toString(), getParams());
     }
 }

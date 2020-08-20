@@ -43,7 +43,6 @@ import org.orbisgis.commons.annotations.Nullable;
 import org.orbisgis.orbisdata.datamanager.api.dataset.ISpatialTable;
 import org.orbisgis.orbisdata.datamanager.api.dataset.ITable;
 
-import java.sql.ResultSet;
 import java.util.List;
 
 /**

@@ -736,17 +736,13 @@ public abstract class JdbcTable<T extends ResultSet, U> extends DefaultResultSet
         ResultSet rs = getResultSet();
         if(rs != null) {
             try {
-                if(rs.isBeforeFirst()) {
-                    if(!rs.next()) {
-                        LOGGER.error("Unable go to the first row.");
-                        return list;
-                    }
+                if(rs.isBeforeFirst() &&!rs.next()) {
+                    LOGGER.error("Unable go to the first row.");
+                    return list;
                 }
-                if(!rs.isFirst()) {
-                    if(!rs.first()){
-                        LOGGER.error("Unable go to the first row.");
-                        return list;
-                    }
+                if(!rs.isFirst() && !rs.first()){
+                    LOGGER.error("Unable go to the first row.");
+                    return list;
                 }
                 for (int i = 1; i <= getColumnCount(); i++) {
                     list.add(rs.getObject(i));

@@ -571,4 +571,5 @@ public class DataFrameTest {
     public void filterTest(){
         assertThrows(UnsupportedOperationException.class, () -> dataFrame.filter("tata"));
     }
+
 }

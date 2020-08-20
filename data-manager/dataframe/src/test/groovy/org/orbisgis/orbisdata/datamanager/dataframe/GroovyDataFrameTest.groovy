@@ -162,11 +162,17 @@ class GroovyDataFrameTest {
         def data = [
                 [100, 5, 20],
                 [50, 2.5, 10],
-                [110, 6, 22],
+                [110, 6, 22]
         ]
 
-        def df = DataFrame.of(data, "name", "age", "size")
-        println(df)
+        DataFrame df = DataFrame.of(data, "name", "age", "size")
+        assertNotNull df
+        assertEquals(100, df.get(0, 0))
+        assertEquals(5, df.get(0, 1))
+        assertEquals(20, df.get(0, 2))
+        assertEquals(50, df.get(1, 0))
+        assertEquals(2.5, df.get(1, 1))
+        assertEquals(10, df.get(1, 2))
 
         data = [
                 ["A", "B", "C", "D"],
@@ -174,7 +180,14 @@ class GroovyDataFrameTest {
                 ["A2", "B2", "C2", "D2"],
         ]
         df = DataFrame.of(data, "name", "age", "size", "task")
-        println(df)
+        assertNotNull df
+        assertEquals("A", df.get(0, 0))
+        assertEquals("B", df.get(0, 1))
+        assertEquals("C", df.get(0, 2))
+        assertEquals("D", df.get(0, 3))
+        assertEquals("A1", df.get(1, 0))
+        assertEquals("B1", df.get(1, 1))
+        assertEquals("C1", df.get(1, 2))
 
         data = [
                 ["A", 5, true, "D"],
@@ -182,16 +195,41 @@ class GroovyDataFrameTest {
                 ["A2", 7, true, "D2"],
         ]
         df = DataFrame.of(data, "name", "age", "size", "task")
-        println(df)
+        assertNotNull df
+        assertEquals("A", df.get(0, 0))
+        assertEquals(5, df.get(0, 1))
+        assertEquals(true, df.get(0, 2))
+        assertEquals("D", df.get(0, 3))
 
-        //Create dataframe with vector
-        /*data = ['angles' : [0, 3, 4],
-                'degrees': [360, 180, 360]]
+        data = [
+                ["A", 5, true, "D"],
+                ["A1", "OrbisGIS", false, "D1"],
+                ["A2", 7, true, "D2"],
+        ]
 
-        println(data.class)
+        df = DataFrame.of(data, "name", "age", "size", "task")
+        assertNotNull df
+        assertEquals("A", df.get(0, 0))
+        assertEquals(5, df.get(0, 1))
+        assertEquals(true, df.get(0, 2))
+        assertEquals("D", df.get(0, 3))
+        assertEquals("A1", df.get(1, 0))
+        assertEquals("OrbisGIS", df.get(1, 1))
+        assertEquals(false, df.get(1, 2))
+        assertEquals("D1", df.get(1, 3))
 
-        //df = DataFrame.of(data,
-        //        index=['circle', 'triangle', 'rectangle'])
-    */
+        data = [
+                [100, 20],
+                [50, 2.5, 10],
+                [110, 6, 22]
+        ]
+        assertThrows(IllegalArgumentException.class,() ->  DataFrame.of(data, "name", "age", "size"));
+
+        data = [
+                [100, 12, 20],
+                [50, 2.5, 10],
+                [110, 6, 22]
+        ]
+        assertThrows(IllegalArgumentException.class,() ->  DataFrame.of(data, "age", "size"));
     }
 }

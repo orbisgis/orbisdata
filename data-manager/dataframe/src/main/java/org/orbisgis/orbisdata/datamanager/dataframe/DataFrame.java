@@ -54,10 +54,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import smile.data.Tuple;
 import smile.data.formula.Formula;
-import smile.data.type.DataType;
-import smile.data.type.DataTypes;
-import smile.data.type.StructField;
-import smile.data.type.StructType;
+import smile.data.type.*;
 import smile.data.vector.Vector;
 import smile.data.vector.*;
 import smile.math.matrix.Matrix;
@@ -1190,7 +1187,7 @@ public class DataFrame implements smile.data.DataFrame, ITable<BaseVector, Tuple
                     StructField currentField = fields[k];
                     DataType fieldType = currentField.type;
                     if(!fieldType.equals(rowValueDataType)){
-                        fields[k]= new StructField(currentField.name, rowValueDataType);
+                        fields[k]= new StructField(currentField.name, DataTypes.ObjectType);
                     }
                     row[k]=rowValue;
 
@@ -1201,7 +1198,6 @@ public class DataFrame implements smile.data.DataFrame, ITable<BaseVector, Tuple
                 throw new IllegalArgumentException("Malformed data error. Please use this declaration : [[100, 5, 20],[50, 2.5, 10],[110, 6, 22]]");
             }
         }
-
         return of(rows);
     }
 

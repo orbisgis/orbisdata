@@ -57,7 +57,7 @@ public class ResultSetPropertiesTest {
         assertEquals(-1, rsp.getType());
         assertEquals(-1, rsp.getHoldability());
         assertEquals(-1, rsp.getFetchDirection());
-        assertEquals(-1, rsp.getFetchSize());
+        assertEquals(100, rsp.getFetchSize());
         assertEquals(-1, rsp.getTimeout());
         assertEquals(-1, rsp.getMaxRows());
         assertNull(rsp.getCursorName());
@@ -81,7 +81,7 @@ public class ResultSetPropertiesTest {
         assertEquals(-1, rsp.getType());
         assertEquals(-1, rsp.getHoldability());
         assertEquals(-1, rsp.getFetchDirection());
-        assertEquals(-1, rsp.getFetchSize());
+        assertEquals(100, rsp.getFetchSize());
         assertEquals(-1, rsp.getTimeout());
         assertEquals(-1, rsp.getMaxRows());
         assertNull(rsp.getCursorName());

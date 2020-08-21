@@ -125,6 +125,11 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, IRe
         this.metaClass = InvokerHelper.getMetaClass(getClass());
         this.databaseType = databaseType;
         LOG.setLevel(Level.OFF);
+        try {
+            getConnection().setAutoCommit(false);
+        } catch (SQLException e) {
+            LOGGER.warn("Unable to set the autocommit option of the connection to false.", e);
+        }
     }
 
     /**
@@ -139,6 +144,11 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, IRe
         this.metaClass = InvokerHelper.getMetaClass(getClass());
         this.databaseType = databaseType;
         LOG.setLevel(Level.OFF);
+        try {
+            getConnection().setAutoCommit(false);
+        } catch (SQLException e) {
+            LOGGER.warn("Unable to set the autocommit option of the connection to false.", e);
+        }
     }
 
     @Override
@@ -366,12 +376,28 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, IRe
 
     @Override
     public boolean execute(GString gstring) throws SQLException {
+        boolean b;
         try {
-            return super.execute(gstring);
+            b = super.execute(gstring);
+            if(!getConnection().getAutoCommit()){
+                super.commit();
+            }
+            return b;
         } catch (SQLException e) {
             LOGGER.debug("Unable to execute the request as a GString.\n" + e.getLocalizedMessage());
+            try {
+                if(!getConnection().getAutoCommit()){
+                    super.rollback();
+                }
+            } catch (SQLException e2) {
+                LOGGER.error("Unable to rollback.", e2.getLocalizedMessage());
+            }
         }
-        return super.execute(gstring.toString());
+        b = super.execute(gstring.toString());
+        if(!getConnection().getAutoCommit()){
+            super.commit();
+        }
+        return b;
     }
 
     @Override
@@ -406,22 +432,74 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, IRe
 
     @Override
     public GroovyRowResult firstRow(GString gstring) throws SQLException {
+        GroovyRowResult row;
         try {
-            return super.firstRow(gstring);
+            row = super.firstRow(gstring);
+            if(!getConnection().getAutoCommit()){
+                super.commit();
+            }
+            return row;
         } catch (SQLException e) {
-            LOGGER.debug("Unable to execute the request as a GString.\n" + e.getLocalizedMessage());
+            LOGGER.debug("Unable to execute the request as a GString.", e.getLocalizedMessage());
+            try {
+                if(!getConnection().getAutoCommit()){
+                    super.rollback();
+                }
+            } catch (SQLException e2) {
+                LOGGER.error("Unable to rollback.", e2.getLocalizedMessage());
+            }
         }
-        return super.firstRow(gstring.toString());
+        row = super.firstRow(gstring.toString());
+        if(!getConnection().getAutoCommit()){
+            super.commit();
+        }
+        return row;
+    }
+
+    @Override
+    public boolean execute(String sql) throws SQLException {
+        try {
+            boolean b = super.execute(sql);
+            if(!getConnection().getAutoCommit()){
+                super.commit();
+            }
+            return b;
+        } catch (SQLException e) {
+            try {
+                if(!getConnection().getAutoCommit()){
+                    super.rollback();
+                }
+            } catch (SQLException e2) {
+                LOGGER.error("Unable to rollback.", e2.getLocalizedMessage());
+            }
+            throw e;
+        }
     }
 
     @Override
     public List<GroovyRowResult> rows(GString gstring) throws SQLException {
+        List<GroovyRowResult> rows;
         try {
-            return super.rows(gstring);
+            rows = super.rows(gstring);
+            if(!getConnection().getAutoCommit()){
+                super.commit();
+            }
+            return rows;
         } catch (SQLException e) {
             LOGGER.debug("Unable to execute the request as a GString.\n" + e.getLocalizedMessage());
+            try {
+                if(!getConnection().getAutoCommit()){
+                    super.rollback();
+                }
+            } catch (SQLException e2) {
+                LOGGER.error("Unable to rollback.", e2.getLocalizedMessage());
+            }
         }
-        return super.rows(gstring.toString());
+        rows = super.rows(gstring.toString());
+        if(!getConnection().getAutoCommit()){
+            super.commit();
+        }
+        return rows;
     }
 
     @Override
@@ -430,8 +508,19 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, IRe
             throws SQLException {
         try {
             super.eachRow(gstring, closure);
+            if(!getConnection().getAutoCommit()){
+                super.commit();
+            }
         } catch (SQLException e) {
             LOGGER.debug("Unable to execute the request as a GString.\n" + e.getLocalizedMessage());
+
+            try {
+                if(!getConnection().getAutoCommit()){
+                    super.rollback();
+                }
+            } catch (SQLException e2) {
+                LOGGER.error("Unable to rollback.", e2.getLocalizedMessage());
+            }
             super.eachRow(gstring.toString(), closure);
         }
     }
@@ -439,14 +528,26 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, IRe
     @Override
     public boolean executeScript(@NotNull String fileName, Map<String, String> bindings) {
         File file = URIUtilities.fileFromString(fileName);
+        boolean b = false;
         try {
             if (FileUtilities.isExtensionWellFormated(file, "sql")) {
-                return executeScript(new FileInputStream(file), bindings);
+                b = executeScript(new FileInputStream(file), bindings);
+                if(!getConnection().getAutoCommit()){
+                    super.commit();
+                }
+                return b;
             }
-        } catch (IOException e) {
-            LOGGER.error("Unable to read the SQL file.\n" + e.getLocalizedMessage());
+        } catch (IOException | SQLException e) {
+            LOGGER.error("Unable to read the SQL file.", e.getLocalizedMessage());
+            try {
+                if(!getConnection().getAutoCommit()){
+                    super.rollback();
+                }
+            } catch (SQLException e2) {
+                LOGGER.error("Unable to rollback.", e2.getLocalizedMessage());
+            }
         }
-        return false;
+        return b;
     }
 
     @Override
@@ -474,6 +575,9 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, IRe
                 }
                 try {
                     execute(commandSQL);
+                    if(!getConnection().getAutoCommit()){
+                        super.commit();
+                    }
                 } catch (SQLException e) {
                     LOGGER.error("Unable to execute the Sql command '" + commandSQL + "'.\n" + e.getLocalizedMessage());
                     return false;
@@ -914,9 +1018,20 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, IRe
     @Nullable
     public Collection<String> getColumnNames(String location){
         try {
-            return JDBCUtilities.getColumnNames(getConnection(), TableLocation.parse(location, databaseType.equals(DataBaseType.H2GIS)));
+            Collection<String> cols = JDBCUtilities.getColumnNames(getConnection(), TableLocation.parse(location, databaseType.equals(DataBaseType.H2GIS)));
+            if(!getConnection().getAutoCommit()) {
+                getConnection().commit();
+            }
+            return cols;
         } catch (SQLException e) {
             LOGGER.error("Unable to get the column names of the table " + location + ".", e);
+            try{
+                if(!getConnection().getAutoCommit()) {
+                    getConnection().rollback();
+                }
+            } catch (SQLException e2) {
+                LOGGER.error("Unable to rollback.", e2);
+            }
             return null;
         }
     }

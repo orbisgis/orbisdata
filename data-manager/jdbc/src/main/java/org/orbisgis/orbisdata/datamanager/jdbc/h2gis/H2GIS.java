@@ -270,12 +270,26 @@ public class H2GIS extends JdbcDataSource {
         if(!nameOrQuery.startsWith("(") && !nameOrQuery.endsWith(")")) {
             org.h2gis.utilities.TableLocation inputLocation = TableLocation.parse(nameOrQuery, true);
             try {
-                if (!JDBCUtilities.tableExists(connection, inputLocation)) {
+                boolean table = JDBCUtilities.tableExists(connection, inputLocation);
+                if(!getConnection().getAutoCommit()) {
+                    super.commit();
+                }
+                if (!table) {
                     LOGGER.error("Unable to find table " + nameOrQuery);
                     return null;
                 }
+                if(!getConnection().getAutoCommit()) {
+                    super.commit();
+                }
             } catch (SQLException e) {
                 LOGGER.error("Unable to find table.\n" + e.getLocalizedMessage());
+                try {
+                    if(!getConnection().getAutoCommit()) {
+                        super.rollback();
+                    }
+                } catch (SQLException e2) {
+                    LOGGER.error("Unable to rollback", e2);
+                }
                 return null;
             }
             query = String.format("SELECT * FROM %s", inputLocation);
@@ -289,7 +303,11 @@ public class H2GIS extends JdbcDataSource {
             Connection con = getConnection();
             if(con != null){
                 if(location != null){
-                    if(GeometryTableUtilities.hasGeometryColumn(con, location)) {
+                    boolean hasGeom = GeometryTableUtilities.hasGeometryColumn(con, location);
+                    if(!getConnection().getAutoCommit()) {
+                        super.commit();
+                    }
+                    if(hasGeom) {
                         return new H2gisSpatialTable(location, query, statement, params, this);
                     }
                     else {
@@ -301,6 +319,9 @@ public class H2GIS extends JdbcDataSource {
                             ((PreparedStatement)statement).executeQuery() :
                             statement.executeQuery(query);
                     boolean hasGeom = GeometryTableUtilities.hasGeometryColumn(rs);
+                    if(!getConnection().getAutoCommit()) {
+                        super.commit();
+                    }
                     if(hasGeom) {
                         return new H2gisSpatialTable(location, query, statement, params, this);
                     }
@@ -312,6 +333,13 @@ public class H2GIS extends JdbcDataSource {
         } catch (SQLException e) {
             LOGGER.error("Unable to check if table '" + location + "' contains geometric fields.\n" +
                     e.getLocalizedMessage());
+            try {
+                if(!getConnection().getAutoCommit()) {
+                    super.rollback();
+                }
+            } catch (SQLException e2) {
+                LOGGER.error("Unable to rollback", e2);
+            }
         }
         return null;
     }

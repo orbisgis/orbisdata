@@ -37,6 +37,7 @@
 package org.orbisgis.orbisdata.datamanager.jdbc
 
 import org.junit.jupiter.api.BeforeAll
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.condition.EnabledIfSystemProperty
 import org.locationtech.jts.geom.Geometry
@@ -86,7 +87,6 @@ class GroovyPostGISTest {
     }
 
     @Test
-    @EnabledIfSystemProperty(named = "test.postgis", matches = "true")
     void querySpatialTable() {
         def postGIS = POSTGIS.open(dbProperties)
         postGIS.execute("""
@@ -97,7 +97,6 @@ class GroovyPostGISTest {
         def concat = ""
         postGIS.getSpatialTable "postgis" eachRow { row -> concat += "$row.id $row.the_geom $row.geometry\n" }
         assertEquals("1 POINT (10 10) POINT (10 10)\n2 POINT (1 1) POINT (1 1)\n", concat)
-        println(concat)
     }
 
 
@@ -480,8 +479,7 @@ class GroovyPostGISTest {
                 DROP TABLE IF EXISTS big_geo;
                 CREATE TABLE big_geo as select st_makepoint(-60 + n*random()/500.00, 30 + n*random()/500.00), n as id from generate_series(1,100000) as n;
         """)
-        def spatialTable = postGIS.autoCommit(false).fetchSize(100).getSpatialTable("(select * from big_geo)");
+        def spatialTable = postGIS.fetchSize(100).getSpatialTable("(select * from big_geo)");
         assertEquals(100000, spatialTable.getRowCount());
-        postGIS.autoCommit(true)
     }
-    }
+}

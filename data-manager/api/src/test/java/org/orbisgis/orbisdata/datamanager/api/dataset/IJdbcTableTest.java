@@ -43,6 +43,7 @@ import org.orbisgis.commons.annotations.Nullable;
 import org.orbisgis.orbisdata.datamanager.api.datasource.IJdbcDataSource;
 import org.orbisgis.orbisdata.datamanager.api.dsl.IBuilderResult;
 import org.orbisgis.orbisdata.datamanager.api.dsl.IFilterBuilder;
+import org.orbisgis.orbisdata.datamanager.api.dsl.IResultSetProperties;
 
 import javax.sql.rowset.RowSetMetaDataImpl;
 import java.io.InputStream;
@@ -256,6 +257,17 @@ public class IJdbcTableTest {
         @NotNull
         @Override
         public List<Object> getParams() {
+            return null;
+        }
+
+        @Override
+        public void setResultSetProperties(@Nullable IResultSetProperties properties) {
+
+        }
+
+        @NotNull
+        @Override
+        public IResultSetProperties getResultSetProperties() {
             return null;
         }
 

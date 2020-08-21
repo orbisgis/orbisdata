@@ -39,6 +39,7 @@ package org.orbisgis.orbisdata.datamanager.api.dataset;
 import groovy.lang.Closure;
 import org.orbisgis.commons.annotations.NotNull;
 import org.orbisgis.commons.annotations.Nullable;
+import org.orbisgis.orbisdata.datamanager.api.dsl.IResultSetProperties;
 
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
@@ -134,4 +135,19 @@ public interface IJdbcTable<T, U> extends ITable<T, U>, ResultSet {
      */
     @NotNull
     List<Object> getParams();
+
+    /**
+     * Sets the {@link IResultSetProperties}.
+     *
+     * @param properties {@link ResultSet} properties.
+     */
+    void setResultSetProperties(@Nullable IResultSetProperties properties);
+
+    /**
+     * Returns the {@link IResultSetProperties}.
+     *
+     * @return {@link ResultSet} properties.
+     */
+    @NotNull
+    IResultSetProperties getResultSetProperties();
 }

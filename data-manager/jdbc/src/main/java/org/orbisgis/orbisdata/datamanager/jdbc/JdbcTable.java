@@ -59,7 +59,9 @@ import org.orbisgis.orbisdata.datamanager.api.datasource.IJdbcDataSource;
 import org.orbisgis.orbisdata.datamanager.api.dsl.IBuilderResult;
 import org.orbisgis.orbisdata.datamanager.api.dsl.IFilterBuilder;
 import org.orbisgis.orbisdata.datamanager.api.dsl.IQueryBuilder;
+import org.orbisgis.orbisdata.datamanager.api.dsl.IResultSetProperties;
 import org.orbisgis.orbisdata.datamanager.jdbc.dsl.QueryBuilder;
+import org.orbisgis.orbisdata.datamanager.jdbc.dsl.ResultSetProperties;
 import org.orbisgis.orbisdata.datamanager.jdbc.io.IOMethods;
 import org.orbisgis.orbisdata.datamanager.jdbc.resultset.DefaultResultSet;
 import org.orbisgis.orbisdata.datamanager.jdbc.resultset.ResultSetSpliterator;
@@ -125,6 +127,10 @@ public abstract class JdbcTable<T extends ResultSet, U> extends DefaultResultSet
      */
     @Nullable
     protected ResultSet resultSet;
+    /**
+     * {@link ResultSet} properties.
+     */
+    private IResultSetProperties rsp;
 
     /**
      * Main constructor.
@@ -146,6 +152,7 @@ public abstract class JdbcTable<T extends ResultSet, U> extends DefaultResultSet
         this.statement = statement;
         this.params = params;
         this.baseQuery = baseQuery;
+        this.rsp = new ResultSetProperties();
     }
 
     /**
@@ -680,7 +687,7 @@ public abstract class JdbcTable<T extends ResultSet, U> extends DefaultResultSet
     @NotNull
     public IBuilderResult filter(String filter) {
         String loc = getTableLocation() != null ? getTableLocation().toString(getDbType()) : getBaseQuery();
-        IQueryBuilder builder = new QueryBuilder(getJdbcDataSource(), loc);
+        IQueryBuilder builder = new QueryBuilder(getJdbcDataSource(), loc, getResultSetProperties());
         return builder.filter(filter);
     }
 
@@ -688,7 +695,7 @@ public abstract class JdbcTable<T extends ResultSet, U> extends DefaultResultSet
     @NotNull
     public IBuilderResult filter(GString filter) {
         String loc = getTableLocation() != null ? getTableLocation().toString(getDbType()) : getBaseQuery();
-        IQueryBuilder builder = new QueryBuilder(getJdbcDataSource(), loc);
+        IQueryBuilder builder = new QueryBuilder(getJdbcDataSource(), loc, getResultSetProperties());
         return builder.filter(filter);
     }
 
@@ -696,7 +703,7 @@ public abstract class JdbcTable<T extends ResultSet, U> extends DefaultResultSet
     @NotNull
     public IBuilderResult filter(String filter, List<Object> params) {
         String loc = getTableLocation() != null ? getTableLocation().toString(getDbType()) : getBaseQuery();
-        IQueryBuilder builder = new QueryBuilder(getJdbcDataSource(), loc);
+        IQueryBuilder builder = new QueryBuilder(getJdbcDataSource(), loc, getResultSetProperties());
         return builder.filter(filter, params);
     }
 
@@ -704,7 +711,7 @@ public abstract class JdbcTable<T extends ResultSet, U> extends DefaultResultSet
     @NotNull
     public IFilterBuilder columns(@NotNull String... columns) {
         String loc = getTableLocation() != null ? getTableLocation().toString(getDbType()) : getBaseQuery();
-        IQueryBuilder builder = new QueryBuilder(getJdbcDataSource(), loc);
+        IQueryBuilder builder = new QueryBuilder(getJdbcDataSource(), loc, getResultSetProperties());
         return builder.columns(columns);
     }
 
@@ -729,7 +736,14 @@ public abstract class JdbcTable<T extends ResultSet, U> extends DefaultResultSet
         ResultSet rs = getResultSet();
         if(rs != null) {
             try {
-                rs.first();
+                if(rs.isBeforeFirst() &&!rs.next()) {
+                    LOGGER.error("Unable go to the first row.");
+                    return list;
+                }
+                if(!rs.isFirst() && !rs.first()){
+                    LOGGER.error("Unable go to the first row.");
+                    return list;
+                }
                 for (int i = 1; i <= getColumnCount(); i++) {
                     list.add(rs.getObject(i));
                 }
@@ -859,5 +873,18 @@ public abstract class JdbcTable<T extends ResultSet, U> extends DefaultResultSet
     @NotNull
     public List<Object> getParams() {
         return params;
+    }
+
+    @Override
+    public void setResultSetProperties(@Nullable IResultSetProperties properties) {
+        if(properties != null) {
+            this.rsp = properties.copy();
+        }
+    }
+
+    @Override
+    @NotNull
+    public IResultSetProperties getResultSetProperties() {
+        return rsp;
     }
 }

@@ -135,10 +135,10 @@ public interface IResultSetBuilder {
     /**
      * Set the {@link java.sql.ResultSet} timeout.
      *
-     * @param time Timeout.
+     * @param timeout Timeout.
      * @return This builder.
      */
-    IResultSetBuilder timeout(int time);
+    IResultSetBuilder timeout(int timeout);
 
     /**
      * Set the {@link java.sql.ResultSet} max row count.

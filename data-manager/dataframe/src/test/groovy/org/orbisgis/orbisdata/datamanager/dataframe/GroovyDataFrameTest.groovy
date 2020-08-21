@@ -38,6 +38,8 @@ package org.orbisgis.orbisdata.datamanager.dataframe
 
 import org.junit.jupiter.api.Test
 import org.orbisgis.orbisdata.datamanager.jdbc.h2gis.H2GIS
+import smile.data.measure.NominalScale
+import smile.data.type.StructField
 
 import static org.junit.jupiter.api.Assertions.*
 
@@ -107,15 +109,15 @@ class GroovyDataFrameTest {
         df.save(h2GIS, "output_dataframe", true)
         def table = h2GIS.getTable("OUTPUT_DATAFRAME")
         assertNotNull(table)
-        assertEquals(5,table.getColumnCount())
-        assertEquals(1,table.getRowCount())
+        assertEquals(5, table.getColumnCount())
+        assertEquals(1, table.getRowCount())
         table.next();
         def row = table.firstRow()
-        assertEquals(1,row.ID)
-        assertEquals("POINT (10 10)",row.THE_GEOM)
-        assertEquals("grass",row.TYPE)
-        assertEquals(-12,row.TEMPERATURE)
-        assertEquals(4.780,row.BABY_JEJE_WEIGHT)
+        assertEquals(1, row.ID)
+        assertEquals("POINT (10 10)", row.THE_GEOM)
+        assertEquals("grass", row.TYPE)
+        assertEquals(-12, row.TEMPERATURE)
+        assertEquals(4.780, row.BABY_JEJE_WEIGHT)
     }
 
     @Test
@@ -128,10 +130,106 @@ class GroovyDataFrameTest {
         """)
         DataFrame df = DataFrame.of(h2GIS.getTable("geotable").filter("where type = 'corn'").getTable())
         assertNotNull df
-        assertEquals(2,df.get(0, 0))
-        assertEquals("corn",df.get(0, 1))
-        assertEquals(22,df.get(0, 2))
+        assertEquals(2, df.get(0, 0))
+        assertEquals("corn", df.get(0, 1))
+        assertEquals(22, df.get(0, 2))
         assertNull(df.get(0, 3))
         assertNull(df.get(0, 4))
+    }
+
+
+    @Test
+    void testFactoryDF() {
+        def h2GIS = RANDOM_DS();
+        h2GIS.execute("""
+                DROP TABLE IF EXISTS geotable;
+                CREATE TABLE geotable (id int,  type varchar, orbisgis boolean);
+                INSERT INTO geotable VALUES (1,  'grass', false), (2,  'corn', null), (3,  'corn', null)
+                , (4,  'grass', null), (5,  'corn', null), (6,  'grass', null), (7,  'forest', null);
+        """)
+        DataFrame df = DataFrame.of(h2GIS.getTable("geotable"))
+        assertNotNull df
+        StructField field = df.schema().field(1);
+        assertFalse(field.measure instanceof  NominalScale)
+        def dfFactorized = df.factorize("TYPE")
+        field = dfFactorized.schema().field(1);
+        assertTrue(field.measure instanceof  NominalScale)
+        assertEquals ("nominal[corn, forest, grass]", field.measure.toString())
+    }
+
+    @Test
+    void testCreateDFFromArray() {
+        def data = [
+                [100, 5, 20],
+                [50, 2.5, 10],
+                [110, 6, 22]
+        ]
+
+        DataFrame df = DataFrame.of(data, "name", "age", "size")
+        assertNotNull df
+        assertEquals(100, df.get(0, 0))
+        assertEquals(5, df.get(0, 1))
+        assertEquals(20, df.get(0, 2))
+        assertEquals(50, df.get(1, 0))
+        assertEquals(2.5, df.get(1, 1))
+        assertEquals(10, df.get(1, 2))
+
+        data = [
+                ["A", "B", "C", "D"],
+                ["A1", "B1", "C1", "D1"],
+                ["A2", "B2", "C2", "D2"],
+        ]
+        df = DataFrame.of(data, "name", "age", "size", "task")
+        assertNotNull df
+        assertEquals("A", df.get(0, 0))
+        assertEquals("B", df.get(0, 1))
+        assertEquals("C", df.get(0, 2))
+        assertEquals("D", df.get(0, 3))
+        assertEquals("A1", df.get(1, 0))
+        assertEquals("B1", df.get(1, 1))
+        assertEquals("C1", df.get(1, 2))
+
+        data = [
+                ["A", 5, true, "D"],
+                ["A1", 6, false, "D1"],
+                ["A2", 7, true, "D2"],
+        ]
+        df = DataFrame.of(data, "name", "age", "size", "task")
+        assertNotNull df
+        assertEquals("A", df.get(0, 0))
+        assertEquals(5, df.get(0, 1))
+        assertEquals(true, df.get(0, 2))
+        assertEquals("D", df.get(0, 3))
+
+        data = [
+                ["A", 5, true, "D"],
+                ["A1", "OrbisGIS", false, "D1"],
+                ["A2", 7, true, "D2"],
+        ]
+
+        df = DataFrame.of(data, "name", "age", "size", "task")
+        assertNotNull df
+        assertEquals("A", df.get(0, 0))
+        assertEquals(5, df.get(0, 1))
+        assertEquals(true, df.get(0, 2))
+        assertEquals("D", df.get(0, 3))
+        assertEquals("A1", df.get(1, 0))
+        assertEquals("OrbisGIS", df.get(1, 1))
+        assertEquals(false, df.get(1, 2))
+        assertEquals("D1", df.get(1, 3))
+
+        data = [
+                [100, 20],
+                [50, 2.5, 10],
+                [110, 6, 22]
+        ]
+        assertThrows(IllegalArgumentException.class,() ->  DataFrame.of(data, "name", "age", "size"));
+
+        data = [
+                [100, 12, 20],
+                [50, 2.5, 10],
+                [110, 6, 22]
+        ]
+        assertThrows(IllegalArgumentException.class,() ->  DataFrame.of(data, "age", "size"));
     }
 }

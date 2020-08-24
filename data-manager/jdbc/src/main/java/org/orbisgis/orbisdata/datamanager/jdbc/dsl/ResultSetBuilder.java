@@ -228,7 +228,10 @@ public class ResultSetBuilder implements IResultSetBuilder {
         return st;
     }
 
-    private PreparedStatement getStatement(String query, List<Object> params) throws SQLException {
+    private Statement getStatement(String query, List<Object> params) throws SQLException {
+        if(params == null || params.isEmpty()) {
+            return getStatement();
+        }
         PreparedStatement st;
         if(rsp.getType() != -1 && rsp.getConcurrency() != -1 && rsp.getHoldability() != -1) {
             st = dataSource.getConnection().prepareStatement(query, rsp.getType(), rsp.getConcurrency(), rsp.getHoldability());

@@ -178,10 +178,18 @@ public class IOMethods {
             if (driverFunction != null) {
                 driverFunction.importFile(connection, tableName, fileToImport, encoding, deleteTable,
                         new EmptyProgressVisitor());
+                if(!dataSource.getConnection().getAutoCommit()) {
+                    dataSource.commit();
+                }
                 return true;
             }
         } catch (SQLException | IOException e) {
             LOGGER.error("Cannot load.\n", e);
+            try {
+                dataSource.rollback();
+            } catch (SQLException e1) {
+                LOGGER.error("Unable to rollback.", e1);
+            }
         }
         return false;
     }
@@ -219,6 +227,14 @@ public class IOMethods {
                     if (delete) {
                         try {
                             jdbcDataSource.execute("DROP TABLE IF EXISTS " + outputTableName);
+                            if(!jdbcDataSource.getConnection().getAutoCommit()) {
+                                jdbcDataSource.commit();
+                            }
+                            try {
+                                jdbcDataSource.rollback();
+                            } catch (SQLException e1) {
+                                LOGGER.error("Unable to rollback.", e1);
+                            }
                         } catch (SQLException e) {
                             LOGGER.error("Cannot drop the table.\n", e);
                         }
@@ -230,8 +246,16 @@ public class IOMethods {
                         jdbcDataSource.execute(String.format("CREATE TABLE %s as SELECT * from %s", outputTableName,
                                 tmpTableName));
                         jdbcDataSource.execute("DROP TABLE IF EXISTS " + tmpTableName);
+                        if(!jdbcDataSource.getConnection().getAutoCommit()) {
+                            jdbcDataSource.commit();
+                        }
                     } catch (SQLException e) {
                         LOGGER.error("Cannot load the table.\n", e);
+                        try {
+                            jdbcDataSource.rollback();
+                        } catch (SQLException e1) {
+                            LOGGER.error("Unable to rollback.", e1);
+                        }
                     }
                 } else {
                     LOGGER.error("This database is not yet supported");
@@ -262,15 +286,29 @@ public class IOMethods {
         if (delete) {
             try {
                 jdbcDataSource.execute("DROP TABLE IF EXISTS " + tableName);
+                if(!jdbcDataSource.getConnection().getAutoCommit()) {
+                    jdbcDataSource.commit();
+                }
             } catch (SQLException e) {
-                LOGGER.error("Cannot drop the table.\n", e);
+                LOGGER.error("Cannot drop the table.", e);
+                try {
+                    jdbcDataSource.rollback();
+                } catch (SQLException e1) {
+                    LOGGER.error("Unable to rollback.", e1);
+                }
             }
         }
 
         try {
             jdbcDataSource.execute(String.format("CALL FILE_TABLE('%s','%s')", filePath, tableName));
+            jdbcDataSource.commit();
         } catch (SQLException e) {
             LOGGER.error("Cannot link the file.\n", e);
+            try {
+                jdbcDataSource.rollback();
+            } catch (SQLException e1) {
+                LOGGER.error("Unable to rollback.", e1);
+            }
         }
     }
 

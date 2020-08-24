@@ -246,7 +246,7 @@ public class ResultSetBuilder implements IResultSetBuilder {
             st = dataSource.getConnection().prepareStatement(query);
         }
         for (int i = 0; i < params.size(); i++) {
-            st.setObject(i, params.get(i));
+            st.setObject(i+1, params.get(i));
         }
 
         if(rsp.getFetchDirection() != -1) {
@@ -365,25 +365,25 @@ public class ResultSetBuilder implements IResultSetBuilder {
 
     @Override
     public ITable<?, ?> getTable(GString nameOrQuery) {
-        try {
-            IJdbcTable<?, ?> table = dataSource.getTable(nameOrQuery, getStatement());
-            table.setResultSetProperties(rsp);
-            return table;
-        } catch (SQLException e) {
-            LOGGER.error("Unable to get the statement.", e);
-            return dataSource.getTable(nameOrQuery);
+        if(nameOrQuery.getValueCount() == 0) {
+            return getTable(nameOrQuery.toString());
+        }
+        else{
+            List<Object> params = dataSource.getParameters(nameOrQuery);
+            String sql = dataSource.asSql(nameOrQuery, params);
+            return getTable(sql, params);
         }
     }
 
     @Override
     public ISpatialTable<?, ?> getSpatialTable(GString nameOrQuery) {
-        try {
-            IJdbcSpatialTable<?> table = dataSource.getSpatialTable(nameOrQuery, getStatement());
-            table.setResultSetProperties(rsp);
-            return table;
-        } catch (SQLException e) {
-            LOGGER.error("Unable to get the statement.", e);
-            return dataSource.getSpatialTable(nameOrQuery);
+        if(nameOrQuery.getValueCount() == 0) {
+            return getSpatialTable(nameOrQuery.toString());
+        }
+        else{
+            List<Object> params = dataSource.getParameters(nameOrQuery);
+            String sql = dataSource.asSql(nameOrQuery, params);
+            return getSpatialTable(sql, params);
         }
     }
 

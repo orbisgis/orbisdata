@@ -36,10 +36,7 @@
  */
 package org.orbisgis.orbisdata.datamanager.jdbc;
 
-import groovy.lang.GString;
-import groovy.lang.GroovyObject;
-import groovy.lang.MetaClass;
-import groovy.lang.MissingMethodException;
+import groovy.lang.*;
 import org.codehaus.groovy.runtime.InvokerHelper;
 import org.h2.value.DataType;
 import org.h2gis.utilities.GeometryMetaData;
@@ -64,7 +61,6 @@ import org.orbisgis.orbisdata.datamanager.jdbc.dsl.QueryBuilder;
 import org.orbisgis.orbisdata.datamanager.jdbc.dsl.ResultSetProperties;
 import org.orbisgis.orbisdata.datamanager.jdbc.io.IOMethods;
 import org.orbisgis.orbisdata.datamanager.jdbc.resultset.DefaultResultSet;
-import org.orbisgis.orbisdata.datamanager.jdbc.resultset.ResultSetSpliterator;
 import org.orbisgis.orbisdata.datamanager.jdbc.resultset.StreamResultSet;
 import org.orbisgis.orbisdata.datamanager.jdbc.resultset.StreamSpatialResultSet;
 import org.slf4j.Logger;
@@ -73,8 +69,6 @@ import org.slf4j.LoggerFactory;
 import java.sql.*;
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
 
 import static org.orbisgis.commons.printer.ICustomPrinter.CellPosition.*;
 
@@ -499,7 +493,7 @@ public abstract class JdbcTable<T extends ResultSet, U> extends DefaultResultSet
 
     @Override
     public int getRowCount() {
-        Connection con = null;
+        Connection con;
         try {
             con = jdbcDataSource.getConnection();
         } catch (SQLException e) {
@@ -515,9 +509,20 @@ public abstract class JdbcTable<T extends ResultSet, U> extends DefaultResultSet
         try {
             ResultSet rowCountRs = con.createStatement().executeQuery("SELECT COUNT(*) FROM (" + query + ") as foo");
             rowCountRs.next();
-            return rowCountRs.getInt(1);
+            int c = rowCountRs.getInt(1);
+            if(!con.getAutoCommit()) {
+                con.commit();
+            }
+            return c;
         } catch (SQLException e) {
             LOGGER.error("Unable to get the number of rows.");
+            try {
+                if(!con.getAutoCommit()) {
+                    con.rollback();
+                }
+            } catch (SQLException e1) {
+                LOGGER.error("Unable to rollback.", e1);
+            }
             return -1;
         }
     }
@@ -886,5 +891,28 @@ public abstract class JdbcTable<T extends ResultSet, U> extends DefaultResultSet
     @NotNull
     public IResultSetProperties getResultSetProperties() {
         return rsp;
+    }
+
+    @Override
+    public void eachRow(@NotNull Closure<Object> closure) {
+        this.forEach(closure::call);
+        Connection con = null;
+        try {
+            con = this.getJdbcDataSource().getConnection();
+        } catch (SQLException e) {
+            LOGGER.error("Unable to get connection.", e);
+        }
+        try {
+            if (!con.getAutoCommit()) {
+                con.commit();
+            }
+        } catch (SQLException e) {
+            LOGGER.error("Unable to commit each row action.", e);
+            try {
+                con.rollback();
+            } catch (SQLException e2) {
+                LOGGER.error("Unable to rollback.", e2);
+            }
+        }
     }
 }

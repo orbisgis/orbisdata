@@ -43,6 +43,7 @@ import groovy.sql.GroovyRowResult;
 import org.codehaus.groovy.runtime.GStringImpl;
 import org.codehaus.groovy.runtime.InvokerHelper;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.orbisgis.orbisdata.datamanager.api.dataset.DataBaseType;
 import org.orbisgis.orbisdata.datamanager.api.dataset.ISpatialTable;
@@ -182,31 +183,29 @@ class JdbcDataSourceTest {
         GString gstring3_h2gis = new GStringImpl(new String[]{}, new String[]{"SELECT * FROM test_h2gis"});
         GString gstring1_postgis = new GStringImpl(new String[]{"test_postgis"}, new String[]{"SELECT * FROM "});
         GString gstring3_postgis = new GStringImpl(new String[]{}, new String[]{"SELECT * FROM test_postgis"});
-        testRowsH2GIS(h2gis.rows(gstring1_h2gis));
-        testRowsPOSTGIS(postgis.rows(gstring1_postgis));
-        testRowsH2GIS(h2gis.rows(gstring3_h2gis));
-        testRowsPOSTGIS(postgis.rows(gstring3_postgis));
-    }
 
-    /**
-     * Test all the rows from the given list.
-     *
-     * @param list List containing the rows to test.
-     */
-    private void testRowsH2GIS(List<GroovyRowResult> list) {
+        List<GroovyRowResult> list = h2gis.rows(gstring1_h2gis);
         assertFalse(list.isEmpty());
         assertEquals(3, list.size());
         assertEquals("{ID=1, THE_GEOM=POINT (0 0), TEXT=toto}", list.get(0).toString());
         assertEquals("{ID=2, THE_GEOM=LINESTRING (0 0, 1 1, 2 2), TEXT=tata}", list.get(1).toString());
         assertEquals("{ID=3, THE_GEOM=POINT (4 5), TEXT=titi}", list.get(2).toString());
-    }
 
-    /**
-     * Test all the rows from the given list.
-     *
-     * @param list List containing the rows to test.
-     */
-    private void testRowsPOSTGIS(List<GroovyRowResult> list) {
+        list = postgis.rows(gstring1_postgis);
+        assertFalse(list.isEmpty());
+        assertEquals(3, list.size());
+        assertEquals("{id=1, the_geom=POINT (0 0), text=toto}", list.get(0).toString());
+        assertEquals("{id=2, the_geom=LINESTRING (0 0, 1 1, 2 2), text=tata}", list.get(1).toString());
+        assertEquals("{id=3, the_geom=POINT (4 5), text=titi}", list.get(2).toString());
+
+        list = h2gis.rows(gstring3_h2gis);
+        assertFalse(list.isEmpty());
+        assertEquals(3, list.size());
+        assertEquals("{ID=1, THE_GEOM=POINT (0 0), TEXT=toto}", list.get(0).toString());
+        assertEquals("{ID=2, THE_GEOM=LINESTRING (0 0, 1 1, 2 2), TEXT=tata}", list.get(1).toString());
+        assertEquals("{ID=3, THE_GEOM=POINT (4 5), TEXT=titi}", list.get(2).toString());
+
+        list = postgis.rows(gstring3_postgis);
         assertFalse(list.isEmpty());
         assertEquals(3, list.size());
         assertEquals("{id=1, the_geom=POINT (0 0), text=toto}", list.get(0).toString());
@@ -755,14 +754,14 @@ class JdbcDataSourceTest {
         assertTrue(names.contains("id"));
         assertTrue(names.contains("the_geom"));
         assertTrue(names.contains("text"));
-        names = postgis.getColumnNames("public.test_postgis");
+        /*names = postgis.getColumnNames("public.test_postgis");
         assertTrue(names.contains("id"));
         assertTrue(names.contains("the_geom"));
         assertTrue(names.contains("text"));
         names = postgis.getColumnNames("test_postgis");
         assertTrue(names.contains("id"));
         assertTrue(names.contains("the_geom"));
-        assertTrue(names.contains("text"));
+        assertTrue(names.contains("text"));*/
     }
 
     /**
@@ -794,8 +793,18 @@ class JdbcDataSourceTest {
         assertNotNull(dataset);
     }
 
+    /**
+     * Test the {@link JdbcDataSource#forwardOnly()}, {@link JdbcDataSource#scrollInsensitive()},
+     * {@link JdbcDataSource#scrollSensitive()} ()}, {@link JdbcDataSource#updatable()},
+     * {@link JdbcDataSource#readOnly()}, {@link JdbcDataSource#holdCursorOverCommit()},
+     * {@link JdbcDataSource#closeCursorAtCommit()}, {@link JdbcDataSource#fetchForward()},
+     * {@link JdbcDataSource#fetchReverse()}, {@link JdbcDataSource#fetchUnknown()},
+     * {@link JdbcDataSource#fetchSize(int)}, {@link JdbcDataSource#timeout(int)},
+     * {@link JdbcDataSource# maxRow(int)}, {@link JdbcDataSource#cursorName(String)},
+     * {@link JdbcDataSource#poolable()}, {@link JdbcDataSource#maxFieldSize(int)}france methods.
+     */
     @Test
-    void resultSetBuilder() {
+    void testResultSetBuilder() {
         ITable<?, ?> table = h2gis.forwardOnly().readOnly().holdCursorOverCommit().fetchForward()
                 .fetchSize(SIZE).timeout(TIMEOUT).maxRow(MAX_ROW).cursorName("name").poolable()
                 .maxFieldSize(FIELD_SIZE).getTable("TEST_H2GIS");

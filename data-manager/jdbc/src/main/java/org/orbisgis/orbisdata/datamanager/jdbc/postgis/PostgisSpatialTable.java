@@ -93,12 +93,6 @@ public class PostgisSpatialTable extends JdbcSpatialTable {
                 LOGGER.error("Unable to execute the query '" + getBaseQuery() + "'.\n" + e.getLocalizedMessage());
                 return null;
             }
-            try {
-                resultSet.beforeFirst();
-            } catch (SQLException e) {
-                LOGGER.error("Unable to go before the first ResultSet row.\n" + e.getLocalizedMessage());
-                return null;
-            }
         }
         try {
             return new SpatialResultSetWrapper(resultSet, new StatementWrapper(new ConnectionWrapper(getJdbcDataSource().getConnection()), getStatement()));

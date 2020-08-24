@@ -63,7 +63,7 @@ public class ResultSetProperties implements IResultSetProperties {
     /** {@link ResultSet} fetch direction. */
     private int fetchDirection = -1;
     /** {@link ResultSet} fetch size. */
-    private int fetchSize = -1;
+    private int fetchSize = 100;
     /** {@link java.sql.Statement} query timeout. */
     private int timeout = -1;
     /** {@link java.sql.Statement} max row count. */
@@ -151,9 +151,9 @@ public class ResultSetProperties implements IResultSetProperties {
 
     @Override
     public void setFetchSize(int fetchSize) {
-        if(fetchSize < -1) {
+        if(fetchSize < 0) {
             LOGGER.warn("The fetch size cannot be under 0 so it will be disabled.");
-            this.fetchSize = -1;
+            this.fetchSize = 100;
         }
         else {
             this.fetchSize = fetchSize;

@@ -54,10 +54,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import smile.data.Tuple;
 import smile.data.formula.Formula;
-import smile.data.type.DataType;
-import smile.data.type.DataTypes;
-import smile.data.type.StructField;
-import smile.data.type.StructType;
+import smile.data.type.*;
 import smile.data.vector.Vector;
 import smile.data.vector.*;
 import smile.math.matrix.Matrix;
@@ -1144,6 +1141,64 @@ public class DataFrame implements smile.data.DataFrame, ITable<BaseVector, Tuple
     @NotNull
     public static DataFrame of(@NotNull Stream<Tuple> data, @NotNull StructType schema) {
         return of(smile.data.DataFrame.of(data, schema));
+    }
+
+    @NotNull
+    public static DataFrame of(@NotNull ArrayList data, String... columnNames) {
+        if (columnNames==null) {
+            throw new IllegalArgumentException("Null collection of columns");
+        }
+        if (data==null && data.isEmpty()) {
+            throw new IllegalArgumentException("Empty collection of data");
+        }
+        //Build the StructType from the first row
+        StructField[] fields = new StructField[columnNames.length];
+        StructType schema = null;
+        ArrayList<Tuple> rows = new ArrayList<>();
+        Object firstRow = data.get(0);
+        if(firstRow instanceof  ArrayList){
+           ArrayList rowValues = ((ArrayList) firstRow);
+            if(rowValues.size()!=columnNames.length){
+                throw new IllegalArgumentException("row array must have same length of column names");
+            }
+            for (int k = 0; k < rowValues.size(); ++k) {
+                Object rowValue = rowValues.get(k);
+                DataType rowValueDataType = DataTypes.object(rowValue.getClass());
+                fields[k] = new StructField(columnNames[k], rowValueDataType);
+            }
+            schema =  new StructType(fields);
+        }
+        else{
+            throw new IllegalArgumentException("Malformed data error. The first row must be an array");
+        }
+
+        //Populate the tuples
+        for (int i = 0; i < data.size(); ++i) {
+            Object values = data.get(i);
+            if(values instanceof  ArrayList){
+                Object[] row = new Object[columnNames.length];
+                ArrayList rowValues = ((ArrayList) values);
+                if(rowValues.size()!=columnNames.length){
+                    throw new IllegalArgumentException("arrays must all be same length");
+                }
+                for (int k = 0; k < rowValues.size(); ++k) {
+                    Object rowValue = rowValues.get(k);
+                    DataType rowValueDataType = DataTypes.object(rowValue.getClass());
+                    StructField currentField = fields[k];
+                    DataType fieldType = currentField.type;
+                    if(!fieldType.equals(rowValueDataType)){
+                        fields[k]= new StructField(currentField.name, DataTypes.ObjectType);
+                    }
+                    row[k]=rowValue;
+
+                }
+                rows.add(Tuple.of(row, schema));
+            }
+            else{
+                throw new IllegalArgumentException("Malformed data error. Please use this declaration : [[100, 5, 20],[50, 2.5, 10],[110, 6, 22]]");
+            }
+        }
+        return of(rows);
     }
 
     @NotNull

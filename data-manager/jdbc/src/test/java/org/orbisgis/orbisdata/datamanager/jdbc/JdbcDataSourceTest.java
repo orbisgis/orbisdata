@@ -48,8 +48,13 @@ import org.junit.jupiter.api.Test;
 import org.orbisgis.orbisdata.datamanager.api.dataset.DataBaseType;
 import org.orbisgis.orbisdata.datamanager.api.dataset.ISpatialTable;
 import org.orbisgis.orbisdata.datamanager.api.dataset.ITable;
+import org.orbisgis.orbisdata.datamanager.api.dsl.IResultSetProperties;
+import org.orbisgis.orbisdata.datamanager.jdbc.dsl.ResultSetProperties;
 import org.orbisgis.orbisdata.datamanager.jdbc.h2gis.H2GIS;
+import org.orbisgis.orbisdata.datamanager.jdbc.h2gis.H2gisSpatialTable;
+import org.orbisgis.orbisdata.datamanager.jdbc.h2gis.H2gisTable;
 import org.orbisgis.orbisdata.datamanager.jdbc.postgis.POSTGIS;
+import org.orbisgis.orbisdata.datamanager.jdbc.postgis.PostgisSpatialTable;
 
 import java.io.File;
 import java.io.InputStream;
@@ -57,6 +62,7 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -804,10 +810,35 @@ class JdbcDataSourceTest {
                 .maxFieldSize(FIELD_SIZE).getTable("TEST_H2GIS");
         assertNotNull(table);
         assertArrayEquals(new int[]{3, 3}, table.getSize());
+        assertTrue(table instanceof H2gisSpatialTable);
+        IResultSetProperties rsp = ((H2gisSpatialTable)table).getResultSetProperties();
+        assertEquals(ResultSet.TYPE_FORWARD_ONLY, rsp.getType());
+        assertEquals(ResultSet.CONCUR_READ_ONLY, rsp.getConcurrency());
+        assertEquals(ResultSet.HOLD_CURSORS_OVER_COMMIT, rsp.getHoldability());
+        assertEquals(ResultSet.FETCH_FORWARD, rsp.getFetchDirection());
+        assertEquals(SIZE, rsp.getFetchSize());
+        assertEquals(TIMEOUT, rsp.getTimeout());
+        assertEquals(MAX_ROW, rsp.getMaxRows());
+        assertEquals("name", rsp.getCursorName());
+        assertTrue(rsp.isPoolable());
+        assertEquals(FIELD_SIZE, rsp.getMaxFieldSize());
+
         table = postgis.scrollInsensitive().readOnly().holdCursorOverCommit().fetchReverse()
                 .fetchSize(SIZE).timeout(TIMEOUT).maxRow(MAX_ROW).cursorName("name").poolable()
                 .maxFieldSize(FIELD_SIZE).getTable("test_postgis");
         assertNotNull(table);
         assertArrayEquals(new int[]{3, 3}, table.getSize());
+        assertTrue(table instanceof PostgisSpatialTable);
+        rsp = ((PostgisSpatialTable)table).getResultSetProperties();
+        assertEquals(ResultSet.TYPE_SCROLL_INSENSITIVE, rsp.getType());
+        assertEquals(ResultSet.CONCUR_READ_ONLY, rsp.getConcurrency());
+        assertEquals(ResultSet.HOLD_CURSORS_OVER_COMMIT, rsp.getHoldability());
+        assertEquals(ResultSet.FETCH_REVERSE, rsp.getFetchDirection());
+        assertEquals(SIZE, rsp.getFetchSize());
+        assertEquals(TIMEOUT, rsp.getTimeout());
+        assertEquals(MAX_ROW, rsp.getMaxRows());
+        assertEquals("name", rsp.getCursorName());
+        assertTrue(rsp.isPoolable());
+        assertEquals(FIELD_SIZE, rsp.getMaxFieldSize());
     }
 }

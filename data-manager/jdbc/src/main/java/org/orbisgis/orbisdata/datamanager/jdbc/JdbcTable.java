@@ -61,7 +61,6 @@ import org.orbisgis.orbisdata.datamanager.jdbc.dsl.QueryBuilder;
 import org.orbisgis.orbisdata.datamanager.jdbc.dsl.ResultSetProperties;
 import org.orbisgis.orbisdata.datamanager.jdbc.io.IOMethods;
 import org.orbisgis.orbisdata.datamanager.jdbc.resultset.DefaultResultSet;
-import org.orbisgis.orbisdata.datamanager.jdbc.resultset.ResultSetSpliterator;
 import org.orbisgis.orbisdata.datamanager.jdbc.resultset.StreamResultSet;
 import org.orbisgis.orbisdata.datamanager.jdbc.resultset.StreamSpatialResultSet;
 import org.slf4j.Logger;
@@ -70,8 +69,6 @@ import org.slf4j.LoggerFactory;
 import java.sql.*;
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
 
 import static org.orbisgis.commons.printer.ICustomPrinter.CellPosition.*;
 

@@ -396,44 +396,44 @@ class GroovyPostGISTest {
         def val = 2
         def String[] arr = []
 
-        def table = postGIS.getTable("(SELECT * FROM postgis where id=$val)")
+        def table = postGIS.scrollInsensitive().getTable("(SELECT * FROM postgis where id=$val)")
         assert 2 == table.firstRow[0]
-        table = postGIS.getSpatialTable("(SELECT * FROM postgis where id=$val)")
-        assert 2 == table.firstRow[0]
-
-        table = postGIS.getTable("(SELECT * FROM postgis where id=?)", [val])
-        assert 2 == table.firstRow[0]
-        table = postGIS.getSpatialTable("(SELECT * FROM postgis where id=?)", [val])
+        table = postGIS.scrollInsensitive().getSpatialTable("(SELECT * FROM postgis where id=$val)")
         assert 2 == table.firstRow[0]
 
-        table = postGIS.getTable("postgis").columns("*").filter("where id=$val").getTable()
+        table = postGIS.scrollInsensitive().getTable("(SELECT * FROM postgis where id=?)", [val])
         assert 2 == table.firstRow[0]
-        table = postGIS.getSpatialTable("postgis").columns("*").filter("where id=$val").getSpatialTable()
-        assert 2 == table.firstRow[0]
-
-        table = postGIS.getTable("postgis").columns(null).filter("where id=$val").getTable()
-        assert 2 == table.firstRow[0]
-        table = postGIS.getSpatialTable("postgis").columns(null).filter("where id=$val").getSpatialTable()
+        table = postGIS.scrollInsensitive().getSpatialTable("(SELECT * FROM postgis where id=?)", [val])
         assert 2 == table.firstRow[0]
 
-        table = postGIS.getTable("postgis").columns(null, "").filter("where id=$val").getTable()
+        table = postGIS.scrollInsensitive().getTable("postgis").columns("*").filter("where id=$val").getTable()
         assert 2 == table.firstRow[0]
-        table = postGIS.getSpatialTable("postgis").columns("", null).filter("where id=$val").getSpatialTable()
+        table = postGIS.scrollInsensitive().getSpatialTable("postgis").columns("*").filter("where id=$val").getSpatialTable()
         assert 2 == table.firstRow[0]
 
-        table = postGIS.getTable("postgis").columns("*").filter(null).getTable()
+        table = postGIS.scrollInsensitive().getTable("postgis").columns(null).filter("where id=$val").getTable()
+        assert 2 == table.firstRow[0]
+        table = postGIS.scrollInsensitive().getSpatialTable("postgis").columns(null).filter("where id=$val").getSpatialTable()
+        assert 2 == table.firstRow[0]
+
+        table = postGIS.scrollInsensitive().getTable("postgis").columns(null, "").filter("where id=$val").getTable()
+        assert 2 == table.firstRow[0]
+        table = postGIS.scrollInsensitive().getSpatialTable("postgis").columns("", null).filter("where id=$val").getSpatialTable()
+        assert 2 == table.firstRow[0]
+
+        table = postGIS.scrollInsensitive().getTable("postgis").columns("*").filter(null).getTable()
         assert 1 == table.firstRow[0]
-        table = postGIS.getSpatialTable("postgis").columns("*").filter(null).getSpatialTable()
+        table = postGIS.scrollInsensitive().getSpatialTable("postgis").columns("*").filter(null).getSpatialTable()
         assert 1 == table.firstRow[0]
 
-        table = postGIS.getTable("postgis").columns(arr).filter("where id=$val").getTable()
+        table = postGIS.scrollInsensitive().getTable("postgis").columns(arr).filter("where id=$val").getTable()
         assert 2 == table.firstRow[0]
-        table = postGIS.getSpatialTable("postgis").columns(arr).filter("where id=$val").getSpatialTable()
+        table = postGIS.scrollInsensitive().getSpatialTable("postgis").columns(arr).filter("where id=$val").getSpatialTable()
         assert 2 == table.firstRow[0]
 
-        table = postGIS.getTable("postgis").columns("*").filter("where id=?", [val]).getTable()
+        table = postGIS.scrollInsensitive().getTable("postgis").columns("*").filter("where id=?", [val]).getTable()
         assert 2 == table.firstRow[0]
-        table = postGIS.getSpatialTable("postgis").columns("*").filter("where id=?", [val]).getSpatialTable()
+        table = postGIS.scrollInsensitive().getSpatialTable("postgis").columns("*").filter("where id=?", [val]).getSpatialTable()
         assert 2 == table.firstRow[0]
     }
 

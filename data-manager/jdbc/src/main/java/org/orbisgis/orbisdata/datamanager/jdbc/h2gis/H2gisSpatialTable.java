@@ -92,12 +92,6 @@ public class H2gisSpatialTable extends JdbcSpatialTable {
                 LOGGER.error("Unable to execute the query '" + getBaseQuery() + "'.\n" + e.getLocalizedMessage());
                 return null;
             }
-            try {
-                resultSet.beforeFirst();
-            } catch (SQLException e) {
-                LOGGER.error("Unable to go before the first ResultSet row.\n" + e.getLocalizedMessage());
-                return null;
-            }
         }
         try {
             return new SpatialResultSetImpl(resultSet, new StatementWrapper(getStatement(), new ConnectionWrapper(getJdbcDataSource().getConnection())));

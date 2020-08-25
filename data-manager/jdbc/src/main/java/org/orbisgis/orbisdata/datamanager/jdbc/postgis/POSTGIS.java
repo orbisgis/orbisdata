@@ -238,7 +238,16 @@ public class POSTGIS extends JdbcDataSource {
                     }
                 }
                 else {
-                    ResultSet rs = statement.executeQuery("(SELECT * FROM " + query + "AS foo WHERE 1=0)");
+                    ResultSet rs;
+                    if(statement instanceof PreparedStatement) {
+                        PreparedStatement st = connection.prepareStatement("(SELECT * FROM " + query + "AS foo WHERE 1=0)");
+                        for(int i = 0; i<params.size(); i++) {
+                            st.setObject(i+1, params.get(i));
+                        }
+                        rs = st.executeQuery();
+                    } else {
+                        rs = statement.executeQuery("(SELECT * FROM " + query + "AS foo WHERE 1=0)");
+                    }
                     boolean hasGeom = GeometryTableUtilities.hasGeometryColumn(rs);
                     if(!getConnection().getAutoCommit()) {
                         super.commit();

@@ -88,17 +88,13 @@ public class H2gisSpatialTable extends JdbcSpatialTable {
                 else {
                     resultSet = getStatement().executeQuery(getBaseQuery());
                 }
+                resultSet = new SpatialResultSetImpl(resultSet, new StatementWrapper(getStatement(), new ConnectionWrapper(getJdbcDataSource().getConnection())));
             } catch (SQLException e) {
                 LOGGER.error("Unable to execute the query '" + getBaseQuery() + "'.\n" + e.getLocalizedMessage());
                 return null;
             }
         }
-        try {
-            return new SpatialResultSetImpl(resultSet, new StatementWrapper(getStatement(), new ConnectionWrapper(getJdbcDataSource().getConnection())));
-        } catch (SQLException e) {
-            LOGGER.error("Unable to get the connection.", e);
-            return null;
-        }
+        return resultSet;
     }
 
 

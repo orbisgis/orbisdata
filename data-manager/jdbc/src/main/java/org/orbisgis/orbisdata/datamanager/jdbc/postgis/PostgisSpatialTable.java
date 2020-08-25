@@ -89,17 +89,13 @@ public class PostgisSpatialTable extends JdbcSpatialTable {
                 else {
                     resultSet = getStatement().executeQuery(getBaseQuery());
                 }
+                resultSet = new SpatialResultSetWrapper(resultSet, new StatementWrapper(new ConnectionWrapper(getJdbcDataSource().getConnection()), getStatement()));
             } catch (SQLException e) {
                 LOGGER.error("Unable to execute the query '" + getBaseQuery() + "'.\n" + e.getLocalizedMessage());
                 return null;
             }
         }
-        try {
-            return new SpatialResultSetWrapper(resultSet, new StatementWrapper(new ConnectionWrapper(getJdbcDataSource().getConnection()), getStatement()));
-        } catch (SQLException e) {
-            LOGGER.error("Unable to get the connection.", e);
-            return null;
-        }
+        return resultSet;
     }
 
     @Override

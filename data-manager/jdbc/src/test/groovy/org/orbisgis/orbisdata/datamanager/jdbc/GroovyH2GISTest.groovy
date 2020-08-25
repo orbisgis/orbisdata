@@ -927,44 +927,44 @@ class GroovyH2GISTest {
         def val = 2
         def String[] arr = []
 
-        def table = h2GIS.getTable("(SELECT * FROM h2gis where id=$val)")
+        def table = h2GIS.scrollInsensitive().getTable("(SELECT * FROM h2gis where id=$val)")
         assert 2 == table.firstRow[0]
-        table = h2GIS.getSpatialTable("(SELECT * FROM h2gis where id=$val)")
-        assert 2 == table.firstRow[0]
-
-        table = h2GIS.getTable("(SELECT * FROM h2gis where id=?)", [val])
-        assert 2 == table.firstRow[0]
-        table = h2GIS.getSpatialTable("(SELECT * FROM h2gis where id=?)", [val])
+        table = h2GIS.scrollInsensitive().getSpatialTable("(SELECT * FROM h2gis where id=$val)")
         assert 2 == table.firstRow[0]
 
-        table = h2GIS.getTable("h2gis").columns("*").filter("where id=$val").getTable()
+        table = h2GIS.scrollInsensitive().getTable("(SELECT * FROM h2gis where id=?)", [val])
         assert 2 == table.firstRow[0]
-        table = h2GIS.getSpatialTable("h2gis").columns("*").filter("where id=$val").getSpatialTable()
-        assert 2 == table.firstRow[0]
-
-        table = h2GIS.getTable("h2gis").columns(null).filter("where id=$val").getTable()
-        assert 2 == table.firstRow[0]
-        table = h2GIS.getSpatialTable("h2gis").columns(null).filter("where id=$val").getSpatialTable()
+        table = h2GIS.scrollInsensitive().getSpatialTable("(SELECT * FROM h2gis where id=?)", [val])
         assert 2 == table.firstRow[0]
 
-        table = h2GIS.getTable("h2gis").columns(null, "").filter("where id=$val").getTable()
+        table = h2GIS.scrollInsensitive().getTable("h2gis").columns("*").filter("where id=$val").getTable()
         assert 2 == table.firstRow[0]
-        table = h2GIS.getSpatialTable("h2gis").columns("", null).filter("where id=$val").getSpatialTable()
+        table = h2GIS.scrollInsensitive().getSpatialTable("h2gis").columns("*").filter("where id=$val").getSpatialTable()
         assert 2 == table.firstRow[0]
 
-        table = h2GIS.getTable("h2gis").columns("*").filter(null).getTable()
+        table = h2GIS.scrollInsensitive().getTable("h2gis").columns(null).filter("where id=$val").getTable()
+        assert 2 == table.firstRow[0]
+        table = h2GIS.scrollInsensitive().getSpatialTable("h2gis").columns(null).filter("where id=$val").getSpatialTable()
+        assert 2 == table.firstRow[0]
+
+        table = h2GIS.scrollInsensitive().getTable("h2gis").columns(null, "").filter("where id=$val").getTable()
+        assert 2 == table.firstRow[0]
+        table = h2GIS.scrollInsensitive().getSpatialTable("h2gis").columns("", null).filter("where id=$val").getSpatialTable()
+        assert 2 == table.firstRow[0]
+
+        table = h2GIS.scrollInsensitive().getTable("h2gis").columns("*").filter(null).getTable()
         assert 1 == table.firstRow[0]
-        table = h2GIS.getSpatialTable("h2gis").columns("*").filter(null).getSpatialTable()
+        table = h2GIS.scrollInsensitive().getSpatialTable("h2gis").columns("*").filter(null).getSpatialTable()
         assert 1 == table.firstRow[0]
 
-        table = h2GIS.getTable("h2gis").columns(arr).filter("where id=$val").getTable()
+        table = h2GIS.scrollInsensitive().getTable("h2gis").columns(arr).filter("where id=$val").getTable()
         assert 2 == table.firstRow[0]
-        table = h2GIS.getSpatialTable("h2gis").columns(arr).filter("where id=$val").getSpatialTable()
+        table = h2GIS.scrollInsensitive().getSpatialTable("h2gis").columns(arr).filter("where id=$val").getSpatialTable()
         assert 2 == table.firstRow[0]
 
-        table = h2GIS.getTable("h2gis").columns("*").filter("where id=?", [val]).getTable()
+        table = h2GIS.scrollInsensitive().getTable("h2gis").columns("*").filter("where id=?", [val]).getTable()
         assert 2 == table.firstRow[0]
-        table = h2GIS.getSpatialTable("h2gis").columns("*").filter("where id=?", [val]).getSpatialTable()
+        table = h2GIS.scrollInsensitive().getSpatialTable("h2gis").columns("*").filter("where id=?", [val]).getSpatialTable()
         assert 2 == table.firstRow[0]
     }
 

@@ -238,9 +238,7 @@ public class POSTGIS extends JdbcDataSource {
                     }
                 }
                 else {
-                    ResultSet rs = statement instanceof PreparedStatement ?
-                            ((PreparedStatement)statement).executeQuery() :
-                            statement.executeQuery(query);
+                    ResultSet rs = statement.executeQuery("(SELECT * FROM " + query + "AS foo WHERE 1=0)");
                     boolean hasGeom = GeometryTableUtilities.hasGeometryColumn(rs);
                     if(!getConnection().getAutoCommit()) {
                         super.commit();

@@ -45,6 +45,7 @@ import org.orbisgis.commons.annotations.NotNull;
 import org.orbisgis.commons.annotations.Nullable;
 import org.orbisgis.orbisdata.datamanager.api.dataset.DataBaseType;
 import org.orbisgis.orbisdata.datamanager.api.dataset.IJdbcSpatialTable;
+import org.orbisgis.orbisdata.datamanager.api.dataset.IJdbcTableMetaData;
 import org.orbisgis.orbisdata.datamanager.api.dataset.IRaster;
 import org.orbisgis.orbisdata.datamanager.api.datasource.IJdbcDataSource;
 import org.orbisgis.orbisdata.datamanager.jdbc.resultset.ResultSetSpliterator;
@@ -388,7 +389,7 @@ public abstract class JdbcSpatialTable extends JdbcTable<SpatialResultSet, Strea
     }
 
     @Override
-    public SpatialResultSetMetaData getMetaData() {
+    public IJdbcTableMetaData getMetaData() {
         try {
             ResultSet rs = getResultSet();
             if(rs == null){

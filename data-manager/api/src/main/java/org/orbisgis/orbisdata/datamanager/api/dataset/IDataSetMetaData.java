@@ -36,35 +36,32 @@
  */
 package org.orbisgis.orbisdata.datamanager.api.dataset;
 
+
 import org.orbisgis.commons.annotations.NotNull;
 import org.orbisgis.commons.annotations.Nullable;
 
 /**
- * Raster data.
+ * Cached metadata of a {@link IDataSet}.
  *
  * @author Erwan Bocher (CNRS)
- * @author Sylvain PALOMINOS (Lab-STICC UBS 2019)
+ * @author Sylvain PALOMINOS (UBS Chaire GEOTERA 2020)
  */
-public interface IRaster {
+public interface IDataSetMetaData {
 
     /**
-     * Returns the {@link IRasterMetaData} of a raster.
+     * Get the location of {@link IDataSet}.
+     * The returned {@link String} can be anything to locate the data (URI, URL, file path ...)
      *
-     * @return The {@link IRasterMetaData} of a raster.
-     */
-    @NotNull
-    IRasterMetaData getMetadata();
-
-    /**
-     * Convert the current object into another with the given class.
-     *
-     * @param clazz New class of the result.
-     * @return The current object into an other class.
+     * @return The location of the data.
      */
     @Nullable
-    Object asType(@NotNull Class<?> clazz);
+    String getLocation();
 
-    @Override
+    /**
+     * Get the human readable name of the {@link IDataSet}.
+     *
+     * @return The name of the {@link IDataSet}.
+     */
     @NotNull
-    String toString();
+    String getName();
 }

@@ -36,81 +36,78 @@
  */
 package org.orbisgis.orbisdata.datamanager.api.dataset;
 
+import org.locationtech.jts.geom.Geometry;
 import org.orbisgis.commons.annotations.NotNull;
 import org.orbisgis.commons.annotations.Nullable;
 
+import java.util.List;
+import java.util.Map;
+
 /**
- * Raw collection of data, no matter its structure.
- *
- * @param <T> The type of elements returned by the iterator.
- * @param <U> The type of elements streamed.
+ * Cached metadata of a {@link ISpatialTable}.
  *
  * @author Erwan Bocher (CNRS)
- * @author Sylvain PALOMINOS (UBS 2018-2019)
+ * @author Sylvain PALOMINOS (UBS Chaire GEOTERA 2020)
  */
-public interface IDataSet<T, U> extends Iterable<T> {
-
-    /**
-     * Get the location of {@link IDataSet}.
-     * The returned {@link String} can be anything to locate the data (URI, URL, file path ...)
-     *
-     * @return The location of the data.
-     */
-    @Nullable
-    default String getLocation() {
-        return getMetaData().getLocation();
-    }
-
-    /**
-     * Get the human readable name of the {@link IDataSet}.
-     *
-     * @return The name of the {@link IDataSet}.
-     */
-    @NotNull
-    default String getName() {
-        return getMetaData().getName();
-    }
-
-    /**
-     * Get the metadata object of the {@link IDataSet}.
-     *
-     * @return The metadata object.
-     */
-    @NotNull
-    IDataSetMetaData getMetaData();
-
-    /**
-     * Convert the current object into another with the given class.
-     *
-     * @param clazz New class of the result.
-     * @return The current object into an other class.
-     */
-    @Nullable
-    Object asType(@NotNull Class<?> clazz);
-
-    /**
-     * Return true if the {@link IDataSet} is empty, false otherwise.
-     *
-     * @return True if the {@link IDataSet} is empty, false otherwise.
-     */
-    boolean isEmpty();
-
-    /**
-     * Return the {@link ISummary} of the {@link IDataSet}.
-     *
-     * @return The {@link ISummary} of the {@link IDataSet}.
-     */
-    @NotNull
-    ISummary getSummary();
-
-    /**
-     * Reload the source of the {@link IDataSet}.
-     *
-     * @return true if the reload has been done successfully, false otherwise.
-     */
-    boolean reload();
+public interface ISpatialTableMetaData extends ITableMetaData {
 
     @Override
+    default boolean isSpatial() {
+        return true;
+    }
+
+    /**
+     * Return the SRID code of the first geometry column of the {@link ISpatialTable}.
+     *
+     * @return The SRID code of the first geometry column of the {@link ISpatialTable}.
+     */
+    int getSrid();
+
+    /**
+     * Return the list of the table spatial columns.
+     *
+     * @return The list of the table spatial columns.
+     */
+    @Nullable
+    List<String> getSpatialColumns();
+
+    /**
+     * Return the list of the table raster columns.
+     *
+     * @return The list of the table raster columns.
+     */
     @NotNull
-    String toString();
+    List<String> getRasterColumns();
+
+    /**
+     * Return the list of the table geometric columns.
+     *
+     * @return The list of the table geometric columns.
+     */
+    @Nullable
+    List<String> getGeometricColumns();
+
+    /**
+     * Return the full extent {@link Geometry} of the first geometry column of the table.
+     *
+     * @return The full extent {@link Geometry} of the first geometry column of the table.
+     */
+    @Nullable
+    Geometry getExtent();
+
+    /**
+     * Return the estimated extent {@link Geometry} of the first geometry column of the table.
+     *
+     * @return The estimated extent {@link Geometry} of the first geometry column of the table.
+     */
+    @Nullable
+    Geometry getEstimatedExtent();
+
+    /**
+     * Returns a {@link Map} containing the field names as key and the SFS geometry type (well known name) as value.
+     *
+     * @return The field names as key and geometry types as value.
+     */
+    @Nullable
+    Map<String, String> getGeometryTypes();
 }

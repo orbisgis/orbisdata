@@ -37,34 +37,27 @@
 package org.orbisgis.orbisdata.datamanager.api.dataset;
 
 import org.orbisgis.commons.annotations.NotNull;
-import org.orbisgis.commons.annotations.Nullable;
 
 /**
- * Raster data.
+ * Cached metadata of a {@link IMatrix}.
  *
  * @author Erwan Bocher (CNRS)
- * @author Sylvain PALOMINOS (Lab-STICC UBS 2019)
+ * @author Sylvain PALOMINOS (UBS Chaire GEOTERA 2020)
  */
-public interface IRaster {
+public interface IMatrixMetaData extends IDataSetMetaData {
 
     /**
-     * Returns the {@link IRasterMetaData} of a raster.
+     * Return the number of dimensions of the {@link IMatrix}.
      *
-     * @return The {@link IRasterMetaData} of a raster.
+     * @return The number of dimensions of the {@link IMatrix}.
      */
-    @NotNull
-    IRasterMetaData getMetadata();
+    int getNDim();
 
     /**
-     * Convert the current object into another with the given class.
+     * Returns the size of the {@link IMatrix}. The returned array contains the size of each dimensions.
      *
-     * @param clazz New class of the result.
-     * @return The current object into an other class.
+     * @return The size of the {@link IMatrix} as an int array.
      */
-    @Nullable
-    Object asType(@NotNull Class<?> clazz);
-
-    @Override
     @NotNull
-    String toString();
+    int[] getSize();
 }

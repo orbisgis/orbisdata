@@ -78,7 +78,9 @@ public interface ITable<T, U> extends IMatrix<T, U>, IQueryBuilder {
      * @return A {@link Collection} containing the name of the column.
      */
     @Nullable
-    Collection<String> getColumns();
+    default Collection<String> getColumns() {
+        return getColumnsTypes().keySet();
+    }
 
     /**
      * Get all column information from the underlying table.
@@ -86,7 +88,9 @@ public interface ITable<T, U> extends IMatrix<T, U>, IQueryBuilder {
      * @return A {@link Map} containing the information of the column.
      */
     @NotNull
-    Map<String, String> getColumnsTypes();
+    default Map<String, String> getColumnsTypes() {
+        return getMetaData().getColumnsTypes();
+    }
 
     /**
      * Get the type of the column from the underlying table.
@@ -95,7 +99,9 @@ public interface ITable<T, U> extends IMatrix<T, U>, IQueryBuilder {
      * @return The type of the column.
      */
     @Nullable
-    String getColumnType(@NotNull String columnName);
+    default String getColumnType(@NotNull String columnName){
+        return getColumnsTypes().get(columnName);
+    }
 
     /**
      * Return true if the {@link ITable} contains a column with the given name with the given type (case sensible).
@@ -142,7 +148,7 @@ public interface ITable<T, U> extends IMatrix<T, U>, IQueryBuilder {
      * @return The count of columns.
      */
     default int getColumnCount() {
-        return getColumns().size();
+        return getMetaData().getColumnCount();
     }
 
     /**
@@ -150,7 +156,9 @@ public interface ITable<T, U> extends IMatrix<T, U>, IQueryBuilder {
      *
      * @return The count of lines or -1 if not able to find the {@link ITable}.
      */
-    int getRowCount();
+    default int getRowCount() {
+        return getMetaData().getRowCount();
+    }
 
     /**
      * Return the current row index.
@@ -312,11 +320,13 @@ public interface ITable<T, U> extends IMatrix<T, U>, IQueryBuilder {
      *
      * @return True if the {@link ITable} is spatial.
      */
-    boolean isSpatial();
+    default boolean isSpatial() {
+        return getMetaData().isSpatial();
+    }
 
     @Override
     default int getNDim() {
-        return 2;
+        return getMetaData().getNDim();
     }
 
     @Override
@@ -327,7 +337,7 @@ public interface ITable<T, U> extends IMatrix<T, U>, IQueryBuilder {
     @Override
     @NotNull
     default int[] getSize() {
-        return new int[]{getColumnCount(), getRowCount()};
+        return getMetaData().getSize();
     }
 
     /**
@@ -596,6 +606,16 @@ public interface ITable<T, U> extends IMatrix<T, U>, IQueryBuilder {
     @Nullable
     Stream<? extends U> stream();
 
+    /**
+     * Returns a {@link Map} containing the first row of the table with the column name as key and the column first
+     * value as value.
+     *
+     * @return A {@link Map} containing the first row value.
+     */
     @NotNull
     Map<String, Object> firstRow();
+
+    @Override
+    @NotNull
+    ITableMetaData getMetaData();
 }

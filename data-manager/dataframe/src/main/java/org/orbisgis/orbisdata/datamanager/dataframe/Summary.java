@@ -40,7 +40,6 @@ import org.orbisgis.commons.annotations.NotNull;
 import org.orbisgis.commons.printer.Ascii;
 import org.orbisgis.commons.printer.Html;
 import org.orbisgis.commons.printer.ICustomPrinter;
-import org.orbisgis.orbisdata.datamanager.api.dataset.ISummary;
 
 import static org.orbisgis.commons.printer.ICustomPrinter.CellPosition.CENTER;
 import static org.orbisgis.commons.printer.ICustomPrinter.CellPosition.RIGHT;

@@ -36,26 +36,14 @@
  */
 package org.orbisgis.orbisdata.datamanager.api.dataset;
 
-import org.orbisgis.commons.annotations.NotNull;
-import org.orbisgis.commons.annotations.Nullable;
+
+import java.sql.ResultSetMetaData;
 
 /**
- * Summary of a {@link IDataSet}
+ * Cached metadata of a {@link IJdbcTable}.
  *
  * @author Erwan Bocher (CNRS)
- * @author Sylvain PALOMINOS (Lab-STICC UBS 2019)
+ * @author Sylvain PALOMINOS (UBS Chaire GEOTERA 2020)
  */
-public interface ISummary {
-    /**
-     * Convert the current object into another with the given class.
-     *
-     * @param clazz New class of the result.
-     * @return The current object into an other class.
-     */
-    @Nullable
-    Object asType(@NotNull Class<?> clazz);
-
-    @Override
-    @NotNull
-    String toString();
+public interface IJdbcSpatialTableMetaData extends IJdbcTableMetaData, ResultSetMetaData {
 }

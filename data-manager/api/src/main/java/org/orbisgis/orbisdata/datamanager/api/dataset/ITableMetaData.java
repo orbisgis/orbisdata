@@ -13,17 +13,17 @@
  * Institut Universitaire de Technologie de Vannes
  * 8, Rue Montaigne - BP 561 56017 Vannes Cedex
  *
- * DataManager API  is distributed under LGPL 3 license.
+ * DataManager API is distributed under LGPL 3 license.
  *
- * Copyright (C) 2019 CNRS (Lab-STICC UMR CNRS 6285)
+ * Copyright (C) 2019-2020 CNRS (Lab-STICC UMR CNRS 6285)
  *
  *
- * DataManager API  is free software: you can redistribute it and/or modify it under the
+ * DataManager API is free software: you can redistribute it and/or modify it under the
  * terms of the GNU General Public License as published by the Free Software
  * Foundation, either version 3 of the License, or (at your option) any later
  * version.
  *
- * DataManager API  is distributed in the hope that it will be useful, but WITHOUT ANY
+ * DataManager API is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
  * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
  *
@@ -36,27 +36,56 @@
  */
 package org.orbisgis.orbisdata.datamanager.api.dataset;
 
+
 import org.orbisgis.commons.annotations.NotNull;
-import org.orbisgis.commons.annotations.Nullable;
+
+import java.util.Map;
 
 /**
- * Metadata of a {@link IRaster}.
+ * Cached metadata of a {@link ITable}.
  *
  * @author Erwan Bocher (CNRS)
- * @author Sylvain PALOMINOS (Lab-STICC UBS 2019)
+ * @author Sylvain PALOMINOS (UBS Chaire GEOTERA 2020)
  */
-public interface IRasterMetadata {
+public interface ITableMetaData extends IMatrixMetaData {
 
-    /**
-     * Convert the current object into another with the given class.
-     *
-     * @param clazz New class of the result.
-     * @return The current object into an other class.
-     */
-    @Nullable
-    Object asType(@NotNull Class<?> clazz);
+    @Override
+    default int getNDim() {
+        return 2;
+    }
 
     @Override
     @NotNull
-    String toString();
+    default int[] getSize(){
+        return new int[] {getColumnCount(), getRowCount()};
+    }
+
+    /**
+     * Get all column information from the underlying table.
+     *
+     * @return A {@link Map} containing the information of the column.
+     */
+    @NotNull
+    Map<String, String> getColumnsTypes();
+
+    /**
+     * Return the count of columns.
+     *
+     * @return The count of columns.
+     */
+    int getColumnCount();
+
+    /**
+     * Return the count of lines or -1 if not able to find the {@link ITable}.
+     *
+     * @return The count of lines or -1 if not able to find the {@link ITable}.
+     */
+    int getRowCount();
+
+    /**
+     * Return true if the {@link ITable} is spatial.
+     *
+     * @return True if the {@link ITable} is spatial.
+     */
+    boolean isSpatial();
 }

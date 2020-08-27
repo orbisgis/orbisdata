@@ -39,8 +39,6 @@ package org.orbisgis.orbisdata.datamanager.jdbc;
 import org.orbisgis.commons.annotations.NotNull;
 import org.orbisgis.commons.annotations.Nullable;
 import org.orbisgis.orbisdata.datamanager.api.dataset.IJdbcTable;
-import org.orbisgis.orbisdata.datamanager.api.dataset.IJdbcTableSummary;
-import org.orbisgis.orbisdata.datamanager.api.dataset.ISummary;
 
 /**
  * Implementation of the interface {@link ISummary} for the JDBC module.

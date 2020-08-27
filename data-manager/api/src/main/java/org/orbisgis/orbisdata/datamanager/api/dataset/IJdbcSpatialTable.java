@@ -38,6 +38,7 @@ package org.orbisgis.orbisdata.datamanager.api.dataset;
 
 
 import org.h2gis.utilities.SpatialResultSet;
+import org.orbisgis.commons.annotations.NotNull;
 
 /**
  * Extension of the {@link IJdbcTable} and {@link ISpatialTable} interfaces.
@@ -46,4 +47,8 @@ import org.h2gis.utilities.SpatialResultSet;
  * @author Sylvain PALOMINOS (Lab-STICC UBS 2019)
  */
 public interface IJdbcSpatialTable<T> extends IJdbcTable<SpatialResultSet, T>, ISpatialTable<SpatialResultSet, T> {
+
+    @Override
+    @NotNull
+    IJdbcSpatialTableMetaData getMetaData();
 }

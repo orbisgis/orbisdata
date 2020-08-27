@@ -47,7 +47,7 @@ import java.util.List;
 
 /**
  * Extension of the {@link ITable} specially dedicated to the JDBC databases thanks to the extension of the
- * {@link ResultSet} interface.
+ * {@link ResultSet} interface. A {@link IJdbcTable} is a snapshot of a JDBC table or query.
  *
  * @author Erwan Bocher (CNRS)
  * @author Sylvain Palominos (UBS Lab-STICC 2019 / Chaire GEOTERA 2020)
@@ -81,8 +81,8 @@ public interface IJdbcTable<T, U> extends ITable<T, U>, ResultSet {
     DataBaseType getDbType();
 
     @Override
-    @Nullable
-    ResultSetMetaData getMetaData();
+    @NotNull
+    IJdbcTableMetaData getMetaData();
 
     /**
      * Return true if the {@link ITable} is a linked one.

@@ -39,6 +39,7 @@ package org.orbisgis.orbisdata.datamanager.api.dataset;
 
 import org.h2gis.utilities.SpatialResultSet;
 import org.orbisgis.commons.annotations.NotNull;
+import org.orbisgis.orbisdata.datamanager.api.metadata.IJdbcSpatialTableMetaData;
 
 /**
  * Extension of the {@link IJdbcTable} and {@link ISpatialTable} interfaces.

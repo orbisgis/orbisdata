@@ -37,6 +37,7 @@
 package org.orbisgis.orbisdata.datamanager.api.dataset;
 
 import org.orbisgis.commons.annotations.NotNull;
+import org.orbisgis.orbisdata.datamanager.api.metadata.IMatrixMetaData;
 
 /**
  * Multi-dimensional structured data.

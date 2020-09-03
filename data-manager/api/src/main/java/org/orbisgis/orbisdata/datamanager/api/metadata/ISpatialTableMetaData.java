@@ -34,11 +34,12 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.orbisdata.datamanager.api.dataset;
+package org.orbisgis.orbisdata.datamanager.api.metadata;
 
 import org.locationtech.jts.geom.Geometry;
 import org.orbisgis.commons.annotations.NotNull;
 import org.orbisgis.commons.annotations.Nullable;
+import org.orbisgis.orbisdata.datamanager.api.dataset.ISpatialTable;
 
 import java.util.List;
 import java.util.Map;

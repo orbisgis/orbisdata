@@ -34,58 +34,35 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.orbisdata.datamanager.api.dataset;
+package org.orbisgis.orbisdata.datamanager.api.metadata;
 
 
 import org.orbisgis.commons.annotations.NotNull;
-
-import java.util.Map;
+import org.orbisgis.commons.annotations.Nullable;
+import org.orbisgis.orbisdata.datamanager.api.dataset.IDataSet;
 
 /**
- * Cached metadata of a {@link ITable}.
+ * Cached metadata of a {@link IDataSet}.
  *
  * @author Erwan Bocher (CNRS)
  * @author Sylvain PALOMINOS (UBS Chaire GEOTERA 2020)
  */
-public interface ITableMetaData extends IMatrixMetaData {
-
-    @Override
-    default int getNDim() {
-        return 2;
-    }
-
-    @Override
-    @NotNull
-    default int[] getSize(){
-        return new int[] {getColumnCount(), getRowCount()};
-    }
+public interface IDataSetMetaData {
 
     /**
-     * Get all column information from the underlying table.
+     * Get the location of {@link IDataSet}.
+     * The returned {@link String} can be anything to locate the data (URI, URL, file path ...)
      *
-     * @return A {@link Map} containing the information of the column.
+     * @return The location of the data.
+     */
+    @Nullable
+    String getLocation();
+
+    /**
+     * Get the human readable name of the {@link IDataSet}.
+     *
+     * @return The name of the {@link IDataSet}.
      */
     @NotNull
-    Map<String, String> getColumnsTypes();
-
-    /**
-     * Return the count of columns.
-     *
-     * @return The count of columns.
-     */
-    int getColumnCount();
-
-    /**
-     * Return the count of lines or -1 if not able to find the {@link ITable}.
-     *
-     * @return The count of lines or -1 if not able to find the {@link ITable}.
-     */
-    int getRowCount();
-
-    /**
-     * Return true if the {@link ITable} is spatial.
-     *
-     * @return True if the {@link ITable} is spatial.
-     */
-    boolean isSpatial();
+    String getName();
 }

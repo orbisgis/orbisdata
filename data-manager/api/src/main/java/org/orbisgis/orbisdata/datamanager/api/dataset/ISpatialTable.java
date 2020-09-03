@@ -39,6 +39,7 @@ package org.orbisgis.orbisdata.datamanager.api.dataset;
 import org.locationtech.jts.geom.Geometry;
 import org.orbisgis.commons.annotations.NotNull;
 import org.orbisgis.commons.annotations.Nullable;
+import org.orbisgis.orbisdata.datamanager.api.metadata.ISpatialTableMetaData;
 
 import java.util.List;
 import java.util.Map;

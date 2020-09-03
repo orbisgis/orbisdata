@@ -57,6 +57,7 @@ import smile.data.formula.Formula;
 import smile.data.type.*;
 import smile.data.vector.Vector;
 import smile.data.vector.*;
+import smile.math.matrix.DenseMatrix;
 import smile.math.matrix.Matrix;
 
 import java.io.*;
@@ -123,7 +124,7 @@ public class DataFrame implements smile.data.DataFrame, ITable<BaseVector, Tuple
      */
     public DataFrame apply(@Nullable Formula formula) {
         if(formula != null) {
-            return DataFrame.of(formula.frame(getInternalDataFrame()));
+            return DataFrame.of(formula.apply(getInternalDataFrame()));
         }
         else {
             return this;
@@ -256,7 +257,7 @@ public class DataFrame implements smile.data.DataFrame, ITable<BaseVector, Tuple
 
     @Override
     @NotNull
-    public Matrix toMatrix() {
+    public DenseMatrix toMatrix() {
         return getInternalDataFrame().toMatrix();
     }
 
@@ -276,9 +277,8 @@ public class DataFrame implements smile.data.DataFrame, ITable<BaseVector, Tuple
         return getInternalDataFrame().isEmpty();
     }
 
-    @Override
     @NotNull
-    public Summary getSummary() {
+    public DataFrameMetaData getSummary() {
         return summary();
     }
 
@@ -289,8 +289,8 @@ public class DataFrame implements smile.data.DataFrame, ITable<BaseVector, Tuple
 
     @Override
     @NotNull
-    public Summary summary() {
-        return new Summary(getInternalDataFrame().summary());
+    public DataFrameMetaData summary() {
+        return new DataFrameMetaData(getInternalDataFrame().summary());
     }
 
     @Override
@@ -561,10 +561,10 @@ public class DataFrame implements smile.data.DataFrame, ITable<BaseVector, Tuple
 
     @Override
     @NotNull
-    public Map<String, String> getColumnsTypes() {
+    public LinkedHashMap<String, String> getColumnsTypes() {
         DataType[] dataTypes = types();
         String[] names = names();
-        Map<String, String> map = new HashMap<>();
+        LinkedHashMap<String, String> map = new LinkedHashMap<>();
         for (int i = 0; i < dataTypes.length; i++) {
             map.put(names[i], dataTypes[i].name());
         }
@@ -871,7 +871,7 @@ public class DataFrame implements smile.data.DataFrame, ITable<BaseVector, Tuple
 
     @Override
     @NotNull
-    public Object getMetaData() {
+    public DataFrameMetaData getMetaData() {
         return summary();
     }
 

@@ -34,16 +34,60 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.orbisdata.datamanager.api.dataset;
+package org.orbisgis.orbisdata.datamanager.api.metadata;
 
 
-import org.h2gis.utilities.SpatialResultSetMetaData;
+import org.orbisgis.commons.annotations.NotNull;
+import org.orbisgis.orbisdata.datamanager.api.dataset.ITable;
+
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
- * Cached metadata of a {@link IJdbcTable}.
+ * Cached metadata of a {@link ITable}.
  *
  * @author Erwan Bocher (CNRS)
  * @author Sylvain PALOMINOS (UBS Chaire GEOTERA 2020)
  */
-public interface IJdbcTableMetaData extends ITableMetaData, SpatialResultSetMetaData {
+public interface ITableMetaData extends IMatrixMetaData {
+
+    @Override
+    default int getNDim() {
+        return 2;
+    }
+
+    @Override
+    @NotNull
+    default int[] getSize(){
+        return new int[] {getColumnCount(), getRowCount()};
+    }
+
+    /**
+     * Get all column information from the underlying table.
+     *
+     * @return A {@link Map} containing the information of the column.
+     */
+    @NotNull
+    LinkedHashMap<String, String> getColumnsTypes();
+
+    /**
+     * Return the count of columns.
+     *
+     * @return The count of columns.
+     */
+    int getColumnCount();
+
+    /**
+     * Return the count of lines or -1 if not able to find the {@link ITable}.
+     *
+     * @return The count of lines or -1 if not able to find the {@link ITable}.
+     */
+    int getRowCount();
+
+    /**
+     * Return true if the {@link ITable} is spatial.
+     *
+     * @return True if the {@link ITable} is spatial.
+     */
+    boolean isSpatial();
 }

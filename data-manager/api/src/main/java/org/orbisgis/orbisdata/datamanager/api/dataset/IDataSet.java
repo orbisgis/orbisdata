@@ -38,6 +38,7 @@ package org.orbisgis.orbisdata.datamanager.api.dataset;
 
 import org.orbisgis.commons.annotations.NotNull;
 import org.orbisgis.commons.annotations.Nullable;
+import org.orbisgis.orbisdata.datamanager.api.metadata.IDataSetMetaData;
 
 /**
  * Raw collection of data, no matter its structure.
@@ -94,14 +95,6 @@ public interface IDataSet<T, U> extends Iterable<T> {
      * @return True if the {@link IDataSet} is empty, false otherwise.
      */
     boolean isEmpty();
-
-    /**
-     * Return the {@link ISummary} of the {@link IDataSet}.
-     *
-     * @return The {@link ISummary} of the {@link IDataSet}.
-     */
-    @NotNull
-    ISummary getSummary();
 
     /**
      * Reload the source of the {@link IDataSet}.

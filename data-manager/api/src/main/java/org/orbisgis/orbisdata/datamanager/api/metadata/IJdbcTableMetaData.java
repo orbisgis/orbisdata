@@ -34,30 +34,17 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.orbisdata.datamanager.api.dataset;
+package org.orbisgis.orbisdata.datamanager.api.metadata;
 
-import org.orbisgis.commons.annotations.NotNull;
+import org.orbisgis.orbisdata.datamanager.api.dataset.IJdbcTable;
+
+import java.sql.ResultSetMetaData;
 
 /**
- * Cached metadata of a {@link IMatrix}.
+ * Cached metadata of a {@link IJdbcTable}.
  *
  * @author Erwan Bocher (CNRS)
  * @author Sylvain PALOMINOS (UBS Chaire GEOTERA 2020)
  */
-public interface IMatrixMetaData extends IDataSetMetaData {
-
-    /**
-     * Return the number of dimensions of the {@link IMatrix}.
-     *
-     * @return The number of dimensions of the {@link IMatrix}.
-     */
-    int getNDim();
-
-    /**
-     * Returns the size of the {@link IMatrix}. The returned array contains the size of each dimensions.
-     *
-     * @return The size of the {@link IMatrix} as an int array.
-     */
-    @NotNull
-    int[] getSize();
+public interface IJdbcTableMetaData extends ITableMetaData, ResultSetMetaData {
 }

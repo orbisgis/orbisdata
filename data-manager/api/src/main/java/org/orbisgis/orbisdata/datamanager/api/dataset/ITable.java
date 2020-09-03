@@ -41,12 +41,14 @@ import org.orbisgis.commons.annotations.NotNull;
 import org.orbisgis.commons.annotations.Nullable;
 import org.orbisgis.orbisdata.datamanager.api.datasource.IJdbcDataSource;
 import org.orbisgis.orbisdata.datamanager.api.dsl.IQueryBuilder;
+import org.orbisgis.orbisdata.datamanager.api.metadata.ITableMetaData;
 
 import java.math.BigDecimal;
 import java.sql.Date;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
@@ -88,7 +90,7 @@ public interface ITable<T, U> extends IMatrix<T, U>, IQueryBuilder {
      * @return A {@link Map} containing the information of the column.
      */
     @NotNull
-    default Map<String, String> getColumnsTypes() {
+    default LinkedHashMap<String, String> getColumnsTypes() {
         return getMetaData().getColumnsTypes();
     }
 
@@ -119,7 +121,7 @@ public interface ITable<T, U> extends IMatrix<T, U>, IQueryBuilder {
      * @return True if the column is found, false otherwise.
      */
     default boolean hasColumn(@NotNull String columnName) {
-        return getColumns().contains(columnName);
+        return getColumns().contains(columnName) || getColumns().contains(columnName.toLowerCase()) || getColumns().contains(columnName.toUpperCase());
     }
 
     /**

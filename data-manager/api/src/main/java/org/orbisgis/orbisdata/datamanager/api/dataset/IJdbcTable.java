@@ -40,9 +40,9 @@ import groovy.lang.Closure;
 import org.orbisgis.commons.annotations.NotNull;
 import org.orbisgis.commons.annotations.Nullable;
 import org.orbisgis.orbisdata.datamanager.api.dsl.IResultSetProperties;
+import org.orbisgis.orbisdata.datamanager.api.metadata.IJdbcTableMetaData;
 
 import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
 import java.util.List;
 
 /**
@@ -57,7 +57,7 @@ public interface IJdbcTable<T, U> extends ITable<T, U>, ResultSet {
     /**
      * {@link String} location/name of the query built table
      */
-    String QUERY_LOCATION = "query";
+    String QUERY_LOCATION = null;
 
     /**
      * {@link String} name of the metadata property
@@ -123,10 +123,6 @@ public interface IJdbcTable<T, U> extends ITable<T, U>, ResultSet {
     default void eachRow(@NotNull Closure<Object> closure) {
         this.forEach(closure::call);
     }
-
-    @Override
-    @NotNull
-    IJdbcTableSummary getSummary();
 
     /**
      * Returns the parameters of the parametrized query.

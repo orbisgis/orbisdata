@@ -40,24 +40,37 @@ import org.orbisgis.commons.annotations.NotNull;
 import org.orbisgis.commons.printer.Ascii;
 import org.orbisgis.commons.printer.Html;
 import org.orbisgis.commons.printer.ICustomPrinter;
+import org.orbisgis.orbisdata.datamanager.api.metadata.IDataSetMetaData;
+import org.orbisgis.orbisdata.datamanager.api.metadata.ITableMetaData;
 
 import static org.orbisgis.commons.printer.ICustomPrinter.CellPosition.CENTER;
 import static org.orbisgis.commons.printer.ICustomPrinter.CellPosition.RIGHT;
 
 /**
- * {@link ISummary} implementation for the {@link DataFrame} object.
+ * {@link IDataSetMetaData} implementation for the {@link DataFrame} object.
  *
  * @author Sylvain PALOMINOS (Lab-STICC UBS 2019)
  */
-public class Summary extends DataFrame implements ISummary {
+public class DataFrameMetaData extends DataFrame implements ITableMetaData {
 
     /**
      * Main constructor wrapping a {@link DataFrame}
      *
      * @param dataFrame {@link DataFrame} wrapped as summary.
      */
-    public Summary(smile.data.DataFrame dataFrame) {
+    public DataFrameMetaData(smile.data.DataFrame dataFrame) {
         setInternalDataFrame(dataFrame);
+    }
+
+    @Override
+    @NotNull
+    public int[] getSize(){
+        return new int[] {getColumnCount(), getRowCount()};
+    }
+
+    @Override
+    public int getNDim() {
+        return 2;
     }
 
     @Override

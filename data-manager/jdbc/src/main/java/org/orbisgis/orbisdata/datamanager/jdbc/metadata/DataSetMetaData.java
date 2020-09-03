@@ -1,5 +1,5 @@
 /*
- * Bundle DataManager API is part of the OrbisGIS platform
+ * Bundle DataManager is part of the OrbisGIS platform
  *
  * OrbisGIS is a java GIS application dedicated to research in GIScience.
  * OrbisGIS is developed by the GIS group of the DECIDE team of the
@@ -13,59 +13,65 @@
  * Institut Universitaire de Technologie de Vannes
  * 8, Rue Montaigne - BP 561 56017 Vannes Cedex
  *
- * DataManager API is distributed under LGPL 3 license.
+ * DataManager is distributed under LGPL 3 license.
  *
- * Copyright (C) 2019-2020 CNRS (Lab-STICC UMR CNRS 6285)
+ * Copyright (C) 2018 CNRS (Lab-STICC UMR CNRS 6285)
  *
  *
- * DataManager API is free software: you can redistribute it and/or modify it under the
+ * DataManager is free software: you can redistribute it and/or modify it under the
  * terms of the GNU General Public License as published by the Free Software
  * Foundation, either version 3 of the License, or (at your option) any later
  * version.
  *
- * DataManager API is distributed in the hope that it will be useful, but WITHOUT ANY
+ * DataManager is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
  * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License along with
- * DataManager API. If not, see <http://www.gnu.org/licenses/>.
+ * DataManager. If not, see <http://www.gnu.org/licenses/>.
  *
  * For more information, please consult: <http://www.orbisgis.org/>
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.orbisdata.datamanager.api.dataset;
+package org.orbisgis.orbisdata.datamanager.jdbc.metadata;
 
 import org.orbisgis.commons.annotations.NotNull;
 import org.orbisgis.commons.annotations.Nullable;
-import org.orbisgis.orbisdata.datamanager.api.metadata.IRasterMetaData;
+import org.orbisgis.orbisdata.datamanager.api.dataset.IDataSet;
+import org.orbisgis.orbisdata.datamanager.api.metadata.IDataSetMetaData;
 
 /**
- * Raster data.
+ * Contains the metadata of a {@link IDataSet}.
  *
  * @author Erwan Bocher (CNRS)
- * @author Sylvain PALOMINOS (Lab-STICC UBS 2019)
+ * @author Sylvain PALOMINOS (UBS Chaire GEOTERA 2020)
  */
-public interface IRaster {
+public class DataSetMetaData implements IDataSetMetaData {
 
     /**
-     * Returns the {@link IRasterMetaData} of a raster.
-     *
-     * @return The {@link IRasterMetaData} of a raster.
+     * Location of the associated {@link IDataSet}
      */
-    @NotNull
-    IRasterMetaData getMetadata();
-
+    protected String location;
     /**
-     * Convert the current object into another with the given class.
-     *
-     * @param clazz New class of the result.
-     * @return The current object into an other class.
+     * Name of the associated {@link IDataSet}
      */
+    protected String name;
+
+    public DataSetMetaData(String location, String name) {
+        this.location = location;
+        this.name = name;
+    }
+
     @Nullable
-    Object asType(@NotNull Class<?> clazz);
-
     @Override
+    public String getLocation() {
+        return location;
+    }
+
     @NotNull
-    String toString();
+    @Override
+    public String getName() {
+        return name;
+    }
 }

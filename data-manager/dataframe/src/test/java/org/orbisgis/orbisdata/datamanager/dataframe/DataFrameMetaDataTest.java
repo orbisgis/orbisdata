@@ -50,16 +50,16 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.orbisgis.orbisdata.datamanager.dataframe.TestUtils.RANDOM_DS;
 
 /**
- * Test class for {@link Summary}.
+ * Test class for {@link DataFrameMetaData}.
  *
  * @author Sylvain PALOMINOS (UBS LAB-STICC 2020)
  */
-public class SummaryTest {
+public class DataFrameMetaDataTest {
 
     /**
-     * {@link Summary} instance for test purpose.
+     * {@link DataFrameMetaData} instance for test purpose.
      */
-    public static Summary summary;
+    public static DataFrameMetaData dataFrameMetaData;
 
     @BeforeAll
     public static void beforeAll() throws SQLException {
@@ -70,12 +70,12 @@ public class SummaryTest {
         h2gis.execute("INSERT INTO toto VALUES (2, 'val2', true , 2, 2, 2, 2, 2.0, 2.0)");
         h2gis.execute("INSERT INTO toto VALUES (3, 'val3', false, 3, 3, 3, 3, 3.0, 3.0)");
         h2gis.execute("INSERT INTO toto VALUES (4, 'val4', true , 4, 4, 4, 4, 4.0, 4.0)");
-        summary = DataFrame.of(h2gis.getTable("toto")).summary();
+        dataFrameMetaData = DataFrame.of(h2gis.getTable("toto")).summary();
     }
 
     @Test
     public void asTypeTest(){
-        assertNull(summary.asType(Time.class));
+        assertNull(dataFrameMetaData.asType(Time.class));
         String str = "[column: String, count: long, min: double, avg: double, max: double]\n" +
                 "+------+-----+---+---+---+\n" +
                 "|column|count|min|avg|max|\n" +
@@ -87,7 +87,7 @@ public class SummaryTest {
                 "|  COL8|    5|  0|  2|  4|\n" +
                 "|  COL9|    5|  0|  2|  4|\n" +
                 "+------+-----+---+---+---+\n";
-        assertEquals(str, summary.asType(String.class).toString());
+        assertEquals(str, dataFrameMetaData.asType(String.class).toString());
         String ascii = "+---------+\n" +
                 "|DataFrame|\n" +
                 "+---------+---------+---------+---------+---------+\n" +
@@ -105,7 +105,7 @@ public class SummaryTest {
                 "+---------+---------+---------+---------+---------+\n" +
                 "|     COL9|        5|      0.0|      2.0|      4.0|\n" +
                 "+---------+---------+---------+---------+---------+\n";
-        assertEquals(ascii, summary.asType(Ascii.class).toString());
+        assertEquals(ascii, dataFrameMetaData.asType(Ascii.class).toString());
         String html = "<table>\n" +
                 "<caption>DataFrame</caption>\n" +
                 "<tr></tr>\n" +
@@ -166,6 +166,6 @@ public class SummaryTest {
                 "</tr>\n" +
                 "<tr></tr>\n" +
                 "</table>\n";
-        assertEquals(html, summary.asType(Html.class).toString());
+        assertEquals(html, dataFrameMetaData.asType(Html.class).toString());
     }
 }

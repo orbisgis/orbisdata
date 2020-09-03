@@ -45,6 +45,7 @@ import org.orbisgis.commons.annotations.Nullable;
 import org.orbisgis.orbisdata.datamanager.api.datasource.IJdbcDataSource;
 import org.orbisgis.orbisdata.datamanager.api.dsl.IBuilderResult;
 import org.orbisgis.orbisdata.datamanager.api.dsl.IFilterBuilder;
+import org.orbisgis.orbisdata.datamanager.api.metadata.ITableMetaData;
 
 import java.math.BigDecimal;
 import java.sql.Date;
@@ -225,15 +226,6 @@ public class ITableTest {
     }
 
     /**
-     * Test the {@link ITable#getColumnCount()} method.
-     */
-    @Test
-    public void testGetColumnCount() {
-        assertEquals(COLUMN_COUNT, table.getColumnCount());
-        assertEquals(0, new DummyTable().getColumnCount());
-    }
-
-    /**
      * Test the {@link ITable#isEmpty()} method.
      */
     @Test
@@ -248,25 +240,6 @@ public class ITableTest {
     @Test
     public void testSave() {
         assertNull(table.save("path"));
-    }
-
-    /**
-     * Test the {@link ITable#getNDim()} method.
-     */
-    @Test
-    public void testNDim() {
-        assertEquals(2, table.getNDim());
-    }
-
-    /**
-     * Test the {@link ITable#getSize()} method.
-     */
-    @Test
-    public void testGetShape() {
-        int[] shape = table.getSize();
-        assertEquals(2, shape.length);
-        assertEquals(5, shape[0]);
-        assertEquals(4, shape[1]);
     }
 
     /**
@@ -596,18 +569,12 @@ public class ITableTest {
 
         @NotNull
         @Override
-        public Object getMetaData() {
+        public ITableMetaData getMetaData() {
             return null;
         }
 
         @Override
         public Object asType(@NotNull Class clazz) {
-            return null;
-        }
-
-        @NotNull
-        @Override
-        public ISummary getSummary() {
             return null;
         }
 
@@ -623,7 +590,7 @@ public class ITableTest {
 
         @NotNull
         @Override
-        public Map<String, String> getColumnsTypes() {
+        public LinkedHashMap<String, String> getColumnsTypes() {
             return null;
         }
 

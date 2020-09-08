@@ -647,15 +647,14 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, IRe
     }
 
     private String getTableNameFromPath(String filePath) {
-        int start = filePath.lastIndexOf("/") + 1;
-        int end = filePath.lastIndexOf(".");
-        if (end == -1) {
-            end = filePath.length();
+        String name = URIUtilities.fileFromString(filePath).getName();
+        if(name.contains(".")) {
+            name = name.substring(0, name.lastIndexOf("."));
         }
         if(databaseType == DataBaseType.H2GIS){
-            return filePath.substring(start, end).toUpperCase();
+            return name.toUpperCase();
         }
-        return filePath.substring(start, end).toLowerCase();
+        return name.toLowerCase();
     }
 
     @Override

@@ -34,36 +34,60 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.orbisdata.datamanager.api.dataset;
+package org.orbisgis.orbisdata.datamanager.api.metadata;
 
-import org.orbisgis.commons.annotations.Nullable;
+
+import org.orbisgis.commons.annotations.NotNull;
+import org.orbisgis.orbisdata.datamanager.api.dataset.ITable;
+
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
- * Extension of the {@link ISummary} interface dedicated to the {@link IJdbcTable}.
+ * Cached metadata of a {@link ITable}.
  *
  * @author Erwan Bocher (CNRS)
- * @author Sylvain Palominos (Lab-STICC UBS 2019)
+ * @author Sylvain PALOMINOS (UBS Chaire GEOTERA 2020)
  */
-public interface IJdbcTableSummary extends ISummary {
-    /**
-     * Returns the {@link ITableLocation} of the summarized {@link IJdbcTable}.
-     *
-     * @return The {@link ITableLocation} of the summarized {@link IJdbcTable}.
-     */
-    @Nullable
-    ITableLocation getLocation();
+public interface ITableMetaData extends IMatrixMetaData {
+
+    @Override
+    default int getNDim() {
+        return 2;
+    }
+
+    @Override
+    @NotNull
+    default int[] getSize(){
+        return new int[] {getColumnCount(), getRowCount()};
+    }
 
     /**
-     * Returns the row count of the summarized {@link IJdbcTable}.
+     * Get all column information from the underlying table.
      *
-     * @return The row count of the summarized {@link IJdbcTable}.
+     * @return A {@link Map} containing the information of the column.
+     */
+    @NotNull
+    LinkedHashMap<String, String> getColumnsTypes();
+
+    /**
+     * Return the count of columns.
+     *
+     * @return The count of columns.
+     */
+    int getColumnCount();
+
+    /**
+     * Return the count of lines or -1 if not able to find the {@link ITable}.
+     *
+     * @return The count of lines or -1 if not able to find the {@link ITable}.
      */
     int getRowCount();
 
     /**
-     * Returns the column count of the summarized {@link IJdbcTable}.
+     * Return true if the {@link ITable} is spatial.
      *
-     * @return The column count of the summarized {@link IJdbcTable}.
+     * @return True if the {@link ITable} is spatial.
      */
-    int getColumnCount();
+    boolean isSpatial();
 }

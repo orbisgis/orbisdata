@@ -34,28 +34,31 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.orbisdata.datamanager.api.dataset;
+package org.orbisgis.orbisdata.datamanager.api.metadata;
 
 import org.orbisgis.commons.annotations.NotNull;
-import org.orbisgis.commons.annotations.Nullable;
+import org.orbisgis.orbisdata.datamanager.api.dataset.IMatrix;
 
 /**
- * Summary of a {@link IDataSet}
+ * Cached metadata of a {@link IMatrix}.
  *
  * @author Erwan Bocher (CNRS)
- * @author Sylvain PALOMINOS (Lab-STICC UBS 2019)
+ * @author Sylvain PALOMINOS (UBS Chaire GEOTERA 2020)
  */
-public interface ISummary {
-    /**
-     * Convert the current object into another with the given class.
-     *
-     * @param clazz New class of the result.
-     * @return The current object into an other class.
-     */
-    @Nullable
-    Object asType(@NotNull Class<?> clazz);
+public interface IMatrixMetaData extends IDataSetMetaData {
 
-    @Override
+    /**
+     * Return the number of dimensions of the {@link IMatrix}.
+     *
+     * @return The number of dimensions of the {@link IMatrix}.
+     */
+    int getNDim();
+
+    /**
+     * Returns the size of the {@link IMatrix}. The returned array contains the size of each dimensions.
+     *
+     * @return The size of the {@link IMatrix} as an int array.
+     */
     @NotNull
-    String toString();
+    int[] getSize();
 }

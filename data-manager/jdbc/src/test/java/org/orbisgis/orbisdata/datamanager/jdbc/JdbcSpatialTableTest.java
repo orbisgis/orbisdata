@@ -128,14 +128,6 @@ public class JdbcSpatialTableTest {
     }
 
     /**
-     * Test the {@link JdbcSpatialTable#isSpatial()} method.
-     */
-    @Test
-    public void testIsSpatial() {
-        assertTrue(dataSource.getSpatialTable(TABLE_NAME).isSpatial());
-    }
-
-    /**
      * Test the {@link JdbcSpatialTable#getGeometry()}, {@link JdbcSpatialTable#getGeometry(int)},
      * {@link JdbcSpatialTable#getGeometry(String)} methods.
      */

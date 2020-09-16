@@ -34,22 +34,17 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.orbisdata.datamanager.api.dataset;
+package org.orbisgis.orbisdata.datamanager.api.metadata;
 
+import org.orbisgis.orbisdata.datamanager.api.dataset.IJdbcTable;
 
-import org.h2gis.utilities.SpatialResultSet;
-import org.orbisgis.commons.annotations.NotNull;
-import org.orbisgis.orbisdata.datamanager.api.metadata.IJdbcSpatialTableMetaData;
+import java.sql.ResultSetMetaData;
 
 /**
- * Extension of the {@link IJdbcTable} and {@link ISpatialTable} interfaces.
+ * Cached metadata of a {@link IJdbcTable}.
  *
  * @author Erwan Bocher (CNRS)
- * @author Sylvain PALOMINOS (Lab-STICC UBS 2019)
+ * @author Sylvain PALOMINOS (UBS Chaire GEOTERA 2020)
  */
-public interface IJdbcSpatialTable<T> extends IJdbcTable<SpatialResultSet, T>, ISpatialTable<SpatialResultSet, T> {
-
-    @Override
-    @NotNull
-    IJdbcSpatialTableMetaData getMetaData();
+public interface IJdbcTableMetaData extends ITableMetaData, ResultSetMetaData {
 }

@@ -37,6 +37,7 @@
 package org.orbisgis.orbisdata.datamanager.api.dataset;
 
 import groovy.lang.GString;
+import org.h2.jdbc.JdbcResultSetMetaData;
 import org.junit.jupiter.api.Test;
 import org.orbisgis.commons.annotations.NotNull;
 import org.orbisgis.commons.annotations.Nullable;
@@ -44,6 +45,7 @@ import org.orbisgis.orbisdata.datamanager.api.datasource.IJdbcDataSource;
 import org.orbisgis.orbisdata.datamanager.api.dsl.IBuilderResult;
 import org.orbisgis.orbisdata.datamanager.api.dsl.IFilterBuilder;
 import org.orbisgis.orbisdata.datamanager.api.dsl.IResultSetProperties;
+import org.orbisgis.orbisdata.datamanager.api.metadata.IJdbcTableMetaData;
 
 import javax.sql.rowset.RowSetMetaDataImpl;
 import java.io.InputStream;
@@ -229,8 +231,8 @@ public class IJdbcTableTest {
 
         @NotNull
         @Override
-        public ResultSetMetaData getMetaData() {
-            return new RowSetMetaDataImpl();
+        public IJdbcTableMetaData getMetaData() {
+            return null;
         }
 
         @Override
@@ -246,12 +248,6 @@ public class IJdbcTableTest {
         @Override
         public boolean isTemporary() {
             return false;
-        }
-
-        @NotNull
-        @Override
-        public IJdbcTableSummary getSummary() {
-            return null;
         }
 
         @NotNull
@@ -1078,7 +1074,7 @@ public class IJdbcTableTest {
 
         @NotNull
         @Override
-        public Map<String, String> getColumnsTypes() {
+        public LinkedHashMap<String, String> getColumnsTypes() {
             return null;
         }
 

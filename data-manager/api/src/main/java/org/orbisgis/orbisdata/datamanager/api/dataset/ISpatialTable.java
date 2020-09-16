@@ -39,6 +39,7 @@ package org.orbisgis.orbisdata.datamanager.api.dataset;
 import org.locationtech.jts.geom.Geometry;
 import org.orbisgis.commons.annotations.NotNull;
 import org.orbisgis.commons.annotations.Nullable;
+import org.orbisgis.orbisdata.datamanager.api.metadata.ISpatialTableMetaData;
 
 import java.util.List;
 import java.util.Map;
@@ -112,7 +113,9 @@ public interface ISpatialTable<T, U> extends ITable<T, U> {
      * @return The list of the table spatial columns.
      */
     @Nullable
-    List<String> getSpatialColumns();
+    default List<String> getSpatialColumns() {
+        return getMetaData().getSpatialColumns();
+    }
 
     /**
      * Return the list of the table raster columns.
@@ -120,7 +123,9 @@ public interface ISpatialTable<T, U> extends ITable<T, U> {
      * @return The list of the table raster columns.
      */
     @NotNull
-    List<String> getRasterColumns();
+    default List<String> getRasterColumns() {
+        return getMetaData().getRasterColumns();
+    }
 
     /**
      * Return the list of the table geometric columns.
@@ -128,7 +133,9 @@ public interface ISpatialTable<T, U> extends ITable<T, U> {
      * @return The list of the table geometric columns.
      */
     @Nullable
-    List<String> getGeometricColumns();
+    default List<String> getGeometricColumns() {
+        return getMetaData().getGeometricColumns();
+    }
 
     /**
      * Return the full extent {@link Geometry} of a list of geometry columns.
@@ -163,7 +170,9 @@ public interface ISpatialTable<T, U> extends ITable<T, U> {
      * @return The full extent {@link Geometry} of the first geometry column of the table.
      */
     @Nullable
-    Geometry getExtent();
+    default Geometry getExtent() {
+        return getMetaData().getExtent();
+    }
 
     /**
      * Return the estimated extent {@link Geometry} of the first geometry column of the table.
@@ -171,14 +180,18 @@ public interface ISpatialTable<T, U> extends ITable<T, U> {
      * @return The estimated extent {@link Geometry} of the first geometry column of the table.
      */
     @Nullable
-    Geometry getEstimatedExtent();
+    default Geometry getEstimatedExtent() {
+        return getMetaData().getEstimatedExtent();
+    }
 
     /**
      * Return the SRID code of the first geometry column of the {@link ISpatialTable}.
      *
      * @return The SRID code of the first geometry column of the {@link ISpatialTable}.
      */
-    int getSrid();
+    default int getSrid() {
+        return getMetaData().getSrid();
+    }
 
     /**
      * Sets the SRID code of the first geometric column of the {@link ISpatialTable}.
@@ -193,7 +206,9 @@ public interface ISpatialTable<T, U> extends ITable<T, U> {
      * @return The field names as key and geometry types as value.
      */
     @Nullable
-    Map<String, String> getGeometryTypes();
+    default Map<String, String> getGeometryTypes() {
+        return getMetaData().getGeometryTypes();
+    }
 
     /**
      * Reproject the current {@link ISpatialTable} to another referenced coordinate system .The reprojection is
@@ -204,4 +219,8 @@ public interface ISpatialTable<T, U> extends ITable<T, U> {
      */
     @Nullable
     ISpatialTable<T, U> reproject(int srid);
+
+    @Override
+    @NotNull
+    ISpatialTableMetaData getMetaData();
 }

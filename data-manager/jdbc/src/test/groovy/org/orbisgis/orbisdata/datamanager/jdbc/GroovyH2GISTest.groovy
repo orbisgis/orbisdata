@@ -301,7 +301,7 @@ class GroovyH2GISTest {
                 INSERT INTO h2gis VALUES (1, 'POINT(10 10)'::GEOMETRY), (2, 'POINT(1 1)'::GEOMETRY);
         """)
         assertEquals("ID,THE_GEOM", h2GIS.getSpatialTable("h2gis").columns.join(","))
-        assertTrue(h2GIS.getSpatialTable("h2gis").columns.indexOf("THE_GEOM") != -1)
+        assertTrue(new ArrayList<>(h2GIS.getSpatialTable("h2gis").getColumns()).indexOf("THE_GEOM") != -1)
     }
 
     @Test
@@ -615,7 +615,7 @@ class GroovyH2GISTest {
                 (h2GIS.getSpatialTable("orbisgis") as Ascii).toString())
         assertEquals(
                 "+--------------------+\n" +
-                        "|       query        |\n" +
+                        "|       Query        |\n" +
                         "+--------------------+--------------------+--------------------+\n" +
                         "|         ID         |      THE_GEOM      |VERY_LONG_TITLE_T...|\n" +
                         "+--------------------+--------------------+--------------------+\n" +

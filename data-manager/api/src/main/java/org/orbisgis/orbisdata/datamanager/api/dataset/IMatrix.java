@@ -37,6 +37,7 @@
 package org.orbisgis.orbisdata.datamanager.api.dataset;
 
 import org.orbisgis.commons.annotations.NotNull;
+import org.orbisgis.orbisdata.datamanager.api.metadata.IMatrixMetaData;
 
 /**
  * Multi-dimensional structured data.
@@ -54,7 +55,9 @@ public interface IMatrix<T, U> extends IDataSet<T, U> {
      *
      * @return The number of dimensions of the {@link IMatrix}.
      */
-    int getNDim();
+    default int getNDim() {
+        return getMetaData().getNDim();
+    }
 
     /**
      * Returns the size of the {@link IMatrix}. The returned array contains the size of each dimensions.
@@ -62,5 +65,11 @@ public interface IMatrix<T, U> extends IDataSet<T, U> {
      * @return The size of the {@link IMatrix} as an int array.
      */
     @NotNull
-    int[] getSize();
+    default int[] getSize() {
+        return getMetaData().getSize();
+    }
+
+    @Override
+    @NotNull
+    IMatrixMetaData getMetaData();
 }

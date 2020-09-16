@@ -40,14 +40,14 @@ import groovy.lang.Closure;
 import org.orbisgis.commons.annotations.NotNull;
 import org.orbisgis.commons.annotations.Nullable;
 import org.orbisgis.orbisdata.datamanager.api.dsl.IResultSetProperties;
+import org.orbisgis.orbisdata.datamanager.api.metadata.IJdbcTableMetaData;
 
 import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
 import java.util.List;
 
 /**
  * Extension of the {@link ITable} specially dedicated to the JDBC databases thanks to the extension of the
- * {@link ResultSet} interface.
+ * {@link ResultSet} interface. A {@link IJdbcTable} is a snapshot of a JDBC table or query.
  *
  * @author Erwan Bocher (CNRS)
  * @author Sylvain Palominos (UBS Lab-STICC 2019 / Chaire GEOTERA 2020)
@@ -57,7 +57,7 @@ public interface IJdbcTable<T, U> extends ITable<T, U>, ResultSet {
     /**
      * {@link String} location/name of the query built table
      */
-    String QUERY_LOCATION = "query";
+    String QUERY_LOCATION = null;
 
     /**
      * {@link String} name of the metadata property
@@ -81,8 +81,8 @@ public interface IJdbcTable<T, U> extends ITable<T, U>, ResultSet {
     DataBaseType getDbType();
 
     @Override
-    @Nullable
-    ResultSetMetaData getMetaData();
+    @NotNull
+    IJdbcTableMetaData getMetaData();
 
     /**
      * Return true if the {@link ITable} is a linked one.
@@ -123,10 +123,6 @@ public interface IJdbcTable<T, U> extends ITable<T, U>, ResultSet {
     default void eachRow(@NotNull Closure<Object> closure) {
         this.forEach(closure::call);
     }
-
-    @Override
-    @NotNull
-    IJdbcTableSummary getSummary();
 
     /**
      * Returns the parameters of the parametrized query.

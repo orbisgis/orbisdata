@@ -61,6 +61,8 @@ import org.orbisgis.orbisdata.datamanager.api.datasource.IJdbcDataSource;
 import org.orbisgis.orbisdata.datamanager.jdbc.h2gis.H2GIS;
 import org.orbisgis.orbisdata.datamanager.jdbc.h2gis.H2gisSpatialTable;
 import org.orbisgis.orbisdata.datamanager.jdbc.h2gis.H2gisTable;
+import org.orbisgis.orbisdata.datamanager.jdbc.metadata.JdbcSpatialTableMetaData;
+import org.orbisgis.orbisdata.datamanager.jdbc.metadata.JdbcTableMetaData;
 import org.orbisgis.orbisdata.datamanager.jdbc.postgis.PostgisTable;
 import org.orbisgis.orbisdata.datamanager.jdbc.resultset.StreamResultSet;
 import org.orbisgis.orbisdata.datamanager.jdbc.resultset.StreamSpatialResultSet;
@@ -504,11 +506,11 @@ class JdbcTableTest {
         colList.add(TableLocation.capsIdentifier(COL_ID, true));
         colList.add(TableLocation.capsIdentifier(COL_VALUE, true));
         colList.add(TableLocation.capsIdentifier(COL_MEANING, true));
-        assertEquals(colList, getTable().getColumns());
-        assertEquals(colList, getLinkedTable().getColumns());
-        assertEquals(colList, getTempTable().getColumns());
-        assertEquals(colList, getEmptyTable().getColumns());
-        assertEquals(colList, getBuiltTable().getColumns());
+        assertEquals(colList, new ArrayList(getTable().getColumns()));
+        assertEquals(colList, new ArrayList(getLinkedTable().getColumns()));
+        assertEquals(colList, new ArrayList(getTempTable().getColumns()));
+        assertEquals(colList, new ArrayList(getEmptyTable().getColumns()));
+        assertEquals(colList, new ArrayList(getBuiltTable().getColumns()));
     }
 
     /**
@@ -541,7 +543,7 @@ class JdbcTableTest {
             assertTrue(t.hasColumn(COL_THE_GEOM2, Point.class));
             assertTrue(t.hasColumn(COL_ID, Integer.class));
             assertFalse(t.hasColumn(COL_ID, Long.class));
-            assertTrue(t.hasColumn(COL_VALUE, Float.class));
+            assertFalse(t.hasColumn(COL_VALUE, Float.class));
             assertTrue(t.hasColumn(COL_VALUE, Double.class));
             assertFalse(t.hasColumn(COL_VALUE, Integer.class));
             assertTrue(t.hasColumn(COL_MEANING, String.class));
@@ -555,7 +557,7 @@ class JdbcTableTest {
         assertFalse(t.hasColumn(COL_THE_GEOM2, Point.class));
         assertTrue(t.hasColumn(COL_ID, Integer.class));
         assertFalse(t.hasColumn(COL_ID, Long.class));
-        assertTrue(t.hasColumn(COL_VALUE, Float.class));
+        assertFalse(t.hasColumn(COL_VALUE, Float.class));
         assertTrue(t.hasColumn(COL_VALUE, Double.class));
         assertFalse(t.hasColumn(COL_VALUE, Integer.class));
         assertTrue(t.hasColumn(COL_MEANING, String.class));
@@ -568,7 +570,7 @@ class JdbcTableTest {
         assertFalse(t.hasColumn(COL_THE_GEOM2, Point.class));
         assertTrue(t.hasColumn(COL_ID, Integer.class));
         assertFalse(t.hasColumn(COL_ID, Long.class));
-        assertTrue(t.hasColumn(COL_VALUE, Float.class));
+        assertFalse(t.hasColumn(COL_VALUE, Float.class));
         assertTrue(t.hasColumn(COL_VALUE, Double.class));
         assertFalse(t.hasColumn(COL_VALUE, Integer.class));
         assertTrue(t.hasColumn(COL_MEANING, String.class));
@@ -654,14 +656,14 @@ class JdbcTableTest {
         tables.forEach(table -> {
             assertEquals(table.getLocation(), table.invokeMethod("getLocation", null));
             assertEquals(table.getLocation(), table.invokeMethod("location", null));
-            assertEquals(JdbcResultSetMetaData.class, table.invokeMethod("metaData", null).getClass());
+            assertEquals(JdbcTableMetaData.class, table.invokeMethod("metaData", null).getClass());
 
             assertThrows(MissingMethodException.class, () -> table.invokeMethod("getLocation", new String[]{"tata", "toto"}));
             assertThrows(MissingMethodException.class, () -> table.invokeMethod("location", new String[]{"tata", "toto"}));
         });
         assertEquals(getTable().getLocation(), getTable().invokeMethod("getLocation", null));
         assertEquals(getTable().getLocation(), getTable().invokeMethod("location", null));
-        assertEquals(SpatialResultSetMetaDataImpl.class, getTable().invokeMethod("metaData", null).getClass());
+        assertEquals(JdbcSpatialTableMetaData.class, getTable().invokeMethod("metaData", null).getClass());
 
         assertThrows(MissingMethodException.class, () -> getTable().invokeMethod("getLocation", new String[]{"tata", "toto"}));
         assertThrows(MissingMethodException.class, () -> getTable().invokeMethod("location", new String[]{"tata", "toto"}));
@@ -676,7 +678,7 @@ class JdbcTableTest {
         tables.forEach(table -> {
             assertThrows(MissingPropertyExceptionNoStack.class, () -> table.getProperty("getLocation"));
             assertEquals(table.getLocation(), table.getProperty("location"));
-            assertEquals(JdbcResultSetMetaData.class, table.getProperty("meta").getClass());
+            assertEquals(JdbcTableMetaData.class, table.getProperty("meta").getClass());
             assertNull(table.getProperty(null));
             assertTrue(table.getProperty("meaning") instanceof JdbcColumn);
             assertEquals("MEANING", ((JdbcColumn) table.getProperty("meaning")).getName());
@@ -685,7 +687,7 @@ class JdbcTableTest {
         });
         assertThrows(MissingPropertyExceptionNoStack.class, () -> getTable().getProperty("getLocation"));
         assertEquals(getTable().getLocation(), getTable().getProperty("location"));
-        assertEquals(SpatialResultSetMetaDataImpl.class, getTable().getProperty("meta").getClass());
+        assertEquals(JdbcSpatialTableMetaData.class, getTable().getProperty("meta").getClass());
         assertNull(getTable().getProperty(null));
         assertTrue(getTable().getProperty("meaning") instanceof JdbcColumn);
         assertEquals("MEANING", ((JdbcColumn) getTable().getProperty("meaning")).getName());
@@ -795,7 +797,7 @@ class JdbcTableTest {
                         "+--------------------+--------------------+--------------------+--------------------+--------------------+\n",
                 getTable().asType(Ascii.class).toString());
         assertEquals("+--------------------+\n" +
-                        "|       " + IJdbcTable.QUERY_LOCATION + "        |\n" +
+                        "|       Query        |\n" +
                         "+--------------------+--------------------+--------------------+--------------------+--------------------+\n" +
                         "|      THE_GEOM      |     THE_GEOM2      |         ID         |        VAL         |      MEANING       |\n" +
                         "+--------------------+--------------------+--------------------+--------------------+--------------------+\n" +
@@ -838,7 +840,7 @@ class JdbcTableTest {
                 "<tr></tr>\n" +
                 "</table>\n", getTable().asType(Html.class).toString());
         assertEquals("<table>\n" +
-                "<caption>" + IJdbcTable.QUERY_LOCATION + "</caption>\n" +
+                "<caption>Query</caption>\n" +
                 "<tr></tr>\n" +
                 "<tr>\n" +
                 "<th align=\"CENTER\">THE_GEOM</th>\n" +
@@ -864,36 +866,6 @@ class JdbcTableTest {
                 "</tr>\n" +
                 "<tr></tr>\n" +
                 "</table>\n", getBuiltTable().asType(Html.class).toString());
-    }
-
-    /**
-     * Test the {@link JdbcTable#getSummary()} method.
-     */
-    @Test
-    void testGetSummary() {
-        assertEquals("\"ORBISGIS\"; row count : 3; column count : 5", getTable().getSummary().toString());
-        assertEquals("\"ORBISGIS\"", getTable().getSummary().getLocation().toString());
-        assertEquals(5, getTable().getSummary().getColumnCount());
-        assertEquals(3, getTable().getSummary().getRowCount());
-        assertEquals(IJdbcTable.QUERY_LOCATION + "; row count : 2; column count : 5", getBuiltTable().getSummary().toString());
-        assertNull(getBuiltTable().getSummary().getLocation());
-        assertEquals(5, getBuiltTable().getSummary().getColumnCount());
-        assertEquals(2, getBuiltTable().getSummary().getRowCount());
-
-        assertEquals("\"ORBISGIS_EMPTY\"; row count : 0; column count : 5", getEmptyTable().getSummary().toString());
-        assertEquals("\"ORBISGIS_EMPTY\"", getEmptyTable().getSummary().getLocation().toString());
-        assertEquals(5, getEmptyTable().getSummary().getColumnCount());
-        assertEquals(0, getEmptyTable().getSummary().getRowCount());
-
-        assertEquals("\"TEMPTABLE\"; row count : 1; column count : 5", getTempTable().getSummary().toString());
-        assertEquals("\"TEMPTABLE\"", getTempTable().getSummary().getLocation().toString());
-        assertEquals(5, getTempTable().getSummary().getColumnCount());
-        assertEquals(1, getTempTable().getSummary().getRowCount());
-
-        assertEquals("\"LINKEDTABLE\"; row count : 2; column count : 5", getLinkedTable().getSummary().toString());
-        assertEquals("\"LINKEDTABLE\"", getLinkedTable().getSummary().getLocation().toString());
-        assertEquals(5, getLinkedTable().getSummary().getColumnCount());
-        assertEquals(2, getLinkedTable().getSummary().getRowCount());
     }
 
     @Test

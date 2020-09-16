@@ -57,9 +57,12 @@ import org.orbisgis.orbisdata.datamanager.api.dsl.IBuilderResult;
 import org.orbisgis.orbisdata.datamanager.api.dsl.IFilterBuilder;
 import org.orbisgis.orbisdata.datamanager.api.dsl.IQueryBuilder;
 import org.orbisgis.orbisdata.datamanager.api.dsl.IResultSetProperties;
+import org.orbisgis.orbisdata.datamanager.api.metadata.IJdbcTableMetaData;
 import org.orbisgis.orbisdata.datamanager.jdbc.dsl.QueryBuilder;
 import org.orbisgis.orbisdata.datamanager.jdbc.dsl.ResultSetProperties;
 import org.orbisgis.orbisdata.datamanager.jdbc.io.IOMethods;
+import org.orbisgis.orbisdata.datamanager.jdbc.metadata.JdbcSpatialTableMetaData;
+import org.orbisgis.orbisdata.datamanager.jdbc.metadata.JdbcTableMetaData;
 import org.orbisgis.orbisdata.datamanager.jdbc.resultset.DefaultResultSet;
 import org.orbisgis.orbisdata.datamanager.jdbc.resultset.StreamResultSet;
 import org.orbisgis.orbisdata.datamanager.jdbc.resultset.StreamSpatialResultSet;
@@ -125,6 +128,10 @@ public abstract class JdbcTable<T extends ResultSet, U> extends DefaultResultSet
      * {@link ResultSet} properties.
      */
     private IResultSetProperties rsp;
+    /**
+     * MetaData
+     */
+    private JdbcTableMetaData metaData;
 
     /**
      * Main constructor.
@@ -225,18 +232,19 @@ public abstract class JdbcTable<T extends ResultSet, U> extends DefaultResultSet
     }
 
     @Override
-    public ResultSetMetaData getMetaData() {
+    public IJdbcTableMetaData getMetaData() {
         try {
             ResultSet rs = getResultSet();
             if (rs == null) {
                 LOGGER.error("The ResultSet is null.");
             } else {
-                return rs.getMetaData();
+                metaData = new JdbcTableMetaData(getLocation(), getName(), calculateRowCount(), rs.getMetaData(),
+                        getJdbcDataSource(), rs);
             }
         } catch (SQLException e) {
             LOGGER.error("Unable to get the metadata.\n" + e.getLocalizedMessage());
         }
-        return null;
+        return metaData;
     }
 
     /**
@@ -268,11 +276,6 @@ public abstract class JdbcTable<T extends ResultSet, U> extends DefaultResultSet
     @Override
     public void setMetaClass(MetaClass metaClass) {
         this.metaClass = metaClass;
-    }
-
-    @Override
-    public boolean isSpatial() {
-        return false;
     }
 
     @Override
@@ -308,168 +311,6 @@ public abstract class JdbcTable<T extends ResultSet, U> extends DefaultResultSet
         }
         return false;
     }
-
-    @Override
-    public Collection<String> getColumns() {
-        try {
-            ResultSet rs = getResultSet();
-            if(rs == null){
-                LOGGER.error("Unable to get the ResultSet");
-                return null;
-            }
-            return JDBCUtilities
-                    .getColumnNames(rs.getMetaData())
-                    .stream()
-                    .map(this::formatColumnName)
-                    .collect(Collectors.toCollection(ArrayList::new));
-        } catch (SQLException e) {
-            LOGGER.error("Unable to get the collection of columns names");
-            return null;
-        }
-    }
-
-    @Override
-    @NotNull
-    public Map<String, String> getColumnsTypes() {
-        Map<String, String> map = new LinkedHashMap<>();
-        Collection<String> columns = getColumns();
-        if(columns != null){
-            getColumns().forEach((name) -> map.put(name, getColumnType(name)));
-        }
-        return map;
-    }
-
-    @Nullable
-    private DataType getColumnDataType(@NotNull String columnName) {
-        boolean found = false;
-        int type = -1;
-        if (tableLocation != null && !getName().isEmpty()) {
-            try {
-                Connection con = jdbcDataSource.getConnection();
-                if(con == null){
-                    LOGGER.error("Unable to get the connection.");
-                    return null;
-                }
-                ResultSet rs = con.getMetaData().getColumns(tableLocation.getCatalog(),
-                        tableLocation.getSchema(), TableLocation.capsIdentifier(tableLocation.getTable(),
-                                getDbType().equals(DataBaseType.H2GIS)), null);
-                while (rs.next() && !found) {
-                    found = rs.getString("COLUMN_NAME").equalsIgnoreCase(columnName);
-                    type = rs.getInt("DATA_TYPE");
-                }
-            } catch (SQLException e) {
-                LOGGER.error("Unable to get the connection MetaData or to read it", e);
-                return null;
-            }
-        } else {
-            try {
-                ResultSet rs = getResultSet();
-                if(rs == null){
-                    LOGGER.error("Unable to get the ResultSet.");
-                    return null;
-                }
-                ResultSetMetaData metaData = rs.getMetaData();
-                for (int i = 1; i <= metaData.getColumnCount(); i++) {
-                    if (metaData.getColumnName(i).equalsIgnoreCase(columnName)) {
-                        type = metaData.getColumnType(i);
-                        break;
-                    }
-                }
-            } catch (SQLException e) {
-                LOGGER.error("unable to request the resultset metadata.", e);
-                return null;
-            }
-        }
-        int valueType = DataType.convertSQLTypeToValueType(type);
-        if(valueType == -1) {
-            return DataType.getDataType(19);
-        }
-        return DataType.getDataType(valueType);
-    }
-
-    @Override
-    public String getColumnType(@NotNull String columnName) {
-        if (!hasColumn(columnName)) {
-            return null;
-        }
-        DataType dataType = getColumnDataType(columnName);
-        Objects.requireNonNull(dataType);
-        if ("OTHER".equals(dataType.name) || "JAVA_OBJECT".equals(dataType.name)) {
-            return getGeometricType(columnName);
-        }
-        return dataType.name;
-    }
-
-    @Nullable
-    private String getGeometricType(String columnName) {
-        if (tableLocation != null && !getName().isEmpty()) {
-            try {
-                Connection con = jdbcDataSource.getConnection();
-                if(con == null){
-                    LOGGER.error("Unable to get the connection.");
-                    return null;
-                }
-                return GeometryTableUtilities.getMetaData(con,
-                        TableLocation.parse(tableLocation.getTable()),
-                        TableLocation.capsIdentifier(columnName, dataBaseType.equals(DataBaseType.H2GIS))
-                ).getGeometryType();
-            } catch (SQLException e) {
-                LOGGER.error("Unable to get the geometric type of the column '" + columnName + "'\n" +
-                        e.getLocalizedMessage());
-            }
-        } else {
-            try {
-                ResultSet rs = getResultSet();
-                if (rs == null) {
-                    LOGGER.error("Unable to get the resultset.");
-                    return null;
-                }
-                Map<String, GeometryMetaData> map = GeometryTableUtilities.getMetaData(rs);
-                if(!map.containsKey(columnName)) {
-                    LOGGER.error("Unable to get data from the column '" + columnName + "'.");
-                    return null;
-                }
-                return map.get(columnName).getGeometryType();
-            } catch (SQLException e) {
-                LOGGER.error("Unable to get data from the resultset.", e);
-                return null;
-            }
-        }
-        return null;
-    }
-
-    @Override
-    public boolean hasColumn(@NotNull String columnName) {
-        return getColumns() != null &&
-                getColumns().contains(TableLocation.capsIdentifier(columnName, getDbType().equals(DataBaseType.H2GIS)));
-    }
-
-    @Override
-    public boolean hasColumn(@NotNull String columnName, @NotNull Class<?> clazz) {
-        String name = TableLocation.capsIdentifier(columnName, dataBaseType.equals(DataBaseType.H2GIS));
-        if (!hasColumn(name)) {
-            return false;
-        }
-        if (Geometry.class.isAssignableFrom(clazz)) {
-            String str = getGeometricType(name);
-            return clazz.getSimpleName().equalsIgnoreCase(str) ||
-                    (clazz.getSimpleName() + "Z").equalsIgnoreCase(str) ||
-                    (clazz.getSimpleName() + "M").equalsIgnoreCase(str) ||
-                    (clazz.getSimpleName() + "ZM").equalsIgnoreCase(str);
-        } else {
-            DataType dataType = getColumnDataType(name);
-            if (dataType == null) {
-                return false;
-            }
-            DataType dtClass = DataType.getDataType(DataType.getTypeFromClass(clazz));
-            if (dataType.equals(dtClass)) {
-                return true;
-            }
-            DataType dtSql = DataType.getDataType(DataType.convertSQLTypeToValueType(DataType.getTypeFromClass(clazz)));
-            return dataType.equals(dtSql);
-        }
-    }
-
     @Override
     public int getColumnCount(){
         ResultSet rs = getResultSet();
@@ -491,8 +332,7 @@ public abstract class JdbcTable<T extends ResultSet, U> extends DefaultResultSet
         }
     }
 
-    @Override
-    public int getRowCount() {
+    protected int calculateRowCount() {
         Connection con;
         try {
             con = jdbcDataSource.getConnection();
@@ -502,9 +342,9 @@ public abstract class JdbcTable<T extends ResultSet, U> extends DefaultResultSet
         }
         String query = "";
         if (tableLocation == null) {
-           query = getBaseQuery();
+            query = getBaseQuery();
         } else  {
-           query =  "SELECT * FROM "+tableLocation.toString(getDbType());
+            query =  "SELECT * FROM "+tableLocation.toString(getDbType());
         }
         try {
             ResultSet rowCountRs = con.createStatement().executeQuery("SELECT COUNT(*) FROM (" + query + ") as foo");
@@ -525,6 +365,39 @@ public abstract class JdbcTable<T extends ResultSet, U> extends DefaultResultSet
             }
             return -1;
         }
+    }
+
+    @Nullable
+    private String getGeometricType(String columnName) {
+        return getMetaData().getColumnsTypes().get(columnName);
+    }
+
+    @Override
+    public boolean hasColumn(@NotNull String columnName, @NotNull Class<?> clazz) {
+        String name = TableLocation.capsIdentifier(columnName, dataBaseType.equals(DataBaseType.H2GIS));
+        if (!hasColumn(name)) {
+            return false;
+        }
+        if (Geometry.class.isAssignableFrom(clazz)) {
+            String str = getGeometricType(name);
+            return clazz.getSimpleName().equalsIgnoreCase(str) ||
+                    (clazz.getSimpleName() + "Z").equalsIgnoreCase(str) ||
+                    (clazz.getSimpleName() + "M").equalsIgnoreCase(str) ||
+                    (clazz.getSimpleName() + "ZM").equalsIgnoreCase(str);
+        } else {
+            int i = new ArrayList<>(getMetaData().getColumnsTypes().keySet()).stream()
+                    .map(String::toLowerCase).collect(Collectors.toList()).indexOf(columnName.toLowerCase());
+            if(i>=0){
+                try {
+                    String className = getMetaData().getColumnClassName(i+1);
+                    return className.equals(clazz.getName());
+                }
+                catch (Exception e) {
+                    LOGGER.error("Unable to get the column type.", e);
+                }
+            }
+        }
+        return false;
     }
 
     @Override
@@ -826,7 +699,7 @@ public abstract class JdbcTable<T extends ResultSet, U> extends DefaultResultSet
             }
 
             printer.startTable(ASCII_COLUMN_WIDTH, columnNames.size());
-            printer.appendTableTitle(this.getName());
+            printer.appendTableTitle(this.getName() == null ? "Query" : this.getName());
             printer.appendTableLineSeparator();
             for (String column : columnNames) {
                 printer.appendTableHeaderValue(column, CENTER);
@@ -867,12 +740,6 @@ public abstract class JdbcTable<T extends ResultSet, U> extends DefaultResultSet
      */
     private String formatColumnName(String column) {
         return getDbType() == DataBaseType.H2GIS ? column.toUpperCase() : column.toLowerCase();
-    }
-
-    @Override
-    @NotNull
-    public JdbcTableSummary getSummary() {
-        return new JdbcTableSummary(getTableLocation(), getColumnCount(), getRowCount());
     }
 
     @NotNull

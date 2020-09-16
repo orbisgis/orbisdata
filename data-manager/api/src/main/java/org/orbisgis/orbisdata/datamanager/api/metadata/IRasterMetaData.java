@@ -34,10 +34,11 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.orbisdata.datamanager.api.dataset;
+package org.orbisgis.orbisdata.datamanager.api.metadata;
 
 import org.orbisgis.commons.annotations.NotNull;
 import org.orbisgis.commons.annotations.Nullable;
+import org.orbisgis.orbisdata.datamanager.api.dataset.IRaster;
 
 /**
  * Metadata of a {@link IRaster}.
@@ -45,7 +46,7 @@ import org.orbisgis.commons.annotations.Nullable;
  * @author Erwan Bocher (CNRS)
  * @author Sylvain PALOMINOS (Lab-STICC UBS 2019)
  */
-public interface IRasterMetadata {
+public interface IRasterMetaData extends ITableMetaData {
 
     /**
      * Convert the current object into another with the given class.

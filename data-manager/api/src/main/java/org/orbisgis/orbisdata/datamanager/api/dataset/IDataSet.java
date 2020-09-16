@@ -38,6 +38,7 @@ package org.orbisgis.orbisdata.datamanager.api.dataset;
 
 import org.orbisgis.commons.annotations.NotNull;
 import org.orbisgis.commons.annotations.Nullable;
+import org.orbisgis.orbisdata.datamanager.api.metadata.IDataSetMetaData;
 
 /**
  * Raw collection of data, no matter its structure.
@@ -57,7 +58,9 @@ public interface IDataSet<T, U> extends Iterable<T> {
      * @return The location of the data.
      */
     @Nullable
-    String getLocation();
+    default String getLocation() {
+        return getMetaData().getLocation();
+    }
 
     /**
      * Get the human readable name of the {@link IDataSet}.
@@ -65,15 +68,17 @@ public interface IDataSet<T, U> extends Iterable<T> {
      * @return The name of the {@link IDataSet}.
      */
     @NotNull
-    String getName();
+    default String getName() {
+        return getMetaData().getName();
+    }
 
     /**
      * Get the metadata object of the {@link IDataSet}.
      *
      * @return The metadata object.
      */
-    @Nullable
-    Object getMetaData();
+    @NotNull
+    IDataSetMetaData getMetaData();
 
     /**
      * Convert the current object into another with the given class.
@@ -90,14 +95,6 @@ public interface IDataSet<T, U> extends Iterable<T> {
      * @return True if the {@link IDataSet} is empty, false otherwise.
      */
     boolean isEmpty();
-
-    /**
-     * Return the {@link ISummary} of the {@link IDataSet}.
-     *
-     * @return The {@link ISummary} of the {@link IDataSet}.
-     */
-    @NotNull
-    ISummary getSummary();
 
     /**
      * Reload the source of the {@link IDataSet}.

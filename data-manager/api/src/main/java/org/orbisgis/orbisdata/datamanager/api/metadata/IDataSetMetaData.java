@@ -34,22 +34,35 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.orbisdata.datamanager.api.dataset;
+package org.orbisgis.orbisdata.datamanager.api.metadata;
 
 
-import org.h2gis.utilities.SpatialResultSet;
 import org.orbisgis.commons.annotations.NotNull;
-import org.orbisgis.orbisdata.datamanager.api.metadata.IJdbcSpatialTableMetaData;
+import org.orbisgis.commons.annotations.Nullable;
+import org.orbisgis.orbisdata.datamanager.api.dataset.IDataSet;
 
 /**
- * Extension of the {@link IJdbcTable} and {@link ISpatialTable} interfaces.
+ * Cached metadata of a {@link IDataSet}.
  *
  * @author Erwan Bocher (CNRS)
- * @author Sylvain PALOMINOS (Lab-STICC UBS 2019)
+ * @author Sylvain PALOMINOS (UBS Chaire GEOTERA 2020)
  */
-public interface IJdbcSpatialTable<T> extends IJdbcTable<SpatialResultSet, T>, ISpatialTable<SpatialResultSet, T> {
+public interface IDataSetMetaData {
 
-    @Override
+    /**
+     * Get the location of {@link IDataSet}.
+     * The returned {@link String} can be anything to locate the data (URI, URL, file path ...)
+     *
+     * @return The location of the data.
+     */
+    @Nullable
+    String getLocation();
+
+    /**
+     * Get the human readable name of the {@link IDataSet}.
+     *
+     * @return The name of the {@link IDataSet}.
+     */
     @NotNull
-    IJdbcSpatialTableMetaData getMetaData();
+    String getName();
 }

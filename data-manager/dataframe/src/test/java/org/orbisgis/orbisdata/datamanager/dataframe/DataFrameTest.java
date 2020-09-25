@@ -436,7 +436,7 @@ public class DataFrameTest {
         assertNotNull(df2);
         assertEquals(13, df2.schema().length());
 
-        assertNotNull(dataFrame.save(path));
+        assertNotNull(dataFrame.save(path, true));
         DataFrame df3 = DataFrame.of(path);
         assertNotNull(df3);
         assertEquals(13, df3.schema().length());

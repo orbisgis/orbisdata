@@ -38,8 +38,10 @@ package org.orbisgis.orbisdata.datamanager.dataframe
 
 import org.junit.jupiter.api.Test
 import org.orbisgis.orbisdata.datamanager.jdbc.h2gis.H2GIS
+import smile.data.formula.Formula
 import smile.data.measure.NominalScale
 import smile.data.type.StructField
+import smile.data.vector.BaseVector
 
 import static org.junit.jupiter.api.Assertions.*
 

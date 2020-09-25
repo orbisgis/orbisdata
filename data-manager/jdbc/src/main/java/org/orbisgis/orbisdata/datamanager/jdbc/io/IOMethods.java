@@ -344,20 +344,14 @@ public class IOMethods {
             String ddlCommand = JDBCUtilities.createTableDDL(connection, innputTableName, outputTableName);
             if (!ddlCommand.isEmpty()) {
                 Connection outputconnection = outputdataSource.getConnection();
-                boolean outCommitStatus = outputconnection.getAutoCommit();
-                if(outCommitStatus) {
-                    outputconnection.setAutoCommit(false);
-                }
                 PreparedStatement preparedStatement = null;
                 ResultSet inputRes = null;
                 try {
                     Statement outputconnectionStatement = outputconnection.createStatement();
                     if (deleteTable) {
                         outputconnectionStatement.execute("DROP TABLE IF EXISTS " + outputTableName);
-                        outputconnection.commit();
                     }
                     outputconnectionStatement.execute(ddlCommand);
-                    outputconnection.commit();
                     Statement inputStat = connection.createStatement();
                     inputRes = inputStat.executeQuery("SELECT * FROM " + innputTableName);
                     int columnsCount = inputRes.getMetaData().getColumnCount();
@@ -375,7 +369,6 @@ public class IOMethods {
                         preparedStatement.setObject(i + 1, inputRes.getObject(i + 1));
                     }
                     preparedStatement.execute();
-                    outputconnection.commit();
                     long batchSize = 0;
                     while (inputRes.next()) {
                         for (int i = 0; i < columnsCount; i++) {
@@ -385,22 +378,17 @@ public class IOMethods {
                         batchSize++;
                         if (batchSize >= batch_size) {
                             preparedStatement.executeBatch();
-                            outputconnection.commit();
                             preparedStatement.clearBatch();
                             batchSize = 0;
                         }
                     }
                     if (batchSize > 0) {
                         preparedStatement.executeBatch();
-                        outputconnection.commit();
                     }
                 } catch (SQLException e) {
                     LOGGER.error("Cannot save the table "+tableLocation+ ".\n", e);
                     return false;
                 } finally {
-                    if(outCommitStatus){
-                        outputconnection.setAutoCommit(true);
-                    }
                     if (preparedStatement != null) {
                         preparedStatement.close();
                     }

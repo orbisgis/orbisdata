@@ -36,6 +36,7 @@
  */
 package org.orbisgis.orbisdata.datamanager.jdbc.h2gis;
 
+import org.h2gis.utilities.GeometryTableUtilities;
 import org.h2gis.utilities.wrapper.ConnectionWrapper;
 import org.h2gis.utilities.wrapper.SpatialResultSetImpl;
 import org.h2gis.utilities.wrapper.StatementWrapper;
@@ -109,6 +110,24 @@ public class H2gisSpatialTable extends JdbcSpatialTable {
         } else {
             return super.asType(clazz);
         }
+    }
+
+    @Override
+    public int getSrid() {
+        if (getTableLocation() == null) {
+            throw new UnsupportedOperationException();
+        }
+        try {
+            Connection con = getJdbcDataSource().getConnection();
+            if(con == null){
+                LOGGER.error("Unable to get connection for the table SRID.");
+                return -1;
+            }
+            return GeometryTableUtilities.getSRID(con, getTableLocation());
+        } catch (SQLException e) {
+            LOGGER.error("Unable to get the table SRID.", e);
+        }
+        return -1;
     }
 
     @Override

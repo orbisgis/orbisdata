@@ -500,4 +500,22 @@ class GroovyPostGISTest {
         def spatialTable = postGIS.fetchSize(100).getSpatialTable("(select * from big_geo)");
         assertEquals(100000, spatialTable.getRowCount());
     }
+
+    @Test
+    @EnabledIfSystemProperty(named = "test.postgis", matches = "true")
+    void saveH2GISTableToPostGIS() {
+        def h2GIS = H2GIS.open([databaseName: './target/loadH2GIS_source'])
+        h2GIS.execute("""
+                DROP TABLE IF EXISTS h2gis;
+                CREATE TABLE h2gis (id int, the_geom geometry(point, 4326));
+                INSERT INTO h2gis VALUES (1, 'SRID=4326;POINT(10 10)'::GEOMETRY), (2, 'SRID=4326;POINT(1 1)'::GEOMETRY);
+        """)
+        def output_table = "postgis_exported"
+        def tmpTable = h2GIS.getTable("h2gis").filter(" where id =2").getSpatialTable().reproject(4326).save(postGIS, output_table, true);
+        assertNotNull(tmpTable)
+        def sp = postGIS.getSpatialTable(output_table)
+        assertTrue(sp.getRowCount()==1)
+        sp.next()
+        assertEquals(4326,sp.getGeometry().getSRID())
+    }
 }

@@ -302,7 +302,7 @@ public class H2GISTests {
         Map<String, String> map = new HashMap<>();
         map.put(DataSourceFactory.JDBC_DATABASE_NAME, "./target/loadH2GIS");
         H2GIS h2GIS = H2GIS.open(map);
-        h2GIS.execute("DROP TABLE IF EXISTS table1, table2; " +
+        h2GIS.execute("DROP TABLE IF EXISTS table1, table2,OrbisGIS; " +
                 "CREATE TABLE table1 (id int, the_geom geometry(point));" +
                 "CREATE TABLE table2 (id int, the_geom geometry(point));");
 

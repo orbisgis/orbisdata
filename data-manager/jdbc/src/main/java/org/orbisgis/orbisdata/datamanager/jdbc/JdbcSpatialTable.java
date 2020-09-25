@@ -316,23 +316,6 @@ public abstract class JdbcSpatialTable extends JdbcTable<SpatialResultSet, Strea
         return null;
     }
 
-    @Override
-    public int getSrid() {
-        if (getTableLocation() == null) {
-            throw new UnsupportedOperationException();
-        }
-        try {
-            Connection con = getJdbcDataSource().getConnection();
-            if(con == null){
-                LOGGER.error("Unable to get connection for the table SRID.");
-                return -1;
-            }
-            return GeometryTableUtilities.getSRID(con, getTableLocation());
-        } catch (SQLException e) {
-            LOGGER.error("Unable to get the table SRID.", e);
-        }
-        return -1;
-    }
 
     @Override
     public void setSrid(int srid) {

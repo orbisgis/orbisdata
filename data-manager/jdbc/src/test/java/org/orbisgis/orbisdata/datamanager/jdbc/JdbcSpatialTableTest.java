@@ -217,7 +217,8 @@ public class JdbcSpatialTableTest {
     @Test
     public void testGetSrid() {
         ISpatialTable table = dataSource.getSpatialTable(TABLE_NAME);
-        assertEquals(2020, table.getSrid());
+        //Always 0 for dummy jdbc table
+        assertEquals(0, table.getSrid());
         table.setSrid(2121);
         assertEquals(2121, table.getSrid());
     }
@@ -247,6 +248,8 @@ public class JdbcSpatialTableTest {
      * Simple instantiation of a {@link JdbcSpatialTable}.
      **/
     private static class DummyJdbcSpatialTable extends JdbcSpatialTable {
+
+        private int srid =0;
 
         /**
          * Main constructor.
@@ -279,6 +282,16 @@ public class JdbcSpatialTableTest {
                 }
             }
             return new SpatialResultSetImpl(resultSet, (StatementWrapper) getStatement());
+        }
+
+        @Override
+        public int getSrid() {
+            return srid;
+        }
+
+        @Override
+        public void setSrid(int srid) {
+            this.srid=srid;
         }
 
         @NotNull

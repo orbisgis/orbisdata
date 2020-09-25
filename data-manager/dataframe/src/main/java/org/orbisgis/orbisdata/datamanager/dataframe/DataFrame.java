@@ -62,6 +62,7 @@ import smile.math.matrix.Matrix;
 import java.io.*;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.nio.file.Files;
 import java.sql.Date;
 import java.sql.*;
 import java.time.LocalDate;
@@ -663,18 +664,74 @@ public class DataFrame implements smile.data.DataFrame, ITable<BaseVector, Tuple
     }
 
     @Override
-    public String save(@NotNull String filePath, String encoding) {
+    public String save(String filePath, boolean delete) {
         File f = new File(filePath);
-        if (!f.exists()) {
+        if(delete){
             try {
-                if (!f.createNewFile()) {
-                    LOGGER.error("Unable to create the file '" + f.getAbsolutePath() + "'.");
-                    return null;
-                }
+                Files.deleteIfExists(f.toPath());
             } catch (IOException e) {
-                LOGGER.error("Unable to create the file '" + f.getAbsolutePath() + "'.", e);
+                LOGGER.error("Unable to delete the file '" + f.getAbsolutePath() + "'.", e);
+            }
+
+        } else if (f.exists()) {
+            LOGGER.error("The file already exist.");
+        }
+        try {
+            if (!f.createNewFile()) {
+                LOGGER.error("Unable to create the file '" + f.getAbsolutePath() + "'.");
                 return null;
             }
+        } catch (IOException e) {
+            LOGGER.error("Unable to create the file '" + f.getAbsolutePath() + "'.", e);
+            return null;
+        }
+
+        BufferedWriter writer;
+        try {
+            writer = new BufferedWriter(new FileWriter(f));
+        } catch (IOException e) {
+            LOGGER.error("Unable to create the FileWriter.", e);
+            return null;
+        }
+        try {
+            writer.write(String.join(",", names()) + "\n");
+            writer.flush();
+        } catch (IOException e) {
+            LOGGER.error("Unable to write in the FileWriter.", e);
+            return null;
+        }
+        for (int i = 0; i < nrows(); i++) {
+            List<String> row = new ArrayList<>();
+            for (int j = 0; j < ncols(); j++) {
+                Object obj = get(i, j);
+                row.add(obj == null ? "null" : obj.toString());
+            }
+            try {
+                writer.write(String.join(",", row) + "\n");
+                writer.flush();
+            } catch (IOException e) {
+                LOGGER.error("Unable to write in the FileWriter.", e);
+                return null;
+            }
+        }
+        return filePath;
+    }
+
+    @Override
+    public String save(@NotNull String filePath, String encoding) {
+        File f = new File(filePath);
+        if(f.exists()){
+            LOGGER.error("The file "+filePath+ " already exist.");
+            return null;
+        }
+        try {
+            if (!f.createNewFile()) {
+                LOGGER.error("Unable to create the file '" + f.getAbsolutePath() + "'.");
+                return null;
+            }
+        } catch (IOException e) {
+            LOGGER.error("Unable to create the file '" + f.getAbsolutePath() + "'.", e);
+            return null;
         }
         BufferedWriter writer;
         try {

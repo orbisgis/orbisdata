@@ -38,7 +38,9 @@ package org.orbisgis.orbisdata.datamanager.jdbc.postgis;
 
 import org.h2gis.postgis_jts.ConnectionWrapper;
 import org.h2gis.postgis_jts.StatementWrapper;
+import org.h2gis.utilities.GeometryTableUtilities;
 import org.h2gis.utilities.wrapper.SpatialResultSetImpl;
+import org.locationtech.jts.geom.Geometry;
 import org.orbisgis.commons.annotations.NotNull;
 import org.orbisgis.commons.annotations.Nullable;
 import org.orbisgis.orbisdata.datamanager.api.dataset.DataBaseType;
@@ -47,6 +49,7 @@ import org.orbisgis.orbisdata.datamanager.api.dataset.ITable;
 import org.orbisgis.orbisdata.datamanager.api.datasource.IJdbcDataSource;
 import org.orbisgis.orbisdata.datamanager.jdbc.JdbcSpatialTable;
 import org.orbisgis.orbisdata.datamanager.jdbc.TableLocation;
+import org.orbisgis.orbisdata.datamanager.jdbc.h2gis.H2gisSpatialTable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -112,6 +115,34 @@ public class PostgisSpatialTable extends JdbcSpatialTable {
     }
 
     @Override
+    public int getSrid() {
+        if (getTableLocation() == null) {
+            throw new UnsupportedOperationException();
+        }
+        try {
+            Connection con = getJdbcDataSource().getConnection();
+            if(con == null){
+                LOGGER.error("Unable to get connection for the table SRID.");
+                return -1;
+            }
+            int srid = GeometryTableUtilities.getSRID(con, getTableLocation());
+            //Workaround get the SRID from the first geometry
+            if(srid==0){
+                ResultSet rs = getStatement().executeQuery("SELECT " + getGeometricColumns().get(0) + " FROM " + getTableLocation() + " limit 1");
+                rs.next();
+                Geometry geom = (Geometry) rs.getObject(1);
+                if (geom != null) {
+                    srid = geom.getSRID();
+                }
+            }
+            return srid;
+        } catch (SQLException e) {
+            LOGGER.error("Unable to get the table SRID.", e);
+        }
+        return -1;
+    }
+
+    @Override
     public ISpatialTable reproject(int srid) {
         try {
             ResultSetMetaData meta = getMetaData();
@@ -129,13 +160,9 @@ public class PostgisSpatialTable extends JdbcSpatialTable {
                     fieldNames[i - 1] = columnName;
                 }
             }
-            TableLocation location = getTableLocation();
-            if(location == null){
-                LOGGER.error("Unable to get table location for reprojection");
-                return null;
-            }
-            String query = "SELECT " + String.join(",", fieldNames) + " FROM " + location.toString(false);
-            return new PostgisSpatialTable(null, query, (StatementWrapper) getStatement(),  getParams(), getJdbcDataSource());
+            String query = "SELECT " + String.join(",", fieldNames) + " FROM " +
+                    (getTableLocation() == null ? getBaseQuery() + " as foo" : getTableLocation().toString(false));
+            return new PostgisSpatialTable(null, query,  getStatement(), getParams(), getJdbcDataSource());
         } catch (SQLException e) {
             LOGGER.error("Cannot reproject the table '" + getLocation() + "' in the SRID '" + srid + "'.\n", e);
             return null;

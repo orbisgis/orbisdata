@@ -276,11 +276,29 @@ class GroovyPostGISTest {
         def spr = sp.reproject(2154)
         assertNotNull(spr)
         assertThrows(UnsupportedOperationException.class, spr::getSrid);
-        assertNotNull(spr.save("target/reprojected_table_postgis.shp"))
+        assertNotNull(spr.save("target/reprojected_table_postgis.shp", true))
         def reprojectedTable = postGIS.getSpatialTable(postGIS.load("target/reprojected_table_postgis.shp", true))
         assertNotNull(reprojectedTable)
         reprojectedTable.next();
         assertEquals(2154, reprojectedTable.getGeometry(2).getSRID())
+    }
+
+    @Test
+    @EnabledIfSystemProperty(named = "test.postgis", matches = "true")
+    void testFilterReproject() {
+        postGIS.execute("""
+                DROP TABLE IF EXISTS orbisgis;
+                CREATE TABLE orbisgis (id int, the_geom geometry(point, 4326));
+                INSERT INTO orbisgis VALUES (1, 'SRID=4326;POINT(10 10)'::GEOMETRY), (2, 'SRID=4326;POINT(1 1)'::GEOMETRY);
+        """)
+        def tableName = postGIS.getTable("orbisgis").filter(" where id = 2").getSpatialTable().reproject(4326).save(postGIS, "output_filtered", true)
+        assertNotNull(tableName)
+        def reprojectedTable = postGIS.getSpatialTable(tableName)
+        reprojectedTable.next();
+        assertEquals(4326, reprojectedTable.getGeometry(2).getSRID())
+        assertNotNull(reprojectedTable)
+        //The SRID value is not set has constrained
+        assertEquals(4326,reprojectedTable.srid )
     }
 
     @Test
@@ -293,7 +311,7 @@ class GroovyPostGISTest {
                 INSERT INTO orbisgis VALUES (1, 'SRID=4326;POINT(10 10)'::GEOMETRY), (2, 'SRID=4326;POINT(1 1)'::GEOMETRY);
         """)
         def sp = postGIS.getSpatialTable("orbisgis").columns("ST_BUFFER(THE_GEOM, 10) AS THE_GEOM").spatialTable
-        sp.save("target/query_table_postgis.shp")
+        sp.save("target/query_table_postgis.shp", true)
         def queryTable = postGIS.getSpatialTable(postGIS.load("target/query_table_postgis.shp", true))
         assertEquals 2, queryTable.rowCount
         assertEquals 4326, queryTable.srid

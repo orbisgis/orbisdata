@@ -382,6 +382,11 @@ public class ITableTest {
         }
 
         @Override
+        public String save(String filePath, boolean delete) {
+            return null;
+        }
+
+        @Override
         public String save(@NotNull String filePath, String encoding) {
             return null;
         }

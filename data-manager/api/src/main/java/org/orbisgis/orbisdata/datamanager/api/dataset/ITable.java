@@ -227,6 +227,16 @@ public interface ITable<T, U> extends IMatrix<T, U>, IQueryBuilder {
      * Save the {@link ITable} into a file.
      *
      * @param filePath Path of the file to be saved.
+     * @param delete True to delete the file if exists.
+     * @return the full path of the saved file.
+     * If the file cannot be saved return null.
+     */
+    String save(@NotNull String filePath,  boolean delete);
+
+    /**
+     * Save the {@link ITable} into a file.
+     *
+     * @param filePath Path of the file to be saved.
      * @param encoding Encoding of the file.
      * @return the full path of the saved file.
      * If the file cannot be saved return null.

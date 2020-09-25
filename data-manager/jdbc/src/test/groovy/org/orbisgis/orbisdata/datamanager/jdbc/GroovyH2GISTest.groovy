@@ -674,8 +674,29 @@ class GroovyH2GISTest {
         def spr = sp.reproject(2154)
         assertNotNull(spr)
         assertThrows(UnsupportedOperationException.class, spr::getSrid);
-        assertEquals("target/reprojected_table.shp", spr.save("target/reprojected_table.shp"))
+        assertEquals("target/reprojected_table.shp", spr.save("target/reprojected_table.shp", true))
         def reprojectedTable = h2GIS.getSpatialTable(h2GIS.load("target/reprojected_table.shp", true))
+        assertNotNull(reprojectedTable)
+        assertEquals(2154, reprojectedTable.srid)
+    }
+
+    @Test
+    void testReprojectGeoJson() {
+        def h2GIS = H2GIS.open('./target/orbisgis')
+        new File("target/reprojected_table.shp").delete()
+        h2GIS.execute("""
+                DROP TABLE IF EXISTS orbisgis;
+                CREATE TABLE orbisgis (id int, the_geom geometry(point, 4326));
+                INSERT INTO orbisgis VALUES (1, 'SRID=4326;POINT(10 10)'::GEOMETRY), (2, 'SRID=4326;POINT(1 1)'::GEOMETRY);
+        """)
+        def sp = h2GIS.getSpatialTable("orbisgis")
+        assertNotNull(sp)
+        assertEquals(4326, sp.getSrid());
+        def spr = sp.reproject(2154)
+        assertNotNull(spr)
+        assertThrows(UnsupportedOperationException.class, spr::getSrid);
+        assertEquals("target/reprojected_table.geojson", spr.save("target/reprojected_table.geojson", true))
+        def reprojectedTable = h2GIS.getSpatialTable(h2GIS.load("target/reprojected_table.geojson", true))
         assertNotNull(reprojectedTable)
         assertEquals(2154, reprojectedTable.srid)
     }
@@ -693,7 +714,7 @@ class GroovyH2GISTest {
         assertNotNull(sp)
         ISpatialTable spr = sp.reproject(2154)
         assertNotNull(spr)
-        assertEquals("target/reprojected_table.shp", spr.save("target/reprojected_table.shp"))
+        assertEquals("target/reprojected_table.shp", spr.save("target/reprojected_table.shp", true))
         ISpatialTable reprojectedTable = h2GIS.getSpatialTable(h2GIS.load("target/reprojected_table.shp", true))
         assertNotNull(reprojectedTable)
         assertEquals(2, reprojectedTable.getRowCount())
@@ -711,7 +732,7 @@ class GroovyH2GISTest {
                 INSERT INTO orbisgis VALUES (1, 'SRID=4326;POINT(10 10)'::GEOMETRY), (2, 'SRID=4326;POINT(1 1)'::GEOMETRY);
         """)
         def sp = h2GIS.getSpatialTable("ORBISGIS").columns("ST_BUFFER(THE_GEOM, 10) AS THE_GEOM").getSpatialTable()
-        sp.save("target/query_table.shp")
+        sp.save("target/query_table.shp", true)
         def queryTable = h2GIS.getTable(h2GIS.load("target/query_table.shp"))
         assertEquals 2, queryTable.rowCount
         assertEquals 4326, queryTable.srid
@@ -985,6 +1006,23 @@ class GroovyH2GISTest {
         table = h2GIS.getTable("postgis").columns("id").filter("limit 2").getTable().filter("where id=2").getTable().filter("where id=2").getTable()
         assert 1 == table.getRowCount()
         assert 2 == table.firstRow[0]
+    }
 
+    @Test
+    void testFilterReproject() {
+        def h2GIS = H2GIS.open([databaseName: './target/loadH2GIS'])
+        h2GIS.execute("""
+                DROP TABLE IF EXISTS orbisgis;
+                CREATE TABLE orbisgis (id int, the_geom geometry(point, 4326));
+                INSERT INTO orbisgis VALUES (1, 'SRID=4326;POINT(10 10)'::GEOMETRY), (2, 'SRID=4326;POINT(1 1)'::GEOMETRY);
+        """)
+        def tableName = h2GIS.getTable("orbisgis").filter(" where id = 2").getSpatialTable().reproject(4326).save(h2GIS, "output_filtered", true)
+        assertNotNull(tableName)
+        def reprojectedTable = h2GIS.getSpatialTable(tableName)
+        assertNotNull(reprojectedTable)
+        reprojectedTable.next();
+        assertEquals(4326, reprojectedTable.getGeometry(2).getSRID())
+        //H2GIS looks on the first geometry SRID
+        assertEquals(4326,reprojectedTable.srid )
     }
 }

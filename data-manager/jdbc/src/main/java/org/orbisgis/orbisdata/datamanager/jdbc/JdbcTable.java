@@ -579,6 +579,23 @@ public abstract class JdbcTable<T extends ResultSet, U> extends DefaultResultSet
     }
 
     @Override
+    public String save(@NotNull String filePath, boolean deleteFile) {
+        try {
+            String toSave = getTableLocation() == null ? "(" + getBaseQuery() + ")" : getTableLocation().toString(getDbType());
+            if(IOMethods.saveAsFile(getStatement().getConnection(), toSave, filePath, null, deleteFile)){
+                return filePath;
+            }else{
+                LOGGER.error("Cannot save the table in the file : "+filePath);
+                return null;
+            }
+
+        } catch (SQLException e) {
+            LOGGER.error("Cannot save the table.\n", e);
+            return null;
+        }
+    }
+
+    @Override
     public String save(@NotNull String filePath, String encoding) {
         try {
             String toSave = getTableLocation() == null ? "(" + getBaseQuery() + ")" : getTableLocation().toString(getDbType());

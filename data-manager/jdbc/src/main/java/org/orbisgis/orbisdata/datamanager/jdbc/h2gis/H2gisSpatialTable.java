@@ -148,7 +148,7 @@ public class H2gisSpatialTable extends JdbcSpatialTable {
                 }
             }
             String query = "SELECT " + String.join(",", fieldNames) + " FROM " +
-                    (getTableLocation() == null ? "(" + getBaseQuery() + ")" : getTableLocation().toString(true));
+                    (getTableLocation() == null ? getBaseQuery() + " as foo " : getTableLocation().toString(true));
             return new H2gisSpatialTable(null, query, (StatementWrapper) getStatement(), getParams(), getJdbcDataSource());
         } catch (SQLException e) {
             LOGGER.error("Cannot reproject the table '" + getLocation() + "' in the SRID '" + srid + "'.\n", e);

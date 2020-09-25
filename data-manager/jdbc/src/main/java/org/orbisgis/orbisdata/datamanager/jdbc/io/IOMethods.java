@@ -388,7 +388,7 @@ public class IOMethods {
                         preparedStatement.executeBatch();
                     }
                 } catch (SQLException e) {
-                    LOGGER.error("Cannot save the table $tableLocation.\n", e);
+                    LOGGER.error("Cannot save the table "+tableLocation+ ".\n", e);
                     return false;
                 } finally {
                     outputconnection.setAutoCommit(true);
@@ -404,7 +404,7 @@ public class IOMethods {
                 return false;
             }
         } catch (SQLException e) {
-            LOGGER.error("Cannot save the table $tableLocation.\n", e);
+            LOGGER.error("Cannot save the table "+tableLocation+ ".\n", e);
             return false;
         }
     }
@@ -483,7 +483,7 @@ public class IOMethods {
                         preparedStatement.executeBatch();
                     }
                 } catch (SQLException e) {
-                    LOGGER.error("Cannot save the table $tableLocation.\n", e);
+                    LOGGER.error("Cannot save the table "+ outputTableName+".\n", e);
                     return false;
                 } finally {
                     outputconnection.setAutoCommit(true);
@@ -499,7 +499,7 @@ public class IOMethods {
                 return false;
             }
         } catch (SQLException e) {
-            LOGGER.error("Cannot save the table $tableLocation.\n", e);
+            LOGGER.error("Cannot save the table "+ outputTableLocation.toString()+".\n", e);
             return false;
         }
     }

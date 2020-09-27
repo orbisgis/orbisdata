@@ -43,10 +43,18 @@ import org.orbisgis.commons.printer.Ascii;
 import org.orbisgis.commons.printer.Html;
 import org.orbisgis.orbisdata.datamanager.api.dataset.IJdbcTable;
 import org.orbisgis.orbisdata.datamanager.jdbc.h2gis.H2GIS;
+import smile.base.cart.SplitRule;
+import smile.classification.RandomForest;
+import smile.data.Tuple;
 import smile.data.formula.Formula;
 import smile.data.type.DataType;
+import smile.data.type.StructField;
+import smile.data.type.StructType;
 import smile.data.vector.BaseVector;
+import smile.data.vector.IntVector;
+import smile.data.vector.StringVector;
 import smile.math.matrix.Matrix;
+import smile.validation.Validation;
 
 import java.io.File;
 import java.io.IOException;
@@ -57,6 +65,9 @@ import java.sql.SQLException;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -570,6 +581,90 @@ public class DataFrameTest {
     @Test
     public void filterTest(){
         assertThrows(UnsupportedOperationException.class, () -> dataFrame.filter("tata"));
+    }
+
+    @Test
+    void testRandomForestNominalValuesInResult() {
+        // Dataset used
+        BaseVector[] bv = new BaseVector[]{
+                IntVector.of("LCZ", new int[]{105, 107, 106, 105, 105, 106, 107, 106, 106, 107, 107, 107, 107}),
+                StringVector.of("TYPE", new String[]{"grass", "corn", "corn", "grass", "corn", "grass", "forest", "grass", "grass", "corn", "corn", "corn", "corn"}),
+                IntVector.of("TEMPERATURE", new int[]{12, 12, 18, 12, 16, 12, 12, 12, 16, 16, 2, 16, 18}),
+                IntVector.of("WIND", new int[]{20, 30, 20, 30, 20, 20, 20, 20, 20, 20, 20, 50, 40}),
+        };
+        DataFrame df = DataFrame.of(bv);
+
+        // Now we need to factorize the columns "LCZ" and "TYPE" in order to use the random forest
+        DataFrame dfFactorized = df.factorize("TYPE");
+
+        // Then we define the characteristics of the randomForest:
+        Formula formula = Formula.lhs("LCZ");
+        SplitRule splitRule = SplitRule.valueOf("GINI");
+        int ntrees = 2;
+        int mtry = 2;
+        int maxDepth = 2;
+        int maxNodes = 5;
+        int nodeSize = 3;
+        double subsample = 1.0;
+
+        // At this point we have the "LCZ" column as predicted variable, defined as nominal. No problem here since we still have the correspondence between our "LCZ" values (105, 106, 107) and 0, 1, 2.
+        // Then we create the randomForest
+        RandomForest model = RandomForest.fit(formula, dfFactorized, ntrees, mtry, splitRule, maxDepth, maxNodes, nodeSize, subsample);
+
+        // Finally, when we apply the random forest
+        int[] prediction = Validation.test(model, dfFactorized);
+
+        assertArrayEquals(new int[]{105, 107, 107, 105, 107, 105, 105, 105, 105, 107, 107, 107, 107}, prediction);
+    }
+
+    @Test
+    void testRandomForestNominalValuesInResult2() {
+        // Dataset used
+        // Dataset used
+        List<Tuple> data = new ArrayList<>();
+        List<StructField> fields = new ArrayList<>();
+        fields.add(new StructField("LCZ", DataType.of(Integer.class)));
+        fields.add(new StructField("TYPE", DataType.of(String.class)));
+        fields.add(new StructField("TEMPERATURE", DataType.of(Integer.class)));
+        fields.add(new StructField("WIND", DataType.of(Integer.class)));
+        StructType structType = new StructType(fields);
+        data.add(Tuple.of(new Object[]{105, "grass", 12, 20}, structType));
+        data.add(Tuple.of(new Object[]{107, "corn", 12, 30}, structType));
+        data.add(Tuple.of(new Object[]{106, "corn", 18, 20}, structType));
+        data.add(Tuple.of(new Object[]{105, "grass", 12, 30}, structType));
+        data.add(Tuple.of(new Object[]{105, "corn", 16, 20}, structType));
+        data.add(Tuple.of(new Object[]{106, "grass", 12, 20}, structType));
+        data.add(Tuple.of(new Object[]{107, "forest" ,12, 20}, structType));
+        data.add(Tuple.of(new Object[]{106, "grass" ,12, 20}, structType));
+        data.add(Tuple.of(new Object[]{106, "grass" ,16, 20}, structType));
+        data.add(Tuple.of(new Object[]{107, "corn", 16, 20}, structType));
+        data.add(Tuple.of(new Object[]{107, "corn", 2, 20}, structType));
+        data.add(Tuple.of(new Object[]{107, "corn", 16, 50}, structType));
+        data.add(Tuple.of(new Object[]{107, "corn", 18, 40}, structType));
+
+        DataFrame df = DataFrame.of(data, structType);
+
+        // Now we need to factorize the columns "LCZ" and "TYPE" in order to use the random forest
+        DataFrame dfFactorized = df.factorize("TYPE");
+
+        // Then we define the characteristics of the randomForest:
+        Formula formula = Formula.lhs("LCZ");
+        SplitRule splitRule = SplitRule.valueOf("GINI");
+        int ntrees = 2;
+        int mtry = 2;
+        int maxDepth = 2;
+        int maxNodes = 5;
+        int nodeSize = 3;
+        double subsample = 1.0;
+
+        // At this point we have the "LCZ" column as predicted variable, defined as nominal. No problem here since we still have the correspondence between our "LCZ" values (105, 106, 107) and 0, 1, 2.
+        // Then we create the randomForest
+        RandomForest model = RandomForest.fit(formula, dfFactorized, ntrees, mtry, splitRule, maxDepth, maxNodes, nodeSize, subsample);
+
+        // Finally, when we apply the random forest
+        int[] prediction = Validation.test(model, dfFactorized);
+
+        assertArrayEquals(new int[]{105, 107, 107, 105, 107, 105, 105, 105, 105, 107, 107, 107, 107}, prediction);
     }
 
 }

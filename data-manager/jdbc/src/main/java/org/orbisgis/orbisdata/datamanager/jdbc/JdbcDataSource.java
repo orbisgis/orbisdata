@@ -603,6 +603,15 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, IRe
     }
 
     @Override
+    public boolean save(String tableName, String filePath, boolean delete) {
+        if(getConnection() == null){
+            LOGGER.error("No connection, cannot save.");
+            return false;
+        }
+        return IOMethods.saveAsFile(getConnection(), tableName, filePath, null, delete);
+    }
+
+    @Override
     public boolean save(@NotNull String tableName, @NotNull String filePath, @Nullable String encoding) {
         if(getConnection() == null){
             LOGGER.error("No connection, cannot save.");
@@ -792,7 +801,7 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, IRe
 
     @Override
     public String load(@NotNull String filePath, boolean delete) {
-        String tableName = getTableNameFromPath(filePath);
+        String tableName = getTableNameFromPath(filePath).replace(".", "_");
         if (Pattern.compile("^[a-zA-Z][a-zA-Z0-9_]*$").matcher(tableName).find()) {
             return load(filePath, tableName, null, delete);
         } else {

@@ -651,6 +651,17 @@ public interface IJdbcDataSource extends IDataSource<ResultSet>, GroovyObject, D
      *
      * @param tableName Name of the table to save.
      * @param filePath  Path of the file where the table will be saved.
+     * @param delete true to delete the file if exists
+     * @return True if the file has been successfully saved, false otherwise.
+     */
+    @Override
+    boolean save(@NotNull String tableName, @NotNull String filePath, boolean delete);
+
+    /**
+     * Save a table into a file.
+     *
+     * @param tableName Name of the table to save.
+     * @param filePath  Path of the file where the table will be saved.
      * @param encoding  Encoding of the file.
      * @return True if the file has been successfully saved, false otherwise.
      */

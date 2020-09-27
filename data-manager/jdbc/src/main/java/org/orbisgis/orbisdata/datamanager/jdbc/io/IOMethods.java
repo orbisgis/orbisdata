@@ -105,12 +105,36 @@ public class IOMethods {
             case "osm":
                 return new OSMDriverFunction();
             case "gz":
-            case "bz":
+                //Look for the following path .geojson.gz
+                String sub_extension = path.substring(0, i);
+                int subDot = sub_extension.lastIndexOf(".");
+                String subExtension ="";
+                if(subDot>=0) {
+                    subExtension = path.substring(subDot + 1, i);
+                }
+                switch (subExtension.toLowerCase()) {
+                    case "gpx":
+                        return new GPXDriverFunction();
+                    case "geojson":
+                        return new GeoJsonDriverFunction();
+                    case "json":
+                        return new JsonDriverFunction();
+                    case "tsv":
+                        return new TSVDriverFunction();
+                    case "dbf":
+                        return new DBFDriverFunction();
+                    case "osm":
+                        return new OSMDriverFunction();
+                    default:
+                        LOGGER.error("Unsupported file format.\n"
+                                + "Supported formats are : [ geojson.gz,json.gz, tsv.gz, dbf.gz, osm.gz, gpx.gz].");
+                        return null;
+                }
             case "gpx":
                 return new GPXDriverFunction();
             default:
                 LOGGER.error("Unsupported file format.\n"
-                        + "Supported formats are : [shp, geojson, tsv, csv, dbf, kml, kmz, osm, gz, bz, gpx].");
+                        + "Supported formats are : [shp, geojson,json, tsv, csv, dbf, kml, kmz, osm, gz, bz, gpx].");
                 return null;
         }
     }

@@ -441,6 +441,11 @@ public class IJdbcDataSourceTest {
         }
 
         @Override
+        public boolean save(String tableName, String filePath, boolean delete) {
+            return false;
+        }
+
+        @Override
         public boolean save(@NotNull String tableName, @NotNull String filePath, String encoding) {
             return false;
         }

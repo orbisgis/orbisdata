@@ -394,6 +394,17 @@ public interface IDataSource<T> {
      */
     boolean save(@NotNull String dataSetId, @NotNull String filePath);
 
+
+    /**
+     * Save a table into a file.
+     *
+     * @param dataSetId Name of the table to save.
+     * @param filePath  Path of the file where the table will be saved.
+     * @param delete true to delete the file if exists
+     * @return True if the file has been successfully saved, false otherwise.
+     */
+    boolean save(@NotNull String dataSetId, @NotNull String filePath, boolean delete);
+
     /**
      * Save a table into a file.
      *

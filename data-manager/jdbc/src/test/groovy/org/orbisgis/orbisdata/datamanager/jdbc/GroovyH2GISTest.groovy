@@ -531,7 +531,7 @@ class GroovyH2GISTest {
                 CREATE TABLE externalTable (id int, the_geom geometry(point));
                 INSERT INTO externalTable VALUES (1, 'POINT(10 10)'::GEOMETRY), (2, 'POINT(1 1)'::GEOMETRY);
         """)
-        h2GIS.save("externalTable", 'target/externalFile.shp')
+        h2GIS.save("externalTable", 'target/externalFile.shp', true)
         def table = h2GIS.link('target/externalFile.shp', 'super', true)
         assertNotNull(table)
         assert (h2GIS.getSpatialTable(table).geometryTypes.toString() == "[THE_GEOM:MULTIPOINT]")
@@ -1024,5 +1024,22 @@ class GroovyH2GISTest {
         assertEquals(4326, reprojectedTable.getGeometry(2).getSRID())
         //H2GIS looks on the first geometry SRID
         assertEquals(4326,reprojectedTable.srid )
+    }
+
+    @Test
+    void exportImportGeoJsonGZ() {
+        def h2GIS = H2GIS.open([databaseName: './target/loadH2GIS'])
+        h2GIS.execute("""
+                DROP TABLE IF EXISTS h2gis, h2gis_imported;
+                CREATE TABLE h2gis (id int, the_geom geometry(point));
+                INSERT INTO h2gis VALUES (1, 'POINT(10 10)'::GEOMETRY), (2, 'POINT(1 1)'::GEOMETRY);
+        """)
+        h2GIS.save("h2gis", "target/h2gis_imported.geojson.gz", true)
+        h2GIS.load("target/h2gis_imported.geojson.gz", true)
+        h2GIS.save("h2gis_imported_geojson", "target/h2gis_imported.shp", true)
+        h2GIS.load("target/h2gis_imported.shp", true)
+        def concat = ""
+        h2GIS.getSpatialTable "h2gis_imported" eachRow { row -> concat += "$row.id $row.the_geom $row.geometry\n" }
+        assertEquals("1 POINT (10 10) POINT (10 10)\n2 POINT (1 1) POINT (1 1)\n", concat)
     }
 }

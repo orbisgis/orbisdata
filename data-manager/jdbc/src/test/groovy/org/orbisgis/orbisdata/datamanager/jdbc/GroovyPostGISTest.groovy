@@ -517,5 +517,11 @@ class GroovyPostGISTest {
         assertTrue(sp.getRowCount()==1)
         sp.next()
         assertEquals(4326,sp.getGeometry().getSRID())
+        tmpTable = h2GIS.getTable("h2gis").filter(" where id =2").getSpatialTable().reproject(4326).save(postGIS, output_table, true);
+        assertNotNull(tmpTable)
+        sp = postGIS.getSpatialTable(output_table)
+        assertTrue(sp.getRowCount()==1)
+        sp.next()
+        assertEquals(4326,sp.getGeometry().getSRID())
     }
 }

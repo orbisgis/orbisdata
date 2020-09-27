@@ -669,5 +669,4 @@ public class DataFrameTest {
         assertEquals(expected.length,prediction.length);
         assertEquals(IntStream.of(expected).sum(),IntStream.of(prediction).sum());
     }
-
 }

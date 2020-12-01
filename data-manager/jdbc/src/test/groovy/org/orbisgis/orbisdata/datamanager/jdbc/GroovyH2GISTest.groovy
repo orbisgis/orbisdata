@@ -116,6 +116,21 @@ class GroovyH2GISTest {
     }
 
     @Test
+    void queryH2GISWithBatch() {
+        def h2GIS = H2GIS.open([databaseName: './target/loadH2GIS'])
+        h2GIS.execute("""
+                DROP TABLE IF EXISTS h2gis;
+                CREATE TABLE h2gis (id int);
+                INSERT INTO h2gis VALUES (1), (2);
+        """)
+        h2GIS.withBatch(1) { stmt ->
+            h2GIS.eachRow "SELECT id FROM h2gis", { row ->
+                stmt.addBatch """INSERT INTO  h2gis VALUES(${row.id+10})""" }
+        }
+        assertEquals(4, h2GIS.getTable("H2GIS").getRowCount())
+    }
+
+    @Test
     void querySpatialTable() {
         def h2GIS = H2GIS.open([databaseName: './target/loadH2GIS'])
         h2GIS.execute("""

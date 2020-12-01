@@ -503,6 +503,29 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, IRe
     }
 
     @Override
+    public void eachRow(String sql,
+                        @ClosureParams(value = SimpleType.class, options = "groovy.sql.GroovyResultSet") Closure closure)
+            throws SQLException {
+        try {
+            super.eachRow(sql, closure);
+            if(!getConnection().getAutoCommit()){
+                super.commit();
+            }
+        } catch (SQLException e) {
+            LOGGER.debug("Unable to execute the request as a String.\n" + e.getLocalizedMessage());
+
+            try {
+                if(!getConnection().getAutoCommit()){
+                    super.rollback();
+                }
+            } catch (SQLException e2) {
+                LOGGER.error("Unable to rollback.", e2.getLocalizedMessage());
+            }
+            super.eachRow(sql.toString(), closure);
+        }
+    }
+
+    @Override
     public void eachRow(GString gstring,
                         @ClosureParams(value = SimpleType.class, options = "java.sql.ResultSet") Closure closure)
             throws SQLException {

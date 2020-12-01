@@ -337,27 +337,34 @@ class JdbcDataSourceTest {
         h2gis.execute("DROP TABLE IF EXISTS load");
         postgis.execute("DROP TABLE IF EXISTS load");
 
-        assertTrue(h2gis.save("test_h2gis", "target/save_path_ds1.geojson"));
+        assertTrue(h2gis.save("test_h2gis", "target/save_path_ds1.geojson", true));
         assertTrue(new File("target/save_path_ds1.geojson").exists());
 
+        new File("target/save_path_enc_ds1.geojson").delete();
         assertTrue(h2gis.save("test_h2gis", "target/save_path_enc_ds1.geojson", "UTF8"));
         assertTrue(new File("target/save_path_enc_ds1.geojson").exists());
 
+        new File("target/save_url_ds1.geojson").delete();
         assertTrue(h2gis.save("test_h2gis", new File("target/save_url_ds1.geojson").toURI().toURL()));
         assertTrue(new File("target/save_url_ds1.geojson").exists());
 
+        new File("target/save_url_enc_ds1.geojson").delete();
         assertTrue(h2gis.save("test_h2gis", new File("target/save_url_enc_ds1.geojson").toURI().toURL(), "UTF8"));
         assertTrue(new File("target/save_url_enc_ds1.geojson").exists());
 
+        new File("target/save_uri_ds1.geojson").delete();
         assertTrue(h2gis.save("test_h2gis", new File("target/save_uri_ds1.geojson").toURI()));
         assertTrue(new File("target/save_uri_ds1.geojson").exists());
 
+        new File("target/save_uri_enc_ds1.geojson").delete();
         assertTrue(h2gis.save("test_h2gis", new File("target/save_uri_enc_ds1.geojson").toURI(), "UTF8"));
         assertTrue(new File("target/save_uri_enc_ds1.geojson").exists());
 
+        new File("target/save_file_ds1.geojson").delete();
         assertTrue(h2gis.save("test_h2gis", new File("target/save_file_ds1.geojson")));
         assertTrue(new File("target/save_file_ds1.geojson").exists());
 
+        new File("target/save_file_enc_ds1.geojson").delete();
         assertTrue(h2gis.save("test_h2gis", new File("target/save_file_enc_ds1.geojson"), "UTF8"));
         assertTrue(new File("target/save_file_enc_ds1.geojson").exists());
     }

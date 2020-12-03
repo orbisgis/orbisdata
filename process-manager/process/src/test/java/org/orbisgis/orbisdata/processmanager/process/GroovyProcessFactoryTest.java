@@ -170,67 +170,6 @@ public class GroovyProcessFactoryTest {
     }
 
     /**
-     * Test the {@link GroovyProcessFactory#info(Object)}, {@link GroovyProcessFactory#info(Object, Exception)},
-     * {@link GroovyProcessFactory#debug(Object)}, {@link GroovyProcessFactory#debug(Object, Exception)},
-     * {@link GroovyProcessFactory#warn(Object)}, {@link GroovyProcessFactory#warn(Object, Exception)},
-     * {@link GroovyProcessFactory#error(Object)}, {@link GroovyProcessFactory#error(Object, Exception)} and
-     * {@link GroovyProcessFactory#setLogger(GroovyObject)} methods.
-     */
-    @Test
-    @Disabled
-    void loggerTest() {
-        DummyFactory factory = new DummyFactory();
-        String s = "toto";
-        Exception e = new UnsupportedOperationException();
-        assertDoesNotThrow(() -> factory.info(s));
-        assertDoesNotThrow(() -> factory.info(s, e));
-        assertDoesNotThrow(() -> factory.debug(s));
-        assertDoesNotThrow(() -> factory.debug(s, e));
-        assertDoesNotThrow(() -> factory.warn(s));
-        assertDoesNotThrow(() -> factory.warn(s, e));
-        assertDoesNotThrow(() -> factory.error(s));
-        assertDoesNotThrow(() -> factory.error(s, e));
-
-        factory.setLogger(null);
-        assertThrows(NullPointerException.class, () -> factory.info(s));
-        assertThrows(NullPointerException.class, () -> factory.info(s, e));
-        assertThrows(NullPointerException.class, () -> factory.debug(s));
-        assertThrows(NullPointerException.class, () -> factory.debug(s, e));
-        assertThrows(NullPointerException.class, () -> factory.warn(s));
-        assertThrows(NullPointerException.class, () -> factory.warn(s, e));
-        assertThrows(NullPointerException.class, () -> factory.error(s));
-        assertThrows(NullPointerException.class, () -> factory.error(s, e));
-
-
-        DummyLogger dummyLogger = new DummyLogger();
-        factory.setLogger(dummyLogger);
-
-        factory.info(s);
-        assertEquals(s, dummyLogger.infoS);
-        factory.info(s, e);
-        assertEquals(s, dummyLogger.infoS);
-        assertTrue(dummyLogger.infoE instanceof UnsupportedOperationException);
-
-        factory.debug(s);
-        assertEquals(s, dummyLogger.debugS);
-        factory.debug(s, e);
-        assertEquals(s, dummyLogger.debugS);
-        assertTrue(dummyLogger.debugE instanceof UnsupportedOperationException);
-
-        factory.warn(s);
-        assertEquals(s, dummyLogger.warnS);
-        factory.warn(s, e);
-        assertEquals(s, dummyLogger.warnS);
-        assertTrue(dummyLogger.warnE instanceof UnsupportedOperationException);
-
-        factory.error(s);
-        assertEquals(s, dummyLogger.errorS);
-        factory.error(s, e);
-        assertEquals(s, dummyLogger.errorS);
-        assertTrue(dummyLogger.errorE instanceof UnsupportedOperationException);
-    }
-
-    /**
      * Test the {@link GroovyProcessFactory#getProperty(String)} method.
      */
     @Test

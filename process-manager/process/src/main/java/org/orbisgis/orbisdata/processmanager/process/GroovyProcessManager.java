@@ -143,8 +143,7 @@ public abstract class GroovyProcessManager extends Script implements IProcessMan
         factoryIds().stream()
                 .map(this::factory)
                 .filter(pf -> pf instanceof GroovyProcessFactory)
-                .map(pf -> (GroovyProcessFactory)pf)
-                .forEach(f -> f.setLogger(logger));
+                .map(pf -> (GroovyProcessFactory)pf);
     }
 
     @Nullable

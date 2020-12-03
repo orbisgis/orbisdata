@@ -58,8 +58,6 @@ import java.util.UUID;
  */
 public abstract class GroovyProcessFactory extends Script implements IProcessFactory, GroovyObject, GroovyInterceptable {
     private final ProcessFactory factory = new ProcessFactory();
-    private Logger logger = LoggerFactory.getLogger(GroovyProcessFactory.class);
-    private GroovyObject gLogger;
     /**
      * MetaClass use for groovy methods/properties binding
      */
@@ -157,114 +155,6 @@ public abstract class GroovyProcessFactory extends Script implements IProcessFac
     }
 
     /**
-     * Call {@link Logger#info(String)}.
-     * @param o Object to log.
-     */
-    public void info(Object o) {
-        if(gLogger == null){
-            logger.info(String.valueOf(o));
-        }
-        else {
-            gLogger.invokeMethod("info", String.valueOf(o));
-        }
-    }
-
-    /**
-     * Call {@link Logger#info(String, Throwable)}.
-     * @param o Object to log.
-     * @param e Exception to log.
-     */
-    public void info(Object o, Exception e) {
-        if(gLogger == null){
-            logger.info(String.valueOf(o), e);
-        }
-        else {
-            gLogger.invokeMethod("info", new Object[]{String.valueOf(o), e});
-        }
-    }
-
-    /**
-     * Call {@link Logger#debug(String)}.
-     * @param o Object to log.
-     */
-    public void debug(Object o) {
-        if(gLogger == null){
-            logger.debug(String.valueOf(o));
-        }
-        else {
-            gLogger.invokeMethod("debug", String.valueOf(o));
-        }
-    }
-
-    /**
-     * Call {@link Logger#debug(String, Throwable)}.
-     * @param o Object to log.
-     * @param e Exception to log.
-     */
-    public void debug(Object o, Exception e) {
-        if(gLogger == null){
-            logger.debug(String.valueOf(o), e);
-        }
-        else {
-            gLogger.invokeMethod("debug", new Object[]{String.valueOf(o), e});
-        }
-    }
-
-    /**
-     * Call {@link Logger#debug(String)}.
-     * @param o Object to log.
-     */
-    public void warn(Object o) {
-        if(gLogger == null){
-            logger.warn(String.valueOf(o));
-        }
-        else {
-            gLogger.invokeMethod("warn", String.valueOf(o));
-        }
-    }
-
-    /**
-     * Call {@link Logger#debug(String, Throwable)}.
-     * @param o Object to log.
-     * @param e Exception to log.
-     */
-    public void warn(Object o, Exception e) {
-        if(gLogger == null){
-            logger.warn(String.valueOf(o), e);
-        }
-        else {
-            gLogger.invokeMethod("warn", new Object[]{String.valueOf(o), e});
-        }
-    }
-
-    /**
-     * Call {@link Logger#error(String, Throwable)}.
-     * @param o Object to log.
-     * @param e Exception to log.
-     */
-    public void error(Object o, Exception e) {
-        if(gLogger == null){
-            logger.error(String.valueOf(o), e);
-        }
-        else {
-            gLogger.invokeMethod("error", new Object[]{String.valueOf(o), e});
-        }
-    }
-
-    /**
-     * Call {@link Logger#error(String)}.
-     * @param o Object to log.
-     */
-    public void error(Object o) {
-        if(gLogger == null){
-            logger.error(String.valueOf(o));
-        }
-        else {
-            gLogger.invokeMethod("error", String.valueOf(o));
-        }
-    }
-
-    /**
      * Prefix the given String with '_' and an UUID.
      *
      * @param name String to prefix
@@ -304,9 +194,5 @@ public abstract class GroovyProcessFactory extends Script implements IProcessFac
      */
     public static String postfix(String name, String postfix) {
         return postfix == null || postfix.isEmpty() ? name : name + "_" + postfix;
-    }
-
-    public void setLogger(GroovyObject logger) {
-        gLogger = logger;
     }
 }

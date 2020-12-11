@@ -128,11 +128,9 @@ public class PostgisSpatialTable extends JdbcSpatialTable {
             int srid = GeometryTableUtilities.getSRID(con, getTableLocation());
             //Workaround get the SRID from the first geometry
             if(srid==0){
-                ResultSet rs = getStatement().executeQuery("SELECT " + getGeometricColumns().get(0) + " FROM " + getTableLocation() + " limit 1");
-                rs.next();
-                Geometry geom = (Geometry) rs.getObject(1);
-                if (geom != null) {
-                    srid = geom.getSRID();
+                ResultSet rs = getStatement().executeQuery("SELECT ST_SRID(" + getGeometricColumns().get(0) + ") AS SRID FROM " + getTableLocation() + " limit 1");
+                if(rs.next()) {
+                    srid = rs.getInt(1);
                 }
             }
             return srid;

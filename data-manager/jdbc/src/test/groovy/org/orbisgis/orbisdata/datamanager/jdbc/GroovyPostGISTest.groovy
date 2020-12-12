@@ -65,8 +65,6 @@ class GroovyPostGISTest {
         System.setProperty("test.postgis", Boolean.toString(postGIS != null));
     }
 
-
-
     @Test
     @EnabledIfSystemProperty(named = "test.postgis", matches = "true")
     void loadPostGIS() {
@@ -523,5 +521,15 @@ class GroovyPostGISTest {
         assertTrue(sp.getRowCount()==1)
         sp.next()
         assertEquals(4326,sp.getGeometry().getSRID())
+    }
+
+    @Test
+    void getSrid() {
+        def postGIS = POSTGIS.open(dbProperties)
+        postGIS.execute("""
+                DROP TABLE IF EXISTS postgis;
+                CREATE TABLE postgis (id int, the_geom geometry(point, 0));
+        """)
+        assertEquals(0, postGIS.getSpatialTable("postgis").srid)
     }
 }

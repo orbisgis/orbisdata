@@ -176,7 +176,7 @@ public class IOMethods {
             if (driverFunction != null) {
                 driverFunction.exportTable(connection, isH2 ? tableName.toUpperCase() : tableName, fileToSave,
                         enc, deleteFile, new EmptyProgressVisitor());
-                return true;
+                return fileToSave.exists();
             }
         } catch (SQLException | IOException e) {
             LOGGER.error("Cannot save.\n", e);
@@ -208,7 +208,7 @@ public class IOMethods {
                 return true;
             }
         } catch (SQLException | IOException e) {
-            LOGGER.error("Cannot load.\n", e);
+            LOGGER.error("Cannot load the file.\n", e.getMessage());
             try {
                 dataSource.rollback();
             } catch (SQLException e1) {

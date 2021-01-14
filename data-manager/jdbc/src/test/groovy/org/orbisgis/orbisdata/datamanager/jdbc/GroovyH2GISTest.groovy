@@ -694,6 +694,23 @@ class GroovyH2GISTest {
         assertNotNull(reprojectedTable)
         assertEquals(2154, reprojectedTable.srid)
     }
+    @Test
+    void testReprojectEmptyTable() {
+        def h2GIS = H2GIS.open('./target/orbisgis')
+        new File("target/reprojected_empty_table.shp").delete()
+        h2GIS.execute("""
+                DROP TABLE IF EXISTS orbisgis;
+                CREATE TABLE orbisgis (id int, the_geom geometry(point, 4326));
+         """)
+        def sp = h2GIS.getSpatialTable("orbisgis")
+        assertNotNull(sp)
+        assertEquals(4326, sp.getSrid());
+        def spr = sp.reproject(2154)
+        assertNotNull(spr)
+        assertNull(spr.save("target/reprojected_empty_table.shp", true))
+        def reprojectedTable = h2GIS.getSpatialTable(h2GIS.load("target/reprojected_empty_table.shp", true))
+        assertNull(reprojectedTable)
+    }
 
     @Test
     void testReprojectGeoJson() {

@@ -532,4 +532,22 @@ class GroovyPostGISTest {
         """)
         assertEquals(0, postGIS.getSpatialTable("postgis").srid)
     }
+
+    @Test
+    void testReprojectEmptyTable() {
+        def postGIS = POSTGIS.open(dbProperties)
+        new File("target/reprojected_empty_table.shp").delete()
+        postGIS.execute("""
+                DROP TABLE IF EXISTS orbisgis;
+                CREATE TABLE orbisgis (id int, the_geom geometry(point, 4326));
+         """)
+        def sp = postGIS.getSpatialTable("orbisgis")
+        assertNotNull(sp)
+        assertEquals(4326, sp.getSrid());
+        def spr = sp.reproject(2154)
+        assertNotNull(spr)
+        assertNull(spr.save("target/reprojected_empty_table.shp", true))
+        def reprojectedTable = postGIS.getSpatialTable(postGIS.load("target/reprojected_empty_table.shp", true))
+        assertNull(reprojectedTable)
+    }
 }

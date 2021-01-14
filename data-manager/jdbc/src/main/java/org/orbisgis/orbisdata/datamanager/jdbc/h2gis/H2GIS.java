@@ -264,6 +264,10 @@ public class H2GIS extends JdbcDataSource {
     @Nullable
     public IJdbcTable getTable(@NotNull String nameOrQuery, @Nullable List<Object> params,
                                @NotNull Statement statement) {
+        if(nameOrQuery==null|| nameOrQuery.isEmpty()){
+            LOGGER.error("The query " + nameOrQuery + "is null or empty.");
+            return null;
+        }
         Connection connection = getConnection();
         String query;
         TableLocation location;
@@ -354,6 +358,10 @@ public class H2GIS extends JdbcDataSource {
     @Override
     @Nullable
     public IJdbcTable getTable(@NotNull String tableName) {
+        if(tableName==null|| tableName.isEmpty()){
+            LOGGER.error("The table is null or empty.");
+            return null;
+        }
         Connection connection = getConnection();
         Statement statement;
         try {
@@ -389,6 +397,10 @@ public class H2GIS extends JdbcDataSource {
 
     @Override
     public IJdbcTable getTable(String query, List<Object> params) {
+        if(query==null|| query.isEmpty()){
+            LOGGER.error("The query is null or empty.");
+            return null;
+        }
         if(params == null || params.isEmpty()) {
             return getTable(query);
         }
@@ -463,7 +475,7 @@ public class H2GIS extends JdbcDataSource {
     @Override
     public IJdbcSpatialTable getSpatialTable(@NotNull String query, @Nullable List<Object> params) {
         IJdbcTable table = getTable(query, params);
-        if (table instanceof ISpatialTable) {
+        if (table!=null && table instanceof ISpatialTable) {
             return (JdbcSpatialTable) table;
         } else {
             String name = "";
@@ -479,7 +491,7 @@ public class H2GIS extends JdbcDataSource {
     @Nullable
     public IJdbcSpatialTable getSpatialTable(@NotNull String tableName) {
         IJdbcTable table = getTable(tableName);
-        if (table instanceof ISpatialTable) {
+        if (table!=null &&  table instanceof ISpatialTable) {
             return (JdbcSpatialTable) table;
         } else {
             String name = "";

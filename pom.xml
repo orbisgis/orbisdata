@@ -11,7 +11,7 @@
         <version>1.0.3-SNAPSHOT</version>
     </parent>
     <artifactId>orbisdata</artifactId>
-    <version>1.0.1-SNAPSHOT</version>
+    <version>${revision}</version>
     <packaging>pom</packaging>
     <modules>
         <module>data-manager</module>
@@ -24,6 +24,7 @@
         <maven.build.timestamp.format>YYYY-MM-dd</maven.build.timestamp.format>
         <buildNumber>${maven.build.timestamp}</buildNumber>
         <site.basedir>${project.basedir}</site.basedir>
+        <revision>1.0.1-RC1</revision>
     </properties>
 
     <!-- Dependencies -->

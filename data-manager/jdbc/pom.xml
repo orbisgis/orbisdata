@@ -8,11 +8,11 @@
     <parent>
         <groupId>org.orbisgis.orbisdata</groupId>
         <artifactId>data-manager</artifactId>
-        <version>${revision}</version>
+        <version>1.0.1-RC1</version>
     </parent>
     <groupId>org.orbisgis.orbisdata.datamanager</groupId>
     <artifactId>jdbc</artifactId>
-    <version>${revision}</version>
+    <version>1.0.1-RC1</version>
     <packaging>bundle</packaging>
 
     <!-- Properties -->
@@ -21,6 +21,7 @@
         <maven.build.timestamp.format>YYYY-MM-dd</maven.build.timestamp.format>
         <buildNumber>${maven.build.timestamp}</buildNumber>
         <site.basedir>${project.parent.basedir}</site.basedir>
+        <h2gis-version>2</h2gis-version>
     </properties>
 
     <!-- Dependencies -->
@@ -49,14 +50,17 @@
         <dependency>
             <groupId>org.orbisgis</groupId>
             <artifactId>h2gis</artifactId>
+            <version>${h2gis-version}</version>
         </dependency>
         <dependency>
             <groupId>org.orbisgis</groupId>
             <artifactId>h2gis-network</artifactId>
+            <version>${h2gis-version}</version>
         </dependency>
         <dependency>
             <groupId>org.orbisgis</groupId>
             <artifactId>h2gis-utilities</artifactId>
+            <version>${h2gis-version}</version>
         </dependency>
         <dependency>
             <groupId>org.osgi</groupId>
@@ -65,10 +69,12 @@
         <dependency>
             <groupId>org.orbisgis</groupId>
             <artifactId>postgis-jts</artifactId>
+            <version>${h2gis-version}</version>
         </dependency>
         <dependency>
             <groupId>org.orbisgis</groupId>
             <artifactId>postgis-jts-osgi</artifactId>
+            <version>${h2gis-version}</version>
         </dependency>
         <!-- Test dependencies -->
         <dependency>

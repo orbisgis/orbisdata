@@ -8,11 +8,11 @@
     <parent>
         <groupId>org.orbisgis.orbisdata</groupId>
         <artifactId>data-manager</artifactId>
-        <version>${revision}</version>
+        <version>1.0.1-RC1</version>
     </parent>
     <groupId>org.orbisgis.orbisdata.datamanager</groupId>
     <artifactId>api</artifactId>
-    <version>${revision}</version>
+    <version>1.0.1-RC1</version>
     <packaging>bundle</packaging>
 
     <!-- Properties -->
@@ -36,6 +36,7 @@
         <dependency>
             <groupId>org.locationtech.jts</groupId>
             <artifactId>jts-core</artifactId>
+            <version>${jts-core-version}</version>
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
@@ -54,6 +55,7 @@
         <dependency>
             <groupId>org.orbisgis</groupId>
             <artifactId>h2gis</artifactId>
+            <version>${h2gis-version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -63,6 +65,7 @@
         <dependency>
             <groupId>org.orbisgis</groupId>
             <artifactId>h2gis-utilities</artifactId>
+            <version>${h2gis-version}</version>
         </dependency>
     </dependencies>
 

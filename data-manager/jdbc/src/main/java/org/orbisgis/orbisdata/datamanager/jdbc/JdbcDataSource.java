@@ -47,6 +47,7 @@ import groovy.transform.stc.ClosureParams;
 import groovy.transform.stc.SimpleType;
 import org.codehaus.groovy.runtime.InvokerHelper;
 import org.h2.util.ScriptReader;
+import org.h2gis.functions.io.utility.IOMethods;
 import org.h2gis.utilities.TableLocation;
 import org.h2gis.utilities.*;
 import org.orbisgis.commons.annotations.NotNull;
@@ -57,7 +58,6 @@ import org.orbisgis.orbisdata.datamanager.api.datasource.IDataSourceLocation;
 import org.orbisgis.orbisdata.datamanager.api.datasource.IJdbcDataSource;
 import org.orbisgis.orbisdata.datamanager.api.dsl.IResultSetBuilder;
 import org.orbisgis.orbisdata.datamanager.jdbc.dsl.ResultSetBuilder;
-import org.orbisgis.orbisdata.datamanager.jdbc.io.IOMethods;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -82,6 +82,8 @@ import java.util.regex.Pattern;
  * @author Sylvain PALOMINOS (UBS Lab-STICC 2019 / Chaire GEOTERA 2020)
  */
 public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, IResultSetBuilder {
+
+    private IOMethods ioMethods = null;
     /**
      * Logger
      */
@@ -631,7 +633,16 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, IRe
             LOGGER.error("No connection, cannot save.");
             return false;
         }
-        return IOMethods.saveAsFile(getConnection(), tableName, filePath, null, delete);
+        try {
+            if(ioMethods==null) {
+                ioMethods = new IOMethods();
+            }
+            ioMethods.exportToFile(getConnection(), tableName,filePath, null, delete);
+            return true;
+        } catch (SQLException e) {
+            LOGGER.error("Cannot import the file : "+ filePath);
+        }
+        return false;
     }
 
     @Override
@@ -640,7 +651,16 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, IRe
             LOGGER.error("No connection, cannot save.");
             return false;
         }
-        return IOMethods.saveAsFile(getConnection(), tableName, filePath, encoding, false);
+        try {
+            if(ioMethods==null) {
+                ioMethods = new IOMethods();
+            }
+            ioMethods.exportToFile(getConnection(), tableName,filePath, encoding, false);
+            return true;
+        } catch (SQLException e) {
+            LOGGER.error("Cannot import the file : "+ filePath);
+        }
+        return false;
     }
 
     @Override
@@ -692,7 +712,12 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, IRe
     @Override
     public String link(@NotNull String filePath, @NotNull String tableName, boolean delete) {
         String formatedTableName = TableLocation.parse(tableName, getDataBaseType() == DataBaseType.H2GIS).toString(getDataBaseType() == DataBaseType.H2GIS);
-        IOMethods.link(filePath, formatedTableName, delete, this);
+        try {
+            IOMethods.linkedFile(getConnection(), filePath, tableName, delete);
+            return formatedTableName;
+        } catch (SQLException e) {
+            LOGGER.error("Cannot link the file : "+ filePath);
+        }
         return formatedTableName;
     }
 
@@ -801,8 +826,14 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, IRe
     public String load(@NotNull String filePath, @NotNull String tableName, @Nullable String encoding,
                            boolean delete) {
         String formatedTableName = TableLocation.parse(tableName, getDataBaseType() == DataBaseType.H2GIS).toString(getDataBaseType() == DataBaseType.H2GIS);
-        if(IOMethods.loadFile(filePath, formatedTableName, encoding, delete, this)){
+        try {
+            if(ioMethods==null) {
+                ioMethods = new IOMethods();
+            }
+            ioMethods.importFile(getConnection(), filePath, tableName, encoding, delete);
             return formatedTableName;
+        } catch (SQLException e) {
+            LOGGER.error("Cannot import the file : "+ filePath);
         }
         return null;
     }
@@ -952,12 +983,12 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, IRe
         if (matcher.find()) {
             LOGGER.error("This function doesn't support query as input data.");
         } else {
-            TableLocation sourceTableLocation = TableLocation.parse(inputTableName, dataSource.getDataBaseType() == DataBaseType.H2GIS);
-            TableLocation targetTableLocation = TableLocation.parse(inputTableName, this.getDataBaseType() == DataBaseType.H2GIS);
-            if (IOMethods.loadFromDB(this, dataSource,
-                    targetTableLocation, sourceTableLocation,
-                    deleteIfExists, 1000)) {
+            try {
+                IOMethods.exportToDataBase(dataSource.getConnection(), inputTableName, getConnection(), inputTableName, deleteIfExists?-1:0, 1000);
+                TableLocation targetTableLocation = TableLocation.parse(inputTableName, this.getDataBaseType() == DataBaseType.H2GIS);
                 return targetTableLocation.toString(this.getDataBaseType() == DataBaseType.H2GIS);
+            } catch (SQLException e) {
+                LOGGER.error("Unable to load the table "+inputTableName + " from " + dataSource.getLocation().toString());
             }
         }
         return null;
@@ -972,12 +1003,12 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, IRe
         if (matcher.find()) {
             LOGGER.error("This function doesn't support query as input data.");
         } else {
-            TableLocation sourceTableLocation = TableLocation.parse(inputTableName, dataSource.getDataBaseType() == DataBaseType.H2GIS);
-            TableLocation targetTableLocation = TableLocation.parse(inputTableName, this.getDataBaseType() == DataBaseType.H2GIS);
-            if (IOMethods.loadFromDB(this, dataSource,
-                    targetTableLocation, sourceTableLocation,
-                    false, 1000)) {
+            try {
+                IOMethods.exportToDataBase(dataSource.getConnection(), inputTableName, getConnection(), inputTableName, 0, 1000);
+                TableLocation targetTableLocation = TableLocation.parse(inputTableName, this.getDataBaseType() == DataBaseType.H2GIS);
                 return targetTableLocation.toString(this.getDataBaseType() == DataBaseType.H2GIS);
+            } catch (SQLException e) {
+                LOGGER.error("Unable to load the table "+inputTableName + " from " + dataSource.getLocation().toString());
             }
         }
         return null;
@@ -985,29 +1016,12 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, IRe
 
     @Override
     public String load(@NotNull IJdbcDataSource dataSource, @NotNull String inputTableName, @NotNull String outputTableName, boolean deleteIfExists, int batchSize) {
-        //The inputTableName can be query
-        String regex = ".*(?i)\\b(select|from)\\b.*";
-        Pattern pattern = Pattern.compile(regex);
-        Matcher matcher = pattern.matcher(inputTableName);
-        if (matcher.find()) {
-            if (inputTableName.startsWith("(") && inputTableName.endsWith(")")) {
-                TableLocation targetTableLocation = TableLocation.parse(outputTableName, this.getDataBaseType() == DataBaseType.H2GIS);
-                if (IOMethods.loadFromDB(this, dataSource,
-                        targetTableLocation, inputTableName,
-                        deleteIfExists, batchSize)) {
-                    return targetTableLocation.toString(this.getDataBaseType() == DataBaseType.H2GIS);
-                }
-            } else {
-                LOGGER.error("The query must be enclosed in parenthesis: '(SELECT * FROM ORDERS)'.");
-            }
-        } else {
-            TableLocation sourceTableLocation = TableLocation.parse(inputTableName, dataSource.getDataBaseType() == DataBaseType.H2GIS);
+        try {
+            IOMethods.exportToDataBase(dataSource.getConnection(), inputTableName, getConnection(), outputTableName, deleteIfExists?-1:0, 1000);
             TableLocation targetTableLocation = TableLocation.parse(outputTableName, this.getDataBaseType() == DataBaseType.H2GIS);
-            if (IOMethods.loadFromDB(this, dataSource,
-                    targetTableLocation, sourceTableLocation,
-                    deleteIfExists, batchSize)) {
-                return targetTableLocation.toString(this.getDataBaseType() == DataBaseType.H2GIS);
-            }
+            return targetTableLocation.toString(this.getDataBaseType() == DataBaseType.H2GIS);
+        } catch (SQLException e) {
+            LOGGER.error("Unable to load the table "+inputTableName + " from " + dataSource.getLocation().toString());
         }
         return null;
     }

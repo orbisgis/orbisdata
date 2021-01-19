@@ -11,7 +11,7 @@
         <version>1.0.3-SNAPSHOT</version>
     </parent>
     <artifactId>orbisdata</artifactId>
-    <version>${revision}</version>
+    <version>1.0.1-RC1</version>
     <packaging>pom</packaging>
     <modules>
         <module>data-manager</module>
@@ -24,7 +24,8 @@
         <maven.build.timestamp.format>YYYY-MM-dd</maven.build.timestamp.format>
         <buildNumber>${maven.build.timestamp}</buildNumber>
         <site.basedir>${project.basedir}</site.basedir>
-        <revision>1.0.1-RC1</revision>
+        <h2gis-version>2.0.0-RC1</h2gis-version>
+        <jts-core-version>1.18.0</jts-core-version>
     </properties>
 
     <!-- Dependencies -->

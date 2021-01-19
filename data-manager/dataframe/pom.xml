@@ -26,6 +26,10 @@
     <!-- Dependencies -->
     <dependencies>
         <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.orbisgis.orbisdata.datamanager</groupId>
             <artifactId>api</artifactId>
             <scope>compile</scope>
@@ -55,12 +59,10 @@
         <dependency>
             <groupId>org.orbisgis</groupId>
             <artifactId>h2gis</artifactId>
-            <version>${h2gis-version}</version>
         </dependency>
         <dependency>
             <groupId>org.orbisgis</groupId>
             <artifactId>h2gis-utilities</artifactId>
-            <version>${h2gis-version}</version>
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
@@ -77,12 +79,10 @@
         <dependency>
             <groupId>org.orbisgis</groupId>
             <artifactId>postgis-jts</artifactId>
-            <version>${h2gis-version}</version>
         </dependency>
         <dependency>
             <groupId>org.orbisgis</groupId>
             <artifactId>postgis-jts-osgi</artifactId>
-            <version>${h2gis-version}</version>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>

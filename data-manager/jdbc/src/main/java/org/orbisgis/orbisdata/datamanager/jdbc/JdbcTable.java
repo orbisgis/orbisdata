@@ -39,6 +39,9 @@ package org.orbisgis.orbisdata.datamanager.jdbc;
 import groovy.lang.*;
 import org.codehaus.groovy.runtime.InvokerHelper;
 import org.h2.value.DataType;
+import org.h2.value.TypeInfo;
+import org.h2.value.Value;
+import org.h2.value.ValueToObjectConverter2;
 import org.h2gis.utilities.GeometryMetaData;
 import org.h2gis.utilities.GeometryTableUtilities;
 import org.h2gis.utilities.JDBCUtilities;
@@ -394,10 +397,11 @@ public abstract class JdbcTable<T extends ResultSet, U> extends DefaultResultSet
         }
         DataType dataType = getColumnDataType(columnName);
         Objects.requireNonNull(dataType);
-        if ("OTHER".equals(dataType.name) || "JAVA_OBJECT".equals(dataType.name)) {
+        String dataType_tmp = Value.getTypeName(dataType.type);
+        if ("OTHER".equals(dataType_tmp) || "JAVA_OBJECT".equals(dataType_tmp)) {
             return getGeometricType(columnName);
         }
-        return dataType.name;
+        return dataType_tmp;
     }
 
     @Nullable
@@ -461,12 +465,8 @@ public abstract class JdbcTable<T extends ResultSet, U> extends DefaultResultSet
             if (dataType == null) {
                 return false;
             }
-            DataType dtClass = DataType.getDataType(DataType.getTypeFromClass(clazz));
-            if (dataType.equals(dtClass)) {
-                return true;
-            }
-            DataType dtSql = DataType.getDataType(DataType.convertSQLTypeToValueType(DataType.getTypeFromClass(clazz)));
-            return dataType.equals(dtSql);
+            DataType dtClass = DataType.getDataType(ValueToObjectConverter2.classToType(clazz).getValueType());
+            return dataType.equals(dtClass);
         }
     }
 

@@ -26,11 +26,6 @@
     <!-- Dependencies -->
     <dependencies>
         <dependency>
-            <groupId>org.locationtech.jts</groupId>
-            <artifactId>jts-core</artifactId>
-            <version>${jts-core-version}</version>
-        </dependency>
-        <dependency>
             <groupId>org.orbisgis.orbisdata.datamanager</groupId>
             <artifactId>api</artifactId>
             <scope>compile</scope>
@@ -54,17 +49,14 @@
         <dependency>
             <groupId>org.orbisgis</groupId>
             <artifactId>h2gis</artifactId>
-            <version>${h2gis-version}</version>
         </dependency>
         <dependency>
             <groupId>org.orbisgis</groupId>
             <artifactId>h2gis-network</artifactId>
-            <version>${h2gis-version}</version>
         </dependency>
         <dependency>
             <groupId>org.orbisgis</groupId>
             <artifactId>h2gis-utilities</artifactId>
-            <version>${h2gis-version}</version>
         </dependency>
         <dependency>
             <groupId>org.osgi</groupId>
@@ -73,12 +65,10 @@
         <dependency>
             <groupId>org.orbisgis</groupId>
             <artifactId>postgis-jts</artifactId>
-            <version>${h2gis-version}</version>
         </dependency>
         <dependency>
             <groupId>org.orbisgis</groupId>
             <artifactId>postgis-jts-osgi</artifactId>
-            <version>${h2gis-version}</version>
         </dependency>
         <!-- Test dependencies -->
         <dependency>

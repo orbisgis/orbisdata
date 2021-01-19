@@ -21,7 +21,6 @@
         <maven.build.timestamp.format>YYYY-MM-dd</maven.build.timestamp.format>
         <buildNumber>${maven.build.timestamp}</buildNumber>
         <site.basedir>${project.parent.basedir}</site.basedir>
-        <h2gis-version>2</h2gis-version>
     </properties>
 
     <!-- Dependencies -->

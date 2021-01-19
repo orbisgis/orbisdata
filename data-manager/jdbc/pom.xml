@@ -26,6 +26,11 @@
     <!-- Dependencies -->
     <dependencies>
         <dependency>
+            <groupId>org.locationtech.jts</groupId>
+            <artifactId>jts-core</artifactId>
+            <version>${jts-core-version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.orbisgis.orbisdata.datamanager</groupId>
             <artifactId>api</artifactId>
             <scope>compile</scope>

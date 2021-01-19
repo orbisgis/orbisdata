@@ -42,6 +42,7 @@ import groovy.lang.MissingMethodException;
 import groovy.sql.GroovyRowResult;
 import org.codehaus.groovy.runtime.InvokerHelper;
 import org.h2gis.utilities.GeometryTableUtilities;
+import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.TableLocation;
 import org.orbisgis.commons.annotations.Nullable;
 import org.orbisgis.orbisdata.datamanager.api.dataset.DataBaseType;
@@ -129,13 +130,13 @@ public class JdbcColumn implements IJdbcColumn, GroovyObject {
         }
         try {
             if(isH2) {
-                Map<?, ?> map = dataSource.firstRow("SELECT TYPE_NAME FROM INFORMATION_SCHEMA.COLUMNS " +
+                Map<?, ?> map = dataSource.firstRow("SELECT DATA_TYPE FROM INFORMATION_SCHEMA.COLUMNS " +
                                 "WHERE INFORMATION_SCHEMA.COLUMNS.TABLE_NAME=? " +
                                 "AND INFORMATION_SCHEMA.COLUMNS.TABLE_SCHEMA=? " +
                                 "AND INFORMATION_SCHEMA.COLUMNS.COLUMN_NAME=?;",
                         new Object[]{tableName.getTable(), tableName.getSchema("PUBLIC"), name});
-                if (map != null && map.containsKey("TYPE_NAME")) {
-                    return map.get("TYPE_NAME").toString();
+                if (map != null && map.containsKey("DATA_TYPE")) {
+                    return map.get("DATA_TYPE").toString();
                 }
             }else {
                 Map<?, ?> map = dataSource.firstRow("SELECT udt_name FROM INFORMATION_SCHEMA.COLUMNS " +
@@ -188,28 +189,8 @@ public class JdbcColumn implements IJdbcColumn, GroovyObject {
         if(dataSource == null || name == null || tableName == null){
             LOGGER.error("Unable to find an index");
         }
-        if(tableName==null){
-            LOGGER.error("Unable to find an index on a query");
-        }
         try {
-            if(isH2) {
-                Map<?, ?> map = dataSource.firstRow("SELECT INDEX_TYPE_NAME FROM INFORMATION_SCHEMA.INDEXES " +
-                                "WHERE INFORMATION_SCHEMA.INDEXES.TABLE_NAME=? " +
-                                "AND INFORMATION_SCHEMA.INDEXES.TABLE_SCHEMA=? " +
-                                "AND INFORMATION_SCHEMA.INDEXES.COLUMN_NAME=?;",
-                        new Object[]{tableName.getTable(), tableName.getSchema("PUBLIC"), name});
-                return map != null;
-            }else {
-               String query =  "SELECT  cls.relname, am.amname " +
-                        "FROM  pg_class cls " +
-                        "JOIN pg_am am ON am.oid=cls.relam where cls.oid " +
-                        " in(select attrelid as pg_class_oid from pg_catalog.pg_attribute " +
-                        " where attname = ? and attrelid in " +
-                        "(select b.oid from pg_catalog.pg_indexes a, pg_catalog.pg_class b  where a.schemaname =? and a.tablename =? " +
-                        "and a.indexname = b.relname)) and am.amname in('btree', 'hash', 'gin', 'brin', 'gist', 'spgist') ;";
-                Map<?, ?> map =  dataSource.firstRow(query, new Object[]{name, tableName.getSchema("public"), tableName.getTable()});
-                return map != null;
-            }
+            return JDBCUtilities.isIndexed(dataSource.getConnection(), tableName, name);
         } catch (SQLException e) {
             LOGGER.error("Unable to check if the column '" + name + "' from the table '" + tableName + "' is indexed.\n" +
                     e.getLocalizedMessage());
@@ -222,28 +203,8 @@ public class JdbcColumn implements IJdbcColumn, GroovyObject {
         if(dataSource == null || name == null || tableName == null){
             LOGGER.error("Unable to find a spatial index");
         }
-        if(tableName==null){
-            LOGGER.error("Unable to find a spatial index on a query");
-        }
         try {
-            if(isH2) {
-                Map<?, ?> map = dataSource.firstRow("SELECT INDEX_TYPE_NAME FROM INFORMATION_SCHEMA.INDEXES " +
-                                "WHERE INFORMATION_SCHEMA.INDEXES.TABLE_NAME=? " +
-                                "AND INFORMATION_SCHEMA.INDEXES.TABLE_SCHEMA=? " +
-                                "AND INFORMATION_SCHEMA.INDEXES.COLUMN_NAME=?;",
-                        new Object[]{tableName.getTable(), tableName.getSchema("PUBLIC"), name});
-                return map != null && map.get("INDEX_TYPE_NAME").toString().contains("SPATIAL");
-            }else{
-                String query =  "SELECT  cls.relname, am.amname " +
-                        "FROM  pg_class cls " +
-                        "JOIN pg_am am ON am.oid=cls.relam where cls.oid " +
-                        " in(select attrelid as pg_class_oid from pg_catalog.pg_attribute " +
-                        " where attname = ? and attrelid in " +
-                        "(select b.oid from pg_catalog.pg_indexes a, pg_catalog.pg_class b  where a.schemaname =? and a.tablename =? " +
-                        "and a.indexname = b.relname)) and am.amname = 'gist' ;";
-                Map<?, ?> map =  dataSource.firstRow(query, new Object[]{name, tableName.getSchema("public"), tableName.getTable()});
-                return map != null;
-            }
+            return JDBCUtilities.isSpatialIndexed(dataSource.getConnection(), tableName, name);
         } catch (SQLException e) {
             LOGGER.error("Unable to check if the column '" + name + "' from the table '" + tableName + "' is indexed.\n" +
                     e.getLocalizedMessage());
@@ -256,18 +217,8 @@ public class JdbcColumn implements IJdbcColumn, GroovyObject {
         if(dataSource == null || name == null || tableName == null){
             LOGGER.error("Unable to create a spatial index");
         }
-        if(tableName==null){
-            LOGGER.error("Unable to create a spatial index on a query");
-        }
         try {
-            if (isH2) {
-                dataSource.execute("CREATE INDEX IF NOT EXISTS " +  tableName.toString(isH2)+"_"+name+ " ON " + tableName.toString(isH2)
-                        + " USING RTREE (" + TableLocation.quoteIdentifier(name, isH2)  + ")");
-            } else {
-                dataSource.execute("CREATE INDEX IF NOT EXISTS "+  tableName.toString(isH2)+"_"+name+ " ON "  + tableName.toString(isH2)
-                        + " USING GIST (" + TableLocation.quoteIdentifier(name, isH2)  + ")");
-            }
-            return true;
+            return  JDBCUtilities.createSpatialIndex(dataSource.getConnection(), tableName, name);
         } catch (SQLException e) {
             LOGGER.error("Unable to create a spatial index on the column '" + name + "' in the table '" + tableName + "'.\n" +
                     e.getLocalizedMessage());
@@ -280,13 +231,8 @@ public class JdbcColumn implements IJdbcColumn, GroovyObject {
         if(dataSource == null || name == null || tableName == null){
             LOGGER.error("Unable to create an index");
         }
-        if(tableName==null){
-            LOGGER.error("Unable to create an index on a query");
-        }
         try {
-            dataSource.execute("CREATE INDEX IF NOT EXISTS "+  tableName.toString(isH2)+"_"+name+ " ON "  + tableName.toString(isH2) + " USING BTREE (" +
-                    TableLocation.quoteIdentifier(name, isH2) + ")");
-            return true;
+            return  JDBCUtilities.createIndex(dataSource.getConnection(), tableName, name);
         } catch (SQLException e) {
             LOGGER.error("Unable to create an index on the column '" + name + "' in the table '" + tableName + "'.\n" +
                     e.getLocalizedMessage());
@@ -299,44 +245,12 @@ public class JdbcColumn implements IJdbcColumn, GroovyObject {
         if(dataSource == null || name == null || tableName == null){
             LOGGER.error("Unable to drop index");
         }
-        if(tableName==null){
-            LOGGER.error("Unable to drop index on a query");
-        }
         List<String> indexes = new ArrayList<>();
         try {
-            if (isH2) {
-                List<GroovyRowResult> list = dataSource.rows("SELECT INDEX_NAME FROM INFORMATION_SCHEMA.INDEXES " +
-                                "WHERE INFORMATION_SCHEMA.INDEXES.TABLE_NAME=? " +
-                                "AND INFORMATION_SCHEMA.INDEXES.TABLE_SCHEMA=? " +
-                                "AND INFORMATION_SCHEMA.INDEXES.COLUMN_NAME=?;",
-                        new Object[]{tableName.getTable(), tableName.getSchema("PUBLIC"), name});
-                for (GroovyRowResult rowResult : list) {
-                    indexes.add(rowResult.get("INDEX_NAME").toString());
-                }
-            }else {
-                String query =  "SELECT  cls.relname as index_name " +
-                        "FROM  pg_class cls " +
-                        "JOIN pg_am am ON am.oid=cls.relam where cls.oid " +
-                        " in(select attrelid as pg_class_oid from pg_catalog.pg_attribute " +
-                        " where attname = ? and attrelid in " +
-                        "(select b.oid from pg_catalog.pg_indexes a, pg_catalog.pg_class b  where a.schemaname =? and a.tablename =? " +
-                        "and a.indexname = b.relname)) and am.amname in('btree', 'hash', 'gin', 'brin', 'gist', 'spgist') ;";
-                List<GroovyRowResult> list  =  dataSource.rows(query, new Object[]{name, tableName.getSchema("public"), tableName.getTable()});
-                for (GroovyRowResult rowResult : list) {
-                    indexes.add(rowResult.get("index_name").toString());
-                }
-            }
+           JDBCUtilities.dropIndex(dataSource.getConnection(), tableName, name);
         } catch (SQLException e) {
-            LOGGER.error("Unable to get the indexes of the column '" + name + "' in the table '" + tableName + "'.\n" +
+            LOGGER.error("Unable to drop the indexes of the column '" + name + "' in the table '" + tableName + "'.\n" +
                     e.getLocalizedMessage());
-        }
-        for (String index : indexes) {
-            try {
-                dataSource.execute("DROP INDEX IF EXISTS " + index);
-            } catch (SQLException e) {
-                LOGGER.error("Unable to drop the index '" + index + "' on the column '" + name + "' in the table '" +
-                        tableName + "'.\n" + e.getLocalizedMessage());
-            }
         }
     }
 
@@ -360,16 +274,14 @@ public class JdbcColumn implements IJdbcColumn, GroovyObject {
 
     @Override
     public void setSrid(int srid) {
+        if(dataSource == null || name == null || tableName == null){
+            LOGGER.error("Unable to set the srid");
+        }
         if (!isSpatial()) {
             throw new UnsupportedOperationException();
         }
         try {
-            Connection con = dataSource.getConnection();
-            if(con == null){
-                LOGGER.error("Unable to set connection for the table SRID.");
-            }
-            con.createStatement().execute(
-                    "ALTER TABLE "+tableName.toString()+" ALTER COLUMN "+name+" TYPE geometry("+getType()+", "+srid+") USING ST_SetSRID("+name+","+srid+");");
+            GeometryTableUtilities.alterSRID(dataSource.getConnection(), tableName, name, srid);
         } catch (SQLException e) {
             LOGGER.error("Unable to set the table SRID.", e);
         }

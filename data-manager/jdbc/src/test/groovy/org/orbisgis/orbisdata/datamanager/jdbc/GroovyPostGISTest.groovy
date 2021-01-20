@@ -136,7 +136,6 @@ class GroovyPostGISTest {
     }
 
 
-    @Disabled
     @Test
     @EnabledIfSystemProperty(named = "test.postgis", matches = "true")
     void exportImportShpFile() {
@@ -202,7 +201,6 @@ class GroovyPostGISTest {
         println(concat)
     }
 
-    @Disabled
     @Test
     @EnabledIfSystemProperty(named = "test.postgis", matches = "true")
     void exportImportGeoJsonShapeFile() {
@@ -411,7 +409,6 @@ class GroovyPostGISTest {
         assertEquals("the_geom", postGIS.getSpatialTable("query_table").getColumns().first())
     }
 
-    @Disabled
     @Test
     void preparedQueryTest() {
         postGIS.execute("""

@@ -122,9 +122,11 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, IRe
                     put("INTEGER", Integer.class);
                     put("FLOAT4", Float.class);
                     put("FLOAT", Float.class);
+                    put("REAL", Float.class);
                     put("DOUBLE PRECISION", Double.class);
                     put("FLOAT8", Double.class);
                     put("BOOL", Boolean.class);
+                    put("BOOLEAN", Boolean.class);
                     put("VARCHAR", String.class);
                     put("CHARACTER VARYING", String.class);
                     put("DATE", java.sql.Date.class);
@@ -132,6 +134,9 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, IRe
                     put("TIMESTAMP", java.sql.Timestamp.class);
                     put("TIMESTAMPZ", java.sql.Timestamp.class);
                     put("TIMESTAMPTZ", java.sql.Timestamp.class);
+                    put("TINYINT", Byte.class);
+                    put("SMALLINT", Short.class);
+                    put("BIGINT", Long.class);
                 }
             };
     private IOMethods ioMethods = null;
@@ -1027,40 +1032,22 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, IRe
 
     @Override
     public String load(@NotNull IJdbcDataSource dataSource, @NotNull String inputTableName, boolean deleteIfExists) {
-        //The inputTableName can be query
-        String regex = ".*(?i)\\b(select|from)\\b.*";
-        Pattern pattern = Pattern.compile(regex);
-        Matcher matcher = pattern.matcher(inputTableName);
-        if (matcher.find()) {
-            LOGGER.error("This function doesn't support query as input data.");
-        } else {
-            try {
-                IOMethods.exportToDataBase(dataSource.getConnection(), inputTableName, getConnection(), inputTableName, deleteIfExists?-1:0, 1000);
-                TableLocation targetTableLocation = TableLocation.parse(inputTableName, this.getDataBaseType() == DataBaseType.H2GIS);
-                return targetTableLocation.toString(this.getDataBaseType() == DataBaseType.H2GIS);
-            } catch (SQLException e) {
-                LOGGER.error("Unable to load the table "+inputTableName + " from " + dataSource.getLocation().toString());
-            }
+        try {
+            IOMethods.exportToDataBase(dataSource.getConnection(), inputTableName, getConnection(), inputTableName, deleteIfExists?-1:0, 1000);
+            TableLocation targetTableLocation = TableLocation.parse(inputTableName, this.getDataBaseType() == DataBaseType.H2GIS);
+            return targetTableLocation.toString(this.getDataBaseType() == DataBaseType.H2GIS);
+        } catch (SQLException e) {
+            LOGGER.error("Unable to load the table "+inputTableName + " from " + dataSource.getLocation().toString());
         }
         return null;
     }
 
     @Override
     public String load(@NotNull IJdbcDataSource dataSource, @NotNull String inputTableName) {
-        //The inputTableName can be query
-        String regex = ".*(?i)\\b(select|from)\\b.*";
-        Pattern pattern = Pattern.compile(regex);
-        Matcher matcher = pattern.matcher(inputTableName);
-        if (matcher.find()) {
-            LOGGER.error("This function doesn't support query as input data.");
-        } else {
-            try {
-                IOMethods.exportToDataBase(dataSource.getConnection(), inputTableName, getConnection(), inputTableName, 0, 1000);
-                TableLocation targetTableLocation = TableLocation.parse(inputTableName, this.getDataBaseType() == DataBaseType.H2GIS);
-                return targetTableLocation.toString(this.getDataBaseType() == DataBaseType.H2GIS);
-            } catch (SQLException e) {
-                LOGGER.error("Unable to load the table "+inputTableName + " from " + dataSource.getLocation().toString());
-            }
+        try {
+            return IOMethods.exportToDataBase(dataSource.getConnection(), inputTableName, getConnection(), inputTableName, 0, 1000);
+        } catch (SQLException e) {
+            LOGGER.error("Unable to load the table "+inputTableName + " from " + dataSource.getLocation().toString());
         }
         return null;
     }
@@ -1068,10 +1055,8 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, IRe
     @Override
     public String load(@NotNull IJdbcDataSource dataSource, @NotNull String inputTableName, @NotNull String outputTableName, boolean deleteIfExists, int batchSize) {
         try {
-            IOMethods.exportToDataBase(dataSource.getConnection(), inputTableName, getConnection(), outputTableName, deleteIfExists?-1:0, 1000);
-            TableLocation targetTableLocation = TableLocation.parse(outputTableName, this.getDataBaseType() == DataBaseType.H2GIS);
-            return targetTableLocation.toString(this.getDataBaseType() == DataBaseType.H2GIS);
-        } catch (SQLException e) {
+            return IOMethods.exportToDataBase(dataSource.getConnection(), inputTableName, getConnection(), outputTableName, deleteIfExists?-1:0, 1000);
+          } catch (SQLException e) {
             LOGGER.error("Unable to load the table "+inputTableName + " from " + dataSource.getLocation().toString());
         }
         return null;

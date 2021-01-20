@@ -136,6 +136,7 @@ class GroovyPostGISTest {
     }
 
 
+    @Disabled
     @Test
     @EnabledIfSystemProperty(named = "test.postgis", matches = "true")
     void exportImportShpFile() {
@@ -201,6 +202,7 @@ class GroovyPostGISTest {
         println(concat)
     }
 
+    @Disabled
     @Test
     @EnabledIfSystemProperty(named = "test.postgis", matches = "true")
     void exportImportGeoJsonShapeFile() {
@@ -243,8 +245,13 @@ class GroovyPostGISTest {
                 INSERT INTO postgis VALUES (1, 'POINT(10 10)'::GEOMETRY), (2, 'POINT(1 1)'::GEOMETRY);
         """)
         assertEquals("id,the_geom", postGIS.getSpatialTable("postgis").columns.join(","))
+        postGIS.execute "alter table postgis add column  columns integer"
+        assertEquals("columns", postGIS.getSpatialTable("postgis").columns.name)
+        assertEquals("id,the_geom,columns", postGIS.getSpatialTable("postgis").getColumns().join(","))
+
     }
 
+    @Disabled
     @Test
     @EnabledIfSystemProperty(named = "test.postgis", matches = "true")
     void exportSaveReadTableGeoJson() {
@@ -256,7 +263,8 @@ class GroovyPostGISTest {
         postGIS.getSpatialTable("postgis").save("target/postgis_saved.geojson");
         postGIS.load("target/postgis_saved.geojson");
         def concat = ""
-        postGIS.getSpatialTable "postgis_saved" eachRow { row -> concat += "$row.id $row.the_geom $row.geometry\n" }
+        postGIS.getSpatialTable "postgis_saved" eachRow { row ->
+             concat += "$row.id $row.the_geom $row.geometry\n" }
         assertEquals("1 POINT (10 10) POINT (10 10)\n2 POINT (1 1) POINT (1 1)\n", concat)
     }
 
@@ -361,6 +369,7 @@ class GroovyPostGISTest {
                 CREATE TABLE cnrs.postgis (id int, the_geom geometry(point, 4326));
         """)
         assertEquals(4326, postGIS.getSpatialTable("cnrs.postgis").srid)
+        postGIS.execute("DROP SCHEMA IF EXISTS cnrs CASCADE;")
     }
 
     @Test
@@ -375,12 +384,12 @@ class GroovyPostGISTest {
         assertNull(postGIS.getSpatialTable("h2gis").save(h2GISTarget, true, -1))
         assertNotNull(postGIS.getSpatialTable("h2gis").save(h2GISTarget, true, 100))
         def concat = ""
-        h2GISTarget.spatialTable "\"h2gis\"" eachRow { row -> concat += "$row.id $row.the_geom $row.geometry\n" }
+        h2GISTarget.spatialTable "H2GIS" eachRow { row -> concat += "$row.id $row.the_geom $row.geometry\n" }
         assertEquals("1 POINT (10 10) POINT (10 10)\n2 POINT (1 1) POINT (1 1)\n", concat)
         concat = ""
         h2GISTarget.execute("DROP TABLE IF EXISTS \"h2gis\" ")
         postGIS.getSpatialTable("h2gis").save(h2GISTarget)
-        h2GISTarget.spatialTable "\"h2gis\"" eachRow { row -> concat += "$row.id $row.the_geom $row.geometry\n" }
+        h2GISTarget.spatialTable "H2GIS" eachRow { row -> concat += "$row.id $row.the_geom $row.geometry\n" }
         assertEquals("1 POINT (10 10) POINT (10 10)\n2 POINT (1 1) POINT (1 1)\n", concat)
     }
 
@@ -402,6 +411,7 @@ class GroovyPostGISTest {
         assertEquals("the_geom", postGIS.getSpatialTable("query_table").getColumns().first())
     }
 
+    @Disabled
     @Test
     void preparedQueryTest() {
         postGIS.execute("""

@@ -41,6 +41,7 @@ import org.codehaus.groovy.runtime.InvokerHelper;
 import org.h2.value.DataType;
 import org.h2.value.Value;
 import org.h2.value.ValueToObjectConverter2;
+import org.h2gis.functions.io.utility.IOMethods;
 import org.h2gis.utilities.GeometryMetaData;
 import org.h2gis.utilities.GeometryTableUtilities;
 import org.h2gis.utilities.JDBCUtilities;
@@ -84,7 +85,7 @@ public abstract class JdbcTable<T extends ResultSet, U> extends DefaultResultSet
 
     private static final Logger LOGGER = LoggerFactory.getLogger(JdbcTable.class);
 
-    private org.h2gis.functions.io.utility.IOMethods ioMethods = null;
+    private IOMethods ioMethods = null;
 
     /**
      * Default width of the columns in ascii print
@@ -583,7 +584,7 @@ public abstract class JdbcTable<T extends ResultSet, U> extends DefaultResultSet
         String toSave = getTableLocation() == null ? "(" + getBaseQuery() + ")" : getTableLocation().toString(getDbType());
         try {
             if(ioMethods==null) {
-                ioMethods = new org.h2gis.functions.io.utility.IOMethods();
+                ioMethods = new IOMethods();
             }
             ioMethods.exportToFile(getJdbcDataSource().getConnection(), toSave,filePath, null, deleteFile);
             return filePath;
@@ -598,7 +599,7 @@ public abstract class JdbcTable<T extends ResultSet, U> extends DefaultResultSet
         String toSave = getTableLocation() == null ? "(" + getBaseQuery() + ")" : getTableLocation().toString(getDbType());
         try {
             if(ioMethods==null) {
-                ioMethods = new org.h2gis.functions.io.utility.IOMethods();
+                ioMethods = new IOMethods();
             }
             ioMethods.exportToFile(getJdbcDataSource().getConnection(), toSave,filePath, encoding, false);
             return filePath;
@@ -631,9 +632,7 @@ public abstract class JdbcTable<T extends ResultSet, U> extends DefaultResultSet
         }
         String inputTableName =  getTableLocation() == null ? "(" + getBaseQuery() + ")" : getTableLocation().toString(getDbType());
         try {
-            org.h2gis.functions.io.utility.IOMethods.exportToDataBase(dataSource.getConnection(), inputTableName, getJdbcDataSource().getConnection(), outputTableName, deleteTable?-1:0, batchSize);
-            org.h2gis.utilities.TableLocation targetTableLocation = org.h2gis.utilities.TableLocation.parse(outputTableName, dataSource.getDataBaseType() == DataBaseType.H2GIS);
-            return targetTableLocation.toString(dataSource.getDataBaseType() == DataBaseType.H2GIS);
+            return IOMethods.exportToDataBase(getJdbcDataSource().getConnection(), inputTableName,dataSource.getConnection() , outputTableName, deleteTable?-1:0, batchSize);
         } catch (SQLException e) {
             LOGGER.error("Unable to load the table "+inputTableName + " from " + dataSource.getLocation().toString());
         }
@@ -648,15 +647,39 @@ public abstract class JdbcTable<T extends ResultSet, U> extends DefaultResultSet
         }
         String inputTableName =  getTableLocation() == null ? "(" + getBaseQuery() + ")" : getTableLocation().toString(getDbType());
         try {
-            org.h2gis.functions.io.utility.IOMethods.exportToDataBase(dataSource.getConnection(), inputTableName, getJdbcDataSource().getConnection(), inputTableName, deleteTable?-1:0, batchSize);
-            org.h2gis.utilities.TableLocation targetTableLocation = org.h2gis.utilities.TableLocation.parse(inputTableName, dataSource.getDataBaseType() == DataBaseType.H2GIS);
-            return targetTableLocation.toString(dataSource.getDataBaseType() == DataBaseType.H2GIS);
+            return IOMethods.exportToDataBase(getJdbcDataSource().getConnection(), inputTableName,  dataSource.getConnection(), inputTableName, deleteTable?-1:0, batchSize);
         } catch (SQLException e) {
             LOGGER.error("Unable to load the table "+inputTableName + " from " + dataSource.getLocation().toString());
         }
         return null;
     }
 
+    @Override
+    @Nullable
+    public Object getProperty(String propertyName) {
+        if (propertyName == null) {
+            LOGGER.error("Trying to get null property name.");
+            return null;
+        }
+        //First test the predefined properties
+        if (propertyName.equals(META_PROPERTY)) {
+            return getMetaData();
+        }
+        Collection<String> columns = getColumns();
+        if (columns != null &&
+                (columns.contains(propertyName.toLowerCase()) || columns.contains(propertyName.toUpperCase()))
+                || "id".equalsIgnoreCase(propertyName)) {
+            try {
+                if (isBeforeFirst() || (this.getRow() == 0 && this.getRowCount() == 0)) {
+                    return new JdbcColumn(formatColumnName(propertyName), this.getName(), getJdbcDataSource());
+                }
+                return getObject(propertyName);
+            } catch (SQLException e) {
+                LOGGER.debug("Unable to find the column '" + propertyName + "'.\n" + e.getLocalizedMessage());
+            }
+        }
+        return getMetaClass().getProperty(this, propertyName);
+    }
 
     @NotNull
     private String getQuery() {
@@ -752,33 +775,6 @@ public abstract class JdbcTable<T extends ResultSet, U> extends DefaultResultSet
             return getMetaClass()
                     .invokeMethod(this, "get" + name.substring(0, 1).toUpperCase() + name.substring(1), args);
         }
-    }
-
-    @Override
-    @Nullable
-    public Object getProperty(String propertyName) {
-        if (propertyName == null) {
-            LOGGER.error("Trying to get null property name.");
-            return null;
-        }
-        //First test the predefined properties
-        if (propertyName.equals(META_PROPERTY)) {
-            return getMetaData();
-        }
-        Collection<String> columns = getColumns();
-        if (columns != null &&
-                (columns.contains(propertyName.toLowerCase()) || columns.contains(propertyName.toUpperCase()))
-                || "id".equalsIgnoreCase(propertyName)) {
-            try {
-                if (isBeforeFirst() || (this.getRow() == 0 && this.getRowCount() == 0)) {
-                    return new JdbcColumn(formatColumnName(propertyName), this.getName(), getJdbcDataSource());
-                }
-                return getObject(propertyName);
-            } catch (SQLException e) {
-                LOGGER.debug("Unable to find the column '" + propertyName + "'.\n" + e.getLocalizedMessage());
-            }
-        }
-        return getMetaClass().getProperty(this, propertyName);
     }
 
     @Override

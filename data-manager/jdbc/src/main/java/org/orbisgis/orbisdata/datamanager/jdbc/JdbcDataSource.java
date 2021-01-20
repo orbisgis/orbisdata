@@ -50,6 +50,7 @@ import org.h2.util.ScriptReader;
 import org.h2gis.functions.io.utility.IOMethods;
 import org.h2gis.utilities.TableLocation;
 import org.h2gis.utilities.*;
+import org.locationtech.jts.geom.*;
 import org.orbisgis.commons.annotations.NotNull;
 import org.orbisgis.commons.annotations.Nullable;
 import org.orbisgis.orbisdata.datamanager.api.dataset.DataBaseType;
@@ -83,6 +84,56 @@ import java.util.regex.Pattern;
  */
 public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, IResultSetBuilder {
 
+    static final Map<String, Class> TYPE_NAME_TO_CLASS =
+            new HashMap<String, Class>() {
+                {
+                    put("GEOMETRY", Geometry.class);
+                    put("GEOGRAPHY", Geometry.class);
+                    put("POINT", Point.class);
+                    put("POINTM", Point.class);
+                    put("POINTZ", Point.class);
+                    put("POINTZM", Point.class);
+                    put("LINESTRING", LineString.class);
+                    put("LINESTRINGM", LineString.class);
+                    put("LINESTRINGZ", LineString.class);
+                    put("LINESTRINGZM", LineString.class);
+                    put("POLYGON", Polygon.class);
+                    put("POLYGONM", Polygon.class);
+                    put("POLYGONZ", Polygon.class);
+                    put("POLYGONZM", Polygon.class);
+                    put("MULTIPOINT", MultiPoint.class);
+                    put("MULTIPOINTM", MultiPoint.class);
+                    put("MULTIPOINTZ", MultiPoint.class);
+                    put("MULTIPOINTZM", MultiPoint.class);
+                    put("MULTILINESTRING", MultiLineString.class);
+                    put("MULTILINESTRINGM", MultiLineString.class);
+                    put("MULTILINESTRINGZ", MultiLineString.class);
+                    put("MULTILINESTRINGZM", MultiLineString.class);
+                    put("MULTIPOLYGON", MultiPolygon.class);
+                    put("MULTIPOLYGONM", MultiPolygon.class);
+                    put("MULTIPOLYGONZ", MultiPolygon.class);
+                    put("MULTIPOLYGONZM", MultiPolygon.class);
+                    put("GEOMETRYCOLLECTION", GeometryCollection.class);
+                    put("GEOMETRYCOLLECTIONM", GeometryCollection.class);
+                    put("BYTEA", byte[].class);
+                    put("INT2", Short.class);
+                    put("INT4", Integer.class);
+                    put("INT8", Long.class);
+                    put("INTEGER", Integer.class);
+                    put("FLOAT4", Float.class);
+                    put("FLOAT", Float.class);
+                    put("DOUBLE PRECISION", Double.class);
+                    put("FLOAT8", Double.class);
+                    put("BOOL", Boolean.class);
+                    put("VARCHAR", String.class);
+                    put("CHARACTER VARYING", String.class);
+                    put("DATE", java.sql.Date.class);
+                    put("TIME", java.sql.Time.class);
+                    put("TIMESTAMP", java.sql.Timestamp.class);
+                    put("TIMESTAMPZ", java.sql.Timestamp.class);
+                    put("TIMESTAMPTZ", java.sql.Timestamp.class);
+                }
+            };
     private IOMethods ioMethods = null;
     /**
      * Logger
@@ -1248,5 +1299,10 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, IRe
             LOGGER.error("Unable to set the auto-commit mode.\n" + e.getLocalizedMessage());
         }
         return this;
+    }
+
+    @Override
+    public Class<?> typeNameToClass(@NotNull String typeName) {
+        return  TYPE_NAME_TO_CLASS.get(typeName);
     }
 }

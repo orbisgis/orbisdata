@@ -46,6 +46,7 @@ import org.h2.jdbc.JdbcResultSetMetaData;
 import org.h2gis.functions.factory.H2GISDBFactory;
 import org.h2gis.utilities.SpatialResultSet;
 import org.h2gis.utilities.wrapper.SpatialResultSetMetaDataImpl;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -70,10 +71,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -135,7 +133,6 @@ class JdbcTableTest {
     private static final String COL_THE_GEOM2 = "the_geom2";
     private static final String COL_ID = "ID";
     private static final String COL_VALUE = "VAL";
-    private static final String COL_COLUMNS = "COLUMNS";
     private static final String COL_MEANING = "MEANING";
 
     /**
@@ -161,19 +158,19 @@ class JdbcTableTest {
             Statement statementLinked = connectionLinked.createStatement();
             statementLinked.execute("DROP TABLE IF EXISTS " + TABLE_NAME + "," + TEMP_NAME);
             statementLinked.execute("CREATE TABLE " + TABLE_NAME + " (" + COL_THE_GEOM + " GEOMETRY, " + COL_THE_GEOM2 + " GEOMETRY(POINT Z)," +
-                    COL_ID + " INTEGER, " + COL_VALUE + " DOUBLE PRECISION, " + COL_COLUMNS+ " INTEGER, " + COL_MEANING + " VARCHAR)");
-            statementLinked.execute("INSERT INTO " + TABLE_NAME + " VALUES ('POINT(0 0)', 'POINT(1 1 0)', 1, 2.3,1, 'Simple points')");
-            statementLinked.execute("INSERT INTO " + TABLE_NAME + " VALUES ('POINT(0 1 2)', 'POINT(10 11 12)', 2, 0.568, 2,'3D point')");
+                    COL_ID + " INTEGER, " + COL_VALUE + " DOUBLE PRECISION, " +  COL_MEANING + " VARCHAR)");
+            statementLinked.execute("INSERT INTO " + TABLE_NAME + " VALUES ('POINT(0 0)', 'POINT(1 1 0)', 1, 2.3, 'Simple points')");
+            statementLinked.execute("INSERT INTO " + TABLE_NAME + " VALUES ('POINT(0 1 2)', 'POINT(10 11 12)', 2, 0.568, '3D point')");
             statementLinked.execute("CREATE TEMPORARY TABLE " + TEMP_NAME + " (" + COL_THE_GEOM + " GEOMETRY, " + COL_THE_GEOM2 + " GEOMETRY(POINT Z)," +
                     COL_ID + " INTEGER, " + COL_VALUE + " DOUBLE PRECISION, " + COL_MEANING + " VARCHAR)");
 
             statement = connection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);
             statement.execute("DROP TABLE IF EXISTS " + TABLE_NAME + "," + LINKED_NAME + "," + TEMP_NAME + "," + EMPTY_NAME);
             statement.execute("CREATE TABLE " + TABLE_NAME + " (" + COL_THE_GEOM + " GEOMETRY, " + COL_THE_GEOM2 + " GEOMETRY(POINT Z)," +
-                    COL_ID + " INTEGER, " + COL_VALUE + " DOUBLE PRECISION, " + COL_COLUMNS+ " INTEGER, " + COL_MEANING + " VARCHAR)");
-            statement.execute("INSERT INTO " + TABLE_NAME + " VALUES ('POINT(0 0)', 'POINT(1 1 0)', 1, 2.3, 1, 'Simple points')");
-            statement.execute("INSERT INTO " + TABLE_NAME + " VALUES ('POINT(0 1 2)', 'POINT(10 11 12)', 2, 0.568, 2,'3D point')");
-            statement.execute("INSERT INTO " + TABLE_NAME + " VALUES ('POINT(10 11 12)', 'POINT(20 21 22)', 3, 7.18,3, '3D point')");
+                    COL_ID + " INTEGER, " + COL_VALUE + " DOUBLE PRECISION, " +  COL_MEANING + " VARCHAR)");
+            statement.execute("INSERT INTO " + TABLE_NAME + " VALUES ('POINT(0 0)', 'POINT(1 1 0)', 1, 2.3,  'Simple points')");
+            statement.execute("INSERT INTO " + TABLE_NAME + " VALUES ('POINT(0 1 2)', 'POINT(10 11 12)', 2, 0.568, '3D point')");
+            statement.execute("INSERT INTO " + TABLE_NAME + " VALUES ('POINT(10 11 12)', 'POINT(20 21 22)', 3, 7.18,'3D point')");
             statement.execute("CREATE LINKED TABLE " + LINKED_NAME + "('org.h2.Driver','jdbc:h2:./target/test-resources/dbH2" + LINKED_DATABASE +
                     "','sa','sa','" + TABLE_NAME + "')");
             statement.execute("CREATE TEMPORARY TABLE " + TEMP_NAME + " (" + COL_THE_GEOM + " GEOMETRY, " + COL_THE_GEOM2 + " GEOMETRY(POINT Z)," +
@@ -538,7 +535,7 @@ class JdbcTableTest {
         tables.forEach(t -> {
             assertTrue(t.hasColumn(COL_THE_GEOM.toUpperCase(), Geometry.class));
             assertTrue(t.hasColumn(COL_THE_GEOM.toLowerCase(), Geometry.class));
-            assertFalse(t.hasColumn(COL_THE_GEOM2, Geometry.class));
+            assertTrue(t.hasColumn(COL_THE_GEOM2, Geometry.class));
             assertTrue(t.hasColumn(COL_THE_GEOM2, Point.class));
             assertTrue(t.hasColumn(COL_ID, Integer.class));
             assertFalse(t.hasColumn(COL_ID, Long.class));
@@ -715,7 +712,7 @@ class JdbcTableTest {
         tables.forEach(table -> {
             assertEquals("GEOMETRY", getTable().getColumnType(COL_THE_GEOM));
             assertEquals("INTEGER", getTable().getColumnType(COL_ID));
-            assertEquals("VARCHAR", getTable().getColumnType(COL_MEANING));
+            assertEquals("CHARACTER VARYING", getTable().getColumnType(COL_MEANING));
             assertNull(getTable().getColumnType("NOT_A_COLUMN"));
         });
     }
@@ -729,24 +726,42 @@ class JdbcTableTest {
         tables.forEach(table -> {
             Map<String, String> map = table.getColumnsTypes();
             String[] keys = {COL_THE_GEOM, COL_THE_GEOM2.toUpperCase(), COL_ID, COL_VALUE, COL_MEANING};
-            String[] values = {"GEOMETRY", "POINTZ", "INTEGER", "DOUBLE", "VARCHAR"};
-            assertArrayEquals(keys, map.keySet().toArray());
-            assertArrayEquals(values, map.values().toArray());
+            String[] values = {"GEOMETRY", "GEOMETRY", "INTEGER", "DOUBLE PRECISION", "CHARACTER VARYING"};
+            Arrays.sort(keys);
+            String[] actual = map.keySet().toArray(new String[0]);
+            Arrays.sort(actual);
+            assertArrayEquals(keys,actual);
+            Arrays.sort(values);
+            String[] actualValues = map.values().toArray(new String[0]);
+            Arrays.sort(actualValues);
+            assertArrayEquals(values, actualValues);
         });
 
         JdbcTable table = getBuiltTable();
         Map<String, String> map = table.getColumnsTypes();
         String[] keys = {COL_THE_GEOM, COL_THE_GEOM2.toUpperCase(), COL_ID, COL_VALUE, COL_MEANING};
-        String[] values = {"GEOMETRY", "GEOMETRY", "INTEGER", "DOUBLE", "VARCHAR"};
-        assertArrayEquals(keys, map.keySet().toArray());
-        assertArrayEquals(values, map.values().toArray());
+        String[] values =  {"GEOMETRY", "GEOMETRY", "INTEGER", "DOUBLE PRECISION", "CHARACTER VARYING"};
+        Arrays.sort(keys);
+        String[] actual = map.keySet().toArray(new String[0]);
+        Arrays.sort(actual);
+        assertArrayEquals(keys,actual);
+        Arrays.sort(values);
+        String[] actualValues = map.values().toArray(new String[0]);
+        Arrays.sort(actualValues);
+        assertArrayEquals(values, actualValues);
 
         table = getLinkedTable();
         map = table.getColumnsTypes();
         keys = new String[]{COL_THE_GEOM, COL_THE_GEOM2.toUpperCase(), COL_ID, COL_VALUE, COL_MEANING};
-        values = new String[]{"GEOMETRY", "GEOMETRY", "INTEGER", "DOUBLE", "VARCHAR"};
-        assertArrayEquals(keys, map.keySet().toArray());
-        assertArrayEquals(values, map.values().toArray());
+        values = new String[] {"GEOMETRY", "GEOMETRY", "INTEGER", "DOUBLE PRECISION", "CHARACTER VARYING"};
+        Arrays.sort(keys);
+        actual = map.keySet().toArray(new String[0]);
+        Arrays.sort(actual);
+        assertArrayEquals(keys,actual);
+        Arrays.sort(values);
+        actualValues = map.values().toArray(new String[0]);
+        Arrays.sort(actualValues);
+        assertArrayEquals(values, actualValues);
     }
 
     /**

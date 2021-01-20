@@ -335,74 +335,54 @@ public abstract class JdbcTable<T extends ResultSet, U> extends DefaultResultSet
     @Override
     @NotNull
     public Map<String, String> getColumnsTypes() {
-        Map<String, String> map = new LinkedHashMap<>();
-        Collection<String> columns = getColumns();
-        if(columns != null){
-            getColumns().forEach((name) -> map.put(name, getColumnType(name)));
+        Map<String, String> map = new HashMap<>();
+        try {
+            ResultSet rs = getResultSetLimit(0);
+            if(rs == null){
+                LOGGER.error("Unable to get the ResultSet.");
+                return null;
+            }
+            ResultSetMetaData metaData = rs.getMetaData();
+            for (int i = 1; i <= metaData.getColumnCount(); i++) {
+                map.put( metaData.getColumnName(i),  metaData.getColumnTypeName(i));
+            }
+        } catch (SQLException e) {
+            LOGGER.error("unable to request the resultset metadata.", e);
+            return null;
         }
-        return map;
-    }
 
-    @Nullable
-    private DataType getColumnDataType(@NotNull String columnName) {
-        boolean found = false;
-        int type = -1;
-        if (tableLocation != null && !getName().isEmpty()) {
-            try {
-                Connection con = jdbcDataSource.getConnection();
-                if(con == null){
-                    LOGGER.error("Unable to get the connection.");
-                    return null;
-                }
-                ResultSet rs = con.getMetaData().getColumns(tableLocation.getCatalog(),
-                        tableLocation.getSchema(), TableLocation.capsIdentifier(tableLocation.getTable(),
-                                getDbType().equals(DataBaseType.H2GIS)), null);
-                while (rs.next() && !found) {
-                    found = rs.getString("COLUMN_NAME").equalsIgnoreCase(columnName);
-                    type = rs.getInt("DATA_TYPE");
-                }
-            } catch (SQLException e) {
-                LOGGER.error("Unable to get the connection MetaData or to read it", e);
-                return null;
-            }
-        } else {
-            try {
-                ResultSet rs = getResultSet();
-                if(rs == null){
-                    LOGGER.error("Unable to get the ResultSet.");
-                    return null;
-                }
-                ResultSetMetaData metaData = rs.getMetaData();
-                for (int i = 1; i <= metaData.getColumnCount(); i++) {
-                    if (metaData.getColumnName(i).equalsIgnoreCase(columnName)) {
-                        type = metaData.getColumnType(i);
-                        break;
-                    }
-                }
-            } catch (SQLException e) {
-                LOGGER.error("unable to request the resultset metadata.", e);
-                return null;
-            }
-        }
-        int valueType = DataType.convertSQLTypeToValueType(type);
-        if(valueType == -1) {
-            return DataType.getDataType(19);
-        }
-        return DataType.getDataType(valueType);
+        return map;
     }
 
     @Override
     public String getColumnType(@NotNull String columnName) {
-        if (!hasColumn(columnName)) {
+        try {
+            ResultSet rs = getResultSetLimit(0);
+            if(rs == null){
+                LOGGER.error("Unable to get the ResultSet.");
+                return null;
+            }
+            ResultSetMetaData metaData = rs.getMetaData();
+            for (int i = 1; i <= metaData.getColumnCount(); i++) {
+                if(columnName.equalsIgnoreCase(metaData.getColumnName(i))){
+                    //Take into account the geometry type
+                    String type = metaData.getColumnTypeName(i);
+                    if(type.equalsIgnoreCase("GEOMETRY")){
+                        if (tableLocation != null && !getName().isEmpty()) {
+                            return GeometryTableUtilities.getMetaData(jdbcDataSource.getConnection(),
+                                    TableLocation.parse(tableLocation.getTable()),
+                                    TableLocation.capsIdentifier(columnName, dataBaseType.equals(DataBaseType.H2GIS))
+                            ).getGeometryType();
+                        }
+                    }
+                    return type;
+                }
+            }
+        } catch (SQLException e) {
+            LOGGER.error("unable to request the resultset metadata.", e);
             return null;
         }
-        DataType dataType = getColumnDataType(columnName);
-        Objects.requireNonNull(dataType);
-        String dataType_tmp = Value.getTypeName(dataType.type);
-        if ("OTHER".equals(dataType_tmp) || "JAVA_OBJECT".equals(dataType_tmp)) {
-            return getGeometricType(columnName);
-        }
-        return dataType_tmp;
+        return null;
     }
 
     @Nullable
@@ -451,24 +431,11 @@ public abstract class JdbcTable<T extends ResultSet, U> extends DefaultResultSet
 
     @Override
     public boolean hasColumn(@NotNull String columnName, @NotNull Class<?> clazz) {
-        String name = TableLocation.capsIdentifier(columnName, dataBaseType.equals(DataBaseType.H2GIS));
-        if (!hasColumn(name)) {
+        Class<?> class_tmp = getJdbcDataSource().typeNameToClass(getColumnType(columnName));
+        if(class_tmp==null){
             return false;
         }
-        if (Geometry.class.isAssignableFrom(clazz)) {
-            String str = getGeometricType(name);
-            return clazz.getSimpleName().equalsIgnoreCase(str) ||
-                    (clazz.getSimpleName() + "Z").equalsIgnoreCase(str) ||
-                    (clazz.getSimpleName() + "M").equalsIgnoreCase(str) ||
-                    (clazz.getSimpleName() + "ZM").equalsIgnoreCase(str);
-        } else {
-            DataType dataType = getColumnDataType(name);
-            if (dataType == null) {
-                return false;
-            }
-            DataType dtClass = DataType.getDataType(ValueToObjectConverter2.classToType(clazz).getValueType());
-            return dataType.equals(dtClass);
-        }
+        return clazz.isAssignableFrom(class_tmp);
     }
 
     @Override

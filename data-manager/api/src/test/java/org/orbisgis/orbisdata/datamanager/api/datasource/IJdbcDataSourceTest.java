@@ -606,6 +606,11 @@ public class IJdbcDataSourceTest {
             return this;
         }
 
+        @Override
+        public Class<?> typeNameToClass(String typeName) {
+            return null;
+        }
+
         @NotNull
         @Override
         public IDataSourceLocation getLocation() {

@@ -39,7 +39,6 @@ package org.orbisgis.orbisdata.datamanager.jdbc;
 import groovy.lang.*;
 import org.codehaus.groovy.runtime.InvokerHelper;
 import org.h2.value.DataType;
-import org.h2.value.TypeInfo;
 import org.h2.value.Value;
 import org.h2.value.ValueToObjectConverter2;
 import org.h2gis.utilities.GeometryMetaData;
@@ -62,7 +61,6 @@ import org.orbisgis.orbisdata.datamanager.api.dsl.IQueryBuilder;
 import org.orbisgis.orbisdata.datamanager.api.dsl.IResultSetProperties;
 import org.orbisgis.orbisdata.datamanager.jdbc.dsl.QueryBuilder;
 import org.orbisgis.orbisdata.datamanager.jdbc.dsl.ResultSetProperties;
-import org.orbisgis.orbisdata.datamanager.jdbc.io.IOMethods;
 import org.orbisgis.orbisdata.datamanager.jdbc.resultset.DefaultResultSet;
 import org.orbisgis.orbisdata.datamanager.jdbc.resultset.StreamResultSet;
 import org.orbisgis.orbisdata.datamanager.jdbc.resultset.StreamSpatialResultSet;
@@ -85,6 +83,8 @@ import static org.orbisgis.commons.printer.ICustomPrinter.CellPosition.*;
 public abstract class JdbcTable<T extends ResultSet, U> extends DefaultResultSet implements IJdbcTable<T, U>, GroovyObject {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(JdbcTable.class);
+
+    private org.h2gis.functions.io.utility.IOMethods ioMethods = null;
 
     /**
      * Default width of the columns in ascii print
@@ -580,34 +580,30 @@ public abstract class JdbcTable<T extends ResultSet, U> extends DefaultResultSet
 
     @Override
     public String save(@NotNull String filePath, boolean deleteFile) {
+        String toSave = getTableLocation() == null ? "(" + getBaseQuery() + ")" : getTableLocation().toString(getDbType());
         try {
-            String toSave = getTableLocation() == null ? "(" + getBaseQuery() + ")" : getTableLocation().toString(getDbType());
-            if(IOMethods.saveAsFile(getStatement().getConnection(), toSave, filePath, null, deleteFile)){
-                return filePath;
-            }else{
-                LOGGER.error("Cannot save the table in the file : "+filePath);
-                return null;
+            if(ioMethods==null) {
+                ioMethods = new org.h2gis.functions.io.utility.IOMethods();
             }
-
+            ioMethods.exportToFile(getJdbcDataSource().getConnection(), toSave,filePath, null, deleteFile);
+            return filePath;
         } catch (SQLException e) {
-            LOGGER.error("Cannot save the table.\n", e);
+            LOGGER.error("Cannot import the file : "+ filePath);
             return null;
         }
     }
 
     @Override
     public String save(@NotNull String filePath, String encoding) {
+        String toSave = getTableLocation() == null ? "(" + getBaseQuery() + ")" : getTableLocation().toString(getDbType());
         try {
-            String toSave = getTableLocation() == null ? "(" + getBaseQuery() + ")" : getTableLocation().toString(getDbType());
-            if(IOMethods.saveAsFile(getStatement().getConnection(), toSave, filePath, encoding, false)){
-                return filePath;
-            }else{
-                LOGGER.error("Cannot save the table in the file : "+filePath);
-                return null;
+            if(ioMethods==null) {
+                ioMethods = new org.h2gis.functions.io.utility.IOMethods();
             }
-
+            ioMethods.exportToFile(getJdbcDataSource().getConnection(), toSave,filePath, encoding, false);
+            return filePath;
         } catch (SQLException e) {
-            LOGGER.error("Cannot save the table.\n", e);
+            LOGGER.error("Cannot import the file : "+ filePath);
             return null;
         }
     }
@@ -633,34 +629,15 @@ public abstract class JdbcTable<T extends ResultSet, U> extends DefaultResultSet
             LOGGER.error("The output datasource connexion cannot ne null\n");
             return null;
         }
+        String inputTableName =  getTableLocation() == null ? "(" + getBaseQuery() + ")" : getTableLocation().toString(getDbType());
         try {
-            if(getTableLocation() != null ){
-                if(outputTableName==null || outputTableName.isEmpty()){
-                    LOGGER.error("The output table name cannot be null or empty\n");
-                    return null;
-                }
-                org.h2gis.utilities.TableLocation outputTableLoc = TableLocation.parse(outputTableName, dataSource.getDataBaseType() == DataBaseType.H2GIS);
-                if(IOMethods.saveInDB(getStatement().getConnection(), getTableLocation(), getDbType(),  deleteTable, dataSource,outputTableLoc,batchSize)){
-                    return outputTableLoc.toString(dataSource.getDataBaseType()  == DataBaseType.H2GIS);
-                }
-                else {
-                    LOGGER.error("Cannot save the table.\n");
-                    return null;
-                }
-            }
-            else{
-                org.h2gis.utilities.TableLocation outputTableLoc = TableLocation.parse(outputTableName, dataSource.getDataBaseType() == DataBaseType.H2GIS);
-                if(IOMethods.saveInDB(getStatement().getConnection(), getBaseQuery(),  getDbType(), deleteTable, dataSource, outputTableLoc,batchSize)){
-                    return outputTableLoc.toString(dataSource.getDataBaseType()  == DataBaseType.H2GIS);
-                } else {
-                    LOGGER.error("Cannot save the query.");
-                    return null;
-                }
-            }
+            org.h2gis.functions.io.utility.IOMethods.exportToDataBase(dataSource.getConnection(), inputTableName, getJdbcDataSource().getConnection(), outputTableName, deleteTable?-1:0, batchSize);
+            org.h2gis.utilities.TableLocation targetTableLocation = org.h2gis.utilities.TableLocation.parse(outputTableName, dataSource.getDataBaseType() == DataBaseType.H2GIS);
+            return targetTableLocation.toString(dataSource.getDataBaseType() == DataBaseType.H2GIS);
         } catch (SQLException e) {
-            LOGGER.error("Cannot save the table.\n", e);
-            return null;
+            LOGGER.error("Unable to load the table "+inputTableName + " from " + dataSource.getLocation().toString());
         }
+        return null;
     }
 
     @Override
@@ -669,25 +646,15 @@ public abstract class JdbcTable<T extends ResultSet, U> extends DefaultResultSet
             LOGGER.error("The output datasource connexion cannot be null\n");
             return null;
         }
+        String inputTableName =  getTableLocation() == null ? "(" + getBaseQuery() + ")" : getTableLocation().toString(getDbType());
         try {
-            if(getTableLocation() != null ){
-                if(IOMethods.saveInDB(getStatement().getConnection(), getTableLocation(), getDbType(),
-                        deleteTable, dataSource, getTableLocation(), batchSize)){
-                    return getTableLocation().toString(DataBaseType.H2GIS);
-                }
-                else{
-                    LOGGER.error("Cannot save the table.\n");
-                    return null;
-                }
-            }
-            else{
-                LOGGER.error("Cannot save the table without a provided name.\n");
-                return null;
-            }
+            org.h2gis.functions.io.utility.IOMethods.exportToDataBase(dataSource.getConnection(), inputTableName, getJdbcDataSource().getConnection(), inputTableName, deleteTable?-1:0, batchSize);
+            org.h2gis.utilities.TableLocation targetTableLocation = org.h2gis.utilities.TableLocation.parse(inputTableName, dataSource.getDataBaseType() == DataBaseType.H2GIS);
+            return targetTableLocation.toString(dataSource.getDataBaseType() == DataBaseType.H2GIS);
         } catch (SQLException e) {
-            LOGGER.error("Cannot save the table.\n", e);
-            return null;
+            LOGGER.error("Unable to load the table "+inputTableName + " from " + dataSource.getLocation().toString());
         }
+        return null;
     }
 
 

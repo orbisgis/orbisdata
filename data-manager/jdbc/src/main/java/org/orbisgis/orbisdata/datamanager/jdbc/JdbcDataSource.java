@@ -1042,6 +1042,16 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, IRe
         return null;
     }
 
+    /**
+     * Return the IOMethods used to load and save data
+     * @return
+     */
+    public IOMethods getIoMethods() {
+        if(ioMethods==null){
+            ioMethods= new IOMethods();
+        }
+        return ioMethods;
+    }
 
     @Override
     @NotNull

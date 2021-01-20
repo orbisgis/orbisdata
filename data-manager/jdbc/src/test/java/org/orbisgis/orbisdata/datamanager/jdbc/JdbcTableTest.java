@@ -160,27 +160,27 @@ class JdbcTableTest {
             Statement statementLinked = connectionLinked.createStatement();
             statementLinked.execute("DROP TABLE IF EXISTS " + TABLE_NAME + "," + TEMP_NAME);
             statementLinked.execute("CREATE TABLE " + TABLE_NAME + " (" + COL_THE_GEOM + " GEOMETRY, " + COL_THE_GEOM2 + " GEOMETRY(POINT Z)," +
-                    COL_ID + " INTEGER, " + COL_VALUE + " FLOAT, " + COL_MEANING + " VARCHAR)");
+                    COL_ID + " INTEGER, " + COL_VALUE + " DOUBLE PRECISION, " + COL_MEANING + " VARCHAR)");
             statementLinked.execute("INSERT INTO " + TABLE_NAME + " VALUES ('POINT(0 0)', 'POINT(1 1 0)', 1, 2.3, 'Simple points')");
             statementLinked.execute("INSERT INTO " + TABLE_NAME + " VALUES ('POINT(0 1 2)', 'POINT(10 11 12)', 2, 0.568, '3D point')");
             statementLinked.execute("CREATE TEMPORARY TABLE " + TEMP_NAME + " (" + COL_THE_GEOM + " GEOMETRY, " + COL_THE_GEOM2 + " GEOMETRY(POINT Z)," +
-                    COL_ID + " INTEGER, " + COL_VALUE + " FLOAT, " + COL_MEANING + " VARCHAR)");
+                    COL_ID + " INTEGER, " + COL_VALUE + " DOUBLE PRECISION, " + COL_MEANING + " VARCHAR)");
 
             statement = connection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);
             statement.execute("DROP TABLE IF EXISTS " + TABLE_NAME + "," + LINKED_NAME + "," + TEMP_NAME + "," + EMPTY_NAME);
             statement.execute("CREATE TABLE " + TABLE_NAME + " (" + COL_THE_GEOM + " GEOMETRY, " + COL_THE_GEOM2 + " GEOMETRY(POINT Z)," +
-                    COL_ID + " INTEGER, " + COL_VALUE + " FLOAT, " + COL_MEANING + " VARCHAR)");
+                    COL_ID + " INTEGER, " + COL_VALUE + " DOUBLE PRECISION, " + COL_MEANING + " VARCHAR)");
             statement.execute("INSERT INTO " + TABLE_NAME + " VALUES ('POINT(0 0)', 'POINT(1 1 0)', 1, 2.3, 'Simple points')");
             statement.execute("INSERT INTO " + TABLE_NAME + " VALUES ('POINT(0 1 2)', 'POINT(10 11 12)', 2, 0.568, '3D point')");
             statement.execute("INSERT INTO " + TABLE_NAME + " VALUES ('POINT(10 11 12)', 'POINT(20 21 22)', 3, 7.18, '3D point')");
             statement.execute("CREATE LINKED TABLE " + LINKED_NAME + "('org.h2.Driver','jdbc:h2:./target/test-resources/dbH2" + LINKED_DATABASE +
                     "','sa','sa','" + TABLE_NAME + "')");
             statement.execute("CREATE TEMPORARY TABLE " + TEMP_NAME + " (" + COL_THE_GEOM + " GEOMETRY, " + COL_THE_GEOM2 + " GEOMETRY(POINT Z)," +
-                    COL_ID + " INTEGER, " + COL_VALUE + " FLOAT, " + COL_MEANING + " VARCHAR)");
+                    COL_ID + " INTEGER, " + COL_VALUE + " DOUBLE PRECISION, " + COL_MEANING + " VARCHAR)");
             statement.execute("INSERT INTO " + TEMP_NAME + " VALUES ('POINT(0 1 2)', 'POINT(10 11 12)', 2, 0.568, '3D point')");
 
             statement.execute("CREATE TABLE " + EMPTY_NAME + " (" + COL_THE_GEOM + " GEOMETRY, " + COL_THE_GEOM2 + " GEOMETRY(POINT Z)," +
-                    COL_ID + " INTEGER, " + COL_VALUE + " FLOAT, " + COL_MEANING + " VARCHAR)");
+                    COL_ID + " INTEGER, " + COL_VALUE + " DOUBLE PRECISION, " + COL_MEANING + " VARCHAR)");
 
             tableLocation = new TableLocation(BASE_DATABASE, TABLE_NAME);
             linkedLocation = new TableLocation(BASE_DATABASE, LINKED_NAME);
@@ -541,7 +541,7 @@ class JdbcTableTest {
             assertTrue(t.hasColumn(COL_THE_GEOM2, Point.class));
             assertTrue(t.hasColumn(COL_ID, Integer.class));
             assertFalse(t.hasColumn(COL_ID, Long.class));
-            assertTrue(t.hasColumn(COL_VALUE, Float.class));
+            assertFalse(t.hasColumn(COL_VALUE, Float.class));
             assertTrue(t.hasColumn(COL_VALUE, Double.class));
             assertFalse(t.hasColumn(COL_VALUE, Integer.class));
             assertTrue(t.hasColumn(COL_MEANING, String.class));
@@ -555,7 +555,7 @@ class JdbcTableTest {
         assertFalse(t.hasColumn(COL_THE_GEOM2, Point.class));
         assertTrue(t.hasColumn(COL_ID, Integer.class));
         assertFalse(t.hasColumn(COL_ID, Long.class));
-        assertTrue(t.hasColumn(COL_VALUE, Float.class));
+        assertFalse(t.hasColumn(COL_VALUE, Float.class));
         assertTrue(t.hasColumn(COL_VALUE, Double.class));
         assertFalse(t.hasColumn(COL_VALUE, Integer.class));
         assertTrue(t.hasColumn(COL_MEANING, String.class));
@@ -568,7 +568,7 @@ class JdbcTableTest {
         assertFalse(t.hasColumn(COL_THE_GEOM2, Point.class));
         assertTrue(t.hasColumn(COL_ID, Integer.class));
         assertFalse(t.hasColumn(COL_ID, Long.class));
-        assertTrue(t.hasColumn(COL_VALUE, Float.class));
+        assertFalse(t.hasColumn(COL_VALUE, Float.class));
         assertTrue(t.hasColumn(COL_VALUE, Double.class));
         assertFalse(t.hasColumn(COL_VALUE, Integer.class));
         assertTrue(t.hasColumn(COL_MEANING, String.class));

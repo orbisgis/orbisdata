@@ -122,6 +122,7 @@ public interface ITable<T, U> extends IMatrix<T, U>, IQueryBuilder {
      * @param columnMap {@link Map} containing the columns with the column name as key and the column type as value.
      * @return True if the columns are found, false otherwise.
      */
+    //TODO : do not iterate resulset set each time
     default boolean hasColumns(@NotNull Map<String, Class<?>> columnMap) {
         return columnMap.entrySet().stream().allMatch(entry -> hasColumn(entry.getKey(), entry.getValue()));
     }

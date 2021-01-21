@@ -8,11 +8,11 @@
     <parent>
         <groupId>org.orbisgis.orbisdata</groupId>
         <artifactId>process-manager</artifactId>
-        <version>1.0.1-SNAPSHOT</version>
+        <version>1.0.1-RC1</version>
     </parent>
     <groupId>org.orbisgis.orbisdata.processmanager</groupId>
     <artifactId>process</artifactId>
-    <version>1.0.1-SNAPSHOT</version>
+    <version>1.0.1-RC1</version>
     <packaging>bundle</packaging>
 
     <!-- Properties -->
@@ -28,6 +28,7 @@
         <dependency>
             <groupId>org.orbisgis.orbisdata.processmanager</groupId>
             <artifactId>api</artifactId>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
@@ -50,11 +51,13 @@
         <dependency>
             <groupId>org.orbisgis.orbisdata.datamanager</groupId>
             <artifactId>api</artifactId>
+            <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.orbisgis.orbisdata.datamanager</groupId>
             <artifactId>jdbc</artifactId>
+            <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>

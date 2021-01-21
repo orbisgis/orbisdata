@@ -8,11 +8,11 @@
     <parent>
         <groupId>org.orbisgis.orbisdata</groupId>
         <artifactId>data-manager</artifactId>
-        <version>1.0.1-SNAPSHOT</version>
+        <version>1.0.1-RC1</version>
     </parent>
     <groupId>org.orbisgis.orbisdata.datamanager</groupId>
     <artifactId>dataframe</artifactId>
-    <version>1.0.1-SNAPSHOT</version>
+    <version>1.0.1-RC1</version>
     <packaging>bundle</packaging>
 
     <!-- Properties -->
@@ -26,13 +26,19 @@
     <!-- Dependencies -->
     <dependencies>
         <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.orbisgis.orbisdata.datamanager</groupId>
             <artifactId>api</artifactId>
+            <version>${project.version}</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.orbisgis.orbisdata.datamanager</groupId>
             <artifactId>jdbc</artifactId>
+            <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>

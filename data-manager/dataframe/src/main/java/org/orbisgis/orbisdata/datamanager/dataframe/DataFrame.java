@@ -1030,8 +1030,13 @@ public class DataFrame implements smile.data.DataFrame, ITable<BaseVector, Tuple
             StructField[] fields = new StructField[columnCount];
             for (int i = 1; i <= columnCount; i++) {
                 String type = metadata.getColumnTypeName(i);
-                if (type.equalsIgnoreCase("geometry")) {
+                if (type.equalsIgnoreCase("geometry") ||
+                        type.equalsIgnoreCase("CHARACTER") ||
+                        type.equalsIgnoreCase("CHARACTER VARYING")) {
                     type="VARCHAR";
+                }
+                if (type.equalsIgnoreCase("DOUBLE PRECISION")) {
+                    type="DOUBLE";
                 }
                 DataType dataType = DataType.of(JDBCType.valueOf(type), metadata.isNullable(i) != 0,(table).getDbType().toString());
                 fields[i-1] = new StructField(metadata.getColumnName(i), dataType);

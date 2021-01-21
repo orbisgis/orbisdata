@@ -38,7 +38,9 @@ package org.orbisgis.orbisdata.datamanager.jdbc.postgis;
 
 import org.h2gis.postgis_jts.ConnectionWrapper;
 import org.h2gis.postgis_jts.StatementWrapper;
+import org.h2gis.utilities.GeometryMetaData;
 import org.h2gis.utilities.GeometryTableUtilities;
+import org.h2gis.utilities.Tuple;
 import org.h2gis.utilities.wrapper.SpatialResultSetImpl;
 import org.locationtech.jts.geom.Geometry;
 import org.orbisgis.commons.annotations.NotNull;
@@ -116,28 +118,36 @@ public class PostgisSpatialTable extends JdbcSpatialTable {
 
     @Override
     public int getSrid() {
+        int srid =-1;
         if (getTableLocation() == null) {
-            throw new UnsupportedOperationException();
-        }
-        try {
+            try {
             Connection con = getJdbcDataSource().getConnection();
-            if(con == null){
+            if (con == null) {
                 LOGGER.error("Unable to get connection for the table SRID.");
                 return -1;
             }
-            int srid = GeometryTableUtilities.getSRID(con, getTableLocation());
-            //Workaround get the SRID from the first geometry
-            if(srid==0){
-                ResultSet rs = getStatement().executeQuery("SELECT ST_SRID(" + getGeometricColumns().get(0) + ") AS SRID FROM " + getTableLocation() + " limit 1");
-                if(rs.next()) {
-                    srid = rs.getInt(1);
-                }
+            Tuple<String, GeometryMetaData> geomColumn = GeometryTableUtilities.getFirstColumnMetaData(getResultSetLimit(0));
+            ResultSet rs = getStatement().executeQuery("select st_srid(" + geomColumn.first() + ") from (" + getBaseQuery() + ") as foo limit 1");
+            if(rs.next()){
+                srid = rs.getInt(1);
             }
-            return srid;
-        } catch (SQLException e) {
-            LOGGER.error("Unable to get the table SRID.", e);
+            } catch (SQLException e) {
+                LOGGER.error("Unable to get the table SRID.", e);
+            }
         }
-        return -1;
+        else {
+            try {
+                Connection con = getJdbcDataSource().getConnection();
+                if (con == null) {
+                    LOGGER.error("Unable to get connection for the table SRID.");
+                    return -1;
+                }
+                return GeometryTableUtilities.getSRID(con, getTableLocation());
+            } catch (SQLException e) {
+                LOGGER.error("Unable to get the table SRID.", e);
+            }
+        }
+        return srid;
     }
 
     @Override

@@ -492,6 +492,7 @@ class JdbcDataSourceTest {
     /**
      * Test the load from an existing database methods.
      */
+    @Disabled
     @Test
     void loadFromDB() throws SQLException {
         String tableNameDS1 = "test_h2gis";
@@ -502,7 +503,9 @@ class JdbcDataSourceTest {
         assertNotNull(table);
         assertEquals(tableNameDS2.toUpperCase(), table.getName());
         postgis.execute("DROP TABLE IF EXISTS " + tableNameDS1);
-        table = postgis.getTable(postgis.load(h2gis, tableNameDS1));
+        String loadedTable = postgis.load(h2gis, tableNameDS1.toUpperCase());
+        assertEquals(tableNameDS1, loadedTable);
+        table = postgis.getTable(loadedTable);
         assertNotNull(table);
         assertEquals(tableNameDS1, table.getName());
 

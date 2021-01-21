@@ -1032,4 +1032,11 @@ public interface IJdbcDataSource extends IDataSource<ResultSet>, GroovyObject, D
      * @param autoCommit false to disable auto-commit mode
      */
     IJdbcDataSource autoCommit(boolean autoCommit);
+
+    /**
+     * Convert the type name to a java class using a lookup map
+     * @param typeName
+     * @return
+     */
+     Class<?> typeNameToClass(String typeName);
 }

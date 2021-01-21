@@ -8,11 +8,11 @@
     <parent>
         <groupId>org.orbisgis.orbisdata</groupId>
         <artifactId>data-manager</artifactId>
-        <version>1.0.1-SNAPSHOT</version>
+        <version>1.0.1-RC1</version>
     </parent>
     <groupId>org.orbisgis.orbisdata.datamanager</groupId>
     <artifactId>jdbc</artifactId>
-    <version>1.0.1-SNAPSHOT</version>
+    <version>1.0.1-RC1</version>
     <packaging>bundle</packaging>
 
     <!-- Properties -->
@@ -69,6 +69,10 @@
         <dependency>
             <groupId>org.orbisgis</groupId>
             <artifactId>postgis-jts-osgi</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.orbisgis</groupId>
+            <artifactId>cts</artifactId>
         </dependency>
         <!-- Test dependencies -->
         <dependency>

@@ -357,7 +357,7 @@ public class H2GIS extends JdbcDataSource {
         Connection connection = getConnection();
         Statement statement;
         try {
-            /*DatabaseMetaData dbdm = connection.getMetaData();
+            DatabaseMetaData dbdm = connection.getMetaData();
             int type = ResultSet.TYPE_FORWARD_ONLY;
             if (dbdm.supportsResultSetType(ResultSet.TYPE_SCROLL_SENSITIVE)) {
                 type = ResultSet.TYPE_SCROLL_SENSITIVE;
@@ -368,8 +368,7 @@ public class H2GIS extends JdbcDataSource {
             if (dbdm.supportsResultSetConcurrency(type, ResultSet.CONCUR_UPDATABLE)) {
                 concur = ResultSet.CONCUR_UPDATABLE;
             }
-            statement = connection.createStatement(type, concur);*/
-            statement = connection.createStatement();
+            statement = connection.createStatement(type, concur);
         } catch (SQLException e) {
             LOGGER.error("Unable to create Statement.\n" + e.getLocalizedMessage());
             return null;

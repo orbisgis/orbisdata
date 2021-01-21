@@ -544,5 +544,8 @@ class GroovyPostGISTest {
                 CREATE TABLE testtable (id int, the_geom geometry(point, 0));
         """)
         assertEquals(0, postGIS.getSpatialTable("testtable").srid)
+        assertEquals(-1, postGIS.getSpatialTable("(select st_setsrid(the_geom, 4326) from testtable)").srid)
+        postGIS.execute("insert into testtable values (1, 'SRID=0;POINT(10 10)')")
+        assertEquals(4326, postGIS.getSpatialTable("(select st_setsrid(the_geom, 4326) from testtable)").srid)
     }
 }

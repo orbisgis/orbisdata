@@ -94,7 +94,7 @@ public class DataFrameTest {
     public void beforeEach() {
         try {
             h2gis.execute("DROP TABLE IF EXISTS toto");
-            h2gis.execute("CREATE TABLE toto(col1 int, col2 varchar, col3 boolean, col4 char, col5 TINYINT, col6 SMALLINT, " +
+            h2gis.execute("CREATE TABLE toto(col1 int, col2 varchar, col3 boolean, col4 char, col5 INT, col6 INT, " +
                     "col7 INT8, col8 REAL, col9 double, col10 time, col11 date, col12 timestamp, col13 DECIMAL(20, 2))");
             h2gis.execute("INSERT INTO toto VALUES (0, 'val0', true , 0, 0, 0, 0, 0.5, 0.0, '12:34:56', '2020-04-16', '2020-04-16 12:34:56.7', 0)");
             h2gis.execute("INSERT INTO toto VALUES (1, 'val1', false, 1, 1, 1, 1, 1.5, 1.0, '12:34:56', '2020-04-16', '2020-04-16 12:34:56.7', 1)");
@@ -183,8 +183,8 @@ public class DataFrameTest {
         assertArrayEquals(new byte[]{'v', 'a', 'l', '1'}, dataFrame.getBytes("COL2"));
         assertFalse(dataFrame.getBoolean("COL3"));
         assertEquals("1", dataFrame.getString("COL4"));
-        assertEquals(1, dataFrame.getByte("COL5"));
-        assertEquals(1, dataFrame.getShort("COL6"));
+        assertEquals(1, dataFrame.getInt("COL5"));
+        assertEquals(1, dataFrame.getInt("COL6"));
         assertEquals(1, dataFrame.getLong("COL7"));
         assertEquals(1.5, dataFrame.getFloat("COL8"));
         assertEquals(1, dataFrame.getDouble("COL9"));
@@ -241,10 +241,10 @@ public class DataFrameTest {
         assertEquals(true, dataFrame.getObject("COL3", boolean.class));
         assertEquals(true, dataFrame.getObject("COL3", Boolean.class));
         assertEquals("4", dataFrame.getObject("COL4", String.class));
-        assertEquals((byte)4, dataFrame.getObject("COL5", byte.class));
-        assertEquals((byte)4, dataFrame.getObject("COL5", Byte.class));
-        assertEquals((short)4, dataFrame.getObject("COL6", short.class));
-        assertEquals((short)4, dataFrame.getObject("COL6", Short.class));
+        assertEquals(4, dataFrame.getObject("COL5", int.class));
+        assertEquals(4, dataFrame.getObject("COL5", Integer.class));
+        assertEquals(4, dataFrame.getObject("COL6", int.class));
+        assertEquals(4, dataFrame.getObject("COL6", Integer.class));
         assertEquals(4l, dataFrame.getObject("COL7", long.class));
         assertEquals(4l, dataFrame.getObject("COL7", Long.class));
         assertEquals(4.5f, dataFrame.getObject("COL8", float.class));
@@ -348,8 +348,8 @@ public class DataFrameTest {
         assertEquals("String", dataFrame.getColumnType("COL2"));
         assertEquals("boolean", dataFrame.getColumnType("COL3"));
         assertEquals("String", dataFrame.getColumnType("COL4"));
-        assertEquals("byte", dataFrame.getColumnType("COL5"));
-        assertEquals("short", dataFrame.getColumnType("COL6"));
+        assertEquals("int", dataFrame.getColumnType("COL5"));
+        assertEquals("int", dataFrame.getColumnType("COL6"));
         assertEquals("long", dataFrame.getColumnType("COL7"));
         assertEquals("float", dataFrame.getColumnType("COL8"));
         assertEquals("double", dataFrame.getColumnType("COL9"));

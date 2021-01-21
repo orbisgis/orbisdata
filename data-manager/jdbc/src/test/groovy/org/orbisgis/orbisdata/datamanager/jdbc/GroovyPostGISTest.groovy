@@ -533,13 +533,11 @@ class GroovyPostGISTest {
     }
 
     @Test
-    void getSrid() {
-        def postGIS = POSTGIS.open(dbProperties)
+    void getSridTest() {
         postGIS.execute("""
                 DROP TABLE IF EXISTS testtable;
                 CREATE TABLE testtable (id int, the_geom geometry(point, 0));
         """)
         assertEquals(0, postGIS.getSpatialTable("testtable").srid)
-        postGIS.close()
     }
 }

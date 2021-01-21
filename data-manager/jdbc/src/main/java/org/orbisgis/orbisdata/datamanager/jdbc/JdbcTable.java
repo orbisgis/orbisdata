@@ -640,18 +640,18 @@ public abstract class JdbcTable<T extends ResultSet, U> extends DefaultResultSet
         if (propertyName.equals(META_PROPERTY)) {
             return getMetaData();
         }
+        try {
+            if (!isBeforeFirst() && (this.getRow() != 0 || this.getRowCount() != 0)) {
+                return getObject(propertyName);
+            }
+        } catch (SQLException e) {
+            LOGGER.debug("Unable to find the column '" + propertyName + "'.\n" + e.getLocalizedMessage());
+        }
         Collection<String> columns = getColumns();
         if (columns != null &&
                 (columns.contains(propertyName.toLowerCase()) || columns.contains(propertyName.toUpperCase()))
                 || "id".equalsIgnoreCase(propertyName)) {
-            try {
-                if (isBeforeFirst() || (this.getRow() == 0 && this.getRowCount() == 0)) {
-                    return new JdbcColumn(formatColumnName(propertyName), this.getName(), getJdbcDataSource());
-                }
-                return getObject(propertyName);
-            } catch (SQLException e) {
-                LOGGER.debug("Unable to find the column '" + propertyName + "'.\n" + e.getLocalizedMessage());
-            }
+            return new JdbcColumn(formatColumnName(propertyName), this.getName(), getJdbcDataSource());
         }
         return getMetaClass().getProperty(this, propertyName);
     }

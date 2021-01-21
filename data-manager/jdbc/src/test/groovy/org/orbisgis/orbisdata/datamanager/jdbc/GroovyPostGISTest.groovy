@@ -85,8 +85,8 @@ class GroovyPostGISTest {
     }
 
     @Test
+    @EnabledIfSystemProperty(named = "test.postgis", matches = "true")
     void querySpatialTable() {
-        def postGIS = POSTGIS.open(dbProperties)
         postGIS.execute("""
                 DROP TABLE IF EXISTS testtable;
                 CREATE TABLE testtable (id int, the_geom geometry(point, 0));
@@ -412,6 +412,7 @@ class GroovyPostGISTest {
     }
 
     @Test
+    @EnabledIfSystemProperty(named = "test.postgis", matches = "true")
     void preparedQueryTest() {
         postGIS.execute("""
                 DROP TABLE IF EXISTS testtable;
@@ -463,6 +464,7 @@ class GroovyPostGISTest {
     }
 
     @Test
+    @EnabledIfSystemProperty(named = "test.postgis", matches = "true")
     void filterTest() {
         postGIS.execute("""
                 DROP TABLE IF EXISTS testtable;
@@ -499,6 +501,7 @@ class GroovyPostGISTest {
     }
 
     @Test
+    @EnabledIfSystemProperty(named = "test.postgis", matches = "true")
     void preparedQueryTestWithFetch() {
         postGIS.execute("""
                 DROP TABLE IF EXISTS big_geo;
@@ -533,6 +536,7 @@ class GroovyPostGISTest {
     }
 
     @Test
+    @EnabledIfSystemProperty(named = "test.postgis", matches = "true")
     void getSridTest() {
         postGIS.execute("""
                 DROP TABLE IF EXISTS testtable;

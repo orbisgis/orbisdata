@@ -211,19 +211,11 @@ public abstract class JdbcTable<T extends ResultSet, U> extends DefaultResultSet
                     LOGGER.error("Unable to get the connection.");
                     return null;
                 }
-                resultSet = con.createStatement().executeQuery(getBaseQuery() + " LIMIT " + _limit);
+                resultSet = con.createStatement().executeQuery("SELECT * FROM ("+getBaseQuery() + ") AS FOO LIMIT " + _limit);
             }
         } catch (SQLException e) {
             LOGGER.error("Unable to execute the query '" + getBaseQuery() + "'.\n" + e.getLocalizedMessage());
             return null;
-        }
-        if(resultSet != null) {
-            try {
-                resultSet.beforeFirst();
-            } catch (SQLException e) {
-                LOGGER.error("Unable to go before the first ResultSet row.\n" + e.getLocalizedMessage());
-                return null;
-            }
         }
         return resultSet;
     }
@@ -316,7 +308,7 @@ public abstract class JdbcTable<T extends ResultSet, U> extends DefaultResultSet
     @Override
     public Collection<String> getColumns() {
         try {
-            ResultSet rs = getResultSet();
+            ResultSet rs = getResultSetLimit(0);
             if(rs == null){
                 LOGGER.error("Unable to get the ResultSet");
                 return null;
@@ -425,8 +417,22 @@ public abstract class JdbcTable<T extends ResultSet, U> extends DefaultResultSet
 
     @Override
     public boolean hasColumn(@NotNull String columnName) {
-        return getColumns() != null &&
-                getColumns().contains(TableLocation.capsIdentifier(columnName, getDbType().equals(DataBaseType.H2GIS)));
+        ResultSet rs = getResultSetLimit(0);
+        if(rs == null){
+            return false;
+        }
+        try {
+            ResultSetMetaData metaData = rs.getMetaData();
+            for (int i = 1; i <= metaData.getColumnCount(); i++) {
+                if (columnName.equalsIgnoreCase(metaData.getColumnName(i))) {
+                return true;
+                }
+            }
+        } catch (SQLException e) {
+            LOGGER.error("Unable to get the ResultSet Metadata.", e);
+            return false;
+        }
+        return false;
     }
 
     @Override
@@ -536,7 +542,8 @@ public abstract class JdbcTable<T extends ResultSet, U> extends DefaultResultSet
         } catch (SQLException e) {
             LOGGER.error("Unable to get first row.", e);
         }
-        for(String column : getColumns()){
+        Collection<String> columns = getColumns();
+        for(String column : columns){
             try {
                 map.put(column, rs.getObject(column));
             } catch (SQLException e) {

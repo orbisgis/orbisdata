@@ -119,7 +119,7 @@ class JdbcTableTest {
     private static TableLocation emptyLocation;
 
     private static final String BASE_DATABASE = JdbcTableTest.class.getSimpleName();
-    private static final String TABLE_NAME = "ORBISGIS";
+    private static final String TABLE_NAME = "ORBISGIS_TABLE";
     private static final String BASE_QUERY = "SELECT * FROM " + TABLE_NAME;
     private static final String TEMP_NAME = "TEMPTABLE";
     private static final String TEMP_QUERY = "SELECT * FROM " + TEMP_NAME;
@@ -342,7 +342,7 @@ class JdbcTableTest {
                 "not a request", dataSource.getConnection().createStatement(), null, dataSource).getLocation());
         assertEquals(BASE_DATABASE, new TableLocation(BASE_DATABASE, "catalog", "schema", "table").getDataSource());
 
-        assertEquals("ORBISGIS", getTable().getLocation());
+        assertEquals("ORBISGIS_TABLE", getTable().getLocation());
         assertEquals("LINKEDTABLE", getLinkedTable().getLocation());
         assertEquals("TEMPTABLE", getTempTable().getLocation());
         assertEquals("ORBISGIS_EMPTY", getEmptyTable().getLocation());
@@ -388,9 +388,9 @@ class JdbcTableTest {
         assertEquals(LINKED_QUERY, getLinkedTable().getBaseQuery());
         assertEquals(TEMP_QUERY, getTempTable().getBaseQuery());
         assertEquals(EMPTY_QUERY, getEmptyTable().getBaseQuery());
-        assertEquals("(SELECT THE_GEOM, the_geom2, ID, VAL, MEANING FROM ORBISGIS LIMIT 2)",
+        assertEquals("(SELECT THE_GEOM, the_geom2, ID, VAL, MEANING FROM ORBISGIS_TABLE LIMIT 2)",
                 getBuiltTable().getBaseQuery().trim());
-        assertEquals("(SELECT geom as g, st_area(geom) as area FROM (SELECT the_geom AS geom FROM ORBISGIS where id=1) as foo)",
+        assertEquals("(SELECT geom as g, st_area(geom) as area FROM (SELECT the_geom AS geom FROM ORBISGIS_TABLE where id=1) as foo)",
                 getTable().columns("the_geom AS geom").filter("where id=1").getTable().columns("geom as g", "st_area(geom) as area").toString());
     }
 
@@ -772,8 +772,8 @@ class JdbcTableTest {
         JdbcTable table = getTable();
         JdbcSpatialTable spatialTable = (JdbcSpatialTable) dataSource.getSpatialTable(TABLE_NAME);
 
-        assertEquals("(SELECT TOTO, tata, TIti FROM ORBISGIS WHERE toto)", table.columns("TOTO", "tata", "TIti").filter("WHERE toto").toString().trim());
-        assertEquals("(SELECT TOTO, tata, TIti FROM ORBISGIS WHERE toto)", spatialTable.columns("TOTO", "tata", "TIti").filter("WHERE toto").toString().trim());
+        assertEquals("(SELECT TOTO, tata, TIti FROM ORBISGIS_TABLE WHERE toto)", table.columns("TOTO", "tata", "TIti").filter("WHERE toto").toString().trim());
+        assertEquals("(SELECT TOTO, tata, TIti FROM ORBISGIS_TABLE WHERE toto)", spatialTable.columns("TOTO", "tata", "TIti").filter("WHERE toto").toString().trim());
     }
 
     /**
@@ -801,7 +801,7 @@ class JdbcTableTest {
         assertTrue(getTable().asType(ITable.class) instanceof ITable);
         assertNotNull(getTable().asType(ISpatialTable.class));
         assertEquals("+--------------------+\n" +
-                        "|      ORBISGIS      |\n" +
+                        "|   ORBISGIS_TABLE   |\n" +
                         "+--------------------+--------------------+--------------------+--------------------+--------------------+\n" +
                         "|      THE_GEOM      |     THE_GEOM2      |         ID         |        VAL         |      MEANING       |\n" +
                         "+--------------------+--------------------+--------------------+--------------------+--------------------+\n" +
@@ -820,7 +820,7 @@ class JdbcTableTest {
                         "+--------------------+--------------------+--------------------+--------------------+--------------------+\n",
                 getBuiltTable().asType(Ascii.class).toString());
         assertEquals("<table>\n" +
-                "<caption>ORBISGIS</caption>\n" +
+                "<caption>ORBISGIS_TABLE</caption>\n" +
                 "<tr></tr>\n" +
                 "<tr>\n" +
                 "<th align=\"CENTER\">THE_GEOM</th>\n" +
@@ -887,8 +887,8 @@ class JdbcTableTest {
      */
     @Test
     void testGetSummary() {
-        assertEquals("\"ORBISGIS\"; row count : 3; column count : 5", getTable().getSummary().toString());
-        assertEquals("\"ORBISGIS\"", getTable().getSummary().getLocation().toString());
+        assertEquals("\"ORBISGIS_TABLE\"; row count : 3; column count : 5", getTable().getSummary().toString());
+        assertEquals("\"ORBISGIS_TABLE\"", getTable().getSummary().getLocation().toString());
         assertEquals(5, getTable().getSummary().getColumnCount());
         assertEquals(3, getTable().getSummary().getRowCount());
         assertEquals(IJdbcTable.QUERY_LOCATION + "; row count : 2; column count : 5", getBuiltTable().getSummary().toString());

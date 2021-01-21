@@ -244,9 +244,7 @@ class GroovyPostGISTest {
         """)
         assertEquals("id,the_geom", postGIS.getSpatialTable("postgis").columns.join(","))
         postGIS.execute "alter table testtable add column  columns integer"
-        assertEquals("columns", postGIS.getSpatialTable("postgis").columns.name)
-        assertEquals("id,the_geom,columns", postGIS.getSpatialTable("postgis").getColumns().join(","))
-
+        assertEquals("id,the_geom", postGIS.getSpatialTable("postgis").getColumns().join(","))
     }
 
     @Disabled

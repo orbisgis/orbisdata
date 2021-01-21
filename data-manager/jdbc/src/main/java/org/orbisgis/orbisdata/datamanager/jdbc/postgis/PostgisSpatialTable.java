@@ -127,7 +127,7 @@ public class PostgisSpatialTable extends JdbcSpatialTable {
                 return -1;
             }
             Tuple<String, GeometryMetaData> geomColumn = GeometryTableUtilities.getFirstColumnMetaData(getResultSetLimit(0));
-            ResultSet rs = getStatement().executeQuery("select st_srid(" + geomColumn.first() + ") from " + getBaseQuery() + " as foo limit 1");
+            ResultSet rs = getStatement().executeQuery("select st_srid(" + geomColumn.first() + ") from (" + getBaseQuery() + ") as foo limit 1");
             if(rs.next()){
                 srid = rs.getInt(1);
             }

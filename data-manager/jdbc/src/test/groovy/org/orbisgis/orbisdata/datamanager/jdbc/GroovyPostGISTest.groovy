@@ -277,7 +277,7 @@ class GroovyPostGISTest {
         assertNotNull(sp)
         def spr = sp.reproject(2154)
         assertNotNull(spr)
-        assertThrows(UnsupportedOperationException.class, spr::getSrid);
+        assertEquals(2154, spr.getSrid());
         assertNotNull(spr.save("target/reprojected_table_postgis.shp", true))
         def reprojectedTable = postGIS.getSpatialTable(postGIS.load("target/reprojected_table_postgis.shp", true))
         assertNotNull(reprojectedTable)
@@ -405,7 +405,7 @@ class GroovyPostGISTest {
         assertEquals(1, postGIS.getSpatialTable("query_table").getRowCount())
         assertEquals(1, postGIS.getSpatialTable("query_table").getColumnCount())
         assertEquals("the_geom", postGIS.getSpatialTable("query_table").getColumns().first())
-        def importedTable = postGIS.load(h2GISSource, 'externalTable')
+        def importedTable = postGIS.load(h2GISSource, 'externalTable', true)
         assertNotNull(importedTable)
         assertEquals(2, postGIS.getSpatialTable(importedTable).getRowCount())
         assertEquals(2, postGIS.getSpatialTable(importedTable).getColumnCount())
@@ -538,7 +538,6 @@ class GroovyPostGISTest {
     @Test
     @EnabledIfSystemProperty(named = "test.postgis", matches = "true")
     void getSrid() {
-        def postGIS = POSTGIS.open(dbProperties)
         postGIS.execute("""
                 DROP TABLE IF EXISTS testtable;
                 CREATE TABLE testtable (id int, the_geom geometry(point, 0));

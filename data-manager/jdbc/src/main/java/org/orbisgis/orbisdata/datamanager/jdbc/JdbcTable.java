@@ -606,6 +606,7 @@ public abstract class JdbcTable<T extends ResultSet, U> extends DefaultResultSet
         }
         String inputTableName =  getTableLocation() == null ? "(" + getBaseQuery() + ")" : getTableLocation().toString(getDbType());
         try {
+
             return IOMethods.exportToDataBase(getJdbcDataSource().getConnection(), inputTableName,dataSource.getConnection() , outputTableName, deleteTable?-1:0, batchSize);
         } catch (SQLException e) {
             LOGGER.error("Unable to load the table "+inputTableName + " from " + dataSource.getLocation().toString());

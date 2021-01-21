@@ -8,7 +8,7 @@ jobs:
     steps:
       - uses: huaxk/postgis-action@v1
         with:
-          postgresql version: '9.6'
+          postgresql version: '10'
           postgresql password: orbisgis
           postgresql user: 'orbisgis'
           postgresql db: 'orbisgis_db'

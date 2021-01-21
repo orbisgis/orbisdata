@@ -492,6 +492,7 @@ class JdbcDataSourceTest {
     /**
      * Test the load from an existing database methods.
      */
+    @Disabled
     @Test
     void loadFromDB() throws SQLException {
         String tableNameDS1 = "test_h2gis";

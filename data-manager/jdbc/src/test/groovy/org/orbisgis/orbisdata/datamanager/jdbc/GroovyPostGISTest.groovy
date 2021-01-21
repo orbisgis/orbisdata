@@ -405,6 +405,10 @@ class GroovyPostGISTest {
         assertEquals(1, postGIS.getSpatialTable("query_table").getRowCount())
         assertEquals(1, postGIS.getSpatialTable("query_table").getColumnCount())
         assertEquals("the_geom", postGIS.getSpatialTable("query_table").getColumns().first())
+        def importedTable = postGIS.load(h2GISSource, 'externalTable')
+        assertNotNull(importedTable)
+        assertEquals(2, postGIS.getSpatialTable(importedTable).getRowCount())
+        assertEquals(2, postGIS.getSpatialTable(importedTable).getColumnCount())
     }
 
     @Test

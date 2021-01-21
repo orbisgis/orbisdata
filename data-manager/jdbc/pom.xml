@@ -70,6 +70,10 @@
             <groupId>org.orbisgis</groupId>
             <artifactId>postgis-jts-osgi</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.orbisgis</groupId>
+            <artifactId>cts</artifactId>
+        </dependency>
         <!-- Test dependencies -->
         <dependency>
             <groupId>org.junit.jupiter</groupId>

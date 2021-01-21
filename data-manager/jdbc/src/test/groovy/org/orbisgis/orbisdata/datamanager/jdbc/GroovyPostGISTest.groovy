@@ -110,7 +110,7 @@ class GroovyPostGISTest {
         postGIS.rows "SELECT * FROM testtable", { meta ->
             concat += "${meta.getTableName(1)} $meta.columnCount\n"
         }
-        assertEquals("postgis 2\n", concat)
+        assertEquals("testtable 2\n", concat)
     }
 
     @Test
@@ -357,7 +357,7 @@ class GroovyPostGISTest {
                 DROP TABLE IF EXISTS testtable;
                 CREATE TABLE testtable (id int, the_geom geometry(point, 4326));
         """)
-        assertEquals(4326, postGIS.getSpatialTable("postgis").srid)
+        assertEquals(4326, postGIS.getSpatialTable("testtable").srid)
 
         postGIS.execute("""
                 DROP SCHEMA IF EXISTS cnrs CASCADE;

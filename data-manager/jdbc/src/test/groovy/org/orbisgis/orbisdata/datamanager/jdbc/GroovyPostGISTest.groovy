@@ -75,12 +75,12 @@ class GroovyPostGISTest {
     @EnabledIfSystemProperty(named = "test.postgis", matches = "true")
     void queryPostGIS() {
         postGIS.execute("""
-                DROP TABLE IF EXISTS postgis;
-                CREATE TABLE postgis (id int, the_geom geometry(point, 0));
-                INSERT INTO postgis VALUES (1, 'POINT(10 10)'::GEOMETRY), (2, 'POINT(1 1)'::GEOMETRY);
+                DROP TABLE IF EXISTS testtable;
+                CREATE TABLE testtable (id int, the_geom geometry(point, 0));
+                INSERT INTO testtable VALUES (1, 'POINT(10 10)'::GEOMETRY), (2, 'POINT(1 1)'::GEOMETRY);
         """)
         def concat = ""
-        postGIS.eachRow "SELECT THE_GEOM FROM postgis", { row -> concat += "$row.the_geom\n" }
+        postGIS.eachRow "SELECT THE_GEOM FROM testtable", { row -> concat += "$row.the_geom\n" }
         assertEquals("POINT (10 10)\nPOINT (1 1)\n", concat)
     }
 
@@ -88,9 +88,9 @@ class GroovyPostGISTest {
     void querySpatialTable() {
         def postGIS = POSTGIS.open(dbProperties)
         postGIS.execute("""
-                DROP TABLE IF EXISTS postgis;
-                CREATE TABLE postgis (id int, the_geom geometry(point, 0));
-                INSERT INTO postgis VALUES (1, 'POINT(10 10)'::GEOMETRY), (2, 'POINT(1 1)'::GEOMETRY);
+                DROP TABLE IF EXISTS testtable;
+                CREATE TABLE testtable (id int, the_geom geometry(point, 0));
+                INSERT INTO testtable VALUES (1, 'POINT(10 10)'::GEOMETRY), (2, 'POINT(1 1)'::GEOMETRY);
         """)
         def concat = ""
         postGIS.getSpatialTable "postgis" eachRow { row -> concat += "$row.id $row.the_geom $row.geometry\n" }
@@ -102,12 +102,12 @@ class GroovyPostGISTest {
     @EnabledIfSystemProperty(named = "test.postgis", matches = "true")
     void queryPostGISMetaData() {
         postGIS.execute("""
-                DROP TABLE IF EXISTS postgis;
-                CREATE TABLE postgis (id int, the_geom geometry(point, 0));
-                INSERT INTO postgis VALUES (1, 'POINT(10 10)'::GEOMETRY), (2, 'POINT(1 1)'::GEOMETRY);
+                DROP TABLE IF EXISTS testtable;
+                CREATE TABLE testtable (id int, the_geom geometry(point, 0));
+                INSERT INTO testtable VALUES (1, 'POINT(10 10)'::GEOMETRY), (2, 'POINT(1 1)'::GEOMETRY);
         """)
         def concat = ""
-        postGIS.rows "SELECT * FROM postgis", { meta ->
+        postGIS.rows "SELECT * FROM testtable", { meta ->
             concat += "${meta.getTableName(1)} $meta.columnCount\n"
         }
         assertEquals("postgis 2\n", concat)
@@ -117,9 +117,9 @@ class GroovyPostGISTest {
     @EnabledIfSystemProperty(named = "test.postgis", matches = "true")
     void querySpatialTableMetaData() {
         postGIS.execute("""
-                DROP TABLE IF EXISTS postgis;
-                CREATE TABLE postgis (id int, the_geom geometry(point, 0));
-                INSERT INTO postgis VALUES (1, 'POINT(10 10)'::GEOMETRY), (2, 'POINT(1 1)'::GEOMETRY);
+                DROP TABLE IF EXISTS testtable;
+                CREATE TABLE testtable (id int, the_geom geometry(point, 0));
+                INSERT INTO testtable VALUES (1, 'POINT(10 10)'::GEOMETRY), (2, 'POINT(1 1)'::GEOMETRY);
         """)
 
         def concat = ""
@@ -140,9 +140,9 @@ class GroovyPostGISTest {
     @EnabledIfSystemProperty(named = "test.postgis", matches = "true")
     void exportImportShpFile() {
         postGIS.execute("""
-                DROP TABLE IF EXISTS postgis, postgis_imported;
-                CREATE TABLE postgis (id int, the_geom geometry(point, 0));
-                INSERT INTO postgis VALUES (1, 'POINT(10 10)'::GEOMETRY), (2, 'POINT(1 1)'::GEOMETRY);
+                DROP TABLE IF EXISTS testtable, testtable_imported;
+                CREATE TABLE testtable (id int, the_geom geometry(point, 0));
+                INSERT INTO testtable VALUES (1, 'POINT(10 10)'::GEOMETRY), (2, 'POINT(1 1)'::GEOMETRY);
         """)
         postGIS.save("postgis", "target/postgis_imported.shp")
         postGIS.load("target/postgis_imported.shp", "postgis_imported", null, false)
@@ -156,9 +156,9 @@ class GroovyPostGISTest {
     @EnabledIfSystemProperty(named = "test.postgis", matches = "true")
     void exportImportTwoTimesShpFile() {
         postGIS.execute("""
-                DROP TABLE IF EXISTS postgis, postgis_imported;
-                CREATE TABLE postgis (id int, the_geom geometry(point, 0));
-                INSERT INTO postgis VALUES (1, 'POINT(10 10)'::GEOMETRY), (2, 'POINT(1 1)'::GEOMETRY);
+                DROP TABLE IF EXISTS testtable, testtable_imported;
+                CREATE TABLE testtable (id int, the_geom geometry(point, 0));
+                INSERT INTO testtable VALUES (1, 'POINT(10 10)'::GEOMETRY), (2, 'POINT(1 1)'::GEOMETRY);
         """)
         postGIS.save("postgis", "target/postgis_imported.shp")
         postGIS.load("target/postgis_imported.shp", "postgis_imported", null, false)
@@ -173,9 +173,9 @@ class GroovyPostGISTest {
     @EnabledIfSystemProperty(named = "test.postgis", matches = "true")
     void exportImportShpFileSimple1() {
         postGIS.execute("""
-                DROP TABLE IF EXISTS postgis, postgis_imported;
-                CREATE TABLE postgis (id int, the_geom geometry(point, 0));
-                INSERT INTO postgis VALUES (1, 'POINT(10 10)'::GEOMETRY), (2, 'POINT(1 1)'::GEOMETRY);
+                DROP TABLE IF EXISTS testtable, testtable_imported;
+                CREATE TABLE testtable (id int, the_geom geometry(point, 0));
+                INSERT INTO testtable VALUES (1, 'POINT(10 10)'::GEOMETRY), (2, 'POINT(1 1)'::GEOMETRY);
         """)
         postGIS.save("postgis", "target/postgis_imported.shp")
         postGIS.load("target/postgis_imported.shp", "postgis_imported")
@@ -189,9 +189,9 @@ class GroovyPostGISTest {
     @EnabledIfSystemProperty(named = "test.postgis", matches = "true")
     void exportImportShpFileSimple2() {
         postGIS.execute("""
-                DROP TABLE IF EXISTS postgis, postgis_imported;
-                CREATE TABLE postgis (id int, the_geom geometry(point, 0));
-                INSERT INTO postgis VALUES (1, 'POINT(10 10)'::GEOMETRY), (2, 'POINT(1 1)'::GEOMETRY);
+                DROP TABLE IF EXISTS testtable, testtable_imported;
+                CREATE TABLE testtable (id int, the_geom geometry(point, 0));
+                INSERT INTO testtable VALUES (1, 'POINT(10 10)'::GEOMETRY), (2, 'POINT(1 1)'::GEOMETRY);
         """)
         postGIS.save("postgis", "target/postgis_imported.shp")
         postGIS.load("target/postgis_imported.shp")
@@ -205,9 +205,9 @@ class GroovyPostGISTest {
     @EnabledIfSystemProperty(named = "test.postgis", matches = "true")
     void exportImportGeoJsonShapeFile() {
         postGIS.execute("""
-                DROP TABLE IF EXISTS postgis, postgis_imported;
-                CREATE TABLE postgis (id int, the_geom geometry(point, 0));
-                INSERT INTO postgis VALUES (1, 'POINT(10 10)'::GEOMETRY), (2, 'POINT(1 1)'::GEOMETRY);
+                DROP TABLE IF EXISTS testtable, testtable_imported;
+                CREATE TABLE testtable (id int, the_geom geometry(point, 0));
+                INSERT INTO testtable VALUES (1, 'POINT(10 10)'::GEOMETRY), (2, 'POINT(1 1)'::GEOMETRY);
         """)
         postGIS.save("postgis", "target/postgis_imported.geojson")
         postGIS.load("target/postgis_imported.geojson")
@@ -223,9 +223,9 @@ class GroovyPostGISTest {
     @EnabledIfSystemProperty(named = "test.postgis", matches = "true")
     void exportImportCSV() {
         postGIS.execute("""
-                DROP TABLE IF EXISTS postgis, postgis_imported;
-                CREATE TABLE postgis (id int, the_geom geometry(point, 0));
-                INSERT INTO postgis VALUES (1, 'POINT(10 10)'::GEOMETRY), (2, 'POINT(1 1)'::GEOMETRY);
+                DROP TABLE IF EXISTS testtable, testtable_imported;
+                CREATE TABLE testtable (id int, the_geom geometry(point, 0));
+                INSERT INTO testtable VALUES (1, 'POINT(10 10)'::GEOMETRY), (2, 'POINT(1 1)'::GEOMETRY);
         """)
         postGIS.save("postgis", "target/postgis_imported.csv")
         postGIS.load("target/postgis_imported.csv")
@@ -238,12 +238,12 @@ class GroovyPostGISTest {
     @EnabledIfSystemProperty(named = "test.postgis", matches = "true")
     void queryTableColumnNames() {
         postGIS.execute("""
-                DROP TABLE IF EXISTS postgis;
-                CREATE TABLE postgis (id int, the_geom geometry(point, 0));
-                INSERT INTO postgis VALUES (1, 'POINT(10 10)'::GEOMETRY), (2, 'POINT(1 1)'::GEOMETRY);
+                DROP TABLE IF EXISTS testtable;
+                CREATE TABLE testtable (id int, the_geom geometry(point, 0));
+                INSERT INTO testtable VALUES (1, 'POINT(10 10)'::GEOMETRY), (2, 'POINT(1 1)'::GEOMETRY);
         """)
         assertEquals("id,the_geom", postGIS.getSpatialTable("postgis").columns.join(","))
-        postGIS.execute "alter table postgis add column  columns integer"
+        postGIS.execute "alter table testtable add column  columns integer"
         assertEquals("columns", postGIS.getSpatialTable("postgis").columns.name)
         assertEquals("id,the_geom,columns", postGIS.getSpatialTable("postgis").getColumns().join(","))
 
@@ -254,9 +254,9 @@ class GroovyPostGISTest {
     @EnabledIfSystemProperty(named = "test.postgis", matches = "true")
     void exportSaveReadTableGeoJson() {
         postGIS.execute("""
-                DROP TABLE IF EXISTS postgis, postgis_saved;
-                CREATE TABLE postgis (id int, the_geom geometry(point, 0));
-                INSERT INTO postgis VALUES (1, 'POINT(10 10)'::GEOMETRY), (2, 'POINT(1 1)'::GEOMETRY);
+                DROP TABLE IF EXISTS testtable, testtable_saved;
+                CREATE TABLE testtable (id int, the_geom geometry(point, 0));
+                INSERT INTO testtable VALUES (1, 'POINT(10 10)'::GEOMETRY), (2, 'POINT(1 1)'::GEOMETRY);
         """)
         postGIS.getSpatialTable("postgis").save("target/postgis_saved.geojson");
         postGIS.load("target/postgis_saved.geojson");
@@ -356,8 +356,8 @@ class GroovyPostGISTest {
     @EnabledIfSystemProperty(named = "test.postgis", matches = "true")
     void sridOnEmptyTable() {
         postGIS.execute("""
-                DROP TABLE IF EXISTS postgis;
-                CREATE TABLE postgis (id int, the_geom geometry(point, 4326));
+                DROP TABLE IF EXISTS testtable;
+                CREATE TABLE testtable (id int, the_geom geometry(point, 4326));
         """)
         assertEquals(4326, postGIS.getSpatialTable("postgis").srid)
 
@@ -412,21 +412,21 @@ class GroovyPostGISTest {
     @Test
     void preparedQueryTest() {
         postGIS.execute("""
-                DROP TABLE IF EXISTS postgis;
-                CREATE TABLE postgis (id int, the_geom geometry(point));
-                INSERT INTO postgis VALUES (1, 'POINT(10 10)'::GEOMETRY), (2, 'POINT(1 1)'::GEOMETRY);
+                DROP TABLE IF EXISTS testtable;
+                CREATE TABLE testtable (id int, the_geom geometry(point));
+                INSERT INTO testtable VALUES (1, 'POINT(10 10)'::GEOMETRY), (2, 'POINT(1 1)'::GEOMETRY);
         """)
         def val = 2
         def String[] arr = []
 
-        def table = postGIS.scrollInsensitive().getTable("(SELECT * FROM postgis where id=$val)")
+        def table = postGIS.scrollInsensitive().getTable("(SELECT * FROM testtable where id=$val)")
         assert 2 == table.firstRow[0]
-        table = postGIS.scrollInsensitive().getSpatialTable("(SELECT * FROM postgis where id=$val)")
+        table = postGIS.scrollInsensitive().getSpatialTable("(SELECT * FROM testtable where id=$val)")
         assert 2 == table.firstRow[0]
 
-        table = postGIS.scrollInsensitive().getTable("(SELECT * FROM postgis where id=?)", [val])
+        table = postGIS.scrollInsensitive().getTable("(SELECT * FROM testtable where id=?)", [val])
         assert 2 == table.firstRow[0]
-        table = postGIS.scrollInsensitive().getSpatialTable("(SELECT * FROM postgis where id=?)", [val])
+        table = postGIS.scrollInsensitive().getSpatialTable("(SELECT * FROM testtable where id=?)", [val])
         assert 2 == table.firstRow[0]
 
         table = postGIS.scrollInsensitive().getTable("postgis").columns("*").filter("where id=$val").getTable()
@@ -463,9 +463,9 @@ class GroovyPostGISTest {
     @Test
     void filterTest() {
         postGIS.execute("""
-                DROP TABLE IF EXISTS postgis;
-                CREATE TABLE postgis (id int, the_geom geometry(point));
-                INSERT INTO postgis VALUES (1, 'POINT(10 10)'::GEOMETRY), (2, 'POINT(1 1)'::GEOMETRY);
+                DROP TABLE IF EXISTS testtable;
+                CREATE TABLE testtable (id int, the_geom geometry(point));
+                INSERT INTO testtable VALUES (1, 'POINT(10 10)'::GEOMETRY), (2, 'POINT(1 1)'::GEOMETRY);
         """)
 
         def table = postGIS.getTable("postgis").columns("id").filter("limit 1").getTable()
@@ -534,8 +534,8 @@ class GroovyPostGISTest {
     void getSrid() {
         def postGIS = POSTGIS.open(dbProperties)
         postGIS.execute("""
-                DROP TABLE IF EXISTS postgis;
-                CREATE TABLE postgis (id int, the_geom geometry(point, 0));
+                DROP TABLE IF EXISTS testtable;
+                CREATE TABLE testtable (id int, the_geom geometry(point, 0));
         """)
         assertEquals(0, postGIS.getSpatialTable("postgis").srid)
     }

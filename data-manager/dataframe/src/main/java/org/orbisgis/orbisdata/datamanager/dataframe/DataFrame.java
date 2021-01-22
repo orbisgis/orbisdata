@@ -1038,6 +1038,9 @@ public class DataFrame implements smile.data.DataFrame, ITable<BaseVector, Tuple
                 if (type.equalsIgnoreCase("DOUBLE PRECISION")) {
                     type="DOUBLE";
                 }
+                if (type.equalsIgnoreCase("DECFLOAT")) {
+                    type="FLOAT";
+                }
                 DataType dataType = DataType.of(JDBCType.valueOf(type), metadata.isNullable(i) != 0,(table).getDbType().toString());
                 fields[i-1] = new StructField(metadata.getColumnName(i), dataType);
             }

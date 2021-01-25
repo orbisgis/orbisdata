@@ -44,9 +44,9 @@ import org.h2gis.network.functions.NetworkFunctions;
 import org.h2gis.utilities.FileUtilities;
 import org.h2gis.utilities.GeometryTableUtilities;
 import org.h2gis.utilities.JDBCUtilities;
+import org.h2gis.utilities.dbtypes.DBTypes;
 import org.orbisgis.commons.annotations.NotNull;
 import org.orbisgis.commons.annotations.Nullable;
-import org.orbisgis.orbisdata.datamanager.api.dataset.DataBaseType;
 import org.orbisgis.orbisdata.datamanager.api.dataset.IJdbcSpatialTable;
 import org.orbisgis.orbisdata.datamanager.api.dataset.IJdbcTable;
 import org.orbisgis.orbisdata.datamanager.api.dataset.ISpatialTable;
@@ -80,7 +80,7 @@ public class H2GIS extends JdbcDataSource {
      * @param connection {@link Connection} to the database.
      */
     private H2GIS(@NotNull Connection connection) {
-        super(connection, DataBaseType.H2GIS);
+        super(connection, DBTypes.H2GIS);
     }
 
     /**
@@ -89,7 +89,7 @@ public class H2GIS extends JdbcDataSource {
      * @param dataSource {@link DataSource} to the database.
      */
     private H2GIS(@NotNull DataSource dataSource) {
-        super(dataSource, DataBaseType.H2GIS);
+        super(dataSource, DBTypes.H2GIS);
     }
 
     /**
@@ -182,7 +182,7 @@ public class H2GIS extends JdbcDataSource {
         try {
             isH2 = JDBCUtilities.isH2DataBase(connection);
         } catch (SQLException e) {
-            LOGGER.error("Unable to get DataBaseType metadata.\n" + e.getLocalizedMessage());
+            LOGGER.error("Unable to get DBTypes metadata.\n" + e.getLocalizedMessage());
             return;
         }
         boolean tableExists;

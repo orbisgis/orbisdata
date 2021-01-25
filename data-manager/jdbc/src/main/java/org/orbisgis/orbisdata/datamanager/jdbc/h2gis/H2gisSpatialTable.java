@@ -37,12 +37,12 @@
 package org.orbisgis.orbisdata.datamanager.jdbc.h2gis;
 
 import org.h2gis.utilities.GeometryTableUtilities;
+import org.h2gis.utilities.dbtypes.DBTypes;
 import org.h2gis.utilities.wrapper.ConnectionWrapper;
 import org.h2gis.utilities.wrapper.SpatialResultSetImpl;
 import org.h2gis.utilities.wrapper.StatementWrapper;
 import org.orbisgis.commons.annotations.NotNull;
 import org.orbisgis.commons.annotations.Nullable;
-import org.orbisgis.orbisdata.datamanager.api.dataset.DataBaseType;
 import org.orbisgis.orbisdata.datamanager.api.dataset.ISpatialTable;
 import org.orbisgis.orbisdata.datamanager.api.dataset.ITable;
 import org.orbisgis.orbisdata.datamanager.api.datasource.IJdbcDataSource;
@@ -75,7 +75,7 @@ public class H2gisSpatialTable extends JdbcSpatialTable {
     public H2gisSpatialTable(@Nullable TableLocation tableLocation, @NotNull String baseQuery,
                              @NotNull Statement statement, @Nullable List<Object> params,
                              @NotNull IJdbcDataSource jdbcDataSource) {
-        super(DataBaseType.H2GIS, jdbcDataSource, tableLocation, statement, baseQuery, params);
+        super(DBTypes.H2GIS, jdbcDataSource, tableLocation, statement, baseQuery, params);
     }
 
     @Override
@@ -148,7 +148,7 @@ public class H2gisSpatialTable extends JdbcSpatialTable {
                 }
             }
             String query = "SELECT " + String.join(",", fieldNames) + " FROM " +
-                    (getTableLocation() == null ? getBaseQuery() + " as foo " : getTableLocation().toString(true));
+                    (getTableLocation() == null ? getBaseQuery() + " as foo " : getTableLocation().toString(getDbType()));
             return new H2gisSpatialTable(null, query, (StatementWrapper) getStatement(), getParams(), getJdbcDataSource());
         } catch (SQLException e) {
             LOGGER.error("Cannot reproject the table '" + getLocation() + "' in the SRID '" + srid + "'.\n", e);

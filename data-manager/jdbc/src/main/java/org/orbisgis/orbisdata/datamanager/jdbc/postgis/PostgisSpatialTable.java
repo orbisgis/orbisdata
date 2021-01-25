@@ -41,17 +41,14 @@ import org.h2gis.postgis_jts.StatementWrapper;
 import org.h2gis.utilities.GeometryMetaData;
 import org.h2gis.utilities.GeometryTableUtilities;
 import org.h2gis.utilities.Tuple;
-import org.h2gis.utilities.wrapper.SpatialResultSetImpl;
-import org.locationtech.jts.geom.Geometry;
+import org.h2gis.utilities.dbtypes.DBTypes;
 import org.orbisgis.commons.annotations.NotNull;
 import org.orbisgis.commons.annotations.Nullable;
-import org.orbisgis.orbisdata.datamanager.api.dataset.DataBaseType;
 import org.orbisgis.orbisdata.datamanager.api.dataset.ISpatialTable;
 import org.orbisgis.orbisdata.datamanager.api.dataset.ITable;
 import org.orbisgis.orbisdata.datamanager.api.datasource.IJdbcDataSource;
 import org.orbisgis.orbisdata.datamanager.jdbc.JdbcSpatialTable;
 import org.orbisgis.orbisdata.datamanager.jdbc.TableLocation;
-import org.orbisgis.orbisdata.datamanager.jdbc.h2gis.H2gisSpatialTable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -80,7 +77,7 @@ public class PostgisSpatialTable extends JdbcSpatialTable {
     public PostgisSpatialTable(@Nullable TableLocation tableLocation, @NotNull String baseQuery,
                                @NotNull Statement statement, @Nullable List<Object> params,
                                @NotNull IJdbcDataSource jdbcDataSource) {
-        super(DataBaseType.POSTGIS, jdbcDataSource, tableLocation, statement, baseQuery, params);
+        super(DBTypes.POSTGIS, jdbcDataSource, tableLocation, statement, baseQuery, params);
     }
 
     @Override
@@ -169,7 +166,7 @@ public class PostgisSpatialTable extends JdbcSpatialTable {
                 }
             }
             String query = "SELECT " + String.join(",", fieldNames) + " FROM " +
-                    (getTableLocation() == null ? getBaseQuery() + " as foo" : getTableLocation().toString(false));
+                    (getTableLocation() == null ? getBaseQuery() + " as foo" : getTableLocation().toString(getDbType()));
             return new PostgisSpatialTable(null, query,  getStatement(), getParams(), getJdbcDataSource());
         } catch (SQLException e) {
             LOGGER.error("Cannot reproject the table '" + getLocation() + "' in the SRID '" + srid + "'.\n", e);

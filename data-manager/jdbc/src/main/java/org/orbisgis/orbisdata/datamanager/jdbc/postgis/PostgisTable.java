@@ -36,10 +36,9 @@
  */
 package org.orbisgis.orbisdata.datamanager.jdbc.postgis;
 
-import org.h2gis.utilities.SpatialResultSet;
+import org.h2gis.utilities.dbtypes.DBTypes;
 import org.orbisgis.commons.annotations.NotNull;
 import org.orbisgis.commons.annotations.Nullable;
-import org.orbisgis.orbisdata.datamanager.api.dataset.DataBaseType;
 import org.orbisgis.orbisdata.datamanager.api.dataset.ISpatialTable;
 import org.orbisgis.orbisdata.datamanager.api.dataset.ITable;
 import org.orbisgis.orbisdata.datamanager.api.datasource.IJdbcDataSource;
@@ -48,7 +47,6 @@ import org.orbisgis.orbisdata.datamanager.jdbc.ResultSetIterator;
 import org.orbisgis.orbisdata.datamanager.jdbc.TableLocation;
 import org.orbisgis.orbisdata.datamanager.jdbc.resultset.ResultSetSpliterator;
 import org.orbisgis.orbisdata.datamanager.jdbc.resultset.StreamResultSet;
-import org.orbisgis.orbisdata.datamanager.jdbc.resultset.StreamSpatialResultSet;
 
 import java.sql.ResultSet;
 import java.sql.Statement;
@@ -76,7 +74,7 @@ public class PostgisTable extends JdbcTable<ResultSet, StreamResultSet> {
     public PostgisTable(@Nullable TableLocation tableLocation, @NotNull String baseQuery,
                         @NotNull Statement statement, @Nullable List<Object> params,
                         @NotNull IJdbcDataSource jdbcDataSource) {
-        super(DataBaseType.H2GIS, jdbcDataSource, tableLocation, statement, params, baseQuery);
+        super(DBTypes.POSTGIS, jdbcDataSource, tableLocation, statement, params, baseQuery);
     }
 
     @Override

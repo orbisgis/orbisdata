@@ -36,6 +36,7 @@
  */
 package org.orbisgis.orbisdata.datamanager.api.dataset;
 
+import org.h2gis.utilities.dbtypes.DBTypes;
 import org.orbisgis.commons.annotations.NotNull;
 import org.orbisgis.commons.annotations.Nullable;
 
@@ -86,7 +87,7 @@ public interface ITableLocation {
      * @return The String representation of the table location.
      */
     @NotNull
-    String toString(@NotNull DataBaseType type);
+    String toString(@NotNull DBTypes type);
 
     /**
      * Convert the current object into another with the given class.

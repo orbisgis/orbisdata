@@ -37,6 +37,7 @@
 package org.orbisgis.orbisdata.datamanager.api.dataset;
 
 import groovy.lang.GString;
+import org.h2gis.utilities.dbtypes.DBTypes;
 import org.junit.jupiter.api.Test;
 import org.orbisgis.commons.annotations.NotNull;
 import org.orbisgis.commons.annotations.Nullable;
@@ -73,13 +74,13 @@ public class IJdbcTableTest {
     @Test
     public void testGetLocation() {
         assertEquals("catalog.schema.\"table\"",
-                new DummyJdbcTable(DataBaseType.POSTGIS, LOCATION, true).getLocation());
+                new DummyJdbcTable(DBTypes.POSTGIS, LOCATION, true).getLocation());
         assertEquals(LOCATION.toUpperCase(),
-                new DummyJdbcTable(DataBaseType.H2GIS, LOCATION, true).getLocation());
+                new DummyJdbcTable(DBTypes.H2GIS, LOCATION, true).getLocation());
         assertEquals(IJdbcTable.QUERY_LOCATION,
-                new DummyJdbcTable(DataBaseType.H2GIS, null, true).getLocation());
+                new DummyJdbcTable(DBTypes.H2GIS, null, true).getLocation());
         assertEquals(IJdbcTable.QUERY_LOCATION,
-                new DummyJdbcTable(DataBaseType.H2GIS, "", true).getLocation());
+                new DummyJdbcTable(DBTypes.H2GIS, "", true).getLocation());
     }
 
     /**
@@ -88,13 +89,13 @@ public class IJdbcTableTest {
     @Test
     public void testGetName() {
         assertEquals(LOCATION.toLowerCase().substring(LOCATION.lastIndexOf(".") + 1),
-                new DummyJdbcTable(DataBaseType.POSTGIS, LOCATION, true).getName());
+                new DummyJdbcTable(DBTypes.POSTGIS, LOCATION, true).getName());
         assertEquals(LOCATION.toLowerCase().substring(LOCATION.lastIndexOf(".") + 1),
-                new DummyJdbcTable(DataBaseType.H2GIS, LOCATION, true).getName());
+                new DummyJdbcTable(DBTypes.H2GIS, LOCATION, true).getName());
         assertEquals(IJdbcTable.QUERY_LOCATION,
-                new DummyJdbcTable(DataBaseType.H2GIS, null, true).getName());
+                new DummyJdbcTable(DBTypes.H2GIS, null, true).getName());
         assertEquals(IJdbcTable.QUERY_LOCATION,
-                new DummyJdbcTable(DataBaseType.H2GIS, "", true).getName());
+                new DummyJdbcTable(DBTypes.H2GIS, "", true).getName());
     }
 
     /**
@@ -141,7 +142,7 @@ public class IJdbcTableTest {
 
         @NotNull
         @Override
-        public String toString(@NotNull DataBaseType type) {
+        public String toString(@NotNull DBTypes type) {
             if(location == null){
                 return null;
             }
@@ -174,7 +175,7 @@ public class IJdbcTableTest {
         /**
          * Fake database type.
          */
-        private DataBaseType databaseType;
+        private DBTypes databaseType;
         /**
          * Fake row index.
          */
@@ -199,7 +200,7 @@ public class IJdbcTableTest {
          * @param location     Fake data location.
          * @param isIterable   True if iterable, false otherwise.
          */
-        private DummyJdbcTable(DataBaseType databaseType, String location, boolean isIterable) {
+        private DummyJdbcTable(DBTypes databaseType, String location, boolean isIterable) {
             if(location != null) {
                 this.location = new DummyTableLocation(location);
             }
@@ -223,7 +224,7 @@ public class IJdbcTableTest {
 
         @NotNull
         @Override
-        public DataBaseType getDbType() {
+        public DBTypes getDbType() {
             return databaseType;
         }
 

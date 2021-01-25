@@ -37,6 +37,7 @@
 package org.orbisgis.orbisdata.datamanager.api.dataset;
 
 import groovy.lang.Closure;
+import org.h2gis.utilities.dbtypes.DBTypes;
 import org.orbisgis.commons.annotations.NotNull;
 import org.orbisgis.commons.annotations.Nullable;
 import org.orbisgis.orbisdata.datamanager.api.dsl.IResultSetProperties;
@@ -73,12 +74,12 @@ public interface IJdbcTable<T, U> extends ITable<T, U>, ResultSet {
     ITableLocation getTableLocation();
 
     /**
-     * Return the {@link DataBaseType} type of the {@link IJdbcTable}.
+     * Return the {@link DBTypes} type of the {@link IJdbcTable}.
      *
-     * @return The {@link DataBaseType} type
+     * @return The {@link DBTypes} type
      */
     @NotNull
-    DataBaseType getDbType();
+    DBTypes getDbType();
 
     @Override
     @Nullable

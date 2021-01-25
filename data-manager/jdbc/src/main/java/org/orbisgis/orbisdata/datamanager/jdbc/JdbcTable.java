@@ -38,20 +38,16 @@ package org.orbisgis.orbisdata.datamanager.jdbc;
 
 import groovy.lang.*;
 import org.codehaus.groovy.runtime.InvokerHelper;
-import org.h2.value.DataType;
-import org.h2.value.Value;
-import org.h2.value.ValueToObjectConverter2;
 import org.h2gis.functions.io.utility.IOMethods;
 import org.h2gis.utilities.GeometryMetaData;
 import org.h2gis.utilities.GeometryTableUtilities;
 import org.h2gis.utilities.JDBCUtilities;
-import org.locationtech.jts.geom.Geometry;
+import org.h2gis.utilities.dbtypes.DBTypes;
 import org.orbisgis.commons.annotations.NotNull;
 import org.orbisgis.commons.annotations.Nullable;
 import org.orbisgis.commons.printer.Ascii;
 import org.orbisgis.commons.printer.Html;
 import org.orbisgis.commons.printer.ICustomPrinter;
-import org.orbisgis.orbisdata.datamanager.api.dataset.DataBaseType;
 import org.orbisgis.orbisdata.datamanager.api.dataset.IJdbcSpatialTable;
 import org.orbisgis.orbisdata.datamanager.api.dataset.IJdbcTable;
 import org.orbisgis.orbisdata.datamanager.api.dataset.ITable;
@@ -98,7 +94,7 @@ public abstract class JdbcTable<T extends ResultSet, U> extends DefaultResultSet
     /**
      * Type of the database
      */
-    private final DataBaseType dataBaseType;
+    private final DBTypes dataBaseType;
     /**
      * DataSource to execute query
      */
@@ -140,7 +136,7 @@ public abstract class JdbcTable<T extends ResultSet, U> extends DefaultResultSet
      * @param params         Map containing the parameters for the query.
      * @param jdbcDataSource DataSource to use for the creation of the resultSet.
      */
-    public JdbcTable(@NotNull DataBaseType dataBaseType, @NotNull IJdbcDataSource jdbcDataSource,
+    public JdbcTable(@NotNull DBTypes dataBaseType, @NotNull IJdbcDataSource jdbcDataSource,
                      @Nullable TableLocation tableLocation, @NotNull Statement statement,
                      @Nullable List <Object> params, @NotNull String baseQuery) {
         this.metaClass = InvokerHelper.getMetaClass(getClass());
@@ -252,7 +248,7 @@ public abstract class JdbcTable<T extends ResultSet, U> extends DefaultResultSet
 
     @Override
     @NotNull
-    public DataBaseType getDbType() {
+    public DBTypes getDbType() {
         return dataBaseType;
     }
 
@@ -363,7 +359,7 @@ public abstract class JdbcTable<T extends ResultSet, U> extends DefaultResultSet
                         if (tableLocation != null && !getName().isEmpty()) {
                             return GeometryTableUtilities.getMetaData(jdbcDataSource.getConnection(),
                                     TableLocation.parse(tableLocation.getTable()),
-                                    TableLocation.capsIdentifier(columnName, dataBaseType.equals(DataBaseType.H2GIS))
+                                    TableLocation.capsIdentifier(columnName, dataBaseType.equals(DBTypes.H2GIS))
                             ).getGeometryType();
                         }
                     }
@@ -388,7 +384,7 @@ public abstract class JdbcTable<T extends ResultSet, U> extends DefaultResultSet
                 }
                 return GeometryTableUtilities.getMetaData(con,
                         TableLocation.parse(tableLocation.getTable()),
-                        TableLocation.capsIdentifier(columnName, dataBaseType.equals(DataBaseType.H2GIS))
+                        TableLocation.capsIdentifier(columnName, dataBaseType.equals(DBTypes.H2GIS))
                 ).getGeometryType();
             } catch (SQLException e) {
                 LOGGER.error("Unable to get the geometric type of the column '" + columnName + "'\n" +
@@ -821,7 +817,7 @@ public abstract class JdbcTable<T extends ResultSet, U> extends DefaultResultSet
      * @return The formatted column name.
      */
     private String formatColumnName(String column) {
-        return getDbType() == DataBaseType.H2GIS ? column.toUpperCase() : column.toLowerCase();
+        return getDbType() == DBTypes.H2GIS ? column.toUpperCase() : column.toLowerCase();
     }
 
     @Override

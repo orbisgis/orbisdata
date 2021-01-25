@@ -42,17 +42,15 @@ import groovy.lang.MetaClass;
 import groovy.sql.GroovyRowResult;
 import org.codehaus.groovy.runtime.GStringImpl;
 import org.codehaus.groovy.runtime.InvokerHelper;
+import org.h2gis.utilities.dbtypes.DBTypes;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-import org.orbisgis.orbisdata.datamanager.api.dataset.DataBaseType;
 import org.orbisgis.orbisdata.datamanager.api.dataset.ISpatialTable;
 import org.orbisgis.orbisdata.datamanager.api.dataset.ITable;
 import org.orbisgis.orbisdata.datamanager.api.dsl.IResultSetProperties;
-import org.orbisgis.orbisdata.datamanager.jdbc.dsl.ResultSetProperties;
 import org.orbisgis.orbisdata.datamanager.jdbc.h2gis.H2GIS;
 import org.orbisgis.orbisdata.datamanager.jdbc.h2gis.H2gisSpatialTable;
-import org.orbisgis.orbisdata.datamanager.jdbc.h2gis.H2gisTable;
 import org.orbisgis.orbisdata.datamanager.jdbc.postgis.POSTGIS;
 import org.orbisgis.orbisdata.datamanager.jdbc.postgis.PostgisSpatialTable;
 
@@ -126,8 +124,8 @@ class JdbcDataSourceTest {
      */
     @Test
     void testGetDataBaseType() {
-        assertEquals(DataBaseType.H2GIS, h2gis.getDataBaseType());
-        assertEquals(DataBaseType.POSTGIS, postgis.getDataBaseType());
+        assertEquals(DBTypes.H2GIS, h2gis.getDataBaseType());
+        assertEquals(DBTypes.POSTGIS, postgis.getDataBaseType());
     }
 
     /**

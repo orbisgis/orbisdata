@@ -332,7 +332,7 @@ public class H2GISTests {
         Map<String, String> map = new HashMap<>();
         map.put(DataSourceFactory.JDBC_DATABASE_NAME, "./target/addNetworkFunctionsTest" + UUID.randomUUID().toString());
         H2GIS h2GIS = H2GIS.open(map);
-        ITable table = h2GIS.getTable("INFORMATION_SCHEMA.ROUTINES");
+        ITable table = h2GIS.getTable("INFORMATION_SCHEMA.FUNCTION_ALIASES");
         assertNotNull(table);
         try {
             assertTrue(table.first());
@@ -344,7 +344,7 @@ public class H2GISTests {
         List<Object> list = (List<Object>)table.stream()
                 .map(t -> {
                     try {
-                        return ((ResultSet)t).getString(6);
+                        return ((ResultSet)t).getString(3);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -357,7 +357,7 @@ public class H2GISTests {
         assertFalse(list.contains(fcts[3]));
         assertFalse(list.contains(fcts[4]));
 
-        table = h2GIS.getTable("INFORMATION_SCHEMA.ROUTINES");
+        table = h2GIS.getTable("INFORMATION_SCHEMA.FUNCTION_ALIASES");
         assertTrue(h2GIS.addNetworkFunctions());
         try {
             assertTrue(table.first());
@@ -368,7 +368,7 @@ public class H2GISTests {
         list = (List<Object>)table.stream()
                 .map(t -> {
                     try {
-                        return ((ResultSet)t).getString(6);
+                        return ((ResultSet)t).getString(3);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }

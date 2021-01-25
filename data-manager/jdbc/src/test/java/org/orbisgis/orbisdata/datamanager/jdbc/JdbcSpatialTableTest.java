@@ -40,7 +40,7 @@ import groovy.lang.GString;
 import groovy.sql.Sql;
 import org.h2gis.functions.factory.H2GISDBFactory;
 import org.h2gis.utilities.JDBCUtilities;
-import org.h2gis.utilities.SpatialResultSet;
+import org.h2gis.utilities.dbtypes.DBTypes;
 import org.h2gis.utilities.wrapper.SpatialResultSetImpl;
 import org.h2gis.utilities.wrapper.StatementWrapper;
 import org.junit.jupiter.api.BeforeAll;
@@ -48,7 +48,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.orbisgis.commons.annotations.NotNull;
 import org.orbisgis.commons.annotations.Nullable;
-import org.orbisgis.orbisdata.datamanager.api.dataset.DataBaseType;
 import org.orbisgis.orbisdata.datamanager.api.dataset.IJdbcSpatialTable;
 import org.orbisgis.orbisdata.datamanager.api.dataset.IJdbcTable;
 import org.orbisgis.orbisdata.datamanager.api.dataset.ISpatialTable;
@@ -60,7 +59,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -107,7 +105,7 @@ public class JdbcSpatialTableTest {
             fail(e);
         }
         Sql sql = new Sql(connection);
-        dataSource = new DummyJdbcDataSource(sql, DataBaseType.H2GIS);
+        dataSource = new DummyJdbcDataSource(sql, DBTypes.H2GIS);
     }
 
     /**
@@ -261,7 +259,7 @@ public class JdbcSpatialTableTest {
          */
         public DummyJdbcSpatialTable(TableLocation tableLocation, String baseQuery, Statement statement,
                                      JdbcDataSource jdbcDataSource, List<Object> params) {
-            super(DataBaseType.H2GIS, jdbcDataSource, tableLocation, statement, baseQuery, params);
+            super(DBTypes.H2GIS, jdbcDataSource, tableLocation, statement, baseQuery, params);
         }
 
 
@@ -306,7 +304,7 @@ public class JdbcSpatialTableTest {
      */
     private static class DummyJdbcDataSource extends JdbcDataSource {
 
-        private DummyJdbcDataSource(Sql parent, DataBaseType databaseType) {
+        private DummyJdbcDataSource(Sql parent, DBTypes databaseType) {
             super(parent, databaseType);
         }
 
@@ -347,7 +345,7 @@ public class JdbcSpatialTableTest {
 
         @Override
         public IJdbcSpatialTable getSpatialTable(@NotNull String tableName) {
-            String name = TableLocation.parse(tableName, getDataBaseType().equals(DataBaseType.H2GIS)).toString(getDataBaseType().equals(DataBaseType.H2GIS));
+            String name = TableLocation.parse(tableName, getDataBaseType().equals(DBTypes.H2GIS)).toString(getDataBaseType());
             try {
                 if (!JDBCUtilities.tableExists(connection, org.h2gis.utilities.TableLocation.parse(name, true))) {
                     return null;

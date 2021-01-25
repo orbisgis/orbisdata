@@ -50,10 +50,10 @@ import org.h2.util.ScriptReader;
 import org.h2gis.functions.io.utility.IOMethods;
 import org.h2gis.utilities.TableLocation;
 import org.h2gis.utilities.*;
+import org.h2gis.utilities.dbtypes.DBTypes;
 import org.locationtech.jts.geom.*;
 import org.orbisgis.commons.annotations.NotNull;
 import org.orbisgis.commons.annotations.Nullable;
-import org.orbisgis.orbisdata.datamanager.api.dataset.DataBaseType;
 import org.orbisgis.orbisdata.datamanager.api.dataset.IJdbcTable;
 import org.orbisgis.orbisdata.datamanager.api.datasource.IDataSourceLocation;
 import org.orbisgis.orbisdata.datamanager.api.datasource.IJdbcDataSource;
@@ -123,12 +123,12 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, IRe
                     put("FLOAT4", Float.class);
                     put("FLOAT", Float.class);
                     put("REAL", Float.class);
-                    put("DOUBLE PRECISION", Double.class);
+                    put("DOUBLE", Double.class);
                     put("FLOAT8", Double.class);
                     put("BOOL", Boolean.class);
                     put("BOOLEAN", Boolean.class);
                     put("VARCHAR", String.class);
-                    put("CHARACTER VARYING", String.class);
+                    put("VARCHAR", String.class);
                     put("DATE", java.sql.Date.class);
                     put("TIME", java.sql.Time.class);
                     put("TIMESTAMP", java.sql.Timestamp.class);
@@ -151,7 +151,7 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, IRe
     /**
      * Type of the database
      */
-    private final DataBaseType databaseType;
+    private final DBTypes databaseType;
     /**
      * Wrapped {@link DataSource}
      */
@@ -163,7 +163,7 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, IRe
      * @param parent       Parent {@link Sql} object.
      * @param databaseType Type of the database
      */
-    public JdbcDataSource(@NotNull Sql parent, @NotNull DataBaseType databaseType) {
+    public JdbcDataSource(@NotNull Sql parent, @NotNull DBTypes databaseType) {
         super(parent);
         this.dataSource = parent.getDataSource();
         this.metaClass = InvokerHelper.getMetaClass(getClass());
@@ -177,7 +177,7 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, IRe
      * @param dataSource   Parent {@link DataSource} object.
      * @param databaseType Type of the database
      */
-    public JdbcDataSource(@NotNull DataSource dataSource, @NotNull DataBaseType databaseType) {
+    public JdbcDataSource(@NotNull DataSource dataSource, @NotNull DBTypes databaseType) {
         super(dataSource);
         this.dataSource = dataSource;
         this.metaClass = InvokerHelper.getMetaClass(getClass());
@@ -196,7 +196,7 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, IRe
      * @param connection   Parent {@link Sql} object.
      * @param databaseType Type of the database
      */
-    public JdbcDataSource(@NotNull Connection connection, @NotNull DataBaseType databaseType) {
+    public JdbcDataSource(@NotNull Connection connection, @NotNull DBTypes databaseType) {
         super(connection);
         this.dataSource = null;
         this.metaClass = InvokerHelper.getMetaClass(getClass());
@@ -348,7 +348,7 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, IRe
 
     @Override
     @NotNull
-    public DataBaseType getDataBaseType() {
+    public DBTypes getDataBaseType() {
         return databaseType;
     }
 
@@ -759,7 +759,7 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, IRe
         if(name.contains(".")) {
             name = name.substring(0, name.lastIndexOf("."));
         }
-        if(databaseType == DataBaseType.H2GIS){
+        if(databaseType == DBTypes.H2GIS){
             return name.toUpperCase();
         }
         return name.toLowerCase();
@@ -767,7 +767,7 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, IRe
 
     @Override
     public String link(@NotNull String filePath, @NotNull String tableName, boolean delete) {
-        String formatedTableName = TableLocation.parse(tableName, getDataBaseType() == DataBaseType.H2GIS).toString(getDataBaseType() == DataBaseType.H2GIS);
+        String formatedTableName = TableLocation.parse(tableName, getDataBaseType() == DBTypes.H2GIS).toString(getDataBaseType());
         try {
             IOMethods.linkedFile(getConnection(), filePath, tableName, delete);
             return formatedTableName;
@@ -881,7 +881,7 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, IRe
     @Override
     public String load(@NotNull String filePath, @NotNull String tableName, @Nullable String encoding,
                            boolean delete) {
-        String formatedTableName = TableLocation.parse(tableName, getDataBaseType() == DataBaseType.H2GIS).toString(getDataBaseType() == DataBaseType.H2GIS);
+        String formatedTableName = TableLocation.parse(tableName, getDataBaseType() == DBTypes.H2GIS).toString(getDataBaseType());
         try {
             if(ioMethods==null) {
                 ioMethods = new IOMethods();
@@ -1034,8 +1034,8 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, IRe
     public String load(@NotNull IJdbcDataSource dataSource, @NotNull String inputTableName, boolean deleteIfExists) {
         try {
             IOMethods.exportToDataBase(dataSource.getConnection(), inputTableName, getConnection(), inputTableName, deleteIfExists?-1:0, 1000);
-            TableLocation targetTableLocation = TableLocation.parse(inputTableName, this.getDataBaseType() == DataBaseType.H2GIS);
-            return targetTableLocation.toString(this.getDataBaseType() == DataBaseType.H2GIS);
+            TableLocation targetTableLocation = TableLocation.parse(inputTableName, this.getDataBaseType() == DBTypes.H2GIS);
+            return targetTableLocation.toString(this.getDataBaseType());
         } catch (SQLException e) {
             LOGGER.error("Unable to load the table "+inputTableName + " from " + dataSource.getLocation().toString());
         }
@@ -1109,7 +1109,7 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, IRe
     @Nullable
     public Collection<String> getColumnNames(String location){
         try {
-            Collection<String> cols = JDBCUtilities.getColumnNames(getConnection(), TableLocation.parse(location, databaseType.equals(DataBaseType.H2GIS)));
+            Collection<String> cols = JDBCUtilities.getColumnNames(getConnection(), TableLocation.parse(location, databaseType.equals(DBTypes.H2GIS)));
             if(!getConnection().getAutoCommit()) {
                 getConnection().commit();
             }

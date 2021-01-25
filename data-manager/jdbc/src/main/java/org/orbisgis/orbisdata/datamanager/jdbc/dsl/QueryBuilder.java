@@ -37,6 +37,7 @@
 package org.orbisgis.orbisdata.datamanager.jdbc.dsl;
 
 import groovy.lang.GString;
+import org.h2gis.utilities.dbtypes.DBTypes;
 import org.orbisgis.commons.annotations.NotNull;
 import org.orbisgis.orbisdata.datamanager.api.dataset.ISpatialTable;
 import org.orbisgis.orbisdata.datamanager.api.dataset.ITable;
@@ -49,8 +50,6 @@ import org.orbisgis.orbisdata.datamanager.jdbc.TableLocation;
 
 import java.util.Arrays;
 import java.util.List;
-
-import static org.orbisgis.orbisdata.datamanager.api.dataset.DataBaseType.H2GIS;
 
 /**
  * Implementation of {@link IQueryBuilder}.
@@ -71,8 +70,9 @@ public class QueryBuilder extends BuilderResult implements IQueryBuilder {
             location = nameOrQuery + " as foo";
         }
         else {
-            boolean isH2 = H2GIS == dataSource.getDataBaseType();
-            location = TableLocation.parse(nameOrQuery, isH2).toString(isH2);
+            boolean isH2 = DBTypes.H2GIS == dataSource.getDataBaseType();
+            DBTypes dbType = isH2 ? DBTypes.H2GIS : DBTypes.POSTGIS;
+            location = TableLocation.parse(nameOrQuery, isH2).toString(dbType);
         }
         rsp = properties.copy();
     }

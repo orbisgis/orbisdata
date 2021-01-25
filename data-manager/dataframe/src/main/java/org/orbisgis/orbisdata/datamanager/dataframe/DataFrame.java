@@ -38,13 +38,13 @@ package org.orbisgis.orbisdata.datamanager.dataframe;
 
 import groovy.lang.GString;
 import org.h2gis.utilities.TableLocation;
+import org.h2gis.utilities.dbtypes.DBTypes;
 import org.locationtech.jts.geom.Geometry;
 import org.orbisgis.commons.annotations.NotNull;
 import org.orbisgis.commons.annotations.Nullable;
 import org.orbisgis.commons.printer.Ascii;
 import org.orbisgis.commons.printer.Html;
 import org.orbisgis.commons.printer.ICustomPrinter;
-import org.orbisgis.orbisdata.datamanager.api.dataset.DataBaseType;
 import org.orbisgis.orbisdata.datamanager.api.dataset.IJdbcTable;
 import org.orbisgis.orbisdata.datamanager.api.dataset.ISpatialTable;
 import org.orbisgis.orbisdata.datamanager.api.dataset.ITable;
@@ -789,7 +789,7 @@ public class DataFrame implements smile.data.DataFrame, ITable<BaseVector, Tuple
         if (isEmpty()) {
             return null;
         }
-        String tableName = TableLocation.parse(outputTableName, dataSource.getDataBaseType() == DataBaseType.H2GIS).toString(dataSource.getDataBaseType() == DataBaseType.H2GIS);
+        String tableName = TableLocation.parse(outputTableName, dataSource.getDataBaseType() == DBTypes.H2GIS).toString(dataSource.getDataBaseType());
         try {
             PreparedStatement preparedStatement = null;
             Connection outputconnection = dataSource.getConnection();

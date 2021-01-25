@@ -8,11 +8,11 @@
     <parent>
         <groupId>org.orbisgis.orbisdata</groupId>
         <artifactId>process-manager</artifactId>
-        <version>1.0.1-RC1</version>
+        <version>1.0.1-SNAPSHOT</version>
     </parent>
     <groupId>org.orbisgis.orbisdata.processmanager</groupId>
     <artifactId>process</artifactId>
-    <version>1.0.1-RC1</version>
+    <version>1.0.1-SNAPSHOT</version>
     <packaging>bundle</packaging>
 
     <!-- Properties -->

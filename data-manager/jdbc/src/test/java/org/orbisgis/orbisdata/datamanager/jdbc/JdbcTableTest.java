@@ -45,8 +45,8 @@ import org.codehaus.groovy.runtime.metaclass.MissingPropertyExceptionNoStack;
 import org.h2.jdbc.JdbcResultSetMetaData;
 import org.h2gis.functions.factory.H2GISDBFactory;
 import org.h2gis.utilities.SpatialResultSet;
+import org.h2gis.utilities.dbtypes.DBTypes;
 import org.h2gis.utilities.wrapper.SpatialResultSetMetaDataImpl;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -54,7 +54,6 @@ import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.Point;
 import org.orbisgis.commons.printer.Ascii;
 import org.orbisgis.commons.printer.Html;
-import org.orbisgis.orbisdata.datamanager.api.dataset.DataBaseType;
 import org.orbisgis.orbisdata.datamanager.api.dataset.IJdbcTable;
 import org.orbisgis.orbisdata.datamanager.api.dataset.ISpatialTable;
 import org.orbisgis.orbisdata.datamanager.api.dataset.ITable;
@@ -237,7 +236,7 @@ class JdbcTableTest {
     }
 
     /**
-     * Test the {@link JdbcTable#JdbcTable(DataBaseType, IJdbcDataSource, TableLocation, Statement, List, String)} constructor.
+     * Test the {@link JdbcTable#JdbcTable(DBTypes, IJdbcDataSource, TableLocation, Statement, List, String)} constructor.
      */
     @Test
     void testConstructor() {
@@ -334,7 +333,7 @@ class JdbcTableTest {
      */
     @Test
     public void testGetLocation() throws SQLException {
-        assertEquals("\"catalog\".\"schema\".\"table\"", new PostgisTable(
+        assertEquals("catalog.schema.\"table\"", new PostgisTable(
                 new TableLocation(BASE_DATABASE, "catalog", "schema", "table"),
                 "not a request", dataSource.getConnection().createStatement(), null, dataSource).getLocation());
         assertEquals("\"catalog\".\"schema\".\"table\"", new H2gisTable(
@@ -423,11 +422,11 @@ class JdbcTableTest {
      */
     @Test
     void testGetDbType() {
-        assertEquals(DataBaseType.H2GIS, getTable().getDbType());
-        assertEquals(DataBaseType.H2GIS, getLinkedTable().getDbType());
-        assertEquals(DataBaseType.H2GIS, getTempTable().getDbType());
-        assertEquals(DataBaseType.H2GIS, getEmptyTable().getDbType());
-        assertEquals(DataBaseType.H2GIS, getBuiltTable().getDbType());
+        assertEquals(DBTypes.H2GIS, getTable().getDbType());
+        assertEquals(DBTypes.H2GIS, getLinkedTable().getDbType());
+        assertEquals(DBTypes.H2GIS, getTempTable().getDbType());
+        assertEquals(DBTypes.H2GIS, getEmptyTable().getDbType());
+        assertEquals(DBTypes.H2GIS, getBuiltTable().getDbType());
     }
 
     /**
@@ -712,7 +711,7 @@ class JdbcTableTest {
         tables.forEach(table -> {
             assertEquals("GEOMETRY", getTable().getColumnType(COL_THE_GEOM));
             assertEquals("INTEGER", getTable().getColumnType(COL_ID));
-            assertEquals("CHARACTER VARYING", getTable().getColumnType(COL_MEANING));
+            assertEquals("VARCHAR", getTable().getColumnType(COL_MEANING));
             assertNull(getTable().getColumnType("NOT_A_COLUMN"));
         });
     }
@@ -726,7 +725,7 @@ class JdbcTableTest {
         tables.forEach(table -> {
             Map<String, String> map = table.getColumnsTypes();
             String[] keys = {COL_THE_GEOM, COL_THE_GEOM2.toUpperCase(), COL_ID, COL_VALUE, COL_MEANING};
-            String[] values = {"GEOMETRY", "GEOMETRY", "INTEGER", "DOUBLE PRECISION", "CHARACTER VARYING"};
+            String[] values = {"GEOMETRY", "GEOMETRY", "INTEGER", "DOUBLE", "VARCHAR"};
             Arrays.sort(keys);
             String[] actual = map.keySet().toArray(new String[0]);
             Arrays.sort(actual);
@@ -740,7 +739,7 @@ class JdbcTableTest {
         JdbcTable table = getBuiltTable();
         Map<String, String> map = table.getColumnsTypes();
         String[] keys = {COL_THE_GEOM, COL_THE_GEOM2.toUpperCase(), COL_ID, COL_VALUE, COL_MEANING};
-        String[] values =  {"GEOMETRY", "GEOMETRY", "INTEGER", "DOUBLE PRECISION", "CHARACTER VARYING"};
+        String[] values =  {"GEOMETRY", "GEOMETRY", "INTEGER", "DOUBLE", "VARCHAR"};
         Arrays.sort(keys);
         String[] actual = map.keySet().toArray(new String[0]);
         Arrays.sort(actual);
@@ -753,7 +752,7 @@ class JdbcTableTest {
         table = getLinkedTable();
         map = table.getColumnsTypes();
         keys = new String[]{COL_THE_GEOM, COL_THE_GEOM2.toUpperCase(), COL_ID, COL_VALUE, COL_MEANING};
-        values = new String[] {"GEOMETRY", "GEOMETRY", "INTEGER", "DOUBLE PRECISION", "CHARACTER VARYING"};
+        values = new String[] {"GEOMETRY", "GEOMETRY", "INTEGER", "DOUBLE", "VARCHAR"};
         Arrays.sort(keys);
         actual = map.keySet().toArray(new String[0]);
         Arrays.sort(actual);

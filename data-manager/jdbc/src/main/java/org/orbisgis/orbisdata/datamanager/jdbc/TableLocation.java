@@ -36,9 +36,9 @@
  */
 package org.orbisgis.orbisdata.datamanager.jdbc;
 
+import org.h2gis.utilities.dbtypes.DBTypes;
 import org.orbisgis.commons.annotations.NotNull;
 import org.orbisgis.commons.annotations.Nullable;
-import org.orbisgis.orbisdata.datamanager.api.dataset.DataBaseType;
 import org.orbisgis.orbisdata.datamanager.api.dataset.ITableLocation;
 
 import java.sql.ResultSet;
@@ -111,8 +111,8 @@ public class TableLocation extends org.h2gis.utilities.TableLocation implements 
 
     @Override
     @NotNull
-    public String toString(@NotNull DataBaseType type) {
-        return super.toString(type==DataBaseType.H2GIS);
+    public String toString(@NotNull DBTypes type) {
+        return super.toString(type);
     }
 
     @Nullable

@@ -5,9 +5,9 @@ import org.h2gis.postgis_jts_osgi.DataSourceFactoryImpl;
 import org.h2gis.utilities.FileUtilities;
 import org.h2gis.utilities.GeometryTableUtilities;
 import org.h2gis.utilities.JDBCUtilities;
+import org.h2gis.utilities.dbtypes.DBTypes;
 import org.orbisgis.commons.annotations.NotNull;
 import org.orbisgis.commons.annotations.Nullable;
-import org.orbisgis.orbisdata.datamanager.api.dataset.DataBaseType;
 import org.orbisgis.orbisdata.datamanager.api.dataset.IJdbcSpatialTable;
 import org.orbisgis.orbisdata.datamanager.api.dataset.IJdbcTable;
 import org.orbisgis.orbisdata.datamanager.api.dataset.ISpatialTable;
@@ -43,7 +43,7 @@ public class POSTGIS extends JdbcDataSource {
      * @param connection {@link Connection} to the database.
      */
     private POSTGIS(Connection connection) {
-        super(connection, DataBaseType.POSTGIS);
+        super(connection, DBTypes.POSTGIS);
     }
 
     /**
@@ -52,7 +52,7 @@ public class POSTGIS extends JdbcDataSource {
      * @param dataSource {@link DataSource} to the database.
      */
     private POSTGIS(DataSource dataSource) {
-        super(dataSource, DataBaseType.POSTGIS);
+        super(dataSource, DBTypes.POSTGIS);
     }
 
     /**

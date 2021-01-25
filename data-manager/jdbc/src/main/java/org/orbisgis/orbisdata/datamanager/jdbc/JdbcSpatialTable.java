@@ -40,15 +40,14 @@ import org.h2gis.utilities.GeometryTableUtilities;
 import org.h2gis.utilities.SpatialResultSet;
 import org.h2gis.utilities.SpatialResultSetMetaData;
 import org.h2gis.utilities.Tuple;
+import org.h2gis.utilities.dbtypes.DBTypes;
 import org.locationtech.jts.geom.Geometry;
 import org.orbisgis.commons.annotations.NotNull;
 import org.orbisgis.commons.annotations.Nullable;
-import org.orbisgis.orbisdata.datamanager.api.dataset.DataBaseType;
 import org.orbisgis.orbisdata.datamanager.api.dataset.IJdbcSpatialTable;
 import org.orbisgis.orbisdata.datamanager.api.dataset.IRaster;
 import org.orbisgis.orbisdata.datamanager.api.datasource.IJdbcDataSource;
 import org.orbisgis.orbisdata.datamanager.jdbc.resultset.ResultSetSpliterator;
-import org.orbisgis.orbisdata.datamanager.jdbc.resultset.StreamResultSet;
 import org.orbisgis.orbisdata.datamanager.jdbc.resultset.StreamSpatialResultSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -81,7 +80,7 @@ public abstract class JdbcSpatialTable extends JdbcTable<SpatialResultSet, Strea
      * @param statement      Statement used to request the database.
      * @param jdbcDataSource DataSource to use for the creation of the resultSet.
      */
-    public JdbcSpatialTable(@NotNull DataBaseType dataBaseType, @NotNull IJdbcDataSource jdbcDataSource,
+    public JdbcSpatialTable(@NotNull DBTypes dataBaseType, @NotNull IJdbcDataSource jdbcDataSource,
                             @Nullable TableLocation tableLocation, @NotNull Statement statement,
                             @NotNull String baseQuery, @Nullable List <Object> params) {
         super(dataBaseType, jdbcDataSource, tableLocation, statement, params, baseQuery);

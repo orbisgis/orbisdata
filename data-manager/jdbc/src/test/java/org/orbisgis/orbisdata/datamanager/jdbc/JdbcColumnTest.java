@@ -137,8 +137,8 @@ public class JdbcColumnTest {
         assertEquals("GEOMETRY", getColumn(COL_THE_GEOM).getType());
         assertEquals("GEOMETRY", getColumn(COL_THE_GEOM2).getType());
         assertEquals("INTEGER", getColumn(COL_ID).getType());
-        assertEquals("DOUBLE PRECISION", getColumn(COL_VALUE).getType());
-        assertEquals("CHARACTER VARYING", getColumn(COL_MEANING).getType());
+        assertEquals("DOUBLE", getColumn(COL_VALUE).getType());
+        assertEquals("VARCHAR", getColumn(COL_MEANING).getType());
         assertNull(getColumn(COL_NO_COL).getType());
         assertNull(getColumn(COL_NO_TAB).getType());
     }

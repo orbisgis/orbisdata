@@ -36,9 +36,9 @@
  */
 package org.orbisgis.orbisdata.datamanager.jdbc.h2gis;
 
+import org.h2gis.utilities.dbtypes.DBTypes;
 import org.orbisgis.commons.annotations.NotNull;
 import org.orbisgis.commons.annotations.Nullable;
-import org.orbisgis.orbisdata.datamanager.api.dataset.DataBaseType;
 import org.orbisgis.orbisdata.datamanager.api.dataset.ISpatialTable;
 import org.orbisgis.orbisdata.datamanager.api.dataset.ITable;
 import org.orbisgis.orbisdata.datamanager.api.datasource.IJdbcDataSource;
@@ -73,7 +73,7 @@ public class H2gisTable extends JdbcTable<ResultSet, StreamResultSet> {
     public H2gisTable(@Nullable TableLocation tableLocation, @NotNull String baseQuery,
                       @NotNull Statement statement, @Nullable List<Object> params,
                       @NotNull IJdbcDataSource jdbcDataSource) {
-        super(DataBaseType.H2GIS, jdbcDataSource, tableLocation, statement, params, baseQuery);
+        super(DBTypes.H2GIS, jdbcDataSource, tableLocation, statement, params, baseQuery);
     }
 
     @Override

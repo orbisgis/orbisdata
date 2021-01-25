@@ -8,11 +8,11 @@
     <parent>
         <groupId>org.orbisgis</groupId>
         <artifactId>orbisdata</artifactId>
-        <version>1.0.1-RC1</version>
+        <version>1.0.1-SNAPSHOT</version>
     </parent>
     <groupId>org.orbisgis.orbisdata</groupId>
     <artifactId>data-manager</artifactId>
-    <version>1.0.1-RC1</version>
+    <version>1.0.1-SNAPSHOT</version>
     <packaging>pom</packaging>
     <modules>
         <module>api</module>

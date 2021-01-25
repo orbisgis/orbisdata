@@ -42,10 +42,10 @@ import groovy.lang.MissingMethodException;
 import groovy.lang.MissingPropertyException;
 import org.codehaus.groovy.runtime.InvokerHelper;
 import org.codehaus.groovy.runtime.InvokerInvocationException;
+import org.h2gis.utilities.dbtypes.DBTypes;
 import org.junit.jupiter.api.Test;
 import org.orbisgis.commons.annotations.NotNull;
 import org.orbisgis.commons.annotations.Nullable;
-import org.orbisgis.orbisdata.datamanager.api.dataset.DataBaseType;
 import org.orbisgis.orbisdata.datamanager.api.dataset.IJdbcSpatialTable;
 import org.orbisgis.orbisdata.datamanager.api.dataset.IJdbcTable;
 
@@ -574,7 +574,7 @@ public class IJdbcDataSourceTest {
 
         @NotNull
         @Override
-        public DataBaseType getDataBaseType() {
+        public DBTypes getDataBaseType() {
             return null;
         }
 

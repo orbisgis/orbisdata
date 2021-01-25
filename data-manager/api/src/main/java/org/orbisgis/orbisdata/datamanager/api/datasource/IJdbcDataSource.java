@@ -39,13 +39,12 @@ package org.orbisgis.orbisdata.datamanager.api.datasource;
 import groovy.lang.GString;
 import groovy.lang.GroovyObject;
 import groovy.lang.MissingMethodException;
+import org.h2gis.utilities.dbtypes.DBTypes;
 import org.orbisgis.commons.annotations.NotNull;
 import org.orbisgis.commons.annotations.Nullable;
-import org.orbisgis.orbisdata.datamanager.api.dataset.DataBaseType;
 import org.orbisgis.orbisdata.datamanager.api.dataset.IJdbcSpatialTable;
 import org.orbisgis.orbisdata.datamanager.api.dataset.IJdbcTable;
 import org.orbisgis.orbisdata.datamanager.api.dataset.ISpatialTable;
-import org.orbisgis.orbisdata.datamanager.api.dsl.IResultSetBuilder;
 
 import javax.sql.DataSource;
 import java.io.File;
@@ -975,7 +974,7 @@ public interface IJdbcDataSource extends IDataSource<ResultSet>, GroovyObject, D
      * @return The type of the database.
      */
     @NotNull
-    DataBaseType getDataBaseType();
+    DBTypes getDataBaseType();
 
     @Override
     @Nullable

@@ -39,13 +39,12 @@ package org.orbisgis.orbisdata.datamanager.jdbc;
 import groovy.lang.GroovyObject;
 import groovy.lang.MetaClass;
 import groovy.lang.MissingMethodException;
-import groovy.sql.GroovyRowResult;
 import org.codehaus.groovy.runtime.InvokerHelper;
 import org.h2gis.utilities.GeometryTableUtilities;
 import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.TableLocation;
+import org.h2gis.utilities.dbtypes.DBTypes;
 import org.orbisgis.commons.annotations.Nullable;
-import org.orbisgis.orbisdata.datamanager.api.dataset.DataBaseType;
 import org.orbisgis.orbisdata.datamanager.api.dataset.IJdbcColumn;
 import org.orbisgis.orbisdata.datamanager.api.datasource.IJdbcDataSource;
 import org.slf4j.Logger;
@@ -87,6 +86,10 @@ public class JdbcColumn implements IJdbcColumn, GroovyObject {
      * Indicates if the database is an H2 one.
      */
     private boolean isH2;
+    /**
+     * Indicates if the database type.
+     */
+    private DBTypes dbType;
 
     /**
      * Default constructor.
@@ -97,7 +100,8 @@ public class JdbcColumn implements IJdbcColumn, GroovyObject {
      */
     public JdbcColumn(String name, String tableName, IJdbcDataSource dataSource) {
         if(dataSource != null) {
-            this.isH2 = dataSource.getDataBaseType() == DataBaseType.H2GIS;
+            this.isH2 = dataSource.getDataBaseType() == DBTypes.H2GIS;
+            this.dbType = isH2 ? DBTypes.H2GIS : DBTypes.POSTGIS;
             this.dataSource = (JdbcDataSource) dataSource;
         }
         else{
@@ -130,13 +134,13 @@ public class JdbcColumn implements IJdbcColumn, GroovyObject {
         }
         try {
             if(isH2) {
-                Map<?, ?> map = dataSource.firstRow("SELECT DATA_TYPE FROM INFORMATION_SCHEMA.COLUMNS " +
+                Map<?, ?> map = dataSource.firstRow("SELECT TYPE_NAME FROM INFORMATION_SCHEMA.COLUMNS " +
                                 "WHERE INFORMATION_SCHEMA.COLUMNS.TABLE_NAME=? " +
                                 "AND INFORMATION_SCHEMA.COLUMNS.TABLE_SCHEMA=? " +
                                 "AND INFORMATION_SCHEMA.COLUMNS.COLUMN_NAME=?;",
                         new Object[]{tableName.getTable(), tableName.getSchema("PUBLIC"), name});
-                if (map != null && map.containsKey("DATA_TYPE")) {
-                    return map.get("DATA_TYPE").toString();
+                if (map != null && map.containsKey("TYPE_NAME")) {
+                    return map.get("TYPE_NAME").toString();
                 }
             }else {
                 Map<?, ?> map = dataSource.firstRow("SELECT udt_name FROM INFORMATION_SCHEMA.COLUMNS " +
@@ -161,7 +165,7 @@ public class JdbcColumn implements IJdbcColumn, GroovyObject {
             return -1;
         }
         try {
-            Map<?, ?> map = dataSource.firstRow("SELECT count(" + TableLocation.quoteIdentifier(name, isH2) +
+            Map<?, ?> map = dataSource.firstRow("SELECT count(" + TableLocation.quoteIdentifier(name, dbType) +
                     ") FROM " + tableName.getTable());
             if (map != null && !map.isEmpty() && map.values().toArray()[0] instanceof Long) {
                 return (Long) map.values().toArray()[0];

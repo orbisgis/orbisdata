@@ -42,6 +42,7 @@ import groovy.lang.MissingMethodException;
 import org.h2gis.utilities.dbtypes.DBTypes;
 import org.orbisgis.commons.annotations.NotNull;
 import org.orbisgis.commons.annotations.Nullable;
+import org.orbisgis.orbisdata.datamanager.api.dataset.IDataSet;
 import org.orbisgis.orbisdata.datamanager.api.dataset.IJdbcSpatialTable;
 import org.orbisgis.orbisdata.datamanager.api.dataset.IJdbcTable;
 import org.orbisgis.orbisdata.datamanager.api.dataset.ISpatialTable;
@@ -303,333 +304,303 @@ public interface IJdbcDataSource extends IDataSource<ResultSet>, GroovyObject, D
     @Nullable
     Collection<String> getColumnNames(String location);
 
-
     /* ********************** */
     /*      Load methods      */
     /* ********************** */
 
     /**
-     * Load a file into the database.
+     * Load a file into the {@link IDataSource}.
      *
      * @param filePath Path of the file.
      * @return The name of the loaded table, formatted according this datasource
      * Null is the table cannot be loaded.
      */
-    @Override
     @Nullable
     String load(@NotNull String filePath);
 
     /**
-     * Load a file into the database.
+     * Load a file into the {@link IDataSource}.
      *
      * @param filePath Path of the file.
-     * @param delete   True to delete the table if exists, false otherwise.
+     * @param delete   True to delete the {@link IDataSet} if exists, false otherwise.
      * @return The name of the loaded table, formatted according this datasource
      * Null is the table cannot be loaded.
      */
-    @Override
     @Nullable
     String load(@NotNull String filePath, boolean delete);
 
     /**
-     * Load a file to the database.
+     * Load a file to the {@link IDataSource}.
      *
      * @param filePath  Path of the file.
-     * @param tableName Name of the table.
+     * @param dataSetId Identifier of the {@link IDataSet}.
      * @return The name of the loaded table, formatted according this datasource
      * Null is the table cannot be loaded.
      */
-    @Override
     @Nullable
-    String load(@NotNull String filePath, @NotNull String tableName);
+    String load(@NotNull String filePath, @NotNull String dataSetId);
 
     /**
-     * Load a file to the database.
+     * Load a file to the {@link IDataSource}.
      *
      * @param filePath  Path of the file.
-     * @param tableName Name of the table.
-     * @param delete    True to delete the table if exists, false otherwise.
+     * @param dataSetId Identifier of the {@link IDataSet}.
+     * @param delete    True to delete the {@link IDataSet} if exists, false otherwise.
      * @return The name of the loaded table, formatted according this datasource
      * Null is the table cannot be loaded.
      */
-    @Override
     @Nullable
-    String load(@NotNull String filePath, @NotNull String tableName, boolean delete);
+    String load(@NotNull String filePath, @NotNull String dataSetId, boolean delete);
 
     /**
-     * Load a file to the database.
+     * Load a file to the {@link IDataSource}.
      *
      * @param filePath  Path of the file.
-     * @param tableName Name of the table
+     * @param dataSetId Identifier of the {@link IDataSet}.
      * @param encoding  Encoding of the loaded file.
-     * @param delete    True to delete the table if exists, false otherwise.
+     * @param delete    True to delete the {@link IDataSet} if exists, false otherwise.
      * @return The name of the loaded table, formatted according this datasource
      * Null is the table cannot be loaded.
      */
-    @Override
     @Nullable
-    String load(@NotNull String filePath, @NotNull String tableName, @Nullable String encoding, boolean delete);
+    String load(@NotNull String filePath, @NotNull String dataSetId, @Nullable String encoding, boolean delete);
 
     /**
-     * Load a file into the database.
+     * Load a file into the {@link IDataSource}.
      *
      * @param url {@link URL} of the file.
      * @return The name of the loaded table, formatted according this datasource
      * Null is the table cannot be loaded.
      */
-    @Override
     @Nullable
     String load(@NotNull URL url);
 
     /**
-     * Load a file into the database.
+     * Load a file into the {@link IDataSource}.
      *
      * @param url    {@link URL} of the file.
-     * @param delete True to delete the table if exists, false otherwise.
+     * @param delete True to delete the {@link IDataSet} if exists, false otherwise.
      * @return The name of the loaded table, formatted according this datasource
      * Null is the table cannot be loaded.
      */
-    @Override
     @Nullable
     String load(@NotNull URL url, boolean delete);
 
     /**
-     * Load a file to the database.
+     * Load a file to the {@link IDataSource}.
      *
      * @param url       {@link URL} of the file.
-     * @param tableName Name of the table.
+     * @param dataSetId Name of the table.
      * @return The name of the loaded table, formatted according this datasource
      * Null is the table cannot be loaded.
      */
-    @Override
     @Nullable
-    String load(@NotNull URL url, @NotNull String tableName);
+    String load(@NotNull URL url, @NotNull String dataSetId);
 
     /**
-     * Load a file to the database.
+     * Load a file to the {@link IDataSource}.
      *
      * @param url       {@link URL} of the file.
-     * @param tableName Name of the table.
-     * @param delete    True to delete the table if exists, false otherwise.
+     * @param dataSetId Name of the table.
+     * @param delete    True to delete the {@link IDataSet} if exists, false otherwise.
      * @return The name of the loaded table, formatted according this datasource
      * Null is the table cannot be loaded.
      */
-    @Override
     @Nullable
-    String load(@NotNull URL url, @NotNull String tableName, boolean delete);
+    String load(@NotNull URL url, @NotNull String dataSetId, boolean delete);
 
     /**
-     * Load a file to the database.
+     * Load a file to the {@link IDataSource}.
      *
      * @param url       {@link URL} of the file.
-     * @param tableName Name of the table
+     * @param dataSetId Name of the table
      * @param encoding  Encoding of the loaded file.
-     * @param delete    True to delete the table if exists, false otherwise.
+     * @param delete    True to delete the {@link IDataSet} if exists, false otherwise.
      * @return The name of the loaded table, formatted according this datasource
      * Null is the table cannot be loaded.
      */
-    @Override
     @Nullable
-    String load(@NotNull URL url, @NotNull String tableName, @Nullable String encoding, boolean delete);
+    String load(@NotNull URL url, @NotNull String dataSetId, @Nullable String encoding, boolean delete);
 
     /**
-     * Load a file into the database.
+     * Load a file into the {@link IDataSource}.
      *
      * @param uri {@link URI} of the file.
      * @return The name of the loaded table, formatted according this datasource
      * Null is the table cannot be loaded.
      */
-    @Override
     @Nullable
     String load(@NotNull URI uri);
 
     /**
-     * Load a file into the database.
+     * Load a file into the {@link IDataSource}.
      *
      * @param uri    {@link URI} of the file.
-     * @param delete True to delete the table if exists, false otherwise.
+     * @param delete True to delete the {@link IDataSet} if exists, false otherwise.
      * @return The name of the loaded table, formatted according this datasource
      * Null is the table cannot be loaded.
      */
-    @Override
     @Nullable
     String load(@NotNull URI uri, boolean delete);
 
     /**
-     * Load a file to the database.
+     * Load a file to the {@link IDataSource}.
      *
      * @param uri       {@link URI} of the file.
-     * @param tableName Name of the table.
+     * @param dataSetId Name of the table.
      * @return The name of the loaded table, formatted according this datasource
      * Null is the table cannot be loaded.
      */
-    @Override
     @Nullable
-    String load(@NotNull URI uri, @NotNull String tableName);
+    String load(@NotNull URI uri, @NotNull String dataSetId);
 
     /**
-     * Load a file to the database.
+     * Load a file to the {@link IDataSource}.
      *
      * @param uri       {@link URI} of the file.
-     * @param tableName Name of the table.
-     * @param delete    True to delete the table if exists, false otherwise.
+     * @param dataSetId Name of the table.
+     * @param delete    True to delete the {@link IDataSet} if exists, false otherwise.
      * @return The name of the loaded table, formatted according this datasource
      * Null is the table cannot be loaded.
      */
-    @Override
     @Nullable
-    String load(@NotNull URI uri, @NotNull String tableName, boolean delete);
+    String load(@NotNull URI uri, @NotNull String dataSetId, boolean delete);
 
     /**
-     * Load a file to the database.
+     * Load a file to the {@link IDataSource}.
      *
      * @param uri       {@link URI} of the file.
-     * @param tableName Name of the table
+     * @param dataSetId Name of the table
      * @param encoding  Encoding of the loaded file.
-     * @param delete    True to delete the table if exists, false otherwise.
+     * @param delete    True to delete the {@link IDataSet} if exists, false otherwise.
      * @return The name of the loaded table, formatted according this datasource
      * Null is the table cannot be loaded.
      */
-    @Override
     @Nullable
-    String load(@NotNull URI uri, @NotNull String tableName, @Nullable String encoding, boolean delete);
+    String load(@NotNull URI uri, @NotNull String dataSetId, @Nullable String encoding, boolean delete);
 
     /**
-     * Load a file into the database.
+     * Load a file into the {@link IDataSource}.
      *
      * @param file {@link File}.
      * @return The name of the loaded table, formatted according this datasource
      * Null is the table cannot be loaded.
      */
-    @Override
     @Nullable
     String load(@NotNull File file);
 
     /**
-     * Load a file into the database.
+     * Load a file into the {@link IDataSource}.
      *
      * @param file   {@link File}.
-     * @param delete True to delete the table if exists, false otherwise.
+     * @param delete True to delete the {@link IDataSet} if exists, false otherwise.
      * @return The name of the loaded table, formatted according this datasource
      * Null is the table cannot be loaded.
      */
-    @Override
     @Nullable
     String load(@NotNull File file, boolean delete);
 
     /**
-     * Load a file to the database.
+     * Load a file to the {@link IDataSource}.
      *
      * @param file      {@link File}.
-     * @param tableName Name of the table.
+     * @param dataSetId Name of the table.
      * @return The name of the loaded table, formatted according this datasource
      * Null is the table cannot be loaded.
      */
-    @Override
     @Nullable
-    String load(@NotNull File file, @NotNull String tableName);
+    String load(@NotNull File file, @NotNull String dataSetId);
 
     /**
-     * Load a file to the database.
+     * Load a file to the {@link IDataSource}.
      *
      * @param file      {@link File}.
-     * @param tableName Name of the table.
-     * @param delete    True to delete the table if exists, false otherwise.
+     * @param dataSetId Name of the table.
+     * @param delete    True to delete the {@link IDataSet} if exists, false otherwise.
      * @return The name of the loaded table, formatted according this datasource
      * Null is the table cannot be loaded.
      */
-    @Override
     @Nullable
-    String load(@NotNull File file, @NotNull String tableName, boolean delete);
+    String load(@NotNull File file, @NotNull String dataSetId, boolean delete);
 
     /**
-     * Load a file to the database.
+     * Load a file to the {@link IDataSource}.
      *
      * @param file      {@link File}.
-     * @param tableName Name of the table
+     * @param dataSetId Name of the table
      * @param encoding  Encoding of the loaded file.
-     * @param delete    True to delete the table if exists, false otherwise.
+     * @param delete    True to delete the {@link IDataSet} if exists, false otherwise.
      * @return The name of the loaded table, formatted according this datasource
      * Null is the table cannot be loaded.
      */
-    @Override
     @Nullable
-    String load(@NotNull File file, @NotNull String tableName, @Nullable String encoding, boolean delete);
-
+    String load(@NotNull File file, @NotNull String dataSetId, @Nullable String encoding, boolean delete);
 
     /**
-     * Load a table from another database.
+     * Load a table from another {@link IDataSource}.
      *
-     * @param dataSource      Connection to the input database
+     * @param dataSource      DataSource reference to the input database
+     * @param inputTableName  Name of the table to import.
+     * @param deleteIfExists  True to delete the outputTableName if exists, false otherwise.
+     * @return The name of the loaded table, formatted according this datasource
+     * Null is the table cannot be loaded.
+     */
+    @Nullable
+    String load(@Nullable IJdbcDataSource dataSource, @NotNull String inputTableName,
+                boolean deleteIfExists);
+
+    /**
+     * Load a table from another {@link IDataSource}.
+     *
+     * @param dataSource      DataSource reference to the input database
+     * @param inputTableName  Name of the table to import.
+     * @param outputTableName Name of the imported table in the database.
+     * @return The name of the loaded table, formatted according this datasource
+     * Null is the table cannot be loaded.
+     */
+    @Nullable
+    String load(@Nullable IJdbcDataSource dataSource, @NotNull String inputTableName,
+                @NotNull String outputTableName);
+
+    /**
+     * Load a table from another {@link IDataSource}.
+     *
+     * @param dataSource      DataSource reference to the input database
      * @param inputTableName  Name of the table to import.
      * @return The name of the loaded table, formatted according this datasource
      * Null is the table cannot be loaded.
      */
-    @Override
     @Nullable
     String load(@Nullable IJdbcDataSource dataSource, @NotNull String inputTableName);
 
     /**
-     * Load a table from another database.
+     * Load a table from another {@link IDataSource}.
      *
-     * @param dataSource      Connection to the input database
-     * @param inputTableName  Name of the table to import.
-     * @param deleteIfExists  True to delete the outputTableName if exists, false otherwise.
-     * @return The name of the loaded table, formatted according this datasource
-     * Null is the table cannot be loaded.
-     */
-    @Override
-    @Nullable
-    String load(@Nullable IJdbcDataSource dataSource, @NotNull String inputTableName,
-                    boolean deleteIfExists);
-
-
-    /**
-     * Load a table from another database.
-     *
-     * @param dataSource      Connection to the input database
-     * @param inputTableName  Name of the table to import.
-     * @param outputTableName Name of the imported table in the database.
-     * @return The name of the loaded table, formatted according this datasource
-     * Null is the table cannot be loaded.
-     */
-    @Override
-    @Nullable
-    String load(@Nullable IJdbcDataSource dataSource, @NotNull String inputTableName,
-                    @NotNull String outputTableName);
-
-    /**
-     * Load a table from another database.
-     *
-     * @param dataSource      Connection to the input database
+     * @param dataSource      DataSource reference to the input database
      * @param inputTableName  Name of the table to import.
      * @param outputTableName Name of the imported table in the database.
      * @param deleteIfExists  True to delete the outputTableName if exists, false otherwise.
      * @return The name of the loaded table, formatted according this datasource
      * Null is the table cannot be loaded.
      */
-    @Override
     @Nullable
     String load(@Nullable IJdbcDataSource dataSource, @NotNull String inputTableName,
-                    @NotNull String outputTableName, boolean deleteIfExists);
-
+                @NotNull String outputTableName, boolean deleteIfExists);
 
     /**
-     * Load a table from another database.
+     * Load a table from another {@link IDataSource}.
      *
-     * @param dataSource      Connection to the input database
+     * @param dataSource      DataSource reference to the input database
      * @param inputTableName  Name of the table to import.
      * @param outputTableName Name of the imported table in the database.
      * @param deleteIfExists  True to delete the outputTableName if exists, false otherwise.
-     * @param batchSize       Number of rows that must be accumulated in memory.
+     * @param batchSize       Integer value to queue the data before executing the query
      * @return The name of the loaded table, formatted according this datasource
      * Null is the table cannot be loaded.
      */
-    @Override
     @Nullable
     String load(@Nullable IJdbcDataSource dataSource, @NotNull String inputTableName,
-                    @NotNull String outputTableName, boolean deleteIfExists,int batchSize);
-
+                @NotNull String outputTableName, boolean deleteIfExists, int batchSize);
 
     /* ********************** */
     /*      Save methods      */
@@ -638,293 +609,89 @@ public interface IJdbcDataSource extends IDataSource<ResultSet>, GroovyObject, D
     /**
      * Save a table into a file.
      *
-     * @param tableName Name of the table to save.
+     * @param dataSetId Name of the table to save.
      * @param filePath  Path of the file where the table will be saved.
      * @return True if the file has been successfully saved, false otherwise.
      */
-    @Override
-    boolean save(@NotNull String tableName, @NotNull String filePath);
+    boolean save(@NotNull String dataSetId, @NotNull String filePath);
+
 
     /**
      * Save a table into a file.
      *
-     * @param tableName Name of the table to save.
+     * @param dataSetId Name of the table to save.
      * @param filePath  Path of the file where the table will be saved.
      * @param delete true to delete the file if exists
      * @return True if the file has been successfully saved, false otherwise.
      */
-    @Override
-    boolean save(@NotNull String tableName, @NotNull String filePath, boolean delete);
+    boolean save(@NotNull String dataSetId, @NotNull String filePath, boolean delete);
 
     /**
      * Save a table into a file.
      *
-     * @param tableName Name of the table to save.
+     * @param dataSetId Name of the table to save.
      * @param filePath  Path of the file where the table will be saved.
      * @param encoding  Encoding of the file.
      * @return True if the file has been successfully saved, false otherwise.
      */
-    @Override
-    boolean save(@NotNull String tableName, @NotNull String filePath, @Nullable String encoding);
+    boolean save(@NotNull String dataSetId, @NotNull String filePath, @Nullable String encoding);
 
     /**
      * Save a table into a file.
      *
-     * @param tableName Name of the table to save.
+     * @param dataSetId Name of the table to save.
      * @param uri       {@link URI} of the file where the table will be saved.
      * @return True if the file has been successfully saved, false otherwise.
      */
-    @Override
-    boolean save(@NotNull String tableName, @NotNull URI uri);
+    boolean save(@NotNull String dataSetId, @NotNull URI uri);
 
     /**
      * Save a table into a file.
      *
-     * @param tableName Name of the table to save.
+     * @param dataSetId Name of the table to save.
      * @param uri       {@link URI} of the file where the table will be saved.
      * @param encoding  Encoding of the file.
      * @return True if the file has been successfully saved, false otherwise.
      */
-    @Override
-    boolean save(@NotNull String tableName, @NotNull URI uri, @Nullable String encoding);
+    boolean save(@NotNull String dataSetId, @NotNull URI uri, @Nullable String encoding);
 
     /**
      * Save a table into a file.
      *
-     * @param tableName Name of the table to save.
+     * @param dataSetId Name of the table to save.
      * @param url       {@link URL} of the file where the table will be saved.
      * @return True if the file has been successfully saved, false otherwise.
      */
-    @Override
-    boolean save(@NotNull String tableName, @NotNull URL url);
+    boolean save(@NotNull String dataSetId, @NotNull URL url);
 
     /**
      * Save a table into a file.
      *
-     * @param tableName Name of the table to save.
+     * @param dataSetId Name of the table to save.
      * @param url       {@link URL} of the file where the table will be saved.
      * @param encoding  Encoding of the file.
      * @return True if the file has been successfully saved, false otherwise.
      */
-    @Override
-    boolean save(@NotNull String tableName, @NotNull URL url, @Nullable String encoding);
+    boolean save(@NotNull String dataSetId, @NotNull URL url, @Nullable String encoding);
 
     /**
      * Save a table into a file.
      *
-     * @param tableName Name of the table to save.
+     * @param dataSetId Name of the table to save.
      * @param file      {@link File} of the file where the table will be saved.
      * @return True if the file has been successfully saved, false otherwise.
      */
-    @Override
-    boolean save(@NotNull String tableName, @NotNull File file);
+    boolean save(@NotNull String dataSetId, @NotNull File file);
 
     /**
      * Save a table into a file.
      *
-     * @param tableName Name of the table to save.
+     * @param dataSetId Name of the table to save.
      * @param file      {@link File} of the file where the table will be saved.
      * @param encoding  Encoding of the file.
      * @return True if the file has been successfully saved, false otherwise.
      */
-    @Override
-    boolean save(@NotNull String tableName, @NotNull File file, @Nullable String encoding);
-
-
-    /* ********************** */
-    /*      Link methods      */
-    /* ********************** */
-
-    /**
-     * Link a file to the database.
-     *
-     * @param filePath  Path of the file.
-     * @param tableName Name of the database table.
-     * @param delete    True to delete the table if exists, false otherwise.
-     * @return The name of the linked table, formatted according this datasource
-     * Null is the table cannot be linked.
-     */
-    @Override
-    @Nullable
-    String link(@NotNull String filePath, @NotNull String tableName, boolean delete);
-
-    /**
-     * Link a file to the database.
-     *
-     * @param filePath  Path of the file.
-     * @param tableName Name of the database table.
-     * @return The name of the linked table, formatted according this datasource
-     * Null is the table cannot be linked.
-     */
-    @Override
-    @Nullable
-    String link(@NotNull String filePath, @NotNull String tableName);
-
-    /**
-     * Link a file to the database.
-     *
-     * @param filePath Path of the file.
-     * @param delete   True to delete the table if exists, false otherwise.
-     * @return The name of the linked table, formatted according this datasource
-     * Null is the table cannot be linked.
-     */
-    @Override
-    @Nullable
-    String link(@NotNull String filePath, boolean delete);
-
-    /**
-     * Link a file to the database.
-     *
-     * @param filePath Path of the file to link.
-     * @return The name of the linked table, formatted according this datasource
-     * Null is the table cannot be linked.
-     */
-    @Override
-    @Nullable
-    String link(@NotNull String filePath);
-
-    /**
-     * Link a file to the database.
-     *
-     * @param uri       {@link URI} of the file.
-     * @param tableName Name of the database table.
-     * @param delete    True to delete the table if exists, false otherwise.
-     * @return The name of the linked table, formatted according this datasource
-     * Null is the table cannot be linked.
-     */
-    @Override
-    @Nullable
-    String link(@NotNull URI uri, @Nullable String tableName, boolean delete);
-
-    /**
-     * Link a file to the database.
-     *
-     * @param uri       {@link URI} of the file.
-     * @param tableName Name of the database table.
-     * @return The name of the linked table, formatted according this datasource
-     * Null is the table cannot be linked.
-     */
-    @Override
-    @Nullable
-    String link(@NotNull URI uri, @Nullable String tableName);
-
-    /**
-     * Link a file to the database.
-     *
-     * @param uri    {@link URI} of the file.
-     * @param delete True to delete the table if exists, false otherwise.
-     * @return The name of the linked table, formatted according this datasource
-     * Null is the table cannot be linked.
-     */
-    @Nullable
-    String link(@NotNull URI uri, boolean delete);
-
-    /**
-     * Link a file to the database.
-     *
-     * @param uri {@link URI} of the file.
-     * @return The name of the linked table, formatted according this datasource
-     * Null is the table cannot be linked.
-     */
-    @Override
-    @Nullable
-    String link(@NotNull URI uri);
-
-    /**
-     * Link a file to the database.
-     *
-     * @param url       {@link URL} of the file.
-     * @param tableName Name of the database table.
-     * @param delete    True to delete the table if exists, false otherwise.
-     * @return The name of the linked table, formatted according this datasource
-     * Null is the table cannot be linked.
-     */
-    @Override
-    @Nullable
-    String link(@NotNull URL url, @Nullable String tableName, boolean delete);
-
-    /**
-     * Link a file to the database.
-     *
-     * @param url       {@link URI} of the file.
-     * @param tableName Name of the database table.
-     * @return The name of the linked table, formatted according this datasource
-     * Null is the table cannot be linked.
-     */
-    @Override
-    @Nullable
-    String link(@NotNull URL url, @Nullable String tableName);
-
-    /**
-     * Link a file to the database.
-     *
-     * @param url    {@link URI} of the file.
-     * @param delete True to delete the table if exists, false otherwise.
-     * @return The name of the linked table, formatted according this datasource
-     * Null is the table cannot be linked.
-     */
-    @Override
-    @Nullable
-    String link(@NotNull URL url, boolean delete);
-
-    /**
-     * Link a file to the database.
-     *
-     * @param url {@link URI} of the file.
-     * @return The name of the linked table, formatted according this datasource
-     * Null is the table cannot be linked.
-     */
-    @Override
-    @Nullable
-    String link(@NotNull URL url);
-
-    /**
-     * Link a file to the database.
-     *
-     * @param file      {@link File}.
-     * @param tableName Name of the database table.
-     * @param delete    True to delete the table if exists, false otherwise.
-     * @return The name of the linked table, formatted according this datasource
-     * Null is the table cannot be linked.
-     */
-    @Override
-    @Nullable
-    String link(@NotNull File file, @NotNull String tableName, boolean delete);
-
-    /**
-     * Link a file to the database.
-     *
-     * @param file      {@link File}.
-     * @param tableName Name of the database table.
-     * @return The name of the linked table, formatted according this datasource
-     * Null is the table cannot be linked.
-     */
-    @Override
-    @Nullable
-    String link(@NotNull File file, @NotNull String tableName);
-
-    /**
-     * Link a file to the database.
-     *
-     * @param file   {@link File}.
-     * @param delete True to delete the table if exists, false otherwise.
-     * @return The name of the linked table, formatted according this datasource
-     * Null is the table cannot be linked.
-     */
-    @Override
-    @Nullable
-    String link(@NotNull File file, boolean delete);
-
-    /**
-     * Link a file to the database.
-     *
-     * @param file {@link File}.
-     * @return The name of the linked table, formatted according this datasource
-     * Null is the table cannot be linked.
-     */
-    @Override
-    @Nullable
-    String link(@NotNull File file);
+    boolean save(@NotNull String dataSetId, @NotNull File file, @Nullable String encoding);
 
     /**
      * This method is used to execute a SQL file
@@ -1038,4 +805,216 @@ public interface IJdbcDataSource extends IDataSource<ResultSet>, GroovyObject, D
      * @return
      */
      Class<?> typeNameToClass(String typeName);
+
+    /**
+     * Link a table from an external database.
+     *
+     * @param dataSourceProperties {@link IJdbcDataSource}.
+     * @param sourceTableName name of the external table
+     * @return The name of the linked table
+     */
+    @Nullable
+    String link(@NotNull Map dataSourceProperties, String sourceTableName);
+
+
+    /**
+     * Link a table from an external database.
+     *
+     * @param dataSourceProperties {@link IJdbcDataSource}.
+     * @param sourceTableName name of the external table
+     * @param delete true to delete the target table if exists
+     * @return The name of the linked table
+     */
+    String link(Map dataSourceProperties, String sourceTableName, boolean delete);
+
+    /**
+     * Link a table from an external database.
+     *
+     * @param dataSourceProperties {@link IJdbcDataSource}.
+     * @param sourceTableName name of the external table
+     * @param targetTableName name of the target table
+     * @param delete true to delete the target table if exists
+     * @return The name of the linked table
+     */
+    String link(Map dataSourceProperties, String sourceTableName, String targetTableName, boolean delete);
+
+    /* ********************** */
+    /*      Link methods      */
+    /* ********************** */
+
+    /**
+     * Link a file to the {@link IDataSource}.
+     *
+     * @param filePath  Path of the file.
+     * @param dataSetId Identifier of the {@link IDataSet}.
+     * @param delete    True to delete the {@link IDataSet} if exists, false otherwise.
+     * @return The name of the linked table, formatted according this datasource
+     * Null is the table cannot be linked.
+     */
+    @Nullable
+    String link(@NotNull String filePath, @NotNull String dataSetId, boolean delete);
+
+    /**
+     * Link a file to the {@link IDataSource}.
+     *
+     * @param filePath  Path of the file.
+     * @param dataSetId Identifier of the {@link IDataSet}.
+     * @return The name of the linked table, formatted according this datasource
+     * Null is the table cannot be linked.
+     */
+    @Nullable
+    String link(@NotNull String filePath, @NotNull String dataSetId);
+
+    /**
+     * Link a file to the {@link IDataSource}.
+     *
+     * @param filePath Path of the file.
+     * @param delete   True to delete the {@link IDataSet} if exists, false otherwise.
+     * @return The name of the linked table, formatted according this datasource
+     * Null is the table cannot be linked.
+     */
+    @Nullable
+    String link(@NotNull String filePath, boolean delete);
+
+    /**
+     * Link a file to the {@link IDataSource}.
+     *
+     * @param filePath Path of the file to link.
+     * @return The name of the linked table, formatted according this datasource
+     * Null is the table cannot be linked.
+     */
+    @Nullable
+    String link(@NotNull String filePath);
+
+    /**
+     * Link a file to the {@link IDataSource}.
+     *
+     * @param uri       {@link URI} of the file.
+     * @param dataSetId Identifier of the {@link IDataSet}.
+     * @param delete    True to delete the {@link IDataSet} if exists, false otherwise.
+     * @return The name of the linked table, formatted according this datasource
+     * Null is the table cannot be linked.
+     */
+    @Nullable
+    String link(@NotNull URI uri, @Nullable String dataSetId, boolean delete);
+
+    /**
+     * Link a file to the {@link IDataSource}.
+     *
+     * @param uri       {@link URI} of the file.
+     * @param dataSetId Identifier of the {@link IDataSet}.
+     * @return The name of the linked table, formatted according this datasource
+     * Null is the table cannot be linked.
+     */
+    @Nullable
+    String link(@NotNull URI uri, @Nullable String dataSetId);
+
+    /**
+     * Link a file to the {@link IDataSource}.
+     *
+     * @param uri    {@link URI} of the file.
+     * @param delete True to delete the {@link IDataSet} if exists, false otherwise.
+     * @return The name of the linked table, formatted according this datasource
+     * Null is the table cannot be linked.
+     */
+    @Nullable
+    String link(@NotNull URI uri, boolean delete);
+
+    /**
+     * Link a file to the {@link IDataSource}.
+     *
+     * @param uri {@link URI} of the file.
+     * @return The name of the linked table, formatted according this datasource
+     * Null is the table cannot be linked.
+     */
+    @Nullable
+    String link(@NotNull URI uri);
+
+    /**
+     * Link a file to the {@link IDataSource}.
+     *
+     * @param url       {@link URL} of the file.
+     * @param dataSetId Identifier of the {@link IDataSet}.
+     * @param delete    True to delete the {@link IDataSet} if exists, false otherwise.
+     * @return The name of the linked table, formatted according this datasource
+     * Null is the table cannot be linked.
+     */
+    @Nullable
+    String link(@NotNull URL url, @Nullable String dataSetId, boolean delete);
+
+    /**
+     * Link a file to the {@link IDataSource}.
+     *
+     * @param url       {@link URI} of the file.
+     * @param dataSetId Identifier of the {@link IDataSet}.
+     * @return The name of the linked table, formatted according this datasource
+     * Null is the table cannot be linked.
+     */
+    @Nullable
+    String link(@NotNull URL url, @Nullable String dataSetId);
+
+    /**
+     * Link a file to the {@link IDataSource}.
+     *
+     * @param url    {@link URI} of the file.
+     * @param delete True to delete the {@link IDataSet} if exists, false otherwise.
+     * @return The name of the linked table, formatted according this datasource
+     * Null is the table cannot be linked.
+     */
+    @Nullable
+    String link(@NotNull URL url, boolean delete);
+
+    /**
+     * Link a file to the {@link IDataSource}.
+     *
+     * @param url {@link URI} of the file.
+     * @return The name of the linked table, formatted according this datasource
+     * Null is the table cannot be linked.
+     */
+    @Nullable
+    String link(@NotNull URL url);
+
+    /**
+     * Link a file to the {@link IDataSource}.
+     *
+     * @param file      {@link File}.
+     * @param dataSetId Identifier of the {@link IDataSet}.
+     * @param delete    True to delete the {@link IDataSet} if exists, false otherwise.
+     * @return The name of the linked table, formatted according this datasource
+     * Null is the table cannot be linked.
+     */
+    @Nullable
+    String link(@NotNull File file, @NotNull String dataSetId, boolean delete);
+
+    /**
+     * Link a file to the {@link IDataSource}.
+     *
+     * @param file      {@link File}.
+     * @param dataSetId Identifier of the {@link IDataSet}.
+     * @return The name of the linked table, formatted according this datasource
+     * Null is the table cannot be linked.
+     */
+    @Nullable
+    String link(@NotNull File file, @NotNull String dataSetId);
+
+    /**
+     * Link a file to the {@link IDataSource}.
+     *
+     * @param file   {@link File}.
+     * @param delete True to delete the {@link IDataSet} if exists, false otherwise.
+     * @return The name of the linked table, formatted according this datasource
+     * Null is the table cannot be linked.
+     */
+    @Nullable
+    String link(@NotNull File file, boolean delete);
+
+    /**
+     * Link a file to the {@link IDataSource}.
+     *
+     * @param file {@link File}.
+     * @return The name of the linked table, formatted according this datasource
+     * Null is the table cannot be linked.
+     */
+    @Nullable
+    String link(@NotNull File file);
 }

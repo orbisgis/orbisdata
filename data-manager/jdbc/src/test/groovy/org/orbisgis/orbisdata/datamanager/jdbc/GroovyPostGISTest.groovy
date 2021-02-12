@@ -547,4 +547,23 @@ class GroovyPostGISTest {
         postGIS.execute("insert into testtable values (1, 'SRID=0;POINT(10 10)')")
         assertEquals(4326, postGIS.getSpatialTable("(select st_setsrid(the_geom, 4326) from testtable)").srid)
     }
+
+
+    @Test
+    @EnabledIfSystemProperty(named = "test.postgis", matches = "true")
+    void linkTableFromPostGISToH2GIS() {
+        postGIS.execute("""
+                DROP TABLE IF EXISTS externalTable;
+                CREATE TABLE externalTable (id int, the_geom geometry(point));
+                INSERT INTO externalTable VALUES (1, 'POINT(10 10)'::GEOMETRY), (2, 'POINT(1 1)'::GEOMETRY);
+        """)
+        def dbProperties_orbis = [
+                        user        : 'orbisgis',
+                        password    : 'orbisgis',
+                        url         : 'jdbc:postgresql://localhost:5432/orbisgis_db']
+        def h2GISSource = H2GIS.open("./target/linkedTable")
+        def  linkedTable = h2GISSource.link(dbProperties_orbis, "externalTable", true)
+        assertEquals("EXTERNALTABLE", linkedTable)
+        assertEquals(2,h2GISSource.getTable("EXTERNALTABLE").getRowCount())
+    }
 }

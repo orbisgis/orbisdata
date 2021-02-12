@@ -40,6 +40,7 @@ import groovy.lang.GString;
 import org.h2.Driver;
 import org.h2.util.OsgiDataSourceFactory;
 import org.h2gis.functions.factory.H2GISFunctions;
+import org.h2gis.functions.io.utility.IOMethods;
 import org.h2gis.network.functions.NetworkFunctions;
 import org.h2gis.utilities.FileUtilities;
 import org.h2gis.utilities.GeometryTableUtilities;
@@ -50,6 +51,7 @@ import org.orbisgis.commons.annotations.Nullable;
 import org.orbisgis.orbisdata.datamanager.api.dataset.IJdbcSpatialTable;
 import org.orbisgis.orbisdata.datamanager.api.dataset.IJdbcTable;
 import org.orbisgis.orbisdata.datamanager.api.dataset.ISpatialTable;
+import org.orbisgis.orbisdata.datamanager.api.datasource.IJdbcDataSource;
 import org.orbisgis.orbisdata.datamanager.jdbc.JdbcDataSource;
 import org.orbisgis.orbisdata.datamanager.jdbc.JdbcSpatialTable;
 import org.orbisgis.orbisdata.datamanager.jdbc.TableLocation;
@@ -512,6 +514,26 @@ public class H2GIS extends JdbcDataSource {
                     ex.getLocalizedMessage());
             return false;
         }
+    }
+
+    @Override
+    public String link(Map dataSourceProperties, String sourceTableName, boolean delete) {
+        return link(dataSourceProperties,sourceTableName,sourceTableName, delete );
+    }
+
+    @Override
+    public String link(Map dataSourceProperties, String sourceTableName, String targetTableName, boolean delete) {
+        try {
+            return  IOMethods.linkedTable(getConnection(), dataSourceProperties, sourceTableName, targetTableName, delete);
+        } catch (SQLException ex) {
+            LOGGER.error("Cannot link the table '" + sourceTableName + ".\n" +
+                    ex.getLocalizedMessage());
+            return null;
+        }
+    }
+    @Override
+    public String link(Map dataSourceProperties, String sourceTableName) {
+        return link(dataSourceProperties,sourceTableName,sourceTableName, false );
     }
 
     /**

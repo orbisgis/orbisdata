@@ -422,5 +422,20 @@ public class JdbcSpatialTableTest {
                 return false;
             }
         }
+
+        @Override
+        public String link(Map dataSourceProperties, String tableName) {
+            return null;
+        }
+
+        @Override
+        public String link(Map dataSourceProperties, String sourceTableName, boolean delete) {
+            return null;
+        }
+
+        @Override
+        public String link(Map dataSourceProperties, String sourceTableName, String targetTableName, boolean delete) {
+            return null;
+        }
     }
 }

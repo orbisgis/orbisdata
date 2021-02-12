@@ -436,6 +436,24 @@ public class POSTGIS extends JdbcDataSource {
         }
     }
 
+    @Override
+    public String link(Map dataSourceProperties, String tableName) {
+        LOGGER.error("Not supported");
+        return null;
+    }
+
+    @Override
+    public String link(Map dataSourceProperties, String sourceTableName, boolean delete) {
+        LOGGER.error("Not supported");
+        return null;
+    }
+
+    @Override
+    public String link(Map dataSourceProperties, String sourceTableName, String targetTableName, boolean delete) {
+        LOGGER.error("Not supported");
+        return null;
+    }
+
     @Nullable
     @Override
     public Object asType(@NotNull Class<?> clazz) {

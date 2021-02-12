@@ -561,6 +561,21 @@ public class IJdbcDataSourceTest {
         }
 
         @Override
+        public String link(Map dataSourceProperties, String tableName) {
+            return null;
+        }
+
+        @Override
+        public String link(Map dataSourceProperties, String sourceTableName, boolean delete) {
+            return null;
+        }
+
+        @Override
+        public String link(Map dataSourceProperties, String sourceTableName, String targetTableName, boolean delete) {
+            return null;
+        }
+
+        @Override
         public boolean executeScript(@NotNull String fileName, Map<String, String> bindings) {
             fileScript = true;
             return true;

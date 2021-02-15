@@ -45,16 +45,15 @@ import org.h2gis.network.functions.NetworkFunctions;
 import org.h2gis.utilities.FileUtilities;
 import org.h2gis.utilities.GeometryTableUtilities;
 import org.h2gis.utilities.JDBCUtilities;
+import org.h2gis.utilities.TableLocation;
 import org.h2gis.utilities.dbtypes.DBTypes;
 import org.orbisgis.commons.annotations.NotNull;
 import org.orbisgis.commons.annotations.Nullable;
 import org.orbisgis.orbisdata.datamanager.api.dataset.IJdbcSpatialTable;
 import org.orbisgis.orbisdata.datamanager.api.dataset.IJdbcTable;
 import org.orbisgis.orbisdata.datamanager.api.dataset.ISpatialTable;
-import org.orbisgis.orbisdata.datamanager.api.datasource.IJdbcDataSource;
 import org.orbisgis.orbisdata.datamanager.jdbc.JdbcDataSource;
 import org.orbisgis.orbisdata.datamanager.jdbc.JdbcSpatialTable;
-import org.orbisgis.orbisdata.datamanager.jdbc.TableLocation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -189,7 +188,7 @@ public class H2GIS extends JdbcDataSource {
         }
         boolean tableExists;
         try {
-            tableExists = JDBCUtilities.tableExists(connection, TableLocation.parse("PUBLIC.GEOMETRY_COLUMNS", isH2));
+            tableExists = JDBCUtilities.tableExists(connection, TableLocation.parse("PUBLIC.GEOMETRY_COLUMNS", DBTypes.H2GIS));
         } catch (SQLException e) {
             LOGGER.error("Unable to check if table 'PUBLIC.GEOMETRY_COLUMNS' exists.\n" + e.getLocalizedMessage());
             return;
@@ -270,7 +269,7 @@ public class H2GIS extends JdbcDataSource {
         String query;
         TableLocation location;
         if(!nameOrQuery.startsWith("(") && !nameOrQuery.endsWith(")")) {
-            org.h2gis.utilities.TableLocation inputLocation = TableLocation.parse(nameOrQuery, true);
+            TableLocation inputLocation = TableLocation.parse(nameOrQuery, DBTypes.H2GIS);
             try {
                 boolean table = JDBCUtilities.tableExists(connection, inputLocation);
                 if(!getConnection().getAutoCommit()) {
@@ -295,7 +294,7 @@ public class H2GIS extends JdbcDataSource {
                 return null;
             }
             query = String.format("SELECT * FROM %s", inputLocation);
-            location = new TableLocation(Objects.requireNonNull(getLocation()).toString(), inputLocation.getCatalog(), inputLocation.getSchema(), inputLocation.getTable());
+            location = new TableLocation(inputLocation.getCatalog(), inputLocation.getSchema(), inputLocation.getTable(), DBTypes.H2GIS);
         }
         else {
             query = nameOrQuery;
@@ -508,11 +507,33 @@ public class H2GIS extends JdbcDataSource {
     public boolean hasTable(@NotNull String tableName) {
         Connection connection = getConnection();
         try {
-            return JDBCUtilities.tableExists(connection, TableLocation.parse(tableName, true));
+            return JDBCUtilities.tableExists(connection, TableLocation.parse(tableName, DBTypes.H2GIS));
         } catch (SQLException ex) {
             LOGGER.error("Cannot find the table '" + tableName + ".\n" +
                     ex.getLocalizedMessage());
             return false;
+        }
+    }
+
+    @Override
+    @Nullable
+    public Collection<String> getColumnNames(String location){
+        try {
+            Collection<String> cols = JDBCUtilities.getColumnNames(getConnection(), TableLocation.parse(location, DBTypes.H2GIS).toString());
+            if(!getConnection().getAutoCommit()) {
+                getConnection().commit();
+            }
+            return cols;
+        } catch (SQLException e) {
+            LOGGER.error("Unable to get the column names of the table " + location + ".", e);
+            try{
+                if(!getConnection().getAutoCommit()) {
+                    getConnection().rollback();
+                }
+            } catch (SQLException e2) {
+                LOGGER.error("Unable to rollback.", e2);
+            }
+            return null;
         }
     }
 

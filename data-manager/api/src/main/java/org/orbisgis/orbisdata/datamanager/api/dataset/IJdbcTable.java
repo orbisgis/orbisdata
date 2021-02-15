@@ -37,6 +37,7 @@
 package org.orbisgis.orbisdata.datamanager.api.dataset;
 
 import groovy.lang.Closure;
+import org.h2gis.utilities.TableLocation;
 import org.h2gis.utilities.dbtypes.DBTypes;
 import org.orbisgis.commons.annotations.NotNull;
 import org.orbisgis.commons.annotations.Nullable;
@@ -71,7 +72,7 @@ public interface IJdbcTable<T, U> extends ITable<T, U>, ResultSet {
      * @return The {@link ITableLocation}.
      */
     @Nullable
-    ITableLocation getTableLocation();
+    TableLocation getTableLocation();
 
     /**
      * Return the {@link DBTypes} type of the {@link IJdbcTable}.
@@ -101,18 +102,18 @@ public interface IJdbcTable<T, U> extends ITable<T, U>, ResultSet {
 
     @Override
     default String getLocation() {
-        ITableLocation location = getTableLocation();
-        if (location == null || location.toString(getDbType()).isEmpty()) {
+        TableLocation location = getTableLocation();
+        if (location == null || location.getTable().isEmpty()) {
             return QUERY_LOCATION;
         } else {
-            return location.toString(getDbType());
+            return location.toString();
         }
     }
 
     @Override
     @NotNull
     default String getName() {
-        ITableLocation location = getTableLocation();
+        TableLocation location = getTableLocation();
         if (location == null || location.getTable().isEmpty()) {
             return QUERY_LOCATION;
         } else {

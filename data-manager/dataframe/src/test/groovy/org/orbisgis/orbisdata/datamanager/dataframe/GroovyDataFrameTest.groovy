@@ -43,9 +43,6 @@ import smile.classification.RandomForest
 import smile.data.formula.Formula
 import smile.data.measure.NominalScale
 import smile.data.type.StructField
-import smile.data.vector.BaseVector
-import smile.data.vector.IntVector
-import smile.data.vector.StringVector
 import smile.validation.Validation
 
 import java.util.stream.IntStream

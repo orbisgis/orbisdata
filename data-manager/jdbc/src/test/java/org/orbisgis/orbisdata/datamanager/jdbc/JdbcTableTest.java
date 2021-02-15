@@ -45,6 +45,7 @@ import org.codehaus.groovy.runtime.metaclass.MissingPropertyExceptionNoStack;
 import org.h2.jdbc.JdbcResultSetMetaData;
 import org.h2gis.functions.factory.H2GISDBFactory;
 import org.h2gis.utilities.SpatialResultSet;
+import org.h2gis.utilities.TableLocation;
 import org.h2gis.utilities.dbtypes.DBTypes;
 import org.h2gis.utilities.wrapper.SpatialResultSetMetaDataImpl;
 import org.junit.jupiter.api.BeforeAll;
@@ -334,12 +335,11 @@ class JdbcTableTest {
     @Test
     public void testGetLocation() throws SQLException {
         assertEquals("catalog.schema.\"table\"", new PostgisTable(
-                new TableLocation(BASE_DATABASE, "catalog", "schema", "table"),
+                new TableLocation("catalog", "schema", "table"),
                 "not a request", dataSource.getConnection().createStatement(), null, dataSource).getLocation());
         assertEquals("\"catalog\".\"schema\".\"table\"", new H2gisTable(
-                new TableLocation(BASE_DATABASE, "catalog", "schema", "table"),
+                new TableLocation( "catalog", "schema", "table"),
                 "not a request", dataSource.getConnection().createStatement(), null, dataSource).getLocation());
-        assertEquals(BASE_DATABASE, new TableLocation(BASE_DATABASE, "catalog", "schema", "table").getDataSource());
 
         assertEquals("ORBISGIS_TABLE", getTable().getLocation());
         assertEquals("LINKEDTABLE", getLinkedTable().getLocation());
@@ -496,11 +496,11 @@ class JdbcTableTest {
     @Test
     void testGetColumnNames() {
         List<String> colList = new ArrayList<>();
-        colList.add(TableLocation.capsIdentifier(COL_THE_GEOM, true));
-        colList.add(TableLocation.capsIdentifier(COL_THE_GEOM2, true));
-        colList.add(TableLocation.capsIdentifier(COL_ID, true));
-        colList.add(TableLocation.capsIdentifier(COL_VALUE, true));
-        colList.add(TableLocation.capsIdentifier(COL_MEANING, true));
+        colList.add(TableLocation.capsIdentifier(COL_THE_GEOM, DBTypes.H2));
+        colList.add(TableLocation.capsIdentifier(COL_THE_GEOM2, DBTypes.H2));
+        colList.add(TableLocation.capsIdentifier(COL_ID, DBTypes.H2));
+        colList.add(TableLocation.capsIdentifier(COL_VALUE, DBTypes.H2));
+        colList.add(TableLocation.capsIdentifier(COL_MEANING, DBTypes.H2));
         assertEquals(colList, getTable().getColumns());
         assertEquals(colList, getLinkedTable().getColumns());
         assertEquals(colList, getTempTable().getColumns());

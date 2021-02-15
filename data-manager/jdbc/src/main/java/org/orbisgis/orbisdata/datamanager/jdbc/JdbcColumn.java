@@ -82,10 +82,7 @@ public class JdbcColumn implements IJdbcColumn, GroovyObject {
      * {@link IJdbcDataSource} of the column.
      */
     private JdbcDataSource dataSource;
-    /**
-     * Indicates if the database is an H2 one.
-     */
-    private boolean isH2;
+
     /**
      * Indicates if the database type.
      */
@@ -100,21 +97,19 @@ public class JdbcColumn implements IJdbcColumn, GroovyObject {
      */
     public JdbcColumn(String name, String tableName, IJdbcDataSource dataSource) {
         if(dataSource != null) {
-            this.isH2 = dataSource.getDataBaseType() == DBTypes.H2GIS;
-            this.dbType = isH2 ? DBTypes.H2GIS : DBTypes.POSTGIS;
             this.dataSource = (JdbcDataSource) dataSource;
         }
         else{
             LOGGER.warn("Null datasource for the column creation.");
         }
         if(name != null) {
-            this.name = TableLocation.capsIdentifier(name, isH2);
+            this.name = TableLocation.capsIdentifier(name, dataSource.getDataBaseType());
         }
         else{
             LOGGER.warn("Null name for the column creation.");
         }
         if(tableName != null) {
-            this.tableName = TableLocation.parse(tableName, isH2);
+            this.tableName = TableLocation.parse(tableName, dataSource.getDataBaseType());
         }
         else{
             LOGGER.warn("Null table name for the column creation.");
@@ -133,7 +128,7 @@ public class JdbcColumn implements IJdbcColumn, GroovyObject {
             return null;
         }
         try {
-            if(isH2) {
+            if(dataSource.getDataBaseType()==DBTypes.H2GIS|| dataSource.getDataBaseType()==DBTypes.H2) {
                 Map<?, ?> map = dataSource.firstRow("SELECT TYPE_NAME FROM INFORMATION_SCHEMA.COLUMNS " +
                                 "WHERE INFORMATION_SCHEMA.COLUMNS.TABLE_NAME=? " +
                                 "AND INFORMATION_SCHEMA.COLUMNS.TABLE_SCHEMA=? " +

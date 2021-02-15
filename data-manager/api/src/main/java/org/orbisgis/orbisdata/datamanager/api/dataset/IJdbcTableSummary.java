@@ -36,6 +36,7 @@
  */
 package org.orbisgis.orbisdata.datamanager.api.dataset;
 
+import org.h2gis.utilities.TableLocation;
 import org.orbisgis.commons.annotations.Nullable;
 
 /**
@@ -46,12 +47,12 @@ import org.orbisgis.commons.annotations.Nullable;
  */
 public interface IJdbcTableSummary extends ISummary {
     /**
-     * Returns the {@link ITableLocation} of the summarized {@link IJdbcTable}.
+     * Returns the {@link TableLocation} of the summarized {@link IJdbcTable}.
      *
-     * @return The {@link ITableLocation} of the summarized {@link IJdbcTable}.
+     * @return The {@link TableLocation} of the summarized {@link IJdbcTable}.
      */
     @Nullable
-    ITableLocation getLocation();
+    TableLocation getLocation();
 
     /**
      * Returns the row count of the summarized {@link IJdbcTable}.

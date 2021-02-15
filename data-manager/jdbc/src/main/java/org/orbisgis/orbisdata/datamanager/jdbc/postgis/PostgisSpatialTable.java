@@ -40,6 +40,7 @@ import org.h2gis.postgis_jts.ConnectionWrapper;
 import org.h2gis.postgis_jts.StatementWrapper;
 import org.h2gis.utilities.GeometryMetaData;
 import org.h2gis.utilities.GeometryTableUtilities;
+import org.h2gis.utilities.TableLocation;
 import org.h2gis.utilities.Tuple;
 import org.h2gis.utilities.dbtypes.DBTypes;
 import org.orbisgis.commons.annotations.NotNull;
@@ -48,12 +49,12 @@ import org.orbisgis.orbisdata.datamanager.api.dataset.ISpatialTable;
 import org.orbisgis.orbisdata.datamanager.api.dataset.ITable;
 import org.orbisgis.orbisdata.datamanager.api.datasource.IJdbcDataSource;
 import org.orbisgis.orbisdata.datamanager.jdbc.JdbcSpatialTable;
-import org.orbisgis.orbisdata.datamanager.jdbc.TableLocation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.sql.*;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Implementation of {@link ISpatialTable} for PostGIG.

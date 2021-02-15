@@ -767,7 +767,7 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, IRe
 
     @Override
     public String link(@NotNull String filePath, @NotNull String tableName, boolean delete) {
-        String formatedTableName = TableLocation.parse(tableName, getDataBaseType() == DBTypes.H2GIS).toString(getDataBaseType());
+        String formatedTableName = TableLocation.parse(tableName, getDataBaseType() ).toString();
         try {
             IOMethods.linkedFile(getConnection(), filePath, tableName, delete);
             return formatedTableName;
@@ -881,7 +881,7 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, IRe
     @Override
     public String load(@NotNull String filePath, @NotNull String tableName, @Nullable String encoding,
                            boolean delete) {
-        String formatedTableName = TableLocation.parse(tableName, getDataBaseType() == DBTypes.H2GIS).toString(getDataBaseType());
+        String formatedTableName = TableLocation.parse(tableName, getDataBaseType()).toString();
         try {
             if(ioMethods==null) {
                 ioMethods = new IOMethods();
@@ -1034,8 +1034,8 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, IRe
     public String load(@NotNull IJdbcDataSource dataSource, @NotNull String inputTableName, boolean deleteIfExists) {
         try {
             IOMethods.exportToDataBase(dataSource.getConnection(), inputTableName, getConnection(), inputTableName, deleteIfExists?-1:0, 1000);
-            TableLocation targetTableLocation = TableLocation.parse(inputTableName, this.getDataBaseType() == DBTypes.H2GIS);
-            return targetTableLocation.toString(this.getDataBaseType());
+            TableLocation targetTableLocation = TableLocation.parse(inputTableName, this.getDataBaseType());
+            return targetTableLocation.toString();
         } catch (SQLException e) {
             LOGGER.error("Unable to load the table "+inputTableName + " from " + dataSource.getLocation().toString());
         }
@@ -1102,28 +1102,6 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, IRe
         } catch (SQLException e) {
             LOGGER.error("Unable to get the database metadata.\n" + e.getLocalizedMessage());
             return new ArrayList<>();
-        }
-    }
-
-    @Override
-    @Nullable
-    public Collection<String> getColumnNames(String location){
-        try {
-            Collection<String> cols = JDBCUtilities.getColumnNames(getConnection(), TableLocation.parse(location, databaseType.equals(DBTypes.H2GIS)));
-            if(!getConnection().getAutoCommit()) {
-                getConnection().commit();
-            }
-            return cols;
-        } catch (SQLException e) {
-            LOGGER.error("Unable to get the column names of the table " + location + ".", e);
-            try{
-                if(!getConnection().getAutoCommit()) {
-                    getConnection().rollback();
-                }
-            } catch (SQLException e2) {
-                LOGGER.error("Unable to rollback.", e2);
-            }
-            return null;
         }
     }
 

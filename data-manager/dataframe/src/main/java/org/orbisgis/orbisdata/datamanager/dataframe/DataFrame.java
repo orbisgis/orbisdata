@@ -789,7 +789,7 @@ public class DataFrame implements smile.data.DataFrame, ITable<BaseVector, Tuple
         if (isEmpty()) {
             return null;
         }
-        String tableName = TableLocation.parse(outputTableName, dataSource.getDataBaseType() == DBTypes.H2GIS).toString(dataSource.getDataBaseType());
+        String tableName = TableLocation.parse(outputTableName, dataSource.getDataBaseType()).toString();
         try {
             PreparedStatement preparedStatement = null;
             Connection outputconnection = dataSource.getConnection();

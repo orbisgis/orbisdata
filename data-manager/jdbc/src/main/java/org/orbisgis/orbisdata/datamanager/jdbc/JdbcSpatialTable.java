@@ -36,10 +36,7 @@
  */
 package org.orbisgis.orbisdata.datamanager.jdbc;
 
-import org.h2gis.utilities.GeometryTableUtilities;
-import org.h2gis.utilities.SpatialResultSet;
-import org.h2gis.utilities.SpatialResultSetMetaData;
-import org.h2gis.utilities.Tuple;
+import org.h2gis.utilities.*;
 import org.h2gis.utilities.dbtypes.DBTypes;
 import org.locationtech.jts.geom.Geometry;
 import org.orbisgis.commons.annotations.NotNull;

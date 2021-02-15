@@ -40,6 +40,7 @@ import groovy.lang.GString;
 import groovy.sql.Sql;
 import org.h2gis.functions.factory.H2GISDBFactory;
 import org.h2gis.utilities.JDBCUtilities;
+import org.h2gis.utilities.TableLocation;
 import org.h2gis.utilities.dbtypes.DBTypes;
 import org.h2gis.utilities.wrapper.SpatialResultSetImpl;
 import org.h2gis.utilities.wrapper.StatementWrapper;
@@ -259,7 +260,7 @@ public class JdbcSpatialTableTest {
          */
         public DummyJdbcSpatialTable(TableLocation tableLocation, String baseQuery, Statement statement,
                                      JdbcDataSource jdbcDataSource, List<Object> params) {
-            super(DBTypes.H2GIS, jdbcDataSource, tableLocation, statement, baseQuery, params);
+            super(DBTypes.H2, jdbcDataSource, tableLocation, statement, baseQuery, params);
         }
 
 
@@ -345,9 +346,9 @@ public class JdbcSpatialTableTest {
 
         @Override
         public IJdbcSpatialTable getSpatialTable(@NotNull String tableName) {
-            String name = TableLocation.parse(tableName, getDataBaseType().equals(DBTypes.H2GIS)).toString(getDataBaseType());
+            TableLocation location = TableLocation.parse(tableName, getDataBaseType());
             try {
-                if (!JDBCUtilities.tableExists(connection, org.h2gis.utilities.TableLocation.parse(name, true))) {
+                if (!JDBCUtilities.tableExists(connection, location)) {
                     return null;
                 }
             } catch (SQLException e) {
@@ -359,8 +360,8 @@ public class JdbcSpatialTableTest {
             } catch (SQLException e) {
                 return null;
             }
-            String query = String.format("SELECT * FROM %s", name);
-            return new DummyJdbcSpatialTable(new TableLocation(null, name), query, statement, this, null);
+            String query = String.format("SELECT * FROM %s", location.toString());
+            return new DummyJdbcSpatialTable(location, query, statement, this, null);
         }
 
         @Nullable
@@ -417,10 +418,15 @@ public class JdbcSpatialTableTest {
         @Override
         public boolean hasTable(@NotNull String tableName) {
             try {
-                return JDBCUtilities.tableExists(connection, org.h2gis.utilities.TableLocation.parse(tableName, true));
+                return JDBCUtilities.tableExists(connection, org.h2gis.utilities.TableLocation.parse(tableName, DBTypes.H2));
             } catch (SQLException ex) {
                 return false;
             }
+        }
+
+        @Override
+        public Collection<String> getColumnNames(String location) {
+            return null;
         }
 
         @Override

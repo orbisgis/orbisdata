@@ -37,6 +37,7 @@
 package org.orbisgis.orbisdata.datamanager.api.dataset;
 
 import groovy.lang.GString;
+import org.h2gis.utilities.TableLocation;
 import org.h2gis.utilities.dbtypes.DBTypes;
 import org.junit.jupiter.api.Test;
 import org.orbisgis.commons.annotations.NotNull;
@@ -75,7 +76,7 @@ public class IJdbcTableTest {
     public void testGetLocation() {
         assertEquals("catalog.schema.\"table\"",
                 new DummyJdbcTable(DBTypes.POSTGIS, LOCATION, true).getLocation());
-        assertEquals(LOCATION.toUpperCase(),
+        assertEquals("catalog.schema.\"table\"".toUpperCase(),
                 new DummyJdbcTable(DBTypes.H2GIS, LOCATION, true).getLocation());
         assertEquals(IJdbcTable.QUERY_LOCATION,
                 new DummyJdbcTable(DBTypes.H2GIS, null, true).getLocation());
@@ -90,7 +91,7 @@ public class IJdbcTableTest {
     public void testGetName() {
         assertEquals(LOCATION.toLowerCase().substring(LOCATION.lastIndexOf(".") + 1),
                 new DummyJdbcTable(DBTypes.POSTGIS, LOCATION, true).getName());
-        assertEquals(LOCATION.toLowerCase().substring(LOCATION.lastIndexOf(".") + 1),
+        assertEquals(LOCATION.toUpperCase().substring(LOCATION.lastIndexOf(".") + 1),
                 new DummyJdbcTable(DBTypes.H2GIS, LOCATION, true).getName());
         assertEquals(IJdbcTable.QUERY_LOCATION,
                 new DummyJdbcTable(DBTypes.H2GIS, null, true).getName());
@@ -171,7 +172,7 @@ public class IJdbcTableTest {
         /**
          * Fake data location.
          */
-        private ITableLocation location;
+        private TableLocation location;
         /**
          * Fake database type.
          */
@@ -202,7 +203,7 @@ public class IJdbcTableTest {
          */
         private DummyJdbcTable(DBTypes databaseType, String location, boolean isIterable) {
             if(location != null) {
-                this.location = new DummyTableLocation(location);
+                this.location = TableLocation.parse(location, databaseType);
             }
             this.databaseType = databaseType;
             this.isIterable = isIterable;
@@ -218,7 +219,7 @@ public class IJdbcTableTest {
         }
 
         @Override
-        public ITableLocation getTableLocation() {
+        public TableLocation getTableLocation() {
             return location;
         }
 

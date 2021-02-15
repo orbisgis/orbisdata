@@ -45,6 +45,7 @@ import org.codehaus.groovy.runtime.metaclass.MissingPropertyExceptionNoStack;
 import org.h2.jdbc.JdbcResultSetMetaData;
 import org.h2gis.functions.factory.H2GISDBFactory;
 import org.h2gis.utilities.SpatialResultSet;
+import org.h2gis.utilities.TableLocation;
 import org.h2gis.utilities.dbtypes.DBTypes;
 import org.h2gis.utilities.wrapper.SpatialResultSetMetaDataImpl;
 import org.junit.jupiter.api.BeforeAll;
@@ -179,10 +180,10 @@ class JdbcTableTest {
             statement.execute("CREATE TABLE " + EMPTY_NAME + " (" + COL_THE_GEOM + " GEOMETRY, " + COL_THE_GEOM2 + " GEOMETRY(POINT Z)," +
                     COL_ID + " INTEGER, " + COL_VALUE + " DOUBLE PRECISION, " + COL_MEANING + " VARCHAR)");
 
-            tableLocation = new TableLocation(BASE_DATABASE, TABLE_NAME);
-            linkedLocation = new TableLocation(BASE_DATABASE, LINKED_NAME);
-            tempLocation = new TableLocation(BASE_DATABASE, TEMP_NAME);
-            emptyLocation = new TableLocation(BASE_DATABASE, EMPTY_NAME);
+            tableLocation = TableLocation.parse(TABLE_NAME, DBTypes.H2);
+            linkedLocation = TableLocation.parse(LINKED_NAME,DBTypes.H2);
+            tempLocation = TableLocation.parse(TEMP_NAME,DBTypes.H2);
+            emptyLocation = TableLocation.parse(EMPTY_NAME,DBTypes.H2);
         } catch (Exception e) {
             fail(e);
         }
@@ -333,13 +334,12 @@ class JdbcTableTest {
      */
     @Test
     public void testGetLocation() throws SQLException {
-        assertEquals("catalog.schema.\"table\"", new PostgisTable(
-                new TableLocation(BASE_DATABASE, "catalog", "schema", "table"),
+        assertEquals("catalog.schema.table", new PostgisTable(
+                new TableLocation("catalog", "schema", "table"),
                 "not a request", dataSource.getConnection().createStatement(), null, dataSource).getLocation());
-        assertEquals("\"catalog\".\"schema\".\"table\"", new H2gisTable(
-                new TableLocation(BASE_DATABASE, "catalog", "schema", "table"),
+        assertEquals("catalog.schema.table", new H2gisTable(
+                new TableLocation( "catalog", "schema", "table"),
                 "not a request", dataSource.getConnection().createStatement(), null, dataSource).getLocation());
-        assertEquals(BASE_DATABASE, new TableLocation(BASE_DATABASE, "catalog", "schema", "table").getDataSource());
 
         assertEquals("ORBISGIS_TABLE", getTable().getLocation());
         assertEquals("LINKEDTABLE", getLinkedTable().getLocation());
@@ -496,11 +496,11 @@ class JdbcTableTest {
     @Test
     void testGetColumnNames() {
         List<String> colList = new ArrayList<>();
-        colList.add(TableLocation.capsIdentifier(COL_THE_GEOM, true));
-        colList.add(TableLocation.capsIdentifier(COL_THE_GEOM2, true));
-        colList.add(TableLocation.capsIdentifier(COL_ID, true));
-        colList.add(TableLocation.capsIdentifier(COL_VALUE, true));
-        colList.add(TableLocation.capsIdentifier(COL_MEANING, true));
+        colList.add(TableLocation.capsIdentifier(COL_THE_GEOM, DBTypes.H2));
+        colList.add(TableLocation.capsIdentifier(COL_THE_GEOM2, DBTypes.H2));
+        colList.add(TableLocation.capsIdentifier(COL_ID, DBTypes.H2));
+        colList.add(TableLocation.capsIdentifier(COL_VALUE, DBTypes.H2));
+        colList.add(TableLocation.capsIdentifier(COL_MEANING, DBTypes.H2));
         assertEquals(colList, getTable().getColumns());
         assertEquals(colList, getLinkedTable().getColumns());
         assertEquals(colList, getTempTable().getColumns());
@@ -886,8 +886,8 @@ class JdbcTableTest {
      */
     @Test
     void testGetSummary() {
-        assertEquals("\"ORBISGIS_TABLE\"; row count : 3; column count : 5", getTable().getSummary().toString());
-        assertEquals("\"ORBISGIS_TABLE\"", getTable().getSummary().getLocation().toString());
+        assertEquals("ORBISGIS_TABLE; row count : 3; column count : 5", getTable().getSummary().toString());
+        assertEquals("ORBISGIS_TABLE", getTable().getSummary().getLocation().toString());
         assertEquals(5, getTable().getSummary().getColumnCount());
         assertEquals(3, getTable().getSummary().getRowCount());
         assertEquals(IJdbcTable.QUERY_LOCATION + "; row count : 2; column count : 5", getBuiltTable().getSummary().toString());
@@ -895,18 +895,18 @@ class JdbcTableTest {
         assertEquals(5, getBuiltTable().getSummary().getColumnCount());
         assertEquals(2, getBuiltTable().getSummary().getRowCount());
 
-        assertEquals("\"ORBISGIS_EMPTY\"; row count : 0; column count : 5", getEmptyTable().getSummary().toString());
-        assertEquals("\"ORBISGIS_EMPTY\"", getEmptyTable().getSummary().getLocation().toString());
+        assertEquals("ORBISGIS_EMPTY; row count : 0; column count : 5", getEmptyTable().getSummary().toString());
+        assertEquals("ORBISGIS_EMPTY", getEmptyTable().getSummary().getLocation().toString());
         assertEquals(5, getEmptyTable().getSummary().getColumnCount());
         assertEquals(0, getEmptyTable().getSummary().getRowCount());
 
-        assertEquals("\"TEMPTABLE\"; row count : 1; column count : 5", getTempTable().getSummary().toString());
-        assertEquals("\"TEMPTABLE\"", getTempTable().getSummary().getLocation().toString());
+        assertEquals("TEMPTABLE; row count : 1; column count : 5", getTempTable().getSummary().toString());
+        assertEquals("TEMPTABLE", getTempTable().getSummary().getLocation().toString());
         assertEquals(5, getTempTable().getSummary().getColumnCount());
         assertEquals(1, getTempTable().getSummary().getRowCount());
 
-        assertEquals("\"LINKEDTABLE\"; row count : 2; column count : 5", getLinkedTable().getSummary().toString());
-        assertEquals("\"LINKEDTABLE\"", getLinkedTable().getSummary().getLocation().toString());
+        assertEquals("LINKEDTABLE; row count : 2; column count : 5", getLinkedTable().getSummary().toString());
+        assertEquals("LINKEDTABLE", getLinkedTable().getSummary().getLocation().toString());
         assertEquals(5, getLinkedTable().getSummary().getColumnCount());
         assertEquals(2, getLinkedTable().getSummary().getRowCount());
     }

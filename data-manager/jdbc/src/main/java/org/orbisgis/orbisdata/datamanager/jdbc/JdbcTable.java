@@ -42,6 +42,7 @@ import org.h2gis.functions.io.utility.IOMethods;
 import org.h2gis.utilities.GeometryMetaData;
 import org.h2gis.utilities.GeometryTableUtilities;
 import org.h2gis.utilities.JDBCUtilities;
+import org.h2gis.utilities.TableLocation;
 import org.h2gis.utilities.dbtypes.DBTypes;
 import org.orbisgis.commons.annotations.NotNull;
 import org.orbisgis.commons.annotations.Nullable;
@@ -293,7 +294,7 @@ public abstract class JdbcTable<T extends ResultSet, U> extends DefaultResultSet
                     LOGGER.error("Unable to get the connection.");
                     return false;
                 }
-                return JDBCUtilities.isTemporaryTable(con, getTableLocation().toString());
+                return JDBCUtilities.isTemporaryTable(con, getTableLocation());
             } catch (SQLException e) {
                 LOGGER.error("Unable to get the type of the table '" + getTableLocation().getTable() + ".\n" + e.getLocalizedMessage());
             }
@@ -358,8 +359,8 @@ public abstract class JdbcTable<T extends ResultSet, U> extends DefaultResultSet
                     if(type.equalsIgnoreCase("GEOMETRY")){
                         if (tableLocation != null && !getName().isEmpty()) {
                             return GeometryTableUtilities.getMetaData(jdbcDataSource.getConnection(),
-                                    TableLocation.parse(tableLocation.getTable()),
-                                    TableLocation.capsIdentifier(columnName, dataBaseType.equals(DBTypes.H2GIS))
+                                    tableLocation,
+                                    TableLocation.capsIdentifier(columnName, dataBaseType)
                             ).getGeometryType();
                         }
                     }
@@ -383,8 +384,8 @@ public abstract class JdbcTable<T extends ResultSet, U> extends DefaultResultSet
                     return null;
                 }
                 return GeometryTableUtilities.getMetaData(con,
-                        TableLocation.parse(tableLocation.getTable()),
-                        TableLocation.capsIdentifier(columnName, dataBaseType.equals(DBTypes.H2GIS))
+                        tableLocation,
+                        TableLocation.capsIdentifier(columnName, dataBaseType)
                 ).getGeometryType();
             } catch (SQLException e) {
                 LOGGER.error("Unable to get the geometric type of the column '" + columnName + "'\n" +

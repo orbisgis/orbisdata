@@ -36,6 +36,7 @@
  */
 package org.orbisgis.orbisdata.datamanager.jdbc.postgis;
 
+import org.h2gis.utilities.TableLocation;
 import org.h2gis.utilities.dbtypes.DBTypes;
 import org.orbisgis.commons.annotations.NotNull;
 import org.orbisgis.commons.annotations.Nullable;
@@ -44,7 +45,6 @@ import org.orbisgis.orbisdata.datamanager.api.dataset.ITable;
 import org.orbisgis.orbisdata.datamanager.api.datasource.IJdbcDataSource;
 import org.orbisgis.orbisdata.datamanager.jdbc.JdbcTable;
 import org.orbisgis.orbisdata.datamanager.jdbc.ResultSetIterator;
-import org.orbisgis.orbisdata.datamanager.jdbc.TableLocation;
 import org.orbisgis.orbisdata.datamanager.jdbc.resultset.ResultSetSpliterator;
 import org.orbisgis.orbisdata.datamanager.jdbc.resultset.StreamResultSet;
 
@@ -95,6 +95,7 @@ public class PostgisTable extends JdbcTable<ResultSet, StreamResultSet> {
     public ResultSetIterator iterator() {
         return new ResultSetIterator(this);
     }
+
 
     @Nullable
     @Override

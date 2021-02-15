@@ -5,6 +5,7 @@ import org.h2gis.postgis_jts_osgi.DataSourceFactoryImpl;
 import org.h2gis.utilities.FileUtilities;
 import org.h2gis.utilities.GeometryTableUtilities;
 import org.h2gis.utilities.JDBCUtilities;
+import org.h2gis.utilities.TableLocation;
 import org.h2gis.utilities.dbtypes.DBTypes;
 import org.orbisgis.commons.annotations.NotNull;
 import org.orbisgis.commons.annotations.Nullable;
@@ -13,7 +14,6 @@ import org.orbisgis.orbisdata.datamanager.api.dataset.IJdbcTable;
 import org.orbisgis.orbisdata.datamanager.api.dataset.ISpatialTable;
 import org.orbisgis.orbisdata.datamanager.jdbc.JdbcDataSource;
 import org.orbisgis.orbisdata.datamanager.jdbc.JdbcSpatialTable;
-import org.orbisgis.orbisdata.datamanager.jdbc.TableLocation;
 import org.osgi.service.jdbc.DataSourceFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -195,7 +195,7 @@ public class POSTGIS extends JdbcDataSource {
         String query;
         TableLocation location;
         if(!nameOrQuery.startsWith("(") && !nameOrQuery.endsWith(")")) {
-            org.h2gis.utilities.TableLocation inputLocation = TableLocation.parse(nameOrQuery, false);
+            org.h2gis.utilities.TableLocation inputLocation = TableLocation.parse(nameOrQuery, DBTypes.POSTGIS);
             try {
                 boolean table = JDBCUtilities.tableExists(connection, inputLocation);
                 if(!getConnection().getAutoCommit()) {
@@ -217,7 +217,7 @@ public class POSTGIS extends JdbcDataSource {
                 return null;
             }
             query = String.format("SELECT * FROM %s", inputLocation);
-            location = new TableLocation(Objects.requireNonNull(getLocation()).toString(), inputLocation.getCatalog(), inputLocation.getSchema(), inputLocation.getTable());
+            location = new TableLocation(inputLocation.getCatalog(), inputLocation.getSchema(), inputLocation.getTable(), DBTypes.POSTGIS);
         }
         else {
             query = nameOrQuery;
@@ -428,11 +428,33 @@ public class POSTGIS extends JdbcDataSource {
     @Override
     public boolean hasTable(@NotNull String tableName) {
         try {
-            return JDBCUtilities.tableExists(getConnection(), TableLocation.parse(tableName, false));
+            return JDBCUtilities.tableExists(getConnection(), TableLocation.parse(tableName, DBTypes.POSTGIS));
         } catch (SQLException ex) {
             LOGGER.error("Cannot find the table '" + tableName + ".\n" +
                     ex.getLocalizedMessage());
             return false;
+        }
+    }
+
+    @Override
+    @Nullable
+    public Collection<String> getColumnNames(String location){
+        try {
+            Collection<String> cols = JDBCUtilities.getColumnNames(getConnection(), TableLocation.parse(location, DBTypes.POSTGIS).toString());
+            if(!getConnection().getAutoCommit()) {
+                getConnection().commit();
+            }
+            return cols;
+        } catch (SQLException e) {
+            LOGGER.error("Unable to get the column names of the table " + location + ".", e);
+            try{
+                if(!getConnection().getAutoCommit()) {
+                    getConnection().rollback();
+                }
+            } catch (SQLException e2) {
+                LOGGER.error("Unable to rollback.", e2);
+            }
+            return null;
         }
     }
 

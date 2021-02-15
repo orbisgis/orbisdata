@@ -346,9 +346,9 @@ public class JdbcSpatialTableTest {
 
         @Override
         public IJdbcSpatialTable getSpatialTable(@NotNull String tableName) {
-            String name = TableLocation.parse(tableName, getDataBaseType()).toString(getDataBaseType());
+            TableLocation location = TableLocation.parse(tableName, getDataBaseType());
             try {
-                if (!JDBCUtilities.tableExists(connection, TableLocation.parse(name, getDataBaseType()))) {
+                if (!JDBCUtilities.tableExists(connection, location)) {
                     return null;
                 }
             } catch (SQLException e) {
@@ -360,8 +360,8 @@ public class JdbcSpatialTableTest {
             } catch (SQLException e) {
                 return null;
             }
-            String query = String.format("SELECT * FROM %s", name);
-            return new DummyJdbcSpatialTable(new TableLocation(null, name), query, statement, this, null);
+            String query = String.format("SELECT * FROM %s", location.toString());
+            return new DummyJdbcSpatialTable(location, query, statement, this, null);
         }
 
         @Nullable

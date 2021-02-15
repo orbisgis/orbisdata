@@ -217,7 +217,7 @@ public class POSTGIS extends JdbcDataSource {
                 return null;
             }
             query = String.format("SELECT * FROM %s", inputLocation);
-            location = new TableLocation(inputLocation.getCatalog(), inputLocation.getSchema(), inputLocation.getTable());
+            location = new TableLocation(inputLocation.getCatalog(), inputLocation.getSchema(), inputLocation.getTable(), DBTypes.POSTGIS);
         }
         else {
             query = nameOrQuery;

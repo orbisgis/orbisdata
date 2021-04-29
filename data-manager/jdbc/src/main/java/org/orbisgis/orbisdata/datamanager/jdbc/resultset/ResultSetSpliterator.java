@@ -37,6 +37,7 @@
 package org.orbisgis.orbisdata.datamanager.jdbc.resultset;
 
 import org.orbisgis.commons.annotations.Nullable;
+import org.orbisgis.orbisdata.datamanager.api.dataset.IStreamResultSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,7 +51,7 @@ import java.util.function.Consumer;
  * @author Erwan Bocher (CNRS)
  * @author Sylvain PALOMINOS (UBS Lab-STICC 2020)
  */
-public class ResultSetSpliterator<T extends StreamResultSet> implements Spliterator<T> {
+public class ResultSetSpliterator<T extends IStreamResultSet> implements Spliterator<T> {
 
     private final long size;
     private T rs;

@@ -49,9 +49,7 @@ import org.orbisgis.commons.annotations.Nullable;
 import org.orbisgis.commons.printer.Ascii;
 import org.orbisgis.commons.printer.Html;
 import org.orbisgis.commons.printer.ICustomPrinter;
-import org.orbisgis.orbisdata.datamanager.api.dataset.IJdbcSpatialTable;
-import org.orbisgis.orbisdata.datamanager.api.dataset.IJdbcTable;
-import org.orbisgis.orbisdata.datamanager.api.dataset.ITable;
+import org.orbisgis.orbisdata.datamanager.api.dataset.*;
 import org.orbisgis.orbisdata.datamanager.api.datasource.IJdbcDataSource;
 import org.orbisgis.orbisdata.datamanager.api.dsl.IBuilderResult;
 import org.orbisgis.orbisdata.datamanager.api.dsl.IFilterBuilder;
@@ -60,8 +58,6 @@ import org.orbisgis.orbisdata.datamanager.api.dsl.IResultSetProperties;
 import org.orbisgis.orbisdata.datamanager.jdbc.dsl.QueryBuilder;
 import org.orbisgis.orbisdata.datamanager.jdbc.dsl.ResultSetProperties;
 import org.orbisgis.orbisdata.datamanager.jdbc.resultset.DefaultResultSet;
-import org.orbisgis.orbisdata.datamanager.jdbc.resultset.StreamResultSet;
-import org.orbisgis.orbisdata.datamanager.jdbc.resultset.StreamSpatialResultSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -700,12 +696,12 @@ public abstract class JdbcTable<T extends ResultSet, U> extends DefaultResultSet
     }
 
     @Override
-    public IJdbcTable<ResultSet, StreamResultSet> getTable() {
+    public IJdbcTable<? extends ResultSet, ? extends IStreamResultSet> getTable() {
         return (IJdbcTable) asType(IJdbcTable.class);
     }
 
     @Override
-    public IJdbcSpatialTable<StreamSpatialResultSet> getSpatialTable() {
+    public IJdbcSpatialTable<IStreamSpatialResultSet> getSpatialTable() {
         if (isSpatial()) {
             return (IJdbcSpatialTable) asType(IJdbcSpatialTable.class);
         } else {

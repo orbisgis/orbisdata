@@ -41,6 +41,7 @@ import org.locationtech.jts.geom.Geometry;
 import org.orbisgis.commons.annotations.NotNull;
 import org.orbisgis.commons.annotations.Nullable;
 import org.orbisgis.commons.utilities.CheckUtils;
+import org.orbisgis.orbisdata.datamanager.api.dataset.IStreamSpatialResultSet;
 import org.orbisgis.orbisdata.datamanager.api.dataset.ITable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -60,7 +61,7 @@ import java.util.Map;
  * @author Erwan Bocher (CNRS)
  * @author Sylvain PALOMINOS (UBS Lab-STICC)
  */
-public class StreamSpatialResultSet extends StreamResultSet implements SpatialResultSet {
+public class StreamSpatialResultSet implements IStreamSpatialResultSet {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(StreamSpatialResultSet.class);
 
@@ -70,48 +71,22 @@ public class StreamSpatialResultSet extends StreamResultSet implements SpatialRe
     private final SpatialResultSet resultSet;
 
     public StreamSpatialResultSet(@NotNull SpatialResultSet resultSet){
-        super(resultSet);
         CheckUtils.checkNotNull(resultSet, "The given ResultSet should not be null.");
         this.resultSet = resultSet;
     }
 
     @Override
-    public Geometry getGeometry(int i) {
-        try {
-            return resultSet.getGeometry(i);
-        } catch (SQLException e) {
-            LOGGER.error("Unable to get the geometry at index '" + i + "'.", e);
-        }
-        return null;
+    public ResultSet getResultSet() {
+        return resultSet;
     }
 
     @Override
-    public Geometry getGeometry(String s) {
-        try {
-            return resultSet.getGeometry(s);
-        } catch (SQLException e) {
-            LOGGER.error("Unable to get the geometry at index '" + s + "'.", e);
-        }
-        return null;
+    public Logger getLogger() {
+        return LOGGER;
     }
 
     @Override
-    public Geometry getGeometry() {
-        try {
-            return resultSet.getGeometry();
-        } catch (SQLException e) {
-            LOGGER.error("Unable to get the geometry.", e);
-        }
-        return null;
-    }
-
-    @Override
-    public void updateGeometry(int i, Geometry geometry) throws SQLException {
-        resultSet.updateGeometry(i, geometry);
-    }
-
-    @Override
-    public void updateGeometry(String s, Geometry geometry) throws SQLException {
-        resultSet.updateGeometry(s, geometry);
+    public SpatialResultSet getSpatialResultSet() {
+        return resultSet;
     }
 }

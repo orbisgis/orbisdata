@@ -61,7 +61,7 @@ import java.util.Map;
  * @author Erwan Bocher (CNRS)
  * @author Sylvain PALOMINOS (UBS Lab-STICC)
  */
-public class StreamSpatialResultSet implements IStreamSpatialResultSet {
+public class StreamSpatialResultSet extends StreamResultSet implements IStreamSpatialResultSet {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(StreamSpatialResultSet.class);
 
@@ -71,6 +71,7 @@ public class StreamSpatialResultSet implements IStreamSpatialResultSet {
     private final SpatialResultSet resultSet;
 
     public StreamSpatialResultSet(@NotNull SpatialResultSet resultSet){
+        super(resultSet);
         CheckUtils.checkNotNull(resultSet, "The given ResultSet should not be null.");
         this.resultSet = resultSet;
     }

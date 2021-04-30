@@ -76,7 +76,7 @@ public interface IBuilderResult {
      * @return The {@link ITable} representing the result of the SQL query.
      */
     @Nullable
-    ITable<?> getTable();
+    ITable<?,?> getTable();
 
     /**
      * Return the {@link ISpatialTable} representing the result of the SQL query.

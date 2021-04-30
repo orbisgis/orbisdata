@@ -228,7 +228,7 @@ public interface IResultSetBuilder {
      * @param nameOrQuery Name or query of the table to get.
      * @return A {@link ITable} built from the {@link ResultSet}.
      */
-    ITable<?> getTable(String nameOrQuery);
+    ITable<?,?> getTable(String nameOrQuery);
 
     /**
      * Returns a {@link ISpatialTable} built from the {@link ResultSet}.
@@ -244,7 +244,7 @@ public interface IResultSetBuilder {
      * @param nameOrQuery Name or query of the table to get.
      * @return A {@link ITable} built from the {@link ResultSet}.
      */
-    ITable<?> getTable(GString nameOrQuery);
+    ITable<?,?> getTable(GString nameOrQuery);
 
     /**
      * Returns a {@link ISpatialTable} built from the {@link ResultSet}.
@@ -261,7 +261,7 @@ public interface IResultSetBuilder {
      * @param params Parameters of the query.
      * @return A {@link ITable} built from the {@link ResultSet}.
      */
-    ITable<?> getTable(String query, List<Object> params);
+    ITable<?,?> getTable(String query, List<Object> params);
 
     /**
      * Returns a {@link ISpatialTable} built from the {@link ResultSet}.

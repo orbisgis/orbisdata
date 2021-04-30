@@ -59,7 +59,7 @@ import java.util.stream.Stream;
  * @author Erwan Bocher (CNRS)
  * @author Sylvain PALOMINOS (Lab-STICC UBS 2018-2020)
  */
-public interface ITable<T> extends IMatrix<T>, IQueryBuilder {
+public interface ITable<T, U> extends IMatrix<T>, IQueryBuilder {
 
     /**
      * Apply the given {@link Closure} to each row.
@@ -604,7 +604,7 @@ public interface ITable<T> extends IMatrix<T>, IQueryBuilder {
      * @return A {@link Stream} of {@link T} objects.
      */
     @Nullable
-    Stream<? extends T> stream();
+    Stream<? extends U> stream();
 
     @NotNull
     Map<String, Object> firstRow();

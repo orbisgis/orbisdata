@@ -123,7 +123,7 @@ public class FilterBuilder extends BuilderResult implements IFilterBuilder {
     }
 
     @Override
-    public ITable<?> getTable() {
+    public ITable<?,?> getTable() {
         ResultSetBuilder rsb = new ResultSetBuilder(getDataSource(), rsp);
         return rsb.getTable(toString(), getParams());
     }

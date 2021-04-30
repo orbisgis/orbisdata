@@ -51,7 +51,7 @@ import java.util.Map;
  * @author Erwan Bocher (CNRS)
  * @author Sylvain PALOMINOS (Lab-STICC UBS 2018-2019)
  */
-public interface ISpatialTable<T> extends ITable<T> {
+public interface ISpatialTable<T> extends ITable<T, T> {
 
     /**
      * Returns the {@link Geometry} value of the given column at the current row.

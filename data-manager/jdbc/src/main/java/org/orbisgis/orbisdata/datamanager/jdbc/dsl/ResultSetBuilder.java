@@ -367,7 +367,7 @@ public class ResultSetBuilder implements IResultSetBuilder {
     }
 
     @Override
-    public ITable<?> getTable(GString nameOrQuery) {
+    public ITable<?,?> getTable(GString nameOrQuery) {
         if(nameOrQuery.getValueCount() == 0) {
             return getTable(nameOrQuery.toString());
         }
@@ -391,7 +391,7 @@ public class ResultSetBuilder implements IResultSetBuilder {
     }
 
     @Override
-    public ITable<?> getTable(String query, List<Object> params) {
+    public ITable<?,?> getTable(String query, List<Object> params) {
         try {
             IJdbcTable<?> table = dataSource.getTable(query, params, getStatement(query, params));
             table.setResultSetProperties(rsp);

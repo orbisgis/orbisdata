@@ -144,7 +144,7 @@ public class QueryBuilder extends BuilderResult implements IQueryBuilder {
     }
 
     @Override
-    public ITable<?> getTable() {
+    public ITable<?,?> getTable() {
         ResultSetBuilder rsb = new ResultSetBuilder(getDataSource(), rsp);
         return rsb.getTable(toString(), getParams());
     }

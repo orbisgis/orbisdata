@@ -245,13 +245,13 @@ public class H2GIS extends JdbcDataSource {
 
     @Override
     @Nullable
-    public JdbcTable<? extends ResultSet, ? extends IStreamResultSet> getTable(@NotNull String nameOrQuery, @NotNull Statement statement) {
+    public JdbcTable<? extends IStreamResultSet> getTable(@NotNull String nameOrQuery, @NotNull Statement statement) {
         return getTable(nameOrQuery, null, statement);
     }
 
     @Nullable
     @Override
-    public JdbcTable<? extends ResultSet, ? extends IStreamResultSet> getTable(@NotNull GString nameOrQuery, @NotNull Statement statement) {
+    public JdbcTable<? extends IStreamResultSet> getTable(@NotNull GString nameOrQuery, @NotNull Statement statement) {
         if(nameOrQuery.getValueCount() == 0 ||
                 !nameOrQuery.toString().startsWith("(") && !nameOrQuery.toString().endsWith("(")) {
             return getTable(nameOrQuery.toString(), statement);
@@ -263,7 +263,7 @@ public class H2GIS extends JdbcDataSource {
 
     @Override
     @Nullable
-    public JdbcTable<? extends ResultSet, ? extends IStreamResultSet> getTable(@NotNull String nameOrQuery, @Nullable List<Object> params,
+    public JdbcTable<? extends IStreamResultSet> getTable(@NotNull String nameOrQuery, @Nullable List<Object> params,
                                @NotNull Statement statement) {
         Connection connection = getConnection();
         String query;
@@ -354,7 +354,7 @@ public class H2GIS extends JdbcDataSource {
 
     @Override
     @Nullable
-    public JdbcTable<? extends ResultSet, ? extends IStreamResultSet> getTable(@NotNull String tableName) {
+    public JdbcTable<? extends IStreamResultSet> getTable(@NotNull String tableName) {
         Connection connection = getConnection();
         Statement statement;
         try {
@@ -378,7 +378,7 @@ public class H2GIS extends JdbcDataSource {
     }
 
     @Override
-    public IJdbcTable<? extends ResultSet, ? extends IStreamResultSet> getTable(GString nameOrQuery) {
+    public IJdbcTable<? extends IStreamResultSet> getTable(GString nameOrQuery) {
         if(nameOrQuery.getValueCount() == 0 ||
                 !nameOrQuery.toString().startsWith("(") && !nameOrQuery.toString().endsWith("(")) {
             return getTable(nameOrQuery.toString());
@@ -389,7 +389,7 @@ public class H2GIS extends JdbcDataSource {
     }
 
     @Override
-    public IJdbcTable<? extends ResultSet, ? extends IStreamResultSet> getTable(String query, List<Object> params) {
+    public IJdbcTable<? extends IStreamResultSet> getTable(String query, List<Object> params) {
         if(params == null || params.isEmpty()) {
             return getTable(query);
         }
@@ -419,7 +419,7 @@ public class H2GIS extends JdbcDataSource {
     @Override
     @Nullable
     public IJdbcSpatialTable<StreamSpatialResultSet> getSpatialTable(@NotNull String tableName, @NotNull Statement statement) {
-        IJdbcTable<? extends ResultSet, ? extends IStreamResultSet> table = getTable(tableName, statement);
+        IJdbcTable<? extends ResultSet> table = getTable(tableName, statement);
         if (table instanceof ISpatialTable) {
             return (JdbcSpatialTable) table;
         } else {
@@ -447,7 +447,7 @@ public class H2GIS extends JdbcDataSource {
     @Nullable
     @Override
     public IJdbcSpatialTable<StreamSpatialResultSet> getSpatialTable(@NotNull String nameOrQuery, @Nullable List<Object> params, @NotNull Statement statement) {
-        IJdbcTable<? extends ResultSet, ? extends IStreamResultSet> table = getTable(nameOrQuery, params, statement);
+        IJdbcTable<? extends ResultSet> table = getTable(nameOrQuery, params, statement);
         if (table instanceof ISpatialTable) {
             return (JdbcSpatialTable) table;
         } else {
@@ -463,7 +463,7 @@ public class H2GIS extends JdbcDataSource {
     @Nullable
     @Override
     public IJdbcSpatialTable<StreamSpatialResultSet> getSpatialTable(@NotNull String query, @Nullable List<Object> params) {
-        IJdbcTable<? extends ResultSet, ? extends IStreamResultSet> table = getTable(query, params);
+        IJdbcTable<? extends ResultSet> table = getTable(query, params);
         if (table instanceof ISpatialTable) {
             return (JdbcSpatialTable) table;
         } else {
@@ -479,7 +479,7 @@ public class H2GIS extends JdbcDataSource {
     @Override
     @Nullable
     public IJdbcSpatialTable<StreamSpatialResultSet> getSpatialTable(@NotNull String tableName) {
-        IJdbcTable<? extends ResultSet, ? extends IStreamResultSet> table = getTable(tableName);
+        IJdbcTable<? extends ResultSet> table = getTable(tableName);
         if (table instanceof ISpatialTable) {
             return (JdbcSpatialTable) table;
         } else {

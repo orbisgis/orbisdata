@@ -54,7 +54,7 @@ import java.util.List;
  * @author Erwan Bocher (CNRS)
  * @author Sylvain Palominos (UBS Lab-STICC 2019 / Chaire GEOTERA 2020)
  */
-public interface IJdbcTable<T, U> extends ITable<T, U>, ResultSet {
+public interface IJdbcTable<T> extends ITable<T>, ResultSet {
 
     /**
      * {@link String} location/name of the query built table

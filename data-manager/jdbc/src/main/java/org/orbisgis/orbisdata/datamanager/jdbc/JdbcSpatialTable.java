@@ -63,7 +63,7 @@ import java.util.stream.StreamSupport;
  * @author Erwan Bocher (CNRS)
  * @author Sylvain PALOMINOS (UBS 2019)
  */
-public abstract class JdbcSpatialTable extends JdbcTable<SpatialResultSet, StreamSpatialResultSet> implements IJdbcSpatialTable<StreamSpatialResultSet> {
+public abstract class JdbcSpatialTable extends JdbcTable<StreamSpatialResultSet> implements IJdbcSpatialTable<StreamSpatialResultSet> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(JdbcTable.class);
 
@@ -382,7 +382,7 @@ public abstract class JdbcSpatialTable extends JdbcTable<SpatialResultSet, Strea
     }
 
     @Override
-    public Iterator<SpatialResultSet> iterator() {
+    public Iterator<StreamSpatialResultSet> iterator() {
         return new ResultSetIterator(this);
     }
 

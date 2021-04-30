@@ -289,7 +289,7 @@ public class ITableTest {
     /**
      * Simple implementation of {@link ITable} for test purpose.
      */
-    private static class DummyTable implements ITable<ResultSet, ResultSet> {
+    private static class DummyTable implements ITable<ResultSet> {
 
         /**
          * {@link List} of columns. A column is a list with the column name as first value.
@@ -639,13 +639,13 @@ public class ITableTest {
 
         @Nullable
         @Override
-        public ITable<?, ?> getTable() {
+        public ITable<?> getTable() {
             return null;
         }
 
         @Nullable
         @Override
-        public ISpatialTable<?, ?> getSpatialTable() {
+        public ISpatialTable<?> getSpatialTable() {
             return null;
         }
 

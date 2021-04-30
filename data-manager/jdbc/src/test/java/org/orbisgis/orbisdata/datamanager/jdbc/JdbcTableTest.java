@@ -194,7 +194,7 @@ class JdbcTableTest {
      *
      * @return A {@link IJdbcTable} for test purpose.
      */
-    private JdbcTable<SpatialResultSet, StreamSpatialResultSet> getTable() {
+    private JdbcTable<StreamSpatialResultSet> getTable() {
         return new H2gisSpatialTable(tableLocation, BASE_QUERY, statement, null, dataSource);
     }
 
@@ -203,7 +203,7 @@ class JdbcTableTest {
      *
      * @return A linked {@link IJdbcTable} for test purpose.
      */
-    private JdbcTable<ResultSet, StreamResultSet> getLinkedTable() {
+    private JdbcTable<StreamResultSet> getLinkedTable() {
         return new H2gisTable(linkedLocation, LINKED_QUERY, statement, null, dataSource);
     }
 
@@ -212,7 +212,7 @@ class JdbcTableTest {
      *
      * @return A temporary {@link IJdbcTable} for test purpose.
      */
-    private JdbcTable<ResultSet, StreamResultSet> getTempTable() {
+    private JdbcTable<StreamResultSet> getTempTable() {
         return new H2gisTable(tempLocation, TEMP_QUERY, statement, null, dataSource);
     }
 
@@ -221,7 +221,7 @@ class JdbcTableTest {
      *
      * @return An empty {@link IJdbcTable} for test purpose.
      */
-    private JdbcTable<ResultSet, StreamResultSet> getEmptyTable() {
+    private JdbcTable<StreamResultSet> getEmptyTable() {
         return new H2gisTable(emptyLocation, EMPTY_QUERY, statement, null, dataSource);
     }
 
@@ -230,7 +230,7 @@ class JdbcTableTest {
      *
      * @return A {@link JdbcTable} for test purpose.
      */
-    private JdbcTable<ResultSet, StreamResultSet> getBuiltTable() {
+    private JdbcTable<StreamResultSet> getBuiltTable() {
         return (JdbcTable) getTable().columns(COL_THE_GEOM, COL_THE_GEOM2, COL_ID, COL_VALUE, COL_MEANING)
                 .filter("LIMIT 2")
                 .getSpatialTable();

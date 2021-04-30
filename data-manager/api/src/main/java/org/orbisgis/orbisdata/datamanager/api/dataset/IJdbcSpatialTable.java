@@ -45,5 +45,5 @@ import org.h2gis.utilities.SpatialResultSet;
  * @author Erwan Bocher (CNRS)
  * @author Sylvain PALOMINOS (Lab-STICC UBS 2019)
  */
-public interface IJdbcSpatialTable<T> extends IJdbcTable<SpatialResultSet, T>, ISpatialTable<SpatialResultSet, T> {
+public interface IJdbcSpatialTable<T> extends IJdbcTable<T>, ISpatialTable<T> {
 }

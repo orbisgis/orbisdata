@@ -63,6 +63,7 @@ import org.slf4j.LoggerFactory;
 
 import java.sql.*;
 import java.util.*;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import static org.orbisgis.commons.printer.ICustomPrinter.CellPosition.*;
@@ -74,7 +75,7 @@ import static org.orbisgis.commons.printer.ICustomPrinter.CellPosition.*;
  *
  * @author Sylvain Palominos (Lab-STICC UBS 2019 / Chaire GEOTERA 2020)
  */
-public abstract class JdbcTable<T extends ResultSet, U> extends DefaultResultSet implements IJdbcTable<T, U>, GroovyObject {
+public abstract class JdbcTable<T extends ResultSet> extends DefaultResultSet implements IJdbcTable<T>, GroovyObject {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(JdbcTable.class);
 
@@ -696,7 +697,7 @@ public abstract class JdbcTable<T extends ResultSet, U> extends DefaultResultSet
     }
 
     @Override
-    public IJdbcTable<? extends ResultSet, ? extends IStreamResultSet> getTable() {
+    public IJdbcTable<? extends IStreamResultSet> getTable() {
         return (IJdbcTable) asType(IJdbcTable.class);
     }
 
@@ -862,5 +863,17 @@ public abstract class JdbcTable<T extends ResultSet, U> extends DefaultResultSet
                 LOGGER.error("Unable to rollback.", e2);
             }
         }
+    }
+
+    @Override
+    public void forEach(Consumer<? super T> action) {
+        Objects.requireNonNull(action);
+        Iterator<T> var2 = this.iterator();
+
+        while(var2.hasNext()) {
+            T t = var2.next();
+            action.accept(t);
+        }
+
     }
 }

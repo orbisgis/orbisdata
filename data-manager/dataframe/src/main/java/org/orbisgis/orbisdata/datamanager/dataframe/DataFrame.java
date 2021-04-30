@@ -974,13 +974,13 @@ public class DataFrame implements smile.data.DataFrame, ITable<BaseVector, Tuple
 
     @Nullable
     @Override
-    public ITable<?, ?> getTable() {
+    public ITable<?,?> getTable() {
         return this;
     }
 
     @Nullable
     @Override
-    public ISpatialTable<?, ?> getSpatialTable() {
+    public ISpatialTable<?> getSpatialTable() {
         throw new UnsupportedOperationException();
     }
 
@@ -1023,7 +1023,7 @@ public class DataFrame implements smile.data.DataFrame, ITable<BaseVector, Tuple
     }
 
     @Nullable
-    private static StructType getStructure(@NotNull IJdbcTable<?, ?> table) {
+    private static StructType getStructure(@NotNull IJdbcTable<?> table) {
         ResultSetMetaData metadata = table.getMetaData();
         try {
             int columnCount = metadata.getColumnCount();

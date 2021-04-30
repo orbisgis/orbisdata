@@ -55,12 +55,11 @@ import java.util.stream.Stream;
  * Extension of the {@link IDataSet} interface. A {@link ITable} is a 2D (column/line) representation of raw data.
  *
  * @param <T> The type of elements returned by the iterator.
- * @param <U> The type of elements streamed.
  *
  * @author Erwan Bocher (CNRS)
  * @author Sylvain PALOMINOS (Lab-STICC UBS 2018-2020)
  */
-public interface ITable<T, U> extends IMatrix<T, U>, IQueryBuilder {
+public interface ITable<T, U> extends IMatrix<T>, IQueryBuilder {
 
     /**
      * Apply the given {@link Closure} to each row.

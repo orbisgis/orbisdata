@@ -529,7 +529,7 @@ public class IJdbcTableTest {
 
         @Nullable
         @Override
-        public Stream<ResultSet> stream() {
+        public Stream stream() {
             return null;
         }
 

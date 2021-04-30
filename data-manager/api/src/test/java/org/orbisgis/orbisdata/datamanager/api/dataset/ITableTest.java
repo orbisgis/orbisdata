@@ -639,13 +639,13 @@ public class ITableTest {
 
         @Nullable
         @Override
-        public ITable<?, ?> getTable() {
+        public ITable<?,?> getTable() {
             return null;
         }
 
         @Nullable
         @Override
-        public ISpatialTable<?, ?> getSpatialTable() {
+        public ISpatialTable<?> getSpatialTable() {
             return null;
         }
 

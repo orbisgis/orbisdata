@@ -41,6 +41,7 @@ import org.h2gis.utilities.dbtypes.DBTypes;
 import org.orbisgis.commons.annotations.NotNull;
 import org.orbisgis.commons.annotations.Nullable;
 import org.orbisgis.orbisdata.datamanager.api.dataset.ISpatialTable;
+import org.orbisgis.orbisdata.datamanager.api.dataset.IStreamResultSet;
 import org.orbisgis.orbisdata.datamanager.api.dataset.ITable;
 import org.orbisgis.orbisdata.datamanager.api.datasource.IJdbcDataSource;
 import org.orbisgis.orbisdata.datamanager.jdbc.JdbcTable;
@@ -61,7 +62,7 @@ import java.util.stream.StreamSupport;
  * @author Erwan Bocher (CNRS)
  * @author Sylvain PALOMINOS (UBS Lab-STICC 2018-2019 / Chaire GEOTERA 2020)
  */
-public class PostgisTable extends JdbcTable<ResultSet, StreamResultSet> {
+public class PostgisTable extends JdbcTable<StreamResultSet> {
 
     /**
      * Main constructor.

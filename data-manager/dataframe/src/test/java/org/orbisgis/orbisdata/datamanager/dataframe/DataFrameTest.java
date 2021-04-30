@@ -116,7 +116,7 @@ public class DataFrameTest {
         Formula formula = Formula.rhs(floor("COL8"));
 
         try {
-            IJdbcTable<?, ?> table = h2gis.getTable("TOTO");
+            IJdbcTable<?> table = h2gis.getTable("TOTO");
             assertNotNull(table);
             df = DataFrame.of(table);
             assertNotNull(df);

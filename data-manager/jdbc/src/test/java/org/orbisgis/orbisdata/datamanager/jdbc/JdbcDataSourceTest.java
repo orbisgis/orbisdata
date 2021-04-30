@@ -813,7 +813,7 @@ class JdbcDataSourceTest {
      */
     @Test
     void testResultSetBuilder() {
-        ITable<?, ?> table = h2gis.forwardOnly().readOnly().holdCursorOverCommit().fetchForward()
+        ITable<?,?> table = h2gis.forwardOnly().readOnly().holdCursorOverCommit().fetchForward()
                 .fetchSize(SIZE).timeout(TIMEOUT).maxRow(MAX_ROW).cursorName("name").poolable()
                 .maxFieldSize(FIELD_SIZE).getTable("TEST_H2GIS");
         assertNotNull(table);

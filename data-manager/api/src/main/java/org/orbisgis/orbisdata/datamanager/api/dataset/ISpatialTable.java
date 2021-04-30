@@ -47,12 +47,11 @@ import java.util.Map;
  * Extension of {@link ITable}. A {@link ISpatialTable} is a specialisation with at least one Geometry column.
  *
  * @param <T> The type of elements returned by the iterator.
- * @param <U> The type of elements streamed.
  *
  * @author Erwan Bocher (CNRS)
  * @author Sylvain PALOMINOS (Lab-STICC UBS 2018-2019)
  */
-public interface ISpatialTable<T, U> extends ITable<T, U> {
+public interface ISpatialTable<T> extends ITable<T, T> {
 
     /**
      * Returns the {@link Geometry} value of the given column at the current row.
@@ -203,5 +202,5 @@ public interface ISpatialTable<T, U> extends ITable<T, U> {
      * @return A reproject {@link ISpatialTable}.
      */
     @Nullable
-    ISpatialTable<T, U> reproject(int srid);
+    ISpatialTable<T> reproject(int srid);
 }

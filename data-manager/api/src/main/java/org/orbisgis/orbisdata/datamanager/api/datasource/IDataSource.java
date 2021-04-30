@@ -60,7 +60,7 @@ public interface IDataSource<T> {
      * @return The implementation of {@link IDataSet} corresponding to the given name or null.
      */
     @Nullable
-    IDataSet<T, T> getDataSet(@NotNull String name);
+    IDataSet<T> getDataSet(@NotNull String name);
 
     /**
      * Return the location of the {@link IDataSourceLocation}

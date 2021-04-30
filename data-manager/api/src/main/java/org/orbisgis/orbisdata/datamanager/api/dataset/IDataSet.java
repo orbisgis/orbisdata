@@ -43,12 +43,11 @@ import org.orbisgis.commons.annotations.Nullable;
  * Raw collection of data, no matter its structure.
  *
  * @param <T> The type of elements returned by the iterator.
- * @param <U> The type of elements streamed.
  *
  * @author Erwan Bocher (CNRS)
  * @author Sylvain PALOMINOS (UBS 2018-2019)
  */
-public interface IDataSet<T, U> extends Iterable<T> {
+public interface IDataSet<T> extends Iterable<T> {
 
     /**
      * Get the location of {@link IDataSet}.

@@ -62,7 +62,7 @@ import java.util.stream.StreamSupport;
  * @author Erwan Bocher (CNRS)
  * @author Sylvain PALOMINOS (UBS Lab-STICC 2018-2019 / Chaire GEOTERA 2020)
  */
-public class H2gisTable extends JdbcTable<ResultSet, StreamResultSet> {
+public class H2gisTable extends JdbcTable<StreamResultSet> {
 
     /**
      * Main constructor.

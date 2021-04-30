@@ -42,10 +42,7 @@ import groovy.lang.MissingMethodException;
 import org.h2gis.utilities.dbtypes.DBTypes;
 import org.orbisgis.commons.annotations.NotNull;
 import org.orbisgis.commons.annotations.Nullable;
-import org.orbisgis.orbisdata.datamanager.api.dataset.IDataSet;
-import org.orbisgis.orbisdata.datamanager.api.dataset.IJdbcSpatialTable;
-import org.orbisgis.orbisdata.datamanager.api.dataset.IJdbcTable;
-import org.orbisgis.orbisdata.datamanager.api.dataset.ISpatialTable;
+import org.orbisgis.orbisdata.datamanager.api.dataset.*;
 
 import javax.sql.DataSource;
 import java.io.File;

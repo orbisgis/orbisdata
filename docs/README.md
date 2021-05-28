@@ -1,8 +1,8 @@
 
 # OrbisData 
 [![GitHub](https://img.shields.io/github/license/orbisgis/orbisdata.svg)](https://github.com/orbisgis/orbisdata/blob/master/docs/LICENSE.md) 
-[![Build Stat](https://img.shields.io/jenkins/s/http/jenkins-ng.orbisgis.org/job/orbisdata.svg)](http://jenkins-ng.orbisgis.org/job/orbisdata) 
-[![Build Test](https://img.shields.io/jenkins/t/http/jenkins-ng.orbisgis.org/job/orbisdata.svg)](https://jenkins-ng.orbisgis.org/job/orbisdata/test_results_analyzer/) 
+[![Build Stat](https://img.shields.io/jenkins/s/http/jenkins-ng.orbisgis.org/job/orbisdata.svg)](http://jenkins.orbisgis.org/job/orbisdata) 
+[![Build Test](https://img.shields.io/jenkins/t/http/jenkins-ng.orbisgis.org/job/orbisdata.svg)](https://jenkins.orbisgis.org/job/orbisdata/test_results_analyzer/) 
 [![codecov](https://img.shields.io/codecov/c/github/orbisgis/orbisdata.svg)](https://codecov.io/gh/orbisgis/orbisdata) 
 [![Codacy Badge](https://img.shields.io/codacy/grade/93899ea0675d43a2a3787ce5dd3c5595.svg)](https://www.codacy.com/app/orbisgis/orbisdata?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=orbisgis/orbisdata&amp;utm_campaign=Badge_Grade) 
 

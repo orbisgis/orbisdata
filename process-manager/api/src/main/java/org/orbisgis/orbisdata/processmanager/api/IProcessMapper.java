@@ -53,11 +53,9 @@ import java.util.UUID;
 public interface IProcessMapper extends IProcess {
 
     @Override
-    @NotNull
     IProcessMapper newInstance();
 
     @Override
-    @NotNull
     IProcessMapper copy();
 
     /**
@@ -66,8 +64,7 @@ public interface IProcessMapper extends IProcess {
      * @param inOutPuts Inputs or outputs to link.
      * @return A {@link ILinker} object which will do the link.
      */
-    @NotNull
-    ILinker link(@NotNull IInOutPut... inOutPuts);
+    ILinker link(IInOutPut... inOutPuts);
 
     /**
      * Add a {@link IProcessCheck} before the execution of the given {@link IProcess}.
@@ -75,8 +72,7 @@ public interface IProcessMapper extends IProcess {
      * @param process {@link IProcess} before which the check should be done.
      * @return A {@link ICheckDataBuilder} to continue the {@link IProcessCheck} build.
      */
-    @NotNull
-    ICheckDataBuilder before(@NotNull IProcess process);
+    ICheckDataBuilder before(IProcess process);
 
 
     /**
@@ -85,29 +81,24 @@ public interface IProcessMapper extends IProcess {
      * @param process {@link IProcess} after which the check should be done.
      * @return A {@link ICheckDataBuilder} to continue the {@link IProcessCheck} build.
      */
-    @NotNull
-    ICheckDataBuilder after(@NotNull IProcess process);
+    ICheckDataBuilder after(IProcess process);
 
     @Override
-    @NotNull
     default Optional<String> getVersion() {
         return Optional.empty();
     }
 
     @Override
-    @NotNull
     default Optional<String> getDescription() {
         return Optional.empty();
     }
 
     @Override
-    @NotNull
     default Optional<String[]> getKeywords() {
         return Optional.empty();
     }
 
     @Override
-    @NotNull
     default String getIdentifier() {
         return UUID.randomUUID().toString();
     }

@@ -75,7 +75,6 @@ public class ProcessManager implements IProcessManager, GroovyObject, GroovyInte
     /**
      * MetaClass use for groovy methods/properties binding
      */
-    @NotNull
     protected MetaClass metaClass = InvokerHelper.getMetaClass(ProcessManager.class);
 
     /**
@@ -93,7 +92,6 @@ public class ProcessManager implements IProcessManager, GroovyObject, GroovyInte
      *
      * @return The unique instance of the ProcessManager.
      */
-    @NotNull
     public static ProcessManager getProcessManager() {
         if (instance == null) {
             instance = new ProcessManager();
@@ -102,14 +100,12 @@ public class ProcessManager implements IProcessManager, GroovyObject, GroovyInte
     }
 
     @Override
-    @NotNull
     public IProcessBuilder create() {
         return new ProcessBuilder(defaultFactory, defaultFactory);
     }
 
     @Override
-    @NotNull
-    public Optional<IProcess> create(@Nullable @DelegatesTo(IProcessBuilder.class) Closure<?> cl) {
+    public Optional<IProcess> create(@DelegatesTo(IProcessBuilder.class) Closure<?> cl) {
         if(cl == null) {
             return Optional.empty();
         }
@@ -122,14 +118,12 @@ public class ProcessManager implements IProcessManager, GroovyObject, GroovyInte
     }
 
     @Override
-    @NotNull
     public List<String> factoryIds() {
         return new ArrayList<>(processFactoryMap.keySet());
     }
 
     @Override
-    @NotNull
-    public IProcessFactory factory(@Nullable String identifier) {
+    public IProcessFactory factory(String identifier) {
         if(identifier == null) {
             return factory();
         }
@@ -140,38 +134,31 @@ public class ProcessManager implements IProcessManager, GroovyObject, GroovyInte
         }
         return processFactoryMap.get(identifier);
     }
-
-    @NotNull
-    public static IProcessFactory createFactory(@Nullable String identifier) {
+    public static IProcessFactory createFactory(String identifier) {
         return getProcessManager().factory(
                 identifier != null && !identifier.isEmpty() ? identifier : "factory_"+UUID.randomUUID().toString());
     }
 
     @Override
-    @NotNull
     public IProcessFactory factory() {
         return defaultFactory;
     }
-
-    @NotNull
     public static IProcessFactory createFactory() {
         return getProcessManager().factory();
     }
 
     @Override
-    @NotNull
-    public Optional<IProcess> process(@Nullable String processId) {
+    public Optional<IProcess> process(String processId) {
         return factory().getProcess(processId);
     }
 
     @Override
-    @NotNull
-    public Optional<IProcess> process(@Nullable String processId, @Nullable String factoryId) {
+    public Optional<IProcess> process(String processId, String factoryId) {
         return factory(factoryId).getProcess(processId);
     }
 
     @Override
-    public boolean registerFactory(@Nullable String id, @Nullable IProcessFactory factory) {
+    public boolean registerFactory(String id, IProcessFactory factory) {
         if(factory == null || id == null || id.isEmpty() || processFactoryMap.containsKey(id)) {
             return false;
         }
@@ -181,15 +168,13 @@ public class ProcessManager implements IProcessManager, GroovyObject, GroovyInte
     }
 
     @Override
-    public void register(@Nullable Map<String, IProcessFactory> map) {
+    public void register(Map<String, IProcessFactory> map) {
         if(map != null) {
             map.forEach(this::registerFactory);
         }
     }
-
-    @Nullable
     @Override
-    public Object invokeMethod(@Nullable String name, @Nullable Object args) {
+    public Object invokeMethod(String name, Object args) {
         if(name != null) {
             Object obj = getMetaClass().invokeMethod(this, name, args);
             if(obj instanceof Optional){
@@ -205,13 +190,12 @@ public class ProcessManager implements IProcessManager, GroovyObject, GroovyInte
     }
 
     @Override
-    @NotNull
     public MetaClass getMetaClass() {
         return metaClass;
     }
 
     @Override
-    public void setMetaClass(@Nullable MetaClass metaClass) {
+    public void setMetaClass(MetaClass metaClass) {
         this.metaClass = metaClass == null ? InvokerHelper.getMetaClass(this.getClass()) : metaClass;
     }
 }

@@ -61,13 +61,12 @@ public class CheckClosureBuilder implements ICheckClosureBuilder {
      *
      * @param processCheck {@link IProcessCheck} to build.
      */
-    protected CheckClosureBuilder(@NotNull IProcessCheck processCheck) {
+    protected CheckClosureBuilder(IProcessCheck processCheck) {
         this.processCheck = processCheck;
     }
 
     @Override
-    @NotNull
-    public ICheckOptionBuilder check(@Nullable Closure<?> cl) {
+    public ICheckOptionBuilder check(Closure<?> cl) {
         processCheck.setClosure(cl);
         return new CheckOptionBuilder(processCheck);
     }

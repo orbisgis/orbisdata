@@ -185,7 +185,6 @@ public class GroovyProcessFactoryTest {
 
     private static class DummyFactory extends GroovyProcessFactory {
         @Override
-        @Nullable
         public Object run() {
             return null;
         }

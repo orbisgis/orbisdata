@@ -53,10 +53,8 @@ public interface IRasterMetadata {
      * @param clazz New class of the result.
      * @return The current object into an other class.
      */
-    @Nullable
-    Object asType(@NotNull Class<?> clazz);
+    Object asType(Class<?> clazz);
 
     @Override
-    @NotNull
     String toString();
 }

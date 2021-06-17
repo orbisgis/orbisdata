@@ -72,7 +72,6 @@ public class ResultSetSpliterator<T extends IStreamResultSet> implements Spliter
     }
 
     @Override
-    @Nullable
     public Spliterator<T> trySplit() {
         return null;
     }

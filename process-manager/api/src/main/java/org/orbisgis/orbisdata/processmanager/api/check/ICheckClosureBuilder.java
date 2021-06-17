@@ -58,6 +58,5 @@ public interface ICheckClosureBuilder {
      * @param cl {@link Closure} to execute to perform the check.
      * @return A {@link ICheckClosureBuilder} to continue the check building.
      */
-    @NotNull
-    ICheckOptionBuilder check(@Nullable Closure<?> cl);
+    ICheckOptionBuilder check(Closure<?> cl);
 }

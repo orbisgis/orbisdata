@@ -37,7 +37,6 @@
 package org.orbisgis.orbisdata.datamanager.jdbc.dsl;
 
 import groovy.lang.Closure;
-import org.orbisgis.commons.annotations.NotNull;
 import org.orbisgis.commons.printer.ICustomPrinter;
 import org.orbisgis.orbisdata.datamanager.api.dataset.ISpatialTable;
 import org.orbisgis.orbisdata.datamanager.api.dataset.ITable;
@@ -71,7 +70,7 @@ public abstract class BuilderResult implements IBuilderResult {
     protected abstract String getQuery();
 
     @Override
-    public void eachRow(@NotNull Closure<Object> closure) {
+    public void eachRow(Closure<Object> closure) {
         ISpatialTable table = ((ISpatialTable) asType(ISpatialTable.class));
         if(table != null) {
             table.eachRow(closure);
@@ -79,7 +78,7 @@ public abstract class BuilderResult implements IBuilderResult {
     }
 
     @Override
-    public Object asType(@NotNull Class<?> clazz) {
+    public Object asType(Class<?> clazz) {
         if (ICustomPrinter.class.isAssignableFrom(clazz)) {
             ITable table = this.getTable();
             if(table != null) {
@@ -93,8 +92,6 @@ public abstract class BuilderResult implements IBuilderResult {
         }
         return null;
     }
-
-    @NotNull
     @Override
     public String toString() {
         return "(" + getQuery() + ") as foo";

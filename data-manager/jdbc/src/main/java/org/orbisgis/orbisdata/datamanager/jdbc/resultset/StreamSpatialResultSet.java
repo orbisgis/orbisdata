@@ -70,7 +70,7 @@ public class StreamSpatialResultSet extends StreamResultSet implements IStreamSp
      */
     private final SpatialResultSet resultSet;
 
-    public StreamSpatialResultSet(@NotNull SpatialResultSet resultSet){
+    public StreamSpatialResultSet(SpatialResultSet resultSet){
         super(resultSet);
         CheckUtils.checkNotNull(resultSet, "The given ResultSet should not be null.");
         this.resultSet = resultSet;

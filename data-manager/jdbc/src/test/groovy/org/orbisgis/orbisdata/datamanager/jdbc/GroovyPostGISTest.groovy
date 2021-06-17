@@ -36,6 +36,7 @@
  */
 package org.orbisgis.orbisdata.datamanager.jdbc
 
+import org.h2gis.utilities.JDBCUtilities
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
@@ -565,5 +566,35 @@ class GroovyPostGISTest {
         def  linkedTable = h2GISSource.link(dbProperties_orbis, "externalTable", true)
         assertEquals("EXTERNALTABLE", linkedTable)
         assertEquals(2,h2GISSource.getTable("EXTERNALTABLE").getRowCount())
+    }
+
+    @Test
+    @Disabled
+    void integration() {
+        def params = [databaseName           : "orbisgis_db",
+                      user               : "orbisgis",
+                      password             : "orbisgis",
+                      url               : "jdbc:postgresql://localhost/5432"]
+        def ds = POSTGIS.open(params)
+        assert ds
+        //println ds.getTableNames()
+        for (int i = 0; i < 1; i++) {
+            def sum = 0
+            def count = 0
+            //println JDBCUtilities.isIndexed(ds.getConnection(),"paendora.rsu_indicators_2154", "id_zone")
+            println(!ds.getIndexes("paendora.rsu_indicators_2154", "id_zone"))
+            /*ds.getSpatialTable("(select * from paendora.rsu_indicators_2154 limit 100)").eachRow { it ->
+                sum += it.the_geom.area
+                //count++
+            }*/
+            println(sum)
+            //println(count)
+        }
+        /*def table = ds.getSpatialTable("(select * from paendora.rsu_indicators_2154 limit 30000)").iterator()
+        for (Object name : table){
+            sum +=name.getGeometry().area
+        }
+        println(sum)*/
+
     }
 }

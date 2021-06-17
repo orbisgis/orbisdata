@@ -60,6 +60,5 @@ public interface IMatrix<T> extends IDataSet<T> {
      *
      * @return The size of the {@link IMatrix} as an int array.
      */
-    @NotNull
     int[] getSize();
 }

@@ -315,15 +315,13 @@ public class ITableTest {
             list.addAll(values);
             columns.add(list);
         }
-
-        @NotNull
         @Override
         public Collection<String> getColumns() {
             return columns.stream().map(column -> column.get(0).toString()).collect(Collectors.toList());
         }
 
         @Override
-        public boolean hasColumn(@NotNull String columnName, @NotNull Class clazz) {
+        public boolean hasColumn(String columnName, Class clazz) {
             return columns
                     .stream()
                     .filter(column -> column.size() >= 2 &&
@@ -377,7 +375,7 @@ public class ITableTest {
         }
 
         @Override
-        public Collection<String> getUniqueValues(@NotNull String column) {
+        public Collection<String> getUniqueValues(String column) {
             return null;
         }
 
@@ -387,7 +385,7 @@ public class ITableTest {
         }
 
         @Override
-        public String save(@NotNull String filePath, String encoding) {
+        public String save(String filePath, String encoding) {
             return null;
         }
 
@@ -415,8 +413,6 @@ public class ITableTest {
         public String save(IJdbcDataSource dataSource, String outputTableName, boolean deleteTable, int batchSize) {
             return null;
         }
-
-        @NotNull
         @Override
         public List<Object> getFirstRow() {
             return null;
@@ -498,27 +494,27 @@ public class ITableTest {
         }
 
         @Override
-        public String getString(@NotNull String column) {
+        public String getString(String column) {
             return null;
         }
 
         @Override
-        public boolean getBoolean(@NotNull String column) {
+        public boolean getBoolean(String column) {
             return false;
         }
 
         @Override
-        public byte getByte(@NotNull String column) {
+        public byte getByte(String column) {
             return 0;
         }
 
         @Override
-        public short getShort(@NotNull String column) {
+        public short getShort(String column) {
             return 0;
         }
 
         @Override
-        public int getInt(@NotNull String column) {
+        public int getInt(String column) {
             return 0;
         }
 
@@ -528,52 +524,52 @@ public class ITableTest {
         }
 
         @Override
-        public float getFloat(@NotNull String column) {
+        public float getFloat(String column) {
             return 0;
         }
 
         @Override
-        public double getDouble(@NotNull String column) {
+        public double getDouble(String column) {
             return 0;
         }
 
         @Override
-        public byte[] getBytes(@NotNull String column) {
+        public byte[] getBytes(String column) {
             return new byte[0];
         }
 
         @Override
-        public Date getDate(@NotNull String column) {
+        public Date getDate(String column) {
             return null;
         }
 
         @Override
-        public Time getTime(@NotNull String column) {
+        public Time getTime(String column) {
             return null;
         }
 
         @Override
-        public Timestamp getTimestamp(@NotNull String column) {
+        public Timestamp getTimestamp(String column) {
             return null;
         }
 
         @Override
-        public Object getObject(@NotNull String column) {
+        public Object getObject(String column) {
             return null;
         }
 
         @Override
-        public BigDecimal getBigDecimal(@NotNull String column) {
+        public BigDecimal getBigDecimal(String column) {
             return null;
         }
 
         @Override
-        public <U> U getObject(int column, @NotNull Class<U> clazz) throws Exception {
+        public <U> U getObject(int column, Class<U> clazz) throws Exception {
             return null;
         }
 
         @Override
-        public <U> U getObject(@NotNull String column, @NotNull Class<U> clazz) throws Exception {
+        public <U> U getObject(String column, Class<U> clazz) throws Exception {
             return null;
         }
 
@@ -581,8 +577,6 @@ public class ITableTest {
         public Stream<ResultSet> stream() {
             return null;
         }
-
-        @NotNull
         @Override
         public Map<String, Object> firstRow() {
             return null;
@@ -592,25 +586,19 @@ public class ITableTest {
         public String getLocation() {
             return null;
         }
-
-        @NotNull
         @Override
         public String getName() {
             return null;
         }
-
-        @NotNull
         @Override
         public Object getMetaData() {
             return null;
         }
 
         @Override
-        public Object asType(@NotNull Class clazz) {
+        public Object asType(Class clazz) {
             return null;
         }
-
-        @NotNull
         @Override
         public ISummary getSummary() {
             return null;
@@ -625,25 +613,19 @@ public class ITableTest {
         public Iterator<ResultSet> iterator() {
             return new DummyIterator();
         }
-
-        @NotNull
         @Override
         public Map<String, String> getColumnsTypes() {
             return null;
         }
 
         @Override
-        public String getColumnType(@NotNull String columnName) {
+        public String getColumnType(String columnName) {
             return null;
         }
-
-        @Nullable
         @Override
         public ITable<?,?> getTable() {
             return null;
         }
-
-        @Nullable
         @Override
         public ISpatialTable<?> getSpatialTable() {
             return null;

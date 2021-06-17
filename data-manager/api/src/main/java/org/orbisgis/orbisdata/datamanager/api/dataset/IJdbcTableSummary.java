@@ -51,7 +51,6 @@ public interface IJdbcTableSummary extends ISummary {
      *
      * @return The {@link TableLocation} of the summarized {@link IJdbcTable}.
      */
-    @Nullable
     TableLocation getLocation();
 
     /**

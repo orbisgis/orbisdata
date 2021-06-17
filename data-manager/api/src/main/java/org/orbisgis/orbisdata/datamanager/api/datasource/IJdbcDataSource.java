@@ -40,8 +40,6 @@ import groovy.lang.GString;
 import groovy.lang.GroovyObject;
 import groovy.lang.MissingMethodException;
 import org.h2gis.utilities.dbtypes.DBTypes;
-import org.orbisgis.commons.annotations.NotNull;
-import org.orbisgis.commons.annotations.Nullable;
 import org.orbisgis.orbisdata.datamanager.api.dataset.*;
 
 import javax.sql.DataSource;
@@ -51,6 +49,7 @@ import java.net.URI;
 import java.net.URL;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collection;
 import java.util.List;
@@ -84,8 +83,7 @@ public interface IJdbcDataSource extends IDataSource<ResultSet>, GroovyObject, D
      * @param nameOrQuery Name of the requested table.
      * @return The {@link IJdbcTable} with the given name or null if no table is found.
      */
-    @Nullable
-    IJdbcTable getTable(@NotNull String nameOrQuery);
+    IJdbcTable getTable(String nameOrQuery);
 
     /**
      * Return the {@link IJdbcTable} contained by the database with the given name. If the table contains a geometric
@@ -94,8 +92,7 @@ public interface IJdbcDataSource extends IDataSource<ResultSet>, GroovyObject, D
      * @param nameOrQuery Name of the requested table.
      * @return The {@link IJdbcTable} with the given name or null if no table is found.
      */
-    @Nullable
-    IJdbcTable getTable(@NotNull GString nameOrQuery);
+    IJdbcTable getTable(GString nameOrQuery);
 
     /**
      * Return the {@link IJdbcTable} contained by the database with the given name. If the table contains a geometric
@@ -104,19 +101,7 @@ public interface IJdbcDataSource extends IDataSource<ResultSet>, GroovyObject, D
      * @param nameOrQuery Name of the requested table.
      * @return The {@link IJdbcTable} with the given name or null if no table is found.
      */
-    @Nullable
-    IJdbcTable getTable(@NotNull String nameOrQuery, List<Object> params);
-
-    /**
-     * Return the {@link IJdbcTable} contained by the database with the given name. If the table contains a geometric
-     * field, return a {@link ISpatialTable}.
-     *
-     * @param nameOrQuery Name of the requested table.
-     * @param statement {@link Statement} to use.
-     * @return The {@link IJdbcTable} with the given name or null if no table is found.
-     */
-    @Nullable
-    IJdbcTable getTable(@NotNull String nameOrQuery, @NotNull Statement statement);
+    IJdbcTable getTable(String nameOrQuery, List<Object> params);
 
     /**
      * Return the {@link IJdbcTable} contained by the database with the given name. If the table contains a geometric
@@ -126,8 +111,17 @@ public interface IJdbcDataSource extends IDataSource<ResultSet>, GroovyObject, D
      * @param statement {@link Statement} to use.
      * @return The {@link IJdbcTable} with the given name or null if no table is found.
      */
-    @Nullable
-    IJdbcTable getTable(@NotNull GString nameOrQuery, @NotNull Statement statement);
+    IJdbcTable getTable(String nameOrQuery, Statement statement);
+
+    /**
+     * Return the {@link IJdbcTable} contained by the database with the given name. If the table contains a geometric
+     * field, return a {@link ISpatialTable}.
+     *
+     * @param nameOrQuery Name of the requested table.
+     * @param statement {@link Statement} to use.
+     * @return The {@link IJdbcTable} with the given name or null if no table is found.
+     */
+    IJdbcTable getTable(GString nameOrQuery, Statement statement);
 
     /**
      * Return the {@link IJdbcTable} contained by the database with the given name. If the table contains a geometric
@@ -138,8 +132,7 @@ public interface IJdbcDataSource extends IDataSource<ResultSet>, GroovyObject, D
      * @param statement {@link Statement} to use.
      * @return The {@link IJdbcTable} with the given name or null if no table is found.
      */
-    @Nullable
-    IJdbcTable getTable(@NotNull String nameOrQuery, @Nullable List<Object> params, @NotNull Statement statement);
+    IJdbcTable getTable(String nameOrQuery,List<Object> params, Statement statement);
 
     /**
      * Return a {@link ISpatialTable} contained by the database with the given name. If the table doesn't contains a
@@ -149,8 +142,7 @@ public interface IJdbcDataSource extends IDataSource<ResultSet>, GroovyObject, D
      * @return The {@link ISpatialTable} with the given name or null if no table is found or if the table doesn't
      * contains a geometric field.
      */
-    @Nullable
-    IJdbcSpatialTable getSpatialTable(@NotNull String nameOrQuery);
+    IJdbcSpatialTable getSpatialTable(String nameOrQuery);
 
     /**
      * Return a {@link ISpatialTable} contained by the database with the given name. If the table doesn't contains a
@@ -160,8 +152,7 @@ public interface IJdbcDataSource extends IDataSource<ResultSet>, GroovyObject, D
      * @return The {@link ISpatialTable} with the given name or null if no table is found or if the table doesn't
      * contains a geometric field.
      */
-    @Nullable
-    IJdbcSpatialTable getSpatialTable(@NotNull GString nameOrQuery);
+    IJdbcSpatialTable getSpatialTable(GString nameOrQuery);
 
     /**
      * Return a {@link ISpatialTable} contained by the database with the given name. If the table doesn't contains a
@@ -171,20 +162,7 @@ public interface IJdbcDataSource extends IDataSource<ResultSet>, GroovyObject, D
      * @return The {@link ISpatialTable} with the given name or null if no table is found or if the table doesn't
      * contains a geometric field.
      */
-    @Nullable
-    IJdbcSpatialTable getSpatialTable(@NotNull String nameOrQuery, List<Object> params);
-
-    /**
-     * Return a {@link ISpatialTable} contained by the database with the given name. If the table doesn't contains a
-     * geometric field, return null;
-     *
-     * @param nameOrQuery Name of the requested table.
-     * @param statement {@link Statement} to use.
-     * @return The {@link ISpatialTable} with the given name or null if no table is found or if the table doesn't
-     * contains a geometric field.
-     */
-    @Nullable
-    IJdbcSpatialTable getSpatialTable(@NotNull String nameOrQuery, @NotNull Statement statement);
+    IJdbcSpatialTable getSpatialTable(String nameOrQuery, List<Object> params);
 
     /**
      * Return a {@link ISpatialTable} contained by the database with the given name. If the table doesn't contains a
@@ -195,8 +173,18 @@ public interface IJdbcDataSource extends IDataSource<ResultSet>, GroovyObject, D
      * @return The {@link ISpatialTable} with the given name or null if no table is found or if the table doesn't
      * contains a geometric field.
      */
-    @Nullable
-    IJdbcSpatialTable getSpatialTable(@NotNull GString nameOrQuery, @NotNull Statement statement);
+    IJdbcSpatialTable getSpatialTable(String nameOrQuery, Statement statement);
+
+    /**
+     * Return a {@link ISpatialTable} contained by the database with the given name. If the table doesn't contains a
+     * geometric field, return null;
+     *
+     * @param nameOrQuery Name of the requested table.
+     * @param statement {@link Statement} to use.
+     * @return The {@link ISpatialTable} with the given name or null if no table is found or if the table doesn't
+     * contains a geometric field.
+     */
+    IJdbcSpatialTable getSpatialTable(GString nameOrQuery, Statement statement);
 
     /**
      * Return the {@link IJdbcTable} contained by the database with the given name. If the table contains a geometric
@@ -207,15 +195,13 @@ public interface IJdbcDataSource extends IDataSource<ResultSet>, GroovyObject, D
      * @param statement   {@link Statement} to use.
      * @return The {@link IJdbcTable} with the given name or null if no table is found.
      */
-    @Nullable
-    IJdbcSpatialTable getSpatialTable(@NotNull String nameOrQuery, @Nullable List<Object> params, @NotNull Statement statement);
+    IJdbcSpatialTable getSpatialTable(String nameOrQuery,List<Object> params, Statement statement);
 
     /**
      * Get all table names from the underlying database.
      *
      * @return A {@link Collection} containing the names of all the available tables.
      */
-    @NotNull
     Collection<String> getTableNames();
 
     /**
@@ -224,8 +210,7 @@ public interface IJdbcDataSource extends IDataSource<ResultSet>, GroovyObject, D
      * @param namePattern Pattern of the table name.
      * @return            List of the table corresponding to the given patterns and types.
      */
-    @NotNull
-    Collection<String> getTableNames(@Nullable String namePattern);
+    Collection<String> getTableNames(String namePattern);
 
     /**
      * Return the list of the table name corresponding to the given patterns and types.
@@ -234,8 +219,7 @@ public interface IJdbcDataSource extends IDataSource<ResultSet>, GroovyObject, D
      * @param types       Type of the table.
      * @return            List of the table corresponding to the given patterns and types.
      */
-    @NotNull
-    Collection<String> getTableNames(@Nullable String namePattern, @Nullable TableType... types);
+    Collection<String> getTableNames(String namePattern,TableType... types);
 
     /**
      * Return the list of the table name corresponding to the given patterns and types.
@@ -244,8 +228,7 @@ public interface IJdbcDataSource extends IDataSource<ResultSet>, GroovyObject, D
      * @param namePattern   Pattern of the table name.
      * @return              List of the table corresponding to the given patterns and types.
      */
-    @NotNull
-    Collection<String> getTableNames(@Nullable String schemaPattern, @Nullable String namePattern);
+    Collection<String> getTableNames(String schemaPattern,String namePattern);
 
     /**
      * Return the list of the table name corresponding to the given patterns and types.
@@ -255,9 +238,7 @@ public interface IJdbcDataSource extends IDataSource<ResultSet>, GroovyObject, D
      * @param types         Type of the table.
      * @return              List of the table corresponding to the given patterns and types.
      */
-    @NotNull
-    Collection<String> getTableNames(@Nullable String schemaPattern, @Nullable String namePattern,
-                                     @Nullable TableType... types);
+    Collection<String> getTableNames(String schemaPattern,String namePattern, TableType... types);
 
     /**
      * Return the list of the table name corresponding to the given patterns and types.
@@ -267,9 +248,7 @@ public interface IJdbcDataSource extends IDataSource<ResultSet>, GroovyObject, D
      * @param namePattern    Pattern of the table name.
      * @return               List of the table corresponding to the given patterns and types.
      */
-    @NotNull
-    Collection<String> getTableNames(@Nullable String catalogPattern, @Nullable String schemaPattern,
-                                     @Nullable String namePattern);
+    Collection<String> getTableNames(String catalogPattern,String schemaPattern, String namePattern);
 
     /**
      * Return the list of the table name corresponding to the given patterns and types.
@@ -280,9 +259,7 @@ public interface IJdbcDataSource extends IDataSource<ResultSet>, GroovyObject, D
      * @param types          Type of the table.
      * @return               List of the table corresponding to the given patterns and types.
      */
-    @NotNull
-    Collection<String> getTableNames(@Nullable String catalogPattern, @Nullable String schemaPattern,
-                                     @Nullable String namePattern, @Nullable TableType... types);
+    Collection<String> getTableNames(String catalogPattern,String schemaPattern, String namePattern,TableType... types);
 
     /**
      * Return true if the {@link IJdbcDataSource} contains a table with the given name.
@@ -290,16 +267,15 @@ public interface IJdbcDataSource extends IDataSource<ResultSet>, GroovyObject, D
      * @param tableName Name of the table to check.
      * @return True if {@link IJdbcTable} is found, false otherwise.
      */
-    boolean hasTable(@NotNull String tableName);
+    boolean hasTable(String tableName);
 
     /**
      * Returns the names of the column of the given table.
      *
-     * @param location Location of the table with the pattern : [[catalog.]schema.]table
+     * @param tableName The name of the table with the pattern : [[catalog.]schema.]table
      * @return The names of the column of the given table.
      */
-    @Nullable
-    Collection<String> getColumnNames(String location);
+    Collection<String> getColumnNames(String tableName);
 
     /* ********************** */
     /*      Load methods      */
@@ -312,8 +288,7 @@ public interface IJdbcDataSource extends IDataSource<ResultSet>, GroovyObject, D
      * @return The name of the loaded table, formatted according this datasource
      * Null is the table cannot be loaded.
      */
-    @Nullable
-    String load(@NotNull String filePath);
+    String load(String filePath);
 
     /**
      * Load a file into the {@link IDataSource}.
@@ -323,8 +298,7 @@ public interface IJdbcDataSource extends IDataSource<ResultSet>, GroovyObject, D
      * @return The name of the loaded table, formatted according this datasource
      * Null is the table cannot be loaded.
      */
-    @Nullable
-    String load(@NotNull String filePath, boolean delete);
+    String load(String filePath, boolean delete);
 
     /**
      * Load a file to the {@link IDataSource}.
@@ -334,8 +308,7 @@ public interface IJdbcDataSource extends IDataSource<ResultSet>, GroovyObject, D
      * @return The name of the loaded table, formatted according this datasource
      * Null is the table cannot be loaded.
      */
-    @Nullable
-    String load(@NotNull String filePath, @NotNull String dataSetId);
+    String load(String filePath, String dataSetId);
 
     /**
      * Load a file to the {@link IDataSource}.
@@ -346,8 +319,7 @@ public interface IJdbcDataSource extends IDataSource<ResultSet>, GroovyObject, D
      * @return The name of the loaded table, formatted according this datasource
      * Null is the table cannot be loaded.
      */
-    @Nullable
-    String load(@NotNull String filePath, @NotNull String dataSetId, boolean delete);
+    String load(String filePath, String dataSetId, boolean delete);
 
     /**
      * Load a file to the {@link IDataSource}.
@@ -359,8 +331,7 @@ public interface IJdbcDataSource extends IDataSource<ResultSet>, GroovyObject, D
      * @return The name of the loaded table, formatted according this datasource
      * Null is the table cannot be loaded.
      */
-    @Nullable
-    String load(@NotNull String filePath, @NotNull String dataSetId, @Nullable String encoding, boolean delete);
+    String load(String filePath, String dataSetId,String encoding, boolean delete);
 
     /**
      * Load a file into the {@link IDataSource}.
@@ -369,8 +340,7 @@ public interface IJdbcDataSource extends IDataSource<ResultSet>, GroovyObject, D
      * @return The name of the loaded table, formatted according this datasource
      * Null is the table cannot be loaded.
      */
-    @Nullable
-    String load(@NotNull URL url);
+    String load(URL url);
 
     /**
      * Load a file into the {@link IDataSource}.
@@ -380,8 +350,7 @@ public interface IJdbcDataSource extends IDataSource<ResultSet>, GroovyObject, D
      * @return The name of the loaded table, formatted according this datasource
      * Null is the table cannot be loaded.
      */
-    @Nullable
-    String load(@NotNull URL url, boolean delete);
+    String load(URL url, boolean delete);
 
     /**
      * Load a file to the {@link IDataSource}.
@@ -391,8 +360,7 @@ public interface IJdbcDataSource extends IDataSource<ResultSet>, GroovyObject, D
      * @return The name of the loaded table, formatted according this datasource
      * Null is the table cannot be loaded.
      */
-    @Nullable
-    String load(@NotNull URL url, @NotNull String dataSetId);
+    String load(URL url, String dataSetId);
 
     /**
      * Load a file to the {@link IDataSource}.
@@ -403,8 +371,7 @@ public interface IJdbcDataSource extends IDataSource<ResultSet>, GroovyObject, D
      * @return The name of the loaded table, formatted according this datasource
      * Null is the table cannot be loaded.
      */
-    @Nullable
-    String load(@NotNull URL url, @NotNull String dataSetId, boolean delete);
+    String load(URL url, String dataSetId, boolean delete);
 
     /**
      * Load a file to the {@link IDataSource}.
@@ -416,8 +383,7 @@ public interface IJdbcDataSource extends IDataSource<ResultSet>, GroovyObject, D
      * @return The name of the loaded table, formatted according this datasource
      * Null is the table cannot be loaded.
      */
-    @Nullable
-    String load(@NotNull URL url, @NotNull String dataSetId, @Nullable String encoding, boolean delete);
+    String load(URL url, String dataSetId,String encoding, boolean delete);
 
     /**
      * Load a file into the {@link IDataSource}.
@@ -426,8 +392,7 @@ public interface IJdbcDataSource extends IDataSource<ResultSet>, GroovyObject, D
      * @return The name of the loaded table, formatted according this datasource
      * Null is the table cannot be loaded.
      */
-    @Nullable
-    String load(@NotNull URI uri);
+    String load(URI uri);
 
     /**
      * Load a file into the {@link IDataSource}.
@@ -437,8 +402,7 @@ public interface IJdbcDataSource extends IDataSource<ResultSet>, GroovyObject, D
      * @return The name of the loaded table, formatted according this datasource
      * Null is the table cannot be loaded.
      */
-    @Nullable
-    String load(@NotNull URI uri, boolean delete);
+    String load(URI uri, boolean delete);
 
     /**
      * Load a file to the {@link IDataSource}.
@@ -448,8 +412,7 @@ public interface IJdbcDataSource extends IDataSource<ResultSet>, GroovyObject, D
      * @return The name of the loaded table, formatted according this datasource
      * Null is the table cannot be loaded.
      */
-    @Nullable
-    String load(@NotNull URI uri, @NotNull String dataSetId);
+    String load(URI uri, String dataSetId);
 
     /**
      * Load a file to the {@link IDataSource}.
@@ -460,8 +423,7 @@ public interface IJdbcDataSource extends IDataSource<ResultSet>, GroovyObject, D
      * @return The name of the loaded table, formatted according this datasource
      * Null is the table cannot be loaded.
      */
-    @Nullable
-    String load(@NotNull URI uri, @NotNull String dataSetId, boolean delete);
+    String load(URI uri, String dataSetId, boolean delete);
 
     /**
      * Load a file to the {@link IDataSource}.
@@ -473,8 +435,7 @@ public interface IJdbcDataSource extends IDataSource<ResultSet>, GroovyObject, D
      * @return The name of the loaded table, formatted according this datasource
      * Null is the table cannot be loaded.
      */
-    @Nullable
-    String load(@NotNull URI uri, @NotNull String dataSetId, @Nullable String encoding, boolean delete);
+    String load(URI uri, String dataSetId,String encoding, boolean delete);
 
     /**
      * Load a file into the {@link IDataSource}.
@@ -483,8 +444,7 @@ public interface IJdbcDataSource extends IDataSource<ResultSet>, GroovyObject, D
      * @return The name of the loaded table, formatted according this datasource
      * Null is the table cannot be loaded.
      */
-    @Nullable
-    String load(@NotNull File file);
+    String load(File file);
 
     /**
      * Load a file into the {@link IDataSource}.
@@ -494,8 +454,7 @@ public interface IJdbcDataSource extends IDataSource<ResultSet>, GroovyObject, D
      * @return The name of the loaded table, formatted according this datasource
      * Null is the table cannot be loaded.
      */
-    @Nullable
-    String load(@NotNull File file, boolean delete);
+    String load(File file, boolean delete);
 
     /**
      * Load a file to the {@link IDataSource}.
@@ -505,8 +464,7 @@ public interface IJdbcDataSource extends IDataSource<ResultSet>, GroovyObject, D
      * @return The name of the loaded table, formatted according this datasource
      * Null is the table cannot be loaded.
      */
-    @Nullable
-    String load(@NotNull File file, @NotNull String dataSetId);
+    String load(File file, String dataSetId);
 
     /**
      * Load a file to the {@link IDataSource}.
@@ -517,8 +475,7 @@ public interface IJdbcDataSource extends IDataSource<ResultSet>, GroovyObject, D
      * @return The name of the loaded table, formatted according this datasource
      * Null is the table cannot be loaded.
      */
-    @Nullable
-    String load(@NotNull File file, @NotNull String dataSetId, boolean delete);
+    String load(File file, String dataSetId, boolean delete);
 
     /**
      * Load a file to the {@link IDataSource}.
@@ -530,8 +487,7 @@ public interface IJdbcDataSource extends IDataSource<ResultSet>, GroovyObject, D
      * @return The name of the loaded table, formatted according this datasource
      * Null is the table cannot be loaded.
      */
-    @Nullable
-    String load(@NotNull File file, @NotNull String dataSetId, @Nullable String encoding, boolean delete);
+    String load(File file, String dataSetId,String encoding, boolean delete);
 
     /**
      * Load a table from another {@link IDataSource}.
@@ -542,8 +498,7 @@ public interface IJdbcDataSource extends IDataSource<ResultSet>, GroovyObject, D
      * @return The name of the loaded table, formatted according this datasource
      * Null is the table cannot be loaded.
      */
-    @Nullable
-    String load(@Nullable IJdbcDataSource dataSource, @NotNull String inputTableName,
+    String load(IJdbcDataSource dataSource, String inputTableName,
                 boolean deleteIfExists);
 
     /**
@@ -555,9 +510,8 @@ public interface IJdbcDataSource extends IDataSource<ResultSet>, GroovyObject, D
      * @return The name of the loaded table, formatted according this datasource
      * Null is the table cannot be loaded.
      */
-    @Nullable
-    String load(@Nullable IJdbcDataSource dataSource, @NotNull String inputTableName,
-                @NotNull String outputTableName);
+    String load(IJdbcDataSource dataSource, String inputTableName,
+                String outputTableName);
 
     /**
      * Load a table from another {@link IDataSource}.
@@ -567,8 +521,7 @@ public interface IJdbcDataSource extends IDataSource<ResultSet>, GroovyObject, D
      * @return The name of the loaded table, formatted according this datasource
      * Null is the table cannot be loaded.
      */
-    @Nullable
-    String load(@Nullable IJdbcDataSource dataSource, @NotNull String inputTableName);
+    String load(IJdbcDataSource dataSource, String inputTableName);
 
     /**
      * Load a table from another {@link IDataSource}.
@@ -580,9 +533,8 @@ public interface IJdbcDataSource extends IDataSource<ResultSet>, GroovyObject, D
      * @return The name of the loaded table, formatted according this datasource
      * Null is the table cannot be loaded.
      */
-    @Nullable
-    String load(@Nullable IJdbcDataSource dataSource, @NotNull String inputTableName,
-                @NotNull String outputTableName, boolean deleteIfExists);
+    String load(IJdbcDataSource dataSource, String inputTableName,
+                String outputTableName, boolean deleteIfExists);
 
     /**
      * Load a table from another {@link IDataSource}.
@@ -595,9 +547,8 @@ public interface IJdbcDataSource extends IDataSource<ResultSet>, GroovyObject, D
      * @return The name of the loaded table, formatted according this datasource
      * Null is the table cannot be loaded.
      */
-    @Nullable
-    String load(@Nullable IJdbcDataSource dataSource, @NotNull String inputTableName,
-                @NotNull String outputTableName, boolean deleteIfExists, int batchSize);
+    String load(IJdbcDataSource dataSource, String inputTableName,
+                String outputTableName, boolean deleteIfExists, int batchSize);
 
     /* ********************** */
     /*      Save methods      */
@@ -610,7 +561,7 @@ public interface IJdbcDataSource extends IDataSource<ResultSet>, GroovyObject, D
      * @param filePath  Path of the file where the table will be saved.
      * @return True if the file has been successfully saved, false otherwise.
      */
-    boolean save(@NotNull String dataSetId, @NotNull String filePath);
+    boolean save(String dataSetId, String filePath);
 
 
     /**
@@ -621,7 +572,7 @@ public interface IJdbcDataSource extends IDataSource<ResultSet>, GroovyObject, D
      * @param delete true to delete the file if exists
      * @return True if the file has been successfully saved, false otherwise.
      */
-    boolean save(@NotNull String dataSetId, @NotNull String filePath, boolean delete);
+    boolean save(String dataSetId, String filePath, boolean delete);
 
     /**
      * Save a table into a file.
@@ -631,7 +582,7 @@ public interface IJdbcDataSource extends IDataSource<ResultSet>, GroovyObject, D
      * @param encoding  Encoding of the file.
      * @return True if the file has been successfully saved, false otherwise.
      */
-    boolean save(@NotNull String dataSetId, @NotNull String filePath, @Nullable String encoding);
+    boolean save(String dataSetId, String filePath,String encoding);
 
     /**
      * Save a table into a file.
@@ -640,7 +591,7 @@ public interface IJdbcDataSource extends IDataSource<ResultSet>, GroovyObject, D
      * @param uri       {@link URI} of the file where the table will be saved.
      * @return True if the file has been successfully saved, false otherwise.
      */
-    boolean save(@NotNull String dataSetId, @NotNull URI uri);
+    boolean save(String dataSetId, URI uri);
 
     /**
      * Save a table into a file.
@@ -650,7 +601,7 @@ public interface IJdbcDataSource extends IDataSource<ResultSet>, GroovyObject, D
      * @param encoding  Encoding of the file.
      * @return True if the file has been successfully saved, false otherwise.
      */
-    boolean save(@NotNull String dataSetId, @NotNull URI uri, @Nullable String encoding);
+    boolean save(String dataSetId, URI uri,String encoding);
 
     /**
      * Save a table into a file.
@@ -659,7 +610,7 @@ public interface IJdbcDataSource extends IDataSource<ResultSet>, GroovyObject, D
      * @param url       {@link URL} of the file where the table will be saved.
      * @return True if the file has been successfully saved, false otherwise.
      */
-    boolean save(@NotNull String dataSetId, @NotNull URL url);
+    boolean save(String dataSetId, URL url);
 
     /**
      * Save a table into a file.
@@ -669,7 +620,7 @@ public interface IJdbcDataSource extends IDataSource<ResultSet>, GroovyObject, D
      * @param encoding  Encoding of the file.
      * @return True if the file has been successfully saved, false otherwise.
      */
-    boolean save(@NotNull String dataSetId, @NotNull URL url, @Nullable String encoding);
+    boolean save(String dataSetId, URL url,String encoding);
 
     /**
      * Save a table into a file.
@@ -678,7 +629,7 @@ public interface IJdbcDataSource extends IDataSource<ResultSet>, GroovyObject, D
      * @param file      {@link File} of the file where the table will be saved.
      * @return True if the file has been successfully saved, false otherwise.
      */
-    boolean save(@NotNull String dataSetId, @NotNull File file);
+    boolean save(String dataSetId, File file);
 
     /**
      * Save a table into a file.
@@ -688,7 +639,7 @@ public interface IJdbcDataSource extends IDataSource<ResultSet>, GroovyObject, D
      * @param encoding  Encoding of the file.
      * @return True if the file has been successfully saved, false otherwise.
      */
-    boolean save(@NotNull String dataSetId, @NotNull File file, @Nullable String encoding);
+    boolean save(String dataSetId, File file,String encoding);
 
     /**
      * This method is used to execute a SQL file
@@ -696,7 +647,7 @@ public interface IJdbcDataSource extends IDataSource<ResultSet>, GroovyObject, D
      * @param fileName The sql file
      * @return True if the script has been successfully run, false otherwise.
      */
-    default boolean executeScript(@NotNull String fileName) {
+    default boolean executeScript(String fileName) {
         return executeScript(fileName, null);
     }
 
@@ -709,7 +660,7 @@ public interface IJdbcDataSource extends IDataSource<ResultSet>, GroovyObject, D
      *                 ["value", "myvalue"] to replace ${value} by myvalue
      * @return True if the script has been successfully run, false otherwise.
      */
-    boolean executeScript(@NotNull String fileName, @Nullable Map<String, String> bindings);
+    boolean executeScript(String fileName,Map<String, String> bindings);
 
     /**
      * This method is used to execute a SQL script
@@ -717,7 +668,7 @@ public interface IJdbcDataSource extends IDataSource<ResultSet>, GroovyObject, D
      * @param stream Input stream of the sql file
      * @return True if the script has been successfully run, false otherwise.
      */
-    default boolean executeScript(@NotNull InputStream stream) {
+    default boolean executeScript(InputStream stream) {
         return executeScript(stream, null);
     }
 
@@ -730,22 +681,19 @@ public interface IJdbcDataSource extends IDataSource<ResultSet>, GroovyObject, D
      *                 ["value", "myvalue"] to replace ${value} by myvalue
      * @return True if the script has been successfully run, false otherwise.
      */
-    boolean executeScript(@NotNull InputStream stream, @Nullable Map<String, String> bindings);
+    boolean executeScript(InputStream stream,Map<String, String> bindings);
 
     /**
      * Return the type of the database.
      *
      * @return The type of the database.
      */
-    @NotNull
     DBTypes getDataBaseType();
 
     @Override
-    @Nullable
-    IJdbcTable getDataSet(@NotNull String name);
+    IJdbcTable getDataSet(String name);
 
     @Override
-    @Nullable
     default Object invokeMethod(String name, Object args) {
         try {
             return getMetaClass().invokeMethod(this, name, args);
@@ -757,7 +705,6 @@ public interface IJdbcDataSource extends IDataSource<ResultSet>, GroovyObject, D
     }
 
     @Override
-    @Nullable
     default Object getProperty(String propertyName) {
         if (propertyName == null) {
             //LOGGER.error("Trying to get null property name.");
@@ -810,8 +757,7 @@ public interface IJdbcDataSource extends IDataSource<ResultSet>, GroovyObject, D
      * @param sourceTableName name of the external table
      * @return The name of the linked table
      */
-    @Nullable
-    String link(@NotNull Map dataSourceProperties, String sourceTableName);
+    String link(Map dataSourceProperties, String sourceTableName);
 
 
     /**
@@ -848,8 +794,7 @@ public interface IJdbcDataSource extends IDataSource<ResultSet>, GroovyObject, D
      * @return The name of the linked table, formatted according this datasource
      * Null is the table cannot be linked.
      */
-    @Nullable
-    String link(@NotNull String filePath, @NotNull String dataSetId, boolean delete);
+    String link(String filePath, String dataSetId, boolean delete);
 
     /**
      * Link a file to the {@link IDataSource}.
@@ -859,8 +804,7 @@ public interface IJdbcDataSource extends IDataSource<ResultSet>, GroovyObject, D
      * @return The name of the linked table, formatted according this datasource
      * Null is the table cannot be linked.
      */
-    @Nullable
-    String link(@NotNull String filePath, @NotNull String dataSetId);
+    String link(String filePath, String dataSetId);
 
     /**
      * Link a file to the {@link IDataSource}.
@@ -870,8 +814,7 @@ public interface IJdbcDataSource extends IDataSource<ResultSet>, GroovyObject, D
      * @return The name of the linked table, formatted according this datasource
      * Null is the table cannot be linked.
      */
-    @Nullable
-    String link(@NotNull String filePath, boolean delete);
+    String link(String filePath, boolean delete);
 
     /**
      * Link a file to the {@link IDataSource}.
@@ -880,8 +823,7 @@ public interface IJdbcDataSource extends IDataSource<ResultSet>, GroovyObject, D
      * @return The name of the linked table, formatted according this datasource
      * Null is the table cannot be linked.
      */
-    @Nullable
-    String link(@NotNull String filePath);
+    String link(String filePath);
 
     /**
      * Link a file to the {@link IDataSource}.
@@ -892,8 +834,7 @@ public interface IJdbcDataSource extends IDataSource<ResultSet>, GroovyObject, D
      * @return The name of the linked table, formatted according this datasource
      * Null is the table cannot be linked.
      */
-    @Nullable
-    String link(@NotNull URI uri, @Nullable String dataSetId, boolean delete);
+    String link(URI uri,String dataSetId, boolean delete);
 
     /**
      * Link a file to the {@link IDataSource}.
@@ -903,8 +844,7 @@ public interface IJdbcDataSource extends IDataSource<ResultSet>, GroovyObject, D
      * @return The name of the linked table, formatted according this datasource
      * Null is the table cannot be linked.
      */
-    @Nullable
-    String link(@NotNull URI uri, @Nullable String dataSetId);
+    String link(URI uri,String dataSetId);
 
     /**
      * Link a file to the {@link IDataSource}.
@@ -914,8 +854,7 @@ public interface IJdbcDataSource extends IDataSource<ResultSet>, GroovyObject, D
      * @return The name of the linked table, formatted according this datasource
      * Null is the table cannot be linked.
      */
-    @Nullable
-    String link(@NotNull URI uri, boolean delete);
+    String link(URI uri, boolean delete);
 
     /**
      * Link a file to the {@link IDataSource}.
@@ -924,8 +863,7 @@ public interface IJdbcDataSource extends IDataSource<ResultSet>, GroovyObject, D
      * @return The name of the linked table, formatted according this datasource
      * Null is the table cannot be linked.
      */
-    @Nullable
-    String link(@NotNull URI uri);
+    String link(URI uri);
 
     /**
      * Link a file to the {@link IDataSource}.
@@ -936,8 +874,7 @@ public interface IJdbcDataSource extends IDataSource<ResultSet>, GroovyObject, D
      * @return The name of the linked table, formatted according this datasource
      * Null is the table cannot be linked.
      */
-    @Nullable
-    String link(@NotNull URL url, @Nullable String dataSetId, boolean delete);
+    String link(URL url,String dataSetId, boolean delete);
 
     /**
      * Link a file to the {@link IDataSource}.
@@ -947,8 +884,7 @@ public interface IJdbcDataSource extends IDataSource<ResultSet>, GroovyObject, D
      * @return The name of the linked table, formatted according this datasource
      * Null is the table cannot be linked.
      */
-    @Nullable
-    String link(@NotNull URL url, @Nullable String dataSetId);
+    String link(URL url,String dataSetId);
 
     /**
      * Link a file to the {@link IDataSource}.
@@ -958,8 +894,7 @@ public interface IJdbcDataSource extends IDataSource<ResultSet>, GroovyObject, D
      * @return The name of the linked table, formatted according this datasource
      * Null is the table cannot be linked.
      */
-    @Nullable
-    String link(@NotNull URL url, boolean delete);
+    String link(URL url, boolean delete);
 
     /**
      * Link a file to the {@link IDataSource}.
@@ -968,8 +903,7 @@ public interface IJdbcDataSource extends IDataSource<ResultSet>, GroovyObject, D
      * @return The name of the linked table, formatted according this datasource
      * Null is the table cannot be linked.
      */
-    @Nullable
-    String link(@NotNull URL url);
+    String link(URL url);
 
     /**
      * Link a file to the {@link IDataSource}.
@@ -980,8 +914,7 @@ public interface IJdbcDataSource extends IDataSource<ResultSet>, GroovyObject, D
      * @return The name of the linked table, formatted according this datasource
      * Null is the table cannot be linked.
      */
-    @Nullable
-    String link(@NotNull File file, @NotNull String dataSetId, boolean delete);
+    String link(File file, String dataSetId, boolean delete);
 
     /**
      * Link a file to the {@link IDataSource}.
@@ -991,8 +924,7 @@ public interface IJdbcDataSource extends IDataSource<ResultSet>, GroovyObject, D
      * @return The name of the linked table, formatted according this datasource
      * Null is the table cannot be linked.
      */
-    @Nullable
-    String link(@NotNull File file, @NotNull String dataSetId);
+    String link(File file, String dataSetId);
 
     /**
      * Link a file to the {@link IDataSource}.
@@ -1002,8 +934,7 @@ public interface IJdbcDataSource extends IDataSource<ResultSet>, GroovyObject, D
      * @return The name of the linked table, formatted according this datasource
      * Null is the table cannot be linked.
      */
-    @Nullable
-    String link(@NotNull File file, boolean delete);
+    String link(File file, boolean delete);
 
     /**
      * Link a file to the {@link IDataSource}.
@@ -1012,6 +943,50 @@ public interface IJdbcDataSource extends IDataSource<ResultSet>, GroovyObject, D
      * @return The name of the linked table, formatted according this datasource
      * Null is the table cannot be linked.
      */
-    @Nullable
-    String link(@NotNull File file);
+    String link(File file);
+
+    /**
+     * Access to the current dataSource
+     * @return
+     */
+    DataSource getDataSource();
+
+    /**
+     * Create an alphanumeric index on the specified table and column names.
+     * @param tableName
+     * @param  columnName
+     */
+    void createIndex(String tableName, String columnName) throws SQLException;
+
+    /**
+     * Create a spatial index on the specified table and column names.
+     * @param tableName
+     * @param  columnName
+     */
+    void createSpatialIndex(String tableName, String columnName) throws SQLException;
+
+    /**
+     * Drop all indexes attached to the specified table and column names
+     * @param tableName
+     * @param columnName
+     * @throws SQLException
+     */
+    void dropIndex(String tableName, String columnName) throws SQLException;
+
+
+    /**
+     * Return the names of the indexes for the given table
+     * @param tableName
+     * @return A map with the index and column names
+     * @throws SQLException
+     */
+    Map<String, String>  getIndexes(String tableName) throws SQLException;
+
+    /**
+     * Return the names of the indexes for the given table and column name
+     * @param tableName
+     * @return A map with the index and column names
+     * @throws SQLException
+     */
+    List<String>  getIndexes(String tableName,  String columnName) throws SQLException;
 }

@@ -53,8 +53,6 @@ import java.util.Optional;
  * @author Sylvain PALOMINOS (UBS Lab-STICC 2019-2020)
  */
 public class Input extends InOutPut implements IInput {
-
-    @Nullable
     private Object dfltValue;
 
     /**
@@ -65,7 +63,6 @@ public class Input extends InOutPut implements IInput {
     }
 
     @Override
-    @NotNull
     public Input optional(Object dfltValue) {
         this.dfltValue = dfltValue;
         return this;
@@ -77,13 +74,11 @@ public class Input extends InOutPut implements IInput {
     }
 
     @Override
-    @NotNull
     public Optional<Object> getDefaultValue() {
         return Optional.ofNullable(dfltValue);
     }
 
     @Override
-    @NotNull
     public Input mandatory() {
         dfltValue = null;
         return this;
@@ -95,49 +90,43 @@ public class Input extends InOutPut implements IInput {
     }
 
     @Override
-    @NotNull
-    public Input title(@Nullable String title) {
+    public Input title(String title) {
         super.setTitle(title);
         return this;
     }
 
     @Override
-    @NotNull
-    public Input description(@Nullable String description) {
+    public Input description(String description) {
         super.setDescription(description);
         return this;
     }
 
     @Override
-    @NotNull
-    public Input keywords(@Nullable String[] keywords) {
+    public Input keywords(String[] keywords) {
         super.setKeywords(keywords);
         return this;
     }
 
     @Override
-    @NotNull
-    public Input type(@Nullable Class<?> type) {
+    public Input type(Class<?> type) {
         super.setType(type);
         return this;
     }
 
     @Override
-    @NotNull
-    public Input name(@Nullable String name) {
+    public Input name(String name) {
         super.setName(name);
         return this;
     }
 
     @Override
-    @NotNull
-    public Input process(@Nullable IProcess process) {
+    public Input process(IProcess process) {
         super.setProcess(process);
         return this;
     }
 
     @Override
-    public void setMetaClass(@Nullable MetaClass metaClass) {
+    public void setMetaClass(MetaClass metaClass) {
         this.metaClass = metaClass == null ? InvokerHelper.getMetaClass(this.getClass()) : metaClass;
     }
 
@@ -150,8 +139,6 @@ public class Input extends InOutPut implements IInput {
         return Objects.equals(this.getProcess(), in.getProcess()) &&
                 Objects.equals(this.getName(), in.getName());
     }
-
-    @Nullable
     @Override
     public Input copy() {
         Input copy = new Input();

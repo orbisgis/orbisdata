@@ -72,9 +72,9 @@ public class H2gisSpatialTable extends JdbcSpatialTable {
      * @param statement      Statement used to request the database.
      * @param jdbcDataSource DataSource to use for the creation of the resultSet.
      */
-    public H2gisSpatialTable(@Nullable TableLocation tableLocation, @NotNull String baseQuery,
-                             @NotNull Statement statement, @Nullable List<Object> params,
-                             @NotNull IJdbcDataSource jdbcDataSource) {
+    public H2gisSpatialTable(TableLocation tableLocation, String baseQuery,
+                             Statement statement, List<Object> params,
+                             IJdbcDataSource jdbcDataSource) {
         super(DBTypes.H2GIS, jdbcDataSource, tableLocation, statement, baseQuery, params);
     }
 
@@ -100,7 +100,7 @@ public class H2gisSpatialTable extends JdbcSpatialTable {
 
 
     @Override
-    public Object asType(@NotNull Class<?> clazz) {
+    public Object asType(Class<?> clazz) {
         if (ISpatialTable.class.isAssignableFrom(clazz)) {
             return new H2gisSpatialTable(getTableLocation(), getBaseQuery(), getStatement(), getParams(),
                     getJdbcDataSource());

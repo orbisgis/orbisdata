@@ -64,7 +64,7 @@ public class QueryBuilder extends BuilderResult implements IQueryBuilder {
     private final IJdbcDataSource dataSource;
     private final IResultSetProperties rsp;
 
-    public QueryBuilder(IJdbcDataSource dataSource, @NotNull String nameOrQuery, IResultSetProperties properties) {
+    public QueryBuilder(IJdbcDataSource dataSource, String nameOrQuery, IResultSetProperties properties) {
         this.dataSource = dataSource;
         if(nameOrQuery.startsWith("(") && nameOrQuery.endsWith(")")) {
             location = nameOrQuery + " as foo";

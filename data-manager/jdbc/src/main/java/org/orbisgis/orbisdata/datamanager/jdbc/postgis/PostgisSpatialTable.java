@@ -75,9 +75,9 @@ public class PostgisSpatialTable extends JdbcSpatialTable {
      * @param params         Parameters fo the query.
      * @param jdbcDataSource DataSource to use for the creation of the resultSet.
      */
-    public PostgisSpatialTable(@Nullable TableLocation tableLocation, @NotNull String baseQuery,
-                               @NotNull Statement statement, @Nullable List<Object> params,
-                               @NotNull IJdbcDataSource jdbcDataSource) {
+    public PostgisSpatialTable(TableLocation tableLocation, String baseQuery,
+                               Statement statement, List<Object> params,
+                               IJdbcDataSource jdbcDataSource) {
         super(DBTypes.POSTGIS, jdbcDataSource, tableLocation, statement, baseQuery, params);
     }
 
@@ -102,7 +102,7 @@ public class PostgisSpatialTable extends JdbcSpatialTable {
     }
 
     @Override
-    public Object asType(@NotNull Class<?> clazz) {
+    public Object asType(Class<?> clazz) {
         if (ISpatialTable.class.isAssignableFrom(clazz)) {
             return new PostgisSpatialTable(getTableLocation(), getBaseQuery(), getStatement(), getParams(),
                     getJdbcDataSource());

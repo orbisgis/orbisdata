@@ -64,65 +64,50 @@ public abstract class GroovyProcessManager extends Script implements IProcessMan
     /**
      * MetaClass use for groovy methods/properties binding
      */
-    @NotNull
     protected MetaClass metaClass = InvokerHelper.getMetaClass(GroovyProcessManager.class);
-
-    @NotNull
     @Override
     public IProcessBuilder create() {
         return pm.create();
     }
-
-    @NotNull
     @Override
-    public Optional<IProcess> create(@Nullable Closure<?> cl) {
+    public Optional<IProcess> create(Closure<?> cl) {
         return pm.create(cl);
     }
-
-    @NotNull
     @Override
     public List<String> factoryIds() {
         return pm.factoryIds();
     }
-
-    @NotNull
     @Override
-    public IProcessFactory factory(@Nullable String identifier) {
+    public IProcessFactory factory(String identifier) {
         return pm.factory(identifier);
     }
-
-    @NotNull
     @Override
     public IProcessFactory factory() {
         return pm.factory();
     }
-
-    @NotNull
     @Override
-    public Optional<IProcess> process(@Nullable String processId) {
+    public Optional<IProcess> process(String processId) {
         return pm.process(processId);
     }
-
-    @NotNull
     @Override
-    public Optional<IProcess> process(@Nullable String processId, @Nullable String factoryId) {
+    public Optional<IProcess> process(String processId, String factoryId) {
         return pm.process(processId, factoryId);
     }
 
     @Override
-    public boolean registerFactory(@Nullable String id, @Nullable IProcessFactory factory) {
+    public boolean registerFactory(String id, IProcessFactory factory) {
         boolean ret = pm.registerFactory(id, factory);
         factory.setProcessManager(this);
         return ret;
     }
 
     @Override
-    public void register(@Nullable Map<String, IProcessFactory> map) {
+    public void register(Map<String, IProcessFactory> map) {
         pm.register(map);
         map.values().forEach(factory -> factory.setProcessManager(this));
     }
 
-    public void register(@Nullable List<Class<? extends GroovyProcessFactory>> list) throws IllegalAccessException, InstantiationException {
+    public void register(List<Class<? extends GroovyProcessFactory>> list) throws IllegalAccessException, InstantiationException {
         if(list != null) {
             for (Class<? extends GroovyProcessFactory> clazz : list) {
                 GroovyProcessFactory gpf = clazz.newInstance();
@@ -145,10 +130,8 @@ public abstract class GroovyProcessManager extends Script implements IProcessMan
                 .filter(pf -> pf instanceof GroovyProcessFactory)
                 .map(pf -> (GroovyProcessFactory)pf);
     }
-
-    @Nullable
     @Override
-    public Object invokeMethod(@Nullable String name, @Nullable Object args) {
+    public Object invokeMethod(String name, Object args) {
         if(name != null) {
             Object obj = getMetaClass().invokeMethod(this, name, args);
             if(obj instanceof Optional){
@@ -162,10 +145,8 @@ public abstract class GroovyProcessManager extends Script implements IProcessMan
             return null;
         }
     }
-
-    @Nullable
     @Override
-    public Object getProperty(@Nullable String name) {
+    public Object getProperty(String name) {
         if(name == null) {
             return null;
         }
@@ -178,13 +159,12 @@ public abstract class GroovyProcessManager extends Script implements IProcessMan
     }
 
     @Override
-    @NotNull
     public MetaClass getMetaClass() {
         return metaClass;
     }
 
     @Override
-    public void setMetaClass(@Nullable MetaClass metaClass) {
+    public void setMetaClass(MetaClass metaClass) {
         this.metaClass = metaClass == null ? InvokerHelper.getMetaClass(this.getClass()) : metaClass;
     }
 }

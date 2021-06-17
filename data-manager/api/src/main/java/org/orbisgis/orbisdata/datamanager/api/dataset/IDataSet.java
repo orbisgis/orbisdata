@@ -55,7 +55,6 @@ public interface IDataSet<T> extends Iterable<T> {
      *
      * @return The location of the data.
      */
-    @Nullable
     String getLocation();
 
     /**
@@ -63,7 +62,6 @@ public interface IDataSet<T> extends Iterable<T> {
      *
      * @return The name of the {@link IDataSet}.
      */
-    @NotNull
     String getName();
 
     /**
@@ -71,7 +69,6 @@ public interface IDataSet<T> extends Iterable<T> {
      *
      * @return The metadata object.
      */
-    @Nullable
     Object getMetaData();
 
     /**
@@ -80,8 +77,7 @@ public interface IDataSet<T> extends Iterable<T> {
      * @param clazz New class of the result.
      * @return The current object into an other class.
      */
-    @Nullable
-    Object asType(@NotNull Class<?> clazz);
+    Object asType(Class<?> clazz);
 
     /**
      * Return true if the {@link IDataSet} is empty, false otherwise.
@@ -95,7 +91,6 @@ public interface IDataSet<T> extends Iterable<T> {
      *
      * @return The {@link ISummary} of the {@link IDataSet}.
      */
-    @NotNull
     ISummary getSummary();
 
     /**
@@ -106,6 +101,5 @@ public interface IDataSet<T> extends Iterable<T> {
     boolean reload();
 
     @Override
-    @NotNull
     String toString();
 }

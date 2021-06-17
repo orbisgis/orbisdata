@@ -59,8 +59,6 @@ import static org.orbisgis.orbisdata.processmanager.api.check.IProcessCheck.Acti
 class TestProcessCheck {
 
     private static IProcess PROCESS
-
-    @Nullable
     private static IProcess NULL_PROCESS
 
     @BeforeAll

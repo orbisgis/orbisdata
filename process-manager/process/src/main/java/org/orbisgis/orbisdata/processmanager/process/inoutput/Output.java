@@ -61,49 +61,43 @@ public class Output extends InOutPut implements IOutput {
     }
 
     @Override
-    @NotNull
     public Output title(String title) {
         super.setTitle(title);
         return this;
     }
 
     @Override
-    @NotNull
     public Output description(String description) {
         super.setDescription(description);
         return this;
     }
 
     @Override
-    @NotNull
     public Output keywords(String[] keywords) {
         super.setKeywords(keywords);
         return this;
     }
 
     @Override
-    @NotNull
-    public Output type(@Nullable Class<?> type) {
+    public Output type(Class<?> type) {
         super.setType(type);
         return this;
     }
 
     @Override
-    @NotNull
-    public Output name(@Nullable String name) {
+    public Output name(String name) {
         super.setName(name);
         return this;
     }
 
     @Override
-    @NotNull
-    public Output process(@Nullable IProcess process) {
+    public Output process(IProcess process) {
         super.setProcess(process);
         return this;
     }
 
     @Override
-    public void setMetaClass(@Nullable MetaClass metaClass) {
+    public void setMetaClass(MetaClass metaClass) {
         this.metaClass = metaClass == null ? InvokerHelper.getMetaClass(this.getClass()) : metaClass;
     }
 
@@ -116,8 +110,6 @@ public class Output extends InOutPut implements IOutput {
         return Objects.equals(this.getProcess(), out.getProcess()) &&
                 Objects.equals(this.getName(), out.getName());
     }
-
-    @Nullable
     @Override
     public Output copy() {
         Output copy = new Output();

@@ -62,7 +62,7 @@ public class Summary extends DataFrame implements ISummary {
     }
 
     @Override
-    public Object asType(@NotNull Class<?> clazz) {
+    public Object asType(Class<?> clazz) {
         if (Ascii.class.equals(clazz) || Html.class.equals(clazz)) {
             ICustomPrinter printer;
             if (Ascii.class.equals(clazz)) {

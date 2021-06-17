@@ -71,7 +71,7 @@ public class StreamResultSet implements IStreamResultSet {
      */
     private final ResultSet resultSet;
     
-    public StreamResultSet(@NotNull ResultSet resultSet){
+    public StreamResultSet(ResultSet resultSet){
         CheckUtils.checkNotNull(resultSet, "The given ResultSet should not be null.");
         this.resultSet = resultSet;
     }

@@ -59,7 +59,6 @@ public interface IProcessManager {
      *
      * @return A {@link IProcessBuilder} to create a {@link IProcess}.
      */
-    @NotNull
     IProcessBuilder create();
 
     /**
@@ -69,15 +68,13 @@ public interface IProcessManager {
      * @param cl {@link Closure} delegated to {@link IProcessBuilder}.
      * @return A {@link IProcess}.
      */
-    @NotNull
-    Optional<IProcess> create(@Nullable @DelegatesTo(IProcessBuilder.class) Closure<?> cl);
+    Optional<IProcess> create(@DelegatesTo(IProcessBuilder.class) Closure<?> cl);
 
     /**
      * Return the list of the factory identifiers.
      *
      * @return The list of the factory identifier.
      */
-    @NotNull
     List<String> factoryIds();
 
     /**
@@ -86,15 +83,13 @@ public interface IProcessManager {
      * @param identifier Identifier of the factory.
      * @return The process factory with the given identifier.
      */
-    @NotNull
-    IProcessFactory factory(@Nullable String identifier);
+    IProcessFactory factory(String identifier);
 
     /**
      * Returns the default process factory.
      *
      * @return The default process factory.
      */
-    @NotNull
     IProcessFactory factory();
 
     /**
@@ -103,8 +98,7 @@ public interface IProcessManager {
      * @param processId Identifier of the process to get.
      * @return The process with the given identifier from the default factory.
      */
-    @NotNull
-    Optional<IProcess> process(@Nullable String processId);
+    Optional<IProcess> process(String processId);
 
     /**
      * Returns the process with the given identifier from the factory with the given identifier.
@@ -113,8 +107,7 @@ public interface IProcessManager {
      * @param factoryId Identifier of the factory.
      * @return The process with the given identifier from the factory with the given identifier.
      */
-    @NotNull
-    Optional<IProcess> process(@Nullable String processId, @Nullable String factoryId);
+    Optional<IProcess> process(String processId, String factoryId);
 
     /**
      * Register the given factory with the given id.
@@ -122,12 +115,12 @@ public interface IProcessManager {
      * @param id      Identifier of the factory to register.
      * @param factory Factory to register.
      */
-    boolean registerFactory(@Nullable String id, @Nullable IProcessFactory factory);
+    boolean registerFactory(String id, IProcessFactory factory);
 
     /**
      * Register a map of factories with the id as key and the factory as value.
      *
      * @param map Map of the factories.
      */
-    void register(@Nullable Map<String, IProcessFactory> map);
+    void register(Map<String, IProcessFactory> map);
 }

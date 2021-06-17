@@ -53,7 +53,6 @@ public interface IColumn {
      *
      * @return The name of the column.
      */
-    @Nullable
     String getName();
 
     /**
@@ -61,7 +60,6 @@ public interface IColumn {
      *
      * @return The sql type of the column.
      */
-    @Nullable
     String getType();
 
     /**
@@ -72,7 +70,6 @@ public interface IColumn {
     long getSize();
 
     @Override
-    @NotNull
     String toString();
 
     /**
@@ -81,6 +78,5 @@ public interface IColumn {
      * @param clazz New class of the result.
      * @return The current object into an other class.
      */
-    @Nullable
     Object asType(Class<?> clazz);
 }

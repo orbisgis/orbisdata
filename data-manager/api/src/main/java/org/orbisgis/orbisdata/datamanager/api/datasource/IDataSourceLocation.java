@@ -54,10 +54,8 @@ public interface IDataSourceLocation {
      * @param type Type used for the cast
      * @return The {@link IDataSourceLocation} into the given type
      */
-    @Nullable
     Object asType(Class<?> type);
 
     @Override
-    @NotNull
     String toString();
 }

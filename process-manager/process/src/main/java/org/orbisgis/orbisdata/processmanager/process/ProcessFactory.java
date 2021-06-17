@@ -69,7 +69,6 @@ public class ProcessFactory implements IProcessFactory, GroovyObject, GroovyInte
      * List of the processes created with this factory.
      */
     private final List<IProcess> processList;
-    @Nullable
     private IProcessManager processManager;
     /**
      * {@link MetaClass}
@@ -96,7 +95,7 @@ public class ProcessFactory implements IProcessFactory, GroovyObject, GroovyInte
     }
 
     @Override
-    public void registerProcess(@Nullable IProcess process) {
+    public void registerProcess(IProcess process) {
         if (!isLock && process != null) {
             List<IProcess> list = new ArrayList<>();
             for (IProcess p : processList) {
@@ -120,8 +119,7 @@ public class ProcessFactory implements IProcessFactory, GroovyObject, GroovyInte
     }
 
     @Override
-    @NotNull
-    public Optional<IProcess> getProcess(@Nullable String processId) {
+    public Optional<IProcess> getProcess(String processId) {
         return processList
                 .stream()
                 .filter(iProcess -> iProcess.getIdentifier().equals(processId))
@@ -130,14 +128,12 @@ public class ProcessFactory implements IProcessFactory, GroovyObject, GroovyInte
     }
 
     @Override
-    @NotNull
     public IProcessBuilder create() {
         return new ProcessBuilder(this, this);
     }
 
     @Override
-    @NotNull
-    public Optional<IProcess> create(@Nullable @DelegatesTo(IProcessBuilder.class) Closure<?> cl) {
+    public Optional<IProcess> create(@DelegatesTo(IProcessBuilder.class) Closure<?> cl) {
         if(cl == null) {
             return Optional.empty();
         }
@@ -148,21 +144,17 @@ public class ProcessFactory implements IProcessFactory, GroovyObject, GroovyInte
             return Optional.of(((IProcessBuilder) code.call()).getProcess());
         }
     }
-
-    @NotNull
     @Override
     public Optional<IProcessManager> getProcessManager() {
         return Optional.ofNullable(processManager);
     }
 
     @Override
-    public void setProcessManager(@Nullable IProcessManager processManager) {
+    public void setProcessManager(IProcessManager processManager) {
         this.processManager = processManager;
     }
-
-    @Nullable
     @Override
-    public Object invokeMethod(@Nullable String name, @Nullable Object args) {
+    public Object invokeMethod(String name, Object args) {
         if(name != null) {
             Object obj = this.metaClass.invokeMethod(this, name, args);
             if(obj instanceof Optional){
@@ -178,13 +170,12 @@ public class ProcessFactory implements IProcessFactory, GroovyObject, GroovyInte
     }
 
     @Override
-    @NotNull
     public MetaClass getMetaClass() {
         return metaClass;
     }
 
     @Override
-    public void setMetaClass(@Nullable MetaClass metaClass) {
+    public void setMetaClass(MetaClass metaClass) {
         this.metaClass = metaClass == null ? InvokerHelper.getMetaClass(this.getClass()) : metaClass;
     }
 }

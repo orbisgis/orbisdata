@@ -58,141 +58,119 @@ public abstract class InOutPut implements IInOutPut, GroovyObject, GroovyInterce
     /**
      * Groovy {@link MetaClass}.
      */
-    @NotNull
     protected MetaClass metaClass = InvokerHelper.getMetaClass(InOutPut.class);
     /**
      * {@link IProcess} of the input/output.
      */
-    @Nullable
     private IProcess process;
     /**
      * Name of the input/output.
      */
-    @Nullable
     private String name;
     /**
      * Type of the input/output.
      */
-    @Nullable
     private Class<?> type;
     /**
      * Title of the input/output.
      */
-    @Nullable
     private String title;
     /**
      * Description of the input/output.
      */
-    @Nullable
     private String description;
     /**
      * Keywords of the input/output.
      */
-    @Nullable
     private String[] keywords;
-
-    @NotNull
     public Optional<String> getName() {
         return Optional.ofNullable(name);
     }
 
     @Override
-    public void setName(@Nullable String name) {
+    public void setName(String name) {
         this.name = name;
     }
 
     @Override
-    @NotNull
-    public IInOutPut name(@Nullable String name) {
+    public IInOutPut name(String name) {
         this.name = name;
         return this;
     }
-
-    @NotNull
     public Optional<IProcess> getProcess() {
         return Optional.ofNullable(process);
     }
 
     @Override
-    public void setProcess(@Nullable IProcess process) {
+    public void setProcess(IProcess process) {
         this.process = process;
     }
 
     @Override
-    @NotNull
-    public IInOutPut process(@Nullable IProcess process) {
+    public IInOutPut process(IProcess process) {
         this.process = process;
         return this;
     }
 
     @Override
-    @NotNull
     public Optional<String> getTitle() {
         return Optional.ofNullable(title);
     }
 
     @Override
-    public void setTitle(@Nullable String title) {
+    public void setTitle(String title) {
         this.title = title;
     }
 
     @Override
-    @NotNull
-    public IInOutPut title(@Nullable String title) {
+    public IInOutPut title(String title) {
         this.title = title;
         return this;
     }
 
     @Override
-    @NotNull
     public Optional<String> getDescription() {
         return Optional.ofNullable(description);
     }
 
     @Override
-    public void setDescription(@Nullable String description) {
+    public void setDescription(String description) {
         this.description = description;
     }
 
     @Override
-    @NotNull
-    public IInOutPut description(@Nullable String description) {
+    public IInOutPut description(String description) {
         this.description = description;
         return this;
     }
 
     @Override
-    @NotNull
     public Optional<String[]> getKeywords() {
         return Optional.ofNullable(keywords);
     }
 
     @Override
-    public void setKeywords(@Nullable String[] keywords) {
+    public void setKeywords(String[] keywords) {
         this.keywords = keywords;
     }
-
-    @NotNull
     @Override
-    public IInOutPut keywords(@Nullable String[] keywords) {
+    public IInOutPut keywords(String[] keywords) {
         this.keywords = keywords;
         return this;
     }
 
     @Override
-    @NotNull
     public Optional<Class<?>> getType() {
         return Optional.ofNullable(type);
     }
 
     @Override
-    public void setType(@Nullable Class<?> type) {
+    public void setType(Class<?> type) {
         this.type = type;
     }
 
     @Override
-    @NotNull
-    public IInOutPut type(@Nullable Class<?> type) {
+    public IInOutPut type(Class<?> type) {
         this.type = type;
         return this;
     }
@@ -205,15 +183,13 @@ public abstract class InOutPut implements IInOutPut, GroovyObject, GroovyInterce
     }
 
     @Override
-    public void setProperty(@Nullable String propertyName, @Nullable Object newValue) {
+    public void setProperty(String propertyName, Object newValue) {
         if(propertyName != null) {
             this.metaClass.setProperty(this, propertyName, newValue);
         }
     }
-
-    @Nullable
     @Override
-    public Object getProperty(@Nullable String propertyName){
+    public Object getProperty(String propertyName){
         if(propertyName != null) {
             Object obj = this.metaClass.getProperty(this, propertyName);
             if(obj instanceof Optional){
@@ -227,10 +203,8 @@ public abstract class InOutPut implements IInOutPut, GroovyObject, GroovyInterce
             return null;
         }
     }
-
-    @Nullable
     @Override
-    public Object invokeMethod(@Nullable String name, @Nullable Object args) {
+    public Object invokeMethod(String name, Object args) {
         if(name != null) {
             Object obj = this.metaClass.invokeMethod(this, name, args);
             if(obj instanceof Optional){
@@ -246,13 +220,12 @@ public abstract class InOutPut implements IInOutPut, GroovyObject, GroovyInterce
     }
 
     @Override
-    @NotNull
     public MetaClass getMetaClass() {
         return metaClass;
     }
 
     @Override
-    public void setMetaClass(@Nullable MetaClass metaClass) {
+    public void setMetaClass(MetaClass metaClass) {
         this.metaClass = metaClass == null ? InvokerHelper.getMetaClass(this.getClass()) : metaClass;
     }
 }

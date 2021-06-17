@@ -70,7 +70,6 @@ public class ProcessTest {
     static void beforeAll() {
 
         Closure<Object> cl1 = new Closure<Object>(null) {
-            @Nullable
             @Override
             public Object call() {
                 return null;
@@ -109,7 +108,6 @@ public class ProcessTest {
     @Test
     void nullResultTest() {
         Closure<Object> cl = new Closure<Object>(null) {
-            @Nullable
             @Override
             public Object call() {
                 return null;

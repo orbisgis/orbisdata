@@ -61,8 +61,6 @@ public class DummyInOutPut extends InOutPut {
     String getNotOptional() {
         return notOptional;
     }
-
-    @Nullable
     @Override
     public IInOutPut copy() {
         return null;

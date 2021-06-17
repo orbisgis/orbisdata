@@ -60,8 +60,6 @@ public class DataSourceLocation implements IDataSourceLocation {
     public DataSourceLocation(String location) {
         this.location = location;
     }
-
-    @NotNull
     @Override
     public String toString() {
         Object obj = asType(String.class);

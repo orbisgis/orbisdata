@@ -118,8 +118,6 @@ public class IJdbcTableTest {
         public DummyTableLocation(String location) {
             this.location = location;
         }
-
-        @NotNull
         @Override
         public String getTable() {
             return location.isEmpty()?"":location.split("\\.")[2].toLowerCase();
@@ -134,16 +132,12 @@ public class IJdbcTableTest {
         public String getCatalog() {
             return location.isEmpty()?"":location.split("\\.")[0].toLowerCase();
         }
-
-        @NotNull
         @Override
         public String getDataSource() {
             return null;
         }
-
-        @NotNull
         @Override
-        public String toString(@NotNull DBTypes type) {
+        public String toString(DBTypes type) {
             if(location == null){
                 return null;
             }
@@ -156,10 +150,8 @@ public class IJdbcTableTest {
                     return location;
             }
         }
-
-        @Nullable
         @Override
-        public Object asType(@NotNull Class<?> clazz) {
+        public Object asType(Class<?> clazz) {
             return null;
         }
     }
@@ -222,14 +214,10 @@ public class IJdbcTableTest {
         public TableLocation getTableLocation() {
             return location;
         }
-
-        @NotNull
         @Override
         public DBTypes getDbType() {
             return databaseType;
         }
-
-        @NotNull
         @Override
         public ResultSetMetaData getMetaData() {
             return new RowSetMetaDataImpl();
@@ -249,25 +237,19 @@ public class IJdbcTableTest {
         public boolean isTemporary() {
             return false;
         }
-
-        @NotNull
         @Override
         public IJdbcTableSummary getSummary() {
             return null;
         }
-
-        @NotNull
         @Override
         public List<Object> getParams() {
             return null;
         }
 
         @Override
-        public void setResultSetProperties(@Nullable IResultSetProperties properties) {
+        public void setResultSetProperties(IResultSetProperties properties) {
 
         }
-
-        @NotNull
         @Override
         public IResultSetProperties getResultSetProperties() {
             return null;
@@ -277,8 +259,6 @@ public class IJdbcTableTest {
         public boolean reload() {
             return false;
         }
-
-        @NotNull
         @Override
         public Map<String, Object> firstRow() {
             return null;
@@ -382,27 +362,27 @@ public class IJdbcTableTest {
         }
 
         @Override
-        public String getString(@NotNull String s) {
+        public String getString(String s) {
             return null;
         }
 
         @Override
-        public boolean getBoolean(@NotNull String s) {
+        public boolean getBoolean(String s) {
             return false;
         }
 
         @Override
-        public byte getByte(@NotNull String s) {
+        public byte getByte(String s) {
             return 0;
         }
 
         @Override
-        public short getShort(@NotNull String s) {
+        public short getShort(String s) {
             return 0;
         }
 
         @Override
-        public int getInt(@NotNull String s) {
+        public int getInt(String s) {
             return 0;
         }
 
@@ -412,12 +392,12 @@ public class IJdbcTableTest {
         }
 
         @Override
-        public float getFloat(@NotNull String s) {
+        public float getFloat(String s) {
             return 0;
         }
 
         @Override
-        public double getDouble(@NotNull String s) {
+        public double getDouble(String s) {
             return 0;
         }
 
@@ -427,22 +407,22 @@ public class IJdbcTableTest {
         }
 
         @Override
-        public byte[] getBytes(@NotNull String s) {
+        public byte[] getBytes(String s) {
             return new byte[0];
         }
 
         @Override
-        public Date getDate(@NotNull String s) {
+        public Date getDate(String s) {
             return null;
         }
 
         @Override
-        public Time getTime(@NotNull String s) {
+        public Time getTime(String s) {
             return null;
         }
 
         @Override
-        public Timestamp getTimestamp(@NotNull String s) {
+        public Timestamp getTimestamp(String s) {
             return null;
         }
 
@@ -480,7 +460,7 @@ public class IJdbcTableTest {
         }
 
         @Override
-        public Object getObject(@NotNull String s) throws SQLException {
+        public Object getObject(String s) throws SQLException {
             if (sqlException) {
                 throw new SQLException();
             }
@@ -511,23 +491,17 @@ public class IJdbcTableTest {
         }
 
         @Override
-        public BigDecimal getBigDecimal(@NotNull String s) {
+        public BigDecimal getBigDecimal(String s) {
             return null;
         }
-
-        @Nullable
         @Override
-        public Object getObject(int column, @NotNull Class clazz) throws SQLException {
+        public Object getObject(int column, Class clazz) throws SQLException {
             return null;
         }
-
-        @Nullable
         @Override
-        public Object getObject(@NotNull String column, @NotNull Class clazz) throws SQLException {
+        public Object getObject(String column, Class clazz) throws SQLException {
             return null;
         }
-
-        @Nullable
         @Override
         public Stream stream() {
             return null;
@@ -1071,26 +1045,22 @@ public class IJdbcTableTest {
         public boolean isWrapperFor(Class<?> aClass) {
             return false;
         }
-
-        @NotNull
         @Override
         public Collection<String> getColumns() {
             return null;
         }
-
-        @NotNull
         @Override
         public Map<String, String> getColumnsTypes() {
             return null;
         }
 
         @Override
-        public String getColumnType(@NotNull String columnName) {
+        public String getColumnType(String columnName) {
             return null;
         }
 
         @Override
-        public boolean hasColumn(@NotNull String columnName, @NotNull Class clazz) {
+        public boolean hasColumn(String columnName, Class clazz) {
             return false;
         }
 
@@ -1100,7 +1070,7 @@ public class IJdbcTableTest {
         }
 
         @Override
-        public Collection<String> getUniqueValues(@NotNull String column) {
+        public Collection<String> getUniqueValues(String column) {
             return null;
         }
 
@@ -1110,7 +1080,7 @@ public class IJdbcTableTest {
         }
 
         @Override
-        public String save(@NotNull String filePath, String encoding) {
+        public String save(String filePath, String encoding) {
             return null;
         }
 
@@ -1138,15 +1108,13 @@ public class IJdbcTableTest {
         public String save(IJdbcDataSource dataSource, String outputTableName, boolean deleteTable, int batchSize) {
             return null;
         }
-
-        @NotNull
         @Override
         public List<Object> getFirstRow() {
             return null;
         }
 
         @Override
-        public Object asType(@NotNull Class clazz) {
+        public Object asType(Class clazz) {
             return null;
         }
 

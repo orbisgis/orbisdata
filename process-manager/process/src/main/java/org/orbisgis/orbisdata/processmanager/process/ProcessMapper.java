@@ -106,7 +106,6 @@ public class ProcessMapper implements IProcessMapper, GroovyObject, GroovyInterc
     /**
      * Groovy {@link MetaClass}.
      */
-    @NotNull
     protected MetaClass metaClass = InvokerHelper.getMetaClass(ProcessMapper.class);
 
     /**
@@ -119,7 +118,7 @@ public class ProcessMapper implements IProcessMapper, GroovyObject, GroovyInterc
     /**
      * Main constructor.
      */
-    public ProcessMapper(@NotNull String title) {
+    public ProcessMapper(String title) {
         this.title = title;
         beforeList = new ArrayList<>();
         afterList = new ArrayList<>();
@@ -137,8 +136,7 @@ public class ProcessMapper implements IProcessMapper, GroovyObject, GroovyInterc
      * @param process {@link IProcess} containing the input/output with the alias.
      * @return The alias name if there is one, null otherwise.
      */
-    @Nullable
-    private String getAlias(@Nullable String name, @NotNull IProcess process) {
+    private String getAlias(String name, IProcess process) {
         return aliases.entrySet()
                 .stream()
                 .filter(entry ->
@@ -175,7 +173,7 @@ public class ProcessMapper implements IProcessMapper, GroovyObject, GroovyInterc
         processList = processList.stream().distinct().collect(Collectors.toList());
     }
 
-    private Collection<IInOutPut> collectInput(@NotNull IInput input, @NotNull IProcess process) {
+    private Collection<IInOutPut> collectInput(IInput input, IProcess process) {
         Collection<IInOutPut> collection = new ArrayList<>();
         if (inputOutputMap.keySet().stream().noneMatch(in -> in.equals(input))) {
             if (getAlias(input.getName().orElse(null), process) == null) {
@@ -279,20 +277,14 @@ public class ProcessMapper implements IProcessMapper, GroovyObject, GroovyInterc
         }
         return true;
     }
-
-    @NotNull
     @Override
     public List<IInput> getInputs() {
         return inputs;
     }
-
-    @NotNull
     @Override
     public List<IOutput> getOutputs() {
         return outputs;
     }
-
-    @NotNull
     @Override
     public IProcessMapper newInstance() {
         ProcessMapper mapper = new ProcessMapper();
@@ -303,8 +295,6 @@ public class ProcessMapper implements IProcessMapper, GroovyObject, GroovyInterc
         mapper.outputs = this.outputs.stream().map(IOutput::copy).collect(Collectors.toCollection(LinkedList::new));
         return mapper;
     }
-
-    @NotNull
     @Override
     public IProcessMapper copy() {
         ProcessMapper mapper = new ProcessMapper();
@@ -357,7 +347,7 @@ public class ProcessMapper implements IProcessMapper, GroovyObject, GroovyInterc
     }
 
     @Override
-    public boolean execute(@Nullable LinkedHashMap<String, Object> inputDataMap) {
+    public boolean execute(LinkedHashMap<String, Object> inputDataMap) {
         if (!link()) {
             return false;
         }
@@ -404,38 +394,28 @@ public class ProcessMapper implements IProcessMapper, GroovyObject, GroovyInterc
             }
         }
     }
-
-    @NotNull
     @Override
     public Optional<String> getTitle() {
         return Optional.ofNullable(title);
     }
-
-    @NotNull
     @Override
     public Map<String, Object> getResults() {
         return results;
     }
-
-    @NotNull
     @Override
-    public ILinker link(@NotNull IInOutPut... inOutPuts) {
+    public ILinker link(IInOutPut... inOutPuts) {
         Linker linker = new Linker(inOutPuts);
         linkerList.add(linker);
         return linker;
     }
-
-    @NotNull
     @Override
-    public ICheckDataBuilder before(@NotNull IProcess process) {
+    public ICheckDataBuilder before(IProcess process) {
         IProcessCheck processCheck = new ProcessCheck(process);
         beforeList.add(processCheck);
         return new CheckDataBuilder(processCheck);
     }
-
-    @NotNull
     @Override
-    public ICheckDataBuilder after(@NotNull IProcess process) {
+    public ICheckDataBuilder after(IProcess process) {
         IProcessCheck processCheck = new ProcessCheck(process);
         afterList.add(processCheck);
         return new CheckDataBuilder(processCheck);
@@ -445,10 +425,8 @@ public class ProcessMapper implements IProcessMapper, GroovyObject, GroovyInterc
     public boolean call(LinkedHashMap<String, Object> inputDataMap) {
         return execute(inputDataMap);
     }
-
-    @Nullable
     @Override
-    public Object getProperty(@Nullable String propertyName){
+    public Object getProperty(String propertyName){
         if(propertyName != null) {
             Object obj = this.metaClass.getProperty(this, propertyName);
             if(obj instanceof Optional){
@@ -462,10 +440,8 @@ public class ProcessMapper implements IProcessMapper, GroovyObject, GroovyInterc
             return null;
         }
     }
-
-    @Nullable
     @Override
-    public Object invokeMethod(@Nullable String name, @Nullable Object args) {
+    public Object invokeMethod(String name, Object args) {
         if(name != null) {
             Object obj = this.metaClass.invokeMethod(this, name, args);
             if(obj instanceof Optional){
@@ -481,13 +457,12 @@ public class ProcessMapper implements IProcessMapper, GroovyObject, GroovyInterc
     }
 
     @Override
-    @NotNull
     public MetaClass getMetaClass() {
         return metaClass;
     }
 
     @Override
-    public void setMetaClass(@Nullable MetaClass metaClass) {
+    public void setMetaClass(MetaClass metaClass) {
         this.metaClass = metaClass == null ? InvokerHelper.getMetaClass(this.getClass()) : metaClass;
     }
 }

@@ -56,8 +56,7 @@ public interface IProcessBuilder {
      * @param id Identifier of the process.
      * @return A {@link IProcessBuilder} to continue the building.
      */
-    @NotNull
-    IProcessBuilder id(@Nullable String id);
+    IProcessBuilder id(String id);
 
     /**
      * Set the title of the process.
@@ -65,8 +64,7 @@ public interface IProcessBuilder {
      * @param title Title of the process.
      * @return A {@link IProcessBuilder} to continue the building.
      */
-    @NotNull
-    IProcessBuilder title(@Nullable String title);
+    IProcessBuilder title(String title);
 
     /**
      * Set the description of the process.
@@ -74,8 +72,7 @@ public interface IProcessBuilder {
      * @param description Human readable description of the process.
      * @return A {@link IProcessBuilder} to continue the building.
      */
-    @NotNull
-    IProcessBuilder description(@Nullable String description);
+    IProcessBuilder description(String description);
 
     /**
      * Set the keywords of the process.
@@ -83,8 +80,7 @@ public interface IProcessBuilder {
      * @param keywords List of simple keyword (one word) of the process.
      * @return A {@link IProcessBuilder} to continue the building.
      */
-    @NotNull
-    IProcessBuilder keywords(@Nullable String[] keywords);
+    IProcessBuilder keywords(String[] keywords);
 
     /**
      * Set the inputs of the process.
@@ -94,8 +90,7 @@ public interface IProcessBuilder {
      *               input data map.
      * @return A {@link IProcessBuilder} to continue the building.
      */
-    @NotNull
-    IProcessBuilder inputs(@Nullable LinkedHashMap<String, Object> inputs);
+    IProcessBuilder inputs(LinkedHashMap<String, Object> inputs);
 
     /**
      * Set the outputs of the process.
@@ -105,8 +100,7 @@ public interface IProcessBuilder {
      *                getResults Method.
      * @return A {@link IProcessBuilder} to continue the building.
      */
-    @NotNull
-    IProcessBuilder outputs(@Nullable LinkedHashMap<String, Object> outputs);
+    IProcessBuilder outputs(LinkedHashMap<String, Object> outputs);
 
     /**
      * Set the version of the process.
@@ -114,8 +108,7 @@ public interface IProcessBuilder {
      * @param version Process version.
      * @return A {@link IProcessBuilder} to continue the building.
      */
-    @NotNull
-    IProcessBuilder version(@Nullable String version);
+    IProcessBuilder version(String version);
 
     /**
      * Set the closure of the process.
@@ -123,14 +116,12 @@ public interface IProcessBuilder {
      * @param closure {@link Closure} containing the code to execute on the process execution.
      * @return A {@link IProcessBuilder} to continue the building.
      */
-    @NotNull
-    IProcessBuilder run(@Nullable Closure<?> closure);
+    IProcessBuilder run(Closure<?> closure);
 
     /**
      * Build and return the process.
      *
      * @return The built {@link IProcess}.
      */
-    @NotNull
     IProcess getProcess();
 }

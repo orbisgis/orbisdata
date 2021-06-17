@@ -198,7 +198,6 @@ public interface IStreamResultSet extends ResultSet {
     }
 
     @Override
-    @Nullable
     default Date getDate(int i) {
         try {
             return getResultSet().getDate(i);
@@ -209,7 +208,6 @@ public interface IStreamResultSet extends ResultSet {
     }
 
     @Override
-    @Nullable
     default Time getTime(int i) {
         try {
             return getResultSet().getTime(i);
@@ -220,7 +218,6 @@ public interface IStreamResultSet extends ResultSet {
     }
 
     @Override
-    @Nullable
     default Timestamp getTimestamp(int i) {
         try {
             return getResultSet().getTimestamp(i);
@@ -231,7 +228,6 @@ public interface IStreamResultSet extends ResultSet {
     }
 
     @Override
-    @Nullable
     default InputStream getAsciiStream(int i) {
         try {
             return getResultSet().getAsciiStream(i);
@@ -242,7 +238,6 @@ public interface IStreamResultSet extends ResultSet {
     }
 
     @Override
-    @Nullable
     @Deprecated
     default InputStream getUnicodeStream(int i) {
         try {
@@ -254,7 +249,6 @@ public interface IStreamResultSet extends ResultSet {
     }
 
     @Override
-    @Nullable
     default InputStream getBinaryStream(int i) {
         try {
             return getResultSet().getBinaryStream(i);
@@ -365,7 +359,6 @@ public interface IStreamResultSet extends ResultSet {
     }
 
     @Override
-    @Nullable
     default Date getDate(String s) {
         try {
             return getResultSet().getDate(s);
@@ -376,7 +369,6 @@ public interface IStreamResultSet extends ResultSet {
     }
 
     @Override
-    @Nullable
     default Time getTime(String s) {
         try {
             return getResultSet().getTime(s);
@@ -387,7 +379,6 @@ public interface IStreamResultSet extends ResultSet {
     }
 
     @Override
-    @Nullable
     default Timestamp getTimestamp(String s) {
         try {
             return getResultSet().getTimestamp(s);
@@ -398,7 +389,6 @@ public interface IStreamResultSet extends ResultSet {
     }
 
     @Override
-    @Nullable
     default InputStream getAsciiStream(String s) {
         try {
             return getResultSet().getAsciiStream(s);
@@ -409,7 +399,6 @@ public interface IStreamResultSet extends ResultSet {
     }
 
     @Override
-    @Nullable
     @Deprecated
     default InputStream getUnicodeStream(String s) {
         try {
@@ -421,7 +410,6 @@ public interface IStreamResultSet extends ResultSet {
     }
 
     @Override
-    @Nullable
     default InputStream getBinaryStream(String s) {
         try {
             return getResultSet().getBinaryStream(s);
@@ -432,7 +420,6 @@ public interface IStreamResultSet extends ResultSet {
     }
 
     @Override
-    @Nullable
     default SQLWarning getWarnings() {
         try {
             return getResultSet().getWarnings();
@@ -462,7 +449,6 @@ public interface IStreamResultSet extends ResultSet {
     }
 
     @Override
-    @Nullable
     default ResultSetMetaData getMetaData() {
         try {
             return getResultSet().getMetaData();
@@ -473,7 +459,6 @@ public interface IStreamResultSet extends ResultSet {
     }
 
     @Override
-    @Nullable
     default Object getObject(int i) {
         try {
             return getResultSet().getObject(i);
@@ -484,7 +469,6 @@ public interface IStreamResultSet extends ResultSet {
     }
 
     @Override
-    @Nullable
     default Object getObject(String s) {
         try {
             return getResultSet().getObject(s);
@@ -505,7 +489,6 @@ public interface IStreamResultSet extends ResultSet {
     }
 
     @Override
-    @Nullable
     default Reader getCharacterStream(int i) {
         try {
             return getResultSet().getCharacterStream(i);
@@ -516,7 +499,6 @@ public interface IStreamResultSet extends ResultSet {
     }
 
     @Override
-    @Nullable
     default Reader getCharacterStream(String s) {
         try {
             return getResultSet().getCharacterStream(s);
@@ -1158,7 +1140,6 @@ public interface IStreamResultSet extends ResultSet {
     }
 
     @Override
-    @Nullable
     default Statement getStatement() {
         try {
             return getResultSet().getStatement();
@@ -1169,7 +1150,6 @@ public interface IStreamResultSet extends ResultSet {
     }
 
     @Override
-    @Nullable
     default Object getObject(int i, Map<String, Class<?>> map) {
         try {
             return getResultSet().getObject(i, map);
@@ -1180,7 +1160,6 @@ public interface IStreamResultSet extends ResultSet {
     }
 
     @Override
-    @Nullable
     default Ref getRef(int i) {
         try {
             return getResultSet().getRef(i);
@@ -1191,7 +1170,6 @@ public interface IStreamResultSet extends ResultSet {
     }
 
     @Override
-    @Nullable
     default Blob getBlob(int i) {
         try {
             return getResultSet().getBlob(i);
@@ -1202,7 +1180,6 @@ public interface IStreamResultSet extends ResultSet {
     }
 
     @Override
-    @Nullable
     default Clob getClob(int i) {
         try {
             return getResultSet().getClob(i);
@@ -1213,7 +1190,6 @@ public interface IStreamResultSet extends ResultSet {
     }
 
     @Override
-    @Nullable
     default Array getArray(int i) {
         try {
             return getResultSet().getArray(i);
@@ -1224,7 +1200,6 @@ public interface IStreamResultSet extends ResultSet {
     }
 
     @Override
-    @Nullable
     default Object getObject(String s, Map<String, Class<?>> map) {
         try {
             return getResultSet().getObject(s, map);
@@ -1235,7 +1210,6 @@ public interface IStreamResultSet extends ResultSet {
     }
 
     @Override
-    @Nullable
     default Ref getRef(String s) {
         try {
             return getResultSet().getRef(s);
@@ -1246,7 +1220,6 @@ public interface IStreamResultSet extends ResultSet {
     }
 
     @Override
-    @Nullable
     default Blob getBlob(String s) {
         try {
             return getResultSet().getBlob(s);
@@ -1257,7 +1230,6 @@ public interface IStreamResultSet extends ResultSet {
     }
 
     @Override
-    @Nullable
     default Clob getClob(String s) {
         try {
             return getResultSet().getClob(s);
@@ -1268,7 +1240,6 @@ public interface IStreamResultSet extends ResultSet {
     }
 
     @Override
-    @Nullable
     default Array getArray(String s) {
         try {
             return getResultSet().getArray(s);
@@ -1279,7 +1250,6 @@ public interface IStreamResultSet extends ResultSet {
     }
 
     @Override
-    @Nullable
     default Date getDate(int i, Calendar calendar) {
         try {
             return getResultSet().getDate(i, calendar);
@@ -1290,7 +1260,6 @@ public interface IStreamResultSet extends ResultSet {
     }
 
     @Override
-    @Nullable
     default Date getDate(String s, Calendar calendar) {
         try {
             return getResultSet().getDate(s, calendar);
@@ -1301,7 +1270,6 @@ public interface IStreamResultSet extends ResultSet {
     }
 
     @Override
-    @Nullable
     default Time getTime(int i, Calendar calendar) {
         try {
             return getResultSet().getTime(i, calendar);
@@ -1312,7 +1280,6 @@ public interface IStreamResultSet extends ResultSet {
     }
 
     @Override
-    @Nullable
     default Time getTime(String s, Calendar calendar) {
         try {
             return getResultSet().getTime(s, calendar);
@@ -1323,7 +1290,6 @@ public interface IStreamResultSet extends ResultSet {
     }
 
     @Override
-    @Nullable
     default Timestamp getTimestamp(int i, Calendar calendar) {
         try {
             return getResultSet().getTimestamp(i, calendar);
@@ -1334,7 +1300,6 @@ public interface IStreamResultSet extends ResultSet {
     }
 
     @Override
-    @Nullable
     default Timestamp getTimestamp(String s, Calendar calendar) {
         try {
             return getResultSet().getTimestamp(s, calendar);
@@ -1345,7 +1310,6 @@ public interface IStreamResultSet extends ResultSet {
     }
 
     @Override
-    @Nullable
     default URL getURL(int i) {
         try {
             return getResultSet().getURL(i);
@@ -1356,7 +1320,6 @@ public interface IStreamResultSet extends ResultSet {
     }
 
     @Override
-    @Nullable
     default URL getURL(String s) {
         try {
             return getResultSet().getURL(s);
@@ -1439,7 +1402,6 @@ public interface IStreamResultSet extends ResultSet {
     }
 
     @Override
-    @Nullable
     default RowId getRowId(int i) {
         try {
             return getResultSet().getRowId(i);
@@ -1450,7 +1412,6 @@ public interface IStreamResultSet extends ResultSet {
     }
 
     @Override
-    @Nullable
     default RowId getRowId(String s) {
         try {
             return getResultSet().getRowId(s);
@@ -1535,7 +1496,6 @@ public interface IStreamResultSet extends ResultSet {
     }
 
     @Override
-    @Nullable
     default NClob getNClob(int i) {
         try {
             return getResultSet().getNClob(i);
@@ -1546,7 +1506,6 @@ public interface IStreamResultSet extends ResultSet {
     }
 
     @Override
-    @Nullable
     default NClob getNClob(String s) {
         try {
             return getResultSet().getNClob(s);
@@ -1557,7 +1516,6 @@ public interface IStreamResultSet extends ResultSet {
     }
 
     @Override
-    @Nullable
     default SQLXML getSQLXML(int i) {
         try {
             return getResultSet().getSQLXML(i);
@@ -1568,7 +1526,6 @@ public interface IStreamResultSet extends ResultSet {
     }
 
     @Override
-    @Nullable
     default SQLXML getSQLXML(String s) {
         try {
             return getResultSet().getSQLXML(s);
@@ -1617,7 +1574,6 @@ public interface IStreamResultSet extends ResultSet {
     }
 
     @Override
-    @Nullable
     default Reader getNCharacterStream(int i) {
         try {
             return getResultSet().getNCharacterStream(i);
@@ -1628,7 +1584,6 @@ public interface IStreamResultSet extends ResultSet {
     }
 
     @Override
-    @Nullable
     default Reader getNCharacterStream(String s) {
         try {
             return getResultSet().getNCharacterStream(s);
@@ -1891,7 +1846,6 @@ public interface IStreamResultSet extends ResultSet {
     }
 
     @Override
-    @Nullable
     default <T> T getObject(int i, Class<T> aClass) {
         try {
             return getResultSet().getObject(i, aClass);
@@ -1902,7 +1856,6 @@ public interface IStreamResultSet extends ResultSet {
     }
 
     @Override
-    @Nullable
     default <T> T getObject(String s, Class<T> aClass) {
         try {
             return getResultSet().getObject(s, aClass);
@@ -1913,7 +1866,6 @@ public interface IStreamResultSet extends ResultSet {
     }
 
     @Override
-    @Nullable
     default <T> T unwrap(Class<T> aClass) {
         try {
             return getResultSet().unwrap(aClass);

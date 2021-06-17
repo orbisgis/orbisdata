@@ -100,7 +100,6 @@ public abstract class JdbcTable<T extends ResultSet> extends DefaultResultSet im
     /**
      * Table location
      */
-    @Nullable
     private final TableLocation tableLocation;
     /**
      * PreparedStatement
@@ -117,7 +116,6 @@ public abstract class JdbcTable<T extends ResultSet> extends DefaultResultSet im
     /**
      * Cached resultSet
      */
-    @Nullable
     protected ResultSet resultSet;
     /**
      * {@link ResultSet} properties.
@@ -134,9 +132,9 @@ public abstract class JdbcTable<T extends ResultSet> extends DefaultResultSet im
      * @param params         Map containing the parameters for the query.
      * @param jdbcDataSource DataSource to use for the creation of the resultSet.
      */
-    public JdbcTable(@NotNull DBTypes dataBaseType, @NotNull IJdbcDataSource jdbcDataSource,
-                     @Nullable TableLocation tableLocation, @NotNull Statement statement,
-                     @Nullable List <Object> params, @NotNull String baseQuery) {
+    public JdbcTable(DBTypes dataBaseType, IJdbcDataSource jdbcDataSource,
+                     TableLocation tableLocation, Statement statement,
+                     List <Object> params, String baseQuery) {
         this.metaClass = InvokerHelper.getMetaClass(getClass());
         this.dataBaseType = dataBaseType;
         this.jdbcDataSource = jdbcDataSource;
@@ -152,7 +150,6 @@ public abstract class JdbcTable<T extends ResultSet> extends DefaultResultSet im
      *
      * @return The base query.
      */
-    @NotNull
     protected String getBaseQuery() {
         return baseQuery;
     }
@@ -188,7 +185,6 @@ public abstract class JdbcTable<T extends ResultSet> extends DefaultResultSet im
      * @param limit Limit of the result set.
      * @return The {@link ResultSet} with a limit.
      */
-    @Nullable
     protected ResultSet getResultSetLimit(int limit) {
         int _limit = limit;
         if (_limit < 0) {
@@ -239,13 +235,11 @@ public abstract class JdbcTable<T extends ResultSet> extends DefaultResultSet im
     }
 
     @Override
-    @Nullable
     public TableLocation getTableLocation() {
         return tableLocation;
     }
 
     @Override
-    @NotNull
     public DBTypes getDbType() {
         return dataBaseType;
     }
@@ -301,25 +295,38 @@ public abstract class JdbcTable<T extends ResultSet> extends DefaultResultSet im
 
     @Override
     public Collection<String> getColumns() {
+        Connection con;
         try {
-            ResultSet rs = getResultSetLimit(0);
-            if(rs == null){
-                LOGGER.error("Unable to get the ResultSet");
+            con = jdbcDataSource.getConnection();
+        } catch (SQLException e) {
+            LOGGER.error("Unable to get the connection.");
+            return null;
+        }
+        if (tableLocation == null) {
+            try {
+                Statement st = con.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
+                st.setMaxRows(2);
+                ResultSet res = st.executeQuery("SELECT * FROM (" + getBaseQuery() + ") as foo limit 0");
+                Collection<String> cols = JDBCUtilities.getColumnNames(res.getMetaData());
+                return cols;
+            } catch (SQLException e) {
+                LOGGER.error("Unable to get the column names for the query " + getBaseQuery() + ".");
+                LOGGER.debug(e.getLocalizedMessage());
                 return null;
             }
-            return JDBCUtilities
-                    .getColumnNames(rs.getMetaData())
-                    .stream()
-                    .map(this::formatColumnName)
-                    .collect(Collectors.toCollection(ArrayList::new));
-        } catch (SQLException e) {
-            LOGGER.error("Unable to get the collection of columns names");
-            return null;
+        } else  {
+            try {
+                Collection<String> cols = JDBCUtilities.getColumnNames(con, tableLocation);
+                return cols;
+            } catch (SQLException e) {
+                LOGGER.error("Unable to get the column names of the table " + tableLocation + ".");
+                LOGGER.debug(e.getLocalizedMessage());
+                return null;
+            }
         }
     }
 
     @Override
-    @NotNull
     public Map<String, String> getColumnsTypes() {
         Map<String, String> map = new HashMap<>();
         try {
@@ -341,7 +348,7 @@ public abstract class JdbcTable<T extends ResultSet> extends DefaultResultSet im
     }
 
     @Override
-    public String getColumnType(@NotNull String columnName) {
+    public String getColumnType(String columnName) {
         try {
             ResultSet rs = getResultSetLimit(0);
             if(rs == null){
@@ -370,8 +377,6 @@ public abstract class JdbcTable<T extends ResultSet> extends DefaultResultSet im
         }
         return null;
     }
-
-    @Nullable
     private String getGeometricType(String columnName) {
         if (tableLocation != null && !getName().isEmpty()) {
             try {
@@ -410,7 +415,7 @@ public abstract class JdbcTable<T extends ResultSet> extends DefaultResultSet im
     }
 
     @Override
-    public boolean hasColumn(@NotNull String columnName) {
+    public boolean hasColumn(String columnName) {
         ResultSet rs = getResultSetLimit(0);
         if(rs == null){
             return false;
@@ -430,7 +435,7 @@ public abstract class JdbcTable<T extends ResultSet> extends DefaultResultSet im
     }
 
     @Override
-    public boolean hasColumn(@NotNull String columnName, @NotNull Class<?> clazz) {
+    public boolean hasColumn(String columnName, Class<?> clazz) {
         Class<?> class_tmp = getJdbcDataSource().typeNameToClass(getColumnType(columnName));
         if(class_tmp==null){
             return false;
@@ -470,18 +475,16 @@ public abstract class JdbcTable<T extends ResultSet> extends DefaultResultSet im
         }
         String query = "";
         if (tableLocation == null) {
-           query = getBaseQuery();
+           query = "SELECT COUNT(*) FROM (" + getBaseQuery() + ") as foo" ;
         } else  {
-           query =  "SELECT * FROM "+tableLocation.toString(getDbType());
+           query =  "SELECT count(*) FROM "+tableLocation.toString(getDbType());
         }
         try {
-            ResultSet rowCountRs = con.createStatement().executeQuery("SELECT COUNT(*) FROM (" + query + ") as foo");
+            Statement st = con.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
+            st.setMaxRows(2);
+            ResultSet rowCountRs = st.executeQuery(query);
             rowCountRs.next();
-            int c = rowCountRs.getInt(1);
-            if(!con.getAutoCommit()) {
-                con.commit();
-            }
-            return c;
+            return rowCountRs.getInt(1);
         } catch (SQLException e) {
             LOGGER.error("Unable to get the number of rows.");
             try {
@@ -496,7 +499,7 @@ public abstract class JdbcTable<T extends ResultSet> extends DefaultResultSet im
     }
 
     @Override
-    public Collection<String> getUniqueValues(@NotNull String column) {
+    public Collection<String> getUniqueValues(String column) {
         if (tableLocation == null) {
             throw new UnsupportedOperationException();
         }
@@ -524,7 +527,6 @@ public abstract class JdbcTable<T extends ResultSet> extends DefaultResultSet im
     }
 
     @Override
-    @NotNull
     public Map<String, Object> firstRow() {
         Map<String, Object> map = new HashMap<>();
         if(isEmpty()){
@@ -548,7 +550,7 @@ public abstract class JdbcTable<T extends ResultSet> extends DefaultResultSet im
     }
 
     @Override
-    public String save(@NotNull String filePath, boolean deleteFile) {
+    public String save(String filePath, boolean deleteFile) {
         String toSave = getTableLocation() == null ? "(" + getBaseQuery() + ")" : getTableLocation().toString(getDbType());
         try {
             if(ioMethods==null) {
@@ -563,7 +565,7 @@ public abstract class JdbcTable<T extends ResultSet> extends DefaultResultSet im
     }
 
     @Override
-    public String save(@NotNull String filePath, String encoding) {
+    public String save(String filePath, String encoding) {
         String toSave = getTableLocation() == null ? "(" + getBaseQuery() + ")" : getTableLocation().toString(getDbType());
         try {
             if(ioMethods==null) {
@@ -624,7 +626,6 @@ public abstract class JdbcTable<T extends ResultSet> extends DefaultResultSet im
     }
 
     @Override
-    @Nullable
     public Object getProperty(String propertyName) {
         if (propertyName == null) {
             LOGGER.error("Trying to get null property name.");
@@ -649,13 +650,9 @@ public abstract class JdbcTable<T extends ResultSet> extends DefaultResultSet im
         }
         return getMetaClass().getProperty(this, propertyName);
     }
-
-    @NotNull
     private String getQuery() {
         return baseQuery.trim();
     }
-
-    @Nullable
     protected String getQuery(String... columns) {
         TableLocation loc = getTableLocation();
         if(loc == null){
@@ -665,7 +662,6 @@ public abstract class JdbcTable<T extends ResultSet> extends DefaultResultSet im
     }
 
     @Override
-    @NotNull
     public IBuilderResult filter(String filter) {
         String loc = getTableLocation() != null ? getTableLocation().toString(getDbType()) : getBaseQuery();
         IQueryBuilder builder = new QueryBuilder(getJdbcDataSource(), loc, getResultSetProperties());
@@ -673,7 +669,6 @@ public abstract class JdbcTable<T extends ResultSet> extends DefaultResultSet im
     }
 
     @Override
-    @NotNull
     public IBuilderResult filter(GString filter) {
         String loc = getTableLocation() != null ? getTableLocation().toString(getDbType()) : getBaseQuery();
         IQueryBuilder builder = new QueryBuilder(getJdbcDataSource(), loc, getResultSetProperties());
@@ -681,7 +676,6 @@ public abstract class JdbcTable<T extends ResultSet> extends DefaultResultSet im
     }
 
     @Override
-    @NotNull
     public IBuilderResult filter(String filter, List<Object> params) {
         String loc = getTableLocation() != null ? getTableLocation().toString(getDbType()) : getBaseQuery();
         IQueryBuilder builder = new QueryBuilder(getJdbcDataSource(), loc, getResultSetProperties());
@@ -689,8 +683,7 @@ public abstract class JdbcTable<T extends ResultSet> extends DefaultResultSet im
     }
 
     @Override
-    @NotNull
-    public IFilterBuilder columns(@NotNull String... columns) {
+    public IFilterBuilder columns(String... columns) {
         String loc = getTableLocation() != null ? getTableLocation().toString(getDbType()) : getBaseQuery();
         IQueryBuilder builder = new QueryBuilder(getJdbcDataSource(), loc, getResultSetProperties());
         return builder.columns(columns);
@@ -711,7 +704,6 @@ public abstract class JdbcTable<T extends ResultSet> extends DefaultResultSet im
     }
 
     @Override
-    @NotNull
     public List<Object> getFirstRow() {
         List<Object> list = new ArrayList<>();
         ResultSet rs = getResultSet();
@@ -757,7 +749,7 @@ public abstract class JdbcTable<T extends ResultSet> extends DefaultResultSet im
     }
 
     @Override
-    public Object asType(@NotNull Class<?> clazz) {
+    public Object asType(Class<?> clazz) {
         if (ICustomPrinter.class.isAssignableFrom(clazz)) {
             StringBuilder builder = new StringBuilder();
             ICustomPrinter printer;
@@ -819,31 +811,27 @@ public abstract class JdbcTable<T extends ResultSet> extends DefaultResultSet im
     }
 
     @Override
-    @NotNull
     public JdbcTableSummary getSummary() {
         return new JdbcTableSummary(getTableLocation(), getColumnCount(), getRowCount());
     }
-
-    @NotNull
     public List<Object> getParams() {
         return params;
     }
 
     @Override
-    public void setResultSetProperties(@Nullable IResultSetProperties properties) {
+    public void setResultSetProperties(IResultSetProperties properties) {
         if(properties != null) {
             this.rsp = properties.copy();
         }
     }
 
     @Override
-    @NotNull
     public IResultSetProperties getResultSetProperties() {
         return rsp;
     }
 
     @Override
-    public void eachRow(@NotNull Closure<Object> closure) {
+    public void eachRow(Closure<Object> closure) {
         this.forEach(closure::call);
         Connection con = null;
         try {

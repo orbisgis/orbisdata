@@ -49,6 +49,7 @@ import org.orbisgis.commons.annotations.Nullable;
 import org.orbisgis.orbisdata.datamanager.api.dataset.IJdbcSpatialTable;
 import org.orbisgis.orbisdata.datamanager.api.dataset.IJdbcTable;
 
+import javax.sql.DataSource;
 import java.io.File;
 import java.io.InputStream;
 import java.io.PrintWriter;
@@ -196,214 +197,180 @@ public class IJdbcDataSourceTest {
         public void close() {/*Does nothing*/}
 
         @Override
-        public IJdbcTable getTable(@NotNull String tableName) {
+        public IJdbcTable getTable(String tableName) {
             return null;
         }
-
-        @Nullable
         @Override
-        public IJdbcTable getTable(@NotNull GString nameOrQuery) {
+        public IJdbcTable getTable(GString nameOrQuery) {
             return null;
         }
-
-        @Nullable
         @Override
-        public IJdbcTable getTable(@NotNull String nameOrQuery, List<Object> params) {
+        public IJdbcTable getTable(String nameOrQuery, List<Object> params) {
             return null;
         }
-
-        @Nullable
         @Override
-        public IJdbcTable getTable(@NotNull String tableName, @NotNull Statement statement) {
+        public IJdbcTable getTable(String tableName, Statement statement) {
             return null;
         }
-
-        @Nullable
         @Override
-        public IJdbcTable getTable(@NotNull GString nameOrQuery, @NotNull Statement statement) {
+        public IJdbcTable getTable(GString nameOrQuery, Statement statement) {
             return null;
         }
-
-        @Nullable
         @Override
-        public IJdbcTable getTable(@NotNull String nameOrQuery, @Nullable List<Object> params, @NotNull Statement statement) {
+        public IJdbcTable getTable(String nameOrQuery, List<Object> params, Statement statement) {
             return null;
         }
 
         @Override
-        public IJdbcSpatialTable getSpatialTable(@NotNull String tableName) {
+        public IJdbcSpatialTable getSpatialTable(String tableName) {
             return null;
         }
-
-        @Nullable
         @Override
-        public IJdbcSpatialTable getSpatialTable(@NotNull GString nameOrQuery) {
+        public IJdbcSpatialTable getSpatialTable(GString nameOrQuery) {
             return null;
         }
-
-        @Nullable
         @Override
-        public IJdbcSpatialTable getSpatialTable(@NotNull String nameOrQuery, List<Object> params) {
+        public IJdbcSpatialTable getSpatialTable(String nameOrQuery, List<Object> params) {
             return null;
         }
-
-        @Nullable
         @Override
-        public IJdbcSpatialTable getSpatialTable(@NotNull String tableName, @NotNull Statement statement) {
+        public IJdbcSpatialTable getSpatialTable(String tableName, Statement statement) {
             return null;
         }
-
-        @Nullable
         @Override
-        public IJdbcSpatialTable getSpatialTable(@NotNull GString nameOrQuery, @NotNull Statement statement) {
+        public IJdbcSpatialTable getSpatialTable(GString nameOrQuery, Statement statement) {
             return null;
         }
-
-        @Nullable
         @Override
-        public IJdbcSpatialTable getSpatialTable(@NotNull String nameOrQuery, @Nullable List<Object> params, @NotNull Statement statement) {
+        public IJdbcSpatialTable getSpatialTable(String nameOrQuery, List<Object> params, Statement statement) {
             return null;
         }
-
-        @NotNull
         @Override
         public Collection<String> getTableNames() {
             return null;
         }
-
-        @NotNull
         @Override
-        public Collection<String> getTableNames(@Nullable String namePattern) {
+        public Collection<String> getTableNames(String namePattern) {
             return null;
         }
-
-        @NotNull
         @Override
-        public Collection<String> getTableNames(@Nullable String namePattern, @Nullable TableType... types) {
+        public Collection<String> getTableNames(String namePattern, TableType... types) {
             return null;
         }
-
-        @NotNull
         @Override
-        public Collection<String> getTableNames(@Nullable String schemaPattern, @Nullable String namePattern) {
+        public Collection<String> getTableNames(String schemaPattern, String namePattern) {
             return null;
         }
-
-        @NotNull
         @Override
-        public Collection<String> getTableNames(@Nullable String schemaPattern, @Nullable String namePattern, @Nullable TableType... types) {
+        public Collection<String> getTableNames(String schemaPattern, String namePattern, TableType... types) {
             return null;
         }
-
-        @NotNull
         @Override
-        public Collection<String> getTableNames(@Nullable String catalogPattern, @Nullable String schemaPattern, @Nullable String namePattern) {
+        public Collection<String> getTableNames(String catalogPattern, String schemaPattern, String namePattern) {
             return null;
         }
-
-        @NotNull
         @Override
-        public Collection<String> getTableNames(@Nullable String catalogPattern, @Nullable String schemaPattern, @Nullable String namePattern, @Nullable TableType... types) {
+        public Collection<String> getTableNames(String catalogPattern, String schemaPattern, String namePattern, TableType... types) {
             return null;
         }
 
         @Override
-        public String load(@NotNull String filePath) {
+        public String load(String filePath) {
             return null;
         }
 
         @Override
-        public String load(@NotNull String filePath, boolean delete) {
+        public String load(String filePath, boolean delete) {
             return null;
         }
 
         @Override
-        public String load(@NotNull String filePath, @NotNull String tableName) {
+        public String load(String filePath, String tableName) {
             return null;
         }
 
         @Override
-        public String load(@NotNull String filePath, @NotNull String tableName, boolean delete) {
+        public String load(String filePath, String tableName, boolean delete) {
             return null;
         }
 
         @Override
-        public String load(@NotNull String filePath, @NotNull String tableName, String encoding, boolean delete) {
+        public String load(String filePath, String tableName, String encoding, boolean delete) {
             return null;
         }
 
         @Override
-        public String load(@NotNull URL url) {
+        public String load(URL url) {
             return null;
         }
 
         @Override
-        public String load(@NotNull URL url, boolean delete) {
+        public String load(URL url, boolean delete) {
             return null;
         }
 
         @Override
-        public String load(@NotNull URL url, @NotNull String tableName) {
+        public String load(URL url, String tableName) {
             return null;
         }
 
         @Override
-        public String load(@NotNull URL url, @NotNull String tableName, boolean delete) {
+        public String load(URL url, String tableName, boolean delete) {
             return null;
         }
 
         @Override
-        public String load(@NotNull URL url, @NotNull String tableName, String encoding, boolean delete) {
+        public String load(URL url, String tableName, String encoding, boolean delete) {
             return null;
         }
 
         @Override
-        public String load(@NotNull URI uri) {
+        public String load(URI uri) {
             return null;
         }
 
         @Override
-        public String load(@NotNull URI uri, boolean delete) {
+        public String load(URI uri, boolean delete) {
             return null;
         }
 
         @Override
-        public String load(@NotNull URI uri, @NotNull String tableName) {
+        public String load(URI uri, String tableName) {
             return null;
         }
 
         @Override
-        public String load(@NotNull URI uri, @NotNull String tableName, boolean delete) {
+        public String load(URI uri, String tableName, boolean delete) {
             return null;
         }
 
         @Override
-        public String load(@NotNull URI uri, @NotNull String tableName, String encoding, boolean delete) {
+        public String load(URI uri, String tableName, String encoding, boolean delete) {
             return null;
         }
 
         @Override
-        public String load(@NotNull File file) {
+        public String load(File file) {
             return null;
         }
 
         @Override
-        public String load(@NotNull File file, boolean delete) {
+        public String load(File file, boolean delete) {
             return null;
         }
 
         @Override
-        public String load(@NotNull File file, @NotNull String tableName) {
+        public String load(File file, String tableName) {
             return null;
         }
 
         @Override
-        public String load(@NotNull File file, @NotNull String tableName, boolean delete) {
+        public String load(File file, String tableName, boolean delete) {
             return null;
         }
 
         @Override
-        public String load(@NotNull File file, @NotNull String tableName, String encoding, boolean delete) {
+        public String load(File file, String tableName, String encoding, boolean delete) {
             return null;
         }
 
@@ -433,7 +400,7 @@ public class IJdbcDataSourceTest {
         }
 
         @Override
-        public boolean save(@NotNull String tableName, @NotNull String filePath) {
+        public boolean save(String tableName, String filePath) {
             return false;
         }
 
@@ -443,117 +410,147 @@ public class IJdbcDataSourceTest {
         }
 
         @Override
-        public boolean save(@NotNull String tableName, @NotNull String filePath, String encoding) {
+        public boolean save(String tableName, String filePath, String encoding) {
             return false;
         }
 
         @Override
-        public boolean save(@NotNull String tableName, @NotNull URI uri) {
+        public boolean save(String tableName, URI uri) {
             return false;
         }
 
         @Override
-        public boolean save(@NotNull String tableName, @NotNull URI uri, String encoding) {
+        public boolean save(String tableName, URI uri, String encoding) {
             return false;
         }
 
         @Override
-        public boolean save(@NotNull String tableName, @NotNull URL url) {
+        public boolean save(String tableName, URL url) {
             return false;
         }
 
         @Override
-        public boolean save(@NotNull String tableName, @NotNull URL url, String encoding) {
+        public boolean save(String tableName, URL url, String encoding) {
             return false;
         }
 
         @Override
-        public boolean save(@NotNull String tableName, @NotNull File file) {
+        public boolean save(String tableName, File file) {
             return false;
         }
 
         @Override
-        public boolean save(@NotNull String tableName, @NotNull File file, String encoding) {
+        public boolean save(String tableName, File file, String encoding) {
             return false;
         }
 
         @Override
-        public String link(@NotNull String filePath, @NotNull String tableName, boolean delete) {
+        public String link(String filePath, String tableName, boolean delete) {
             return null;
         }
 
         @Override
-        public String link(@NotNull String filePath, @NotNull String tableName) {
+        public String link(String filePath, String tableName) {
             return null;
         }
 
         @Override
-        public String link(@NotNull String filePath, boolean delete) {
+        public String link(String filePath, boolean delete) {
             return null;
         }
 
         @Override
-        public String link(@NotNull String filePath) {
+        public String link(String filePath) {
             return null;
         }
 
         @Override
-        public String link(@NotNull URI uri, String tableName, boolean delete) {
+        public String link(URI uri, String tableName, boolean delete) {
             return null;
         }
 
         @Override
-        public String link(@NotNull URI uri, String tableName) {
+        public String link(URI uri, String tableName) {
             return null;
         }
 
         @Override
-        public String link(@NotNull URI uri, boolean delete) {
+        public String link(URI uri, boolean delete) {
             return null;
         }
 
         @Override
-        public String link(@NotNull URI uri) {
+        public String link(URI uri) {
             return null;
         }
 
         @Override
-        public String link(@NotNull URL url, String tableName, boolean delete) {
+        public String link(URL url, String tableName, boolean delete) {
             return null;
         }
 
         @Override
-        public String link(@NotNull URL url, String tableName) {
+        public String link(URL url, String tableName) {
             return null;
         }
 
         @Override
-        public String link(@NotNull URL url, boolean delete) {
+        public String link(URL url, boolean delete) {
             return null;
         }
 
         @Override
-        public String link(@NotNull URL url) {
+        public String link(URL url) {
             return null;
         }
 
         @Override
-        public String link(@NotNull File file, @NotNull String tableName, boolean delete) {
+        public String link(File file, String tableName, boolean delete) {
             return null;
         }
 
         @Override
-        public String link(@NotNull File file, @NotNull String tableName) {
+        public String link(File file, String tableName) {
             return null;
         }
 
         @Override
-        public String link(@NotNull File file, boolean delete) {
+        public String link(File file, boolean delete) {
             return null;
         }
 
         @Override
-        public String link(@NotNull File file) {
+        public String link(File file) {
+            return null;
+        }
+
+        @Override
+        public DataSource getDataSource() {
+            return null;
+        }
+
+        @Override
+        public void createIndex(String tableName, String columnName) throws SQLException {
+
+        }
+
+        @Override
+        public void createSpatialIndex(String tableName, String columnName) throws SQLException {
+
+        }
+
+        @Override
+        public void dropIndex(String tableName, String columnName) throws SQLException {
+
+        }
+
+        @Override
+        public Map<String, String> getIndexes(String tableName) throws SQLException {
+            return null;
+        }
+
+        @Override
+        public List<String> getIndexes(String tableName, String columnName) throws SQLException {
             return null;
         }
 
@@ -573,18 +570,16 @@ public class IJdbcDataSourceTest {
         }
 
         @Override
-        public boolean executeScript(@NotNull String fileName, Map<String, String> bindings) {
+        public boolean executeScript(String fileName, Map<String, String> bindings) {
             fileScript = true;
             return true;
         }
 
         @Override
-        public boolean executeScript(@NotNull InputStream stream, Map<String, String> bindings) {
+        public boolean executeScript(InputStream stream, Map<String, String> bindings) {
             streamScript = true;
             return true;
         }
-
-        @NotNull
         @Override
         public DBTypes getDataBaseType() {
             return null;
@@ -599,7 +594,7 @@ public class IJdbcDataSourceTest {
         public void setMetaClass(MetaClass metaClass) {/*Does nothing*/}
 
         @Override
-        public IJdbcTable getDataSet(@NotNull String name) {
+        public IJdbcTable getDataSet(String name) {
             return null;
         }
 
@@ -622,25 +617,19 @@ public class IJdbcDataSourceTest {
         public Class<?> typeNameToClass(String typeName) {
             return null;
         }
-
-        @NotNull
         @Override
         public IDataSourceLocation getLocation() {
             return null;
         }
-
-        @Nullable
         @Override
-        public Object asType(@NotNull Class<?> clazz) {
+        public Object asType(Class<?> clazz) {
             return null;
         }
 
         @Override
-        public boolean hasTable(@NotNull String tableName) {
+        public boolean hasTable(String tableName) {
             return false;
         }
-
-        @Nullable
         @Override
         public Collection<String> getColumnNames(String location) {
             return null;

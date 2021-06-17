@@ -171,8 +171,6 @@ public class JdbcColumn implements IJdbcColumn, GroovyObject {
         }
         return -1;
     }
-
-    @Nullable
     @Override
     public Object asType(Class<?> clazz) {
         return null;

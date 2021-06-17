@@ -73,7 +73,6 @@ public class ProcessCheck implements IProcessCheck, GroovyObject, GroovyIntercep
     /**
      * {@link IProcess} concerned by the check.
      */
-    @Nullable
     private final IProcess process;
     /**
      * Inputs/outputs to use for the check.
@@ -82,32 +81,26 @@ public class ProcessCheck implements IProcessCheck, GroovyObject, GroovyIntercep
     /**
      * {@link Closure} to perform for the check.
      */
-    @Nullable
     private Closure<?> cl;
     /**
      * Action to do on fail.
      */
-    @NotNull
     private Action failAction = STOP;
     /**
      * Message to log on fail.
      */
-    @Nullable
     private String failMessage = "Check failed";
     /**
      * Action to do on success.
      */
-    @NotNull
     private Action successAction = CONTINUE;
     /**
      * Message to log on success.
      */
-    @Nullable
     private String successMessage = "Check successful";
     /**
      * MetaClass use for groovy methods/properties binding
      */
-    @NotNull
     private MetaClass metaClass = InvokerHelper.getMetaClass(getClass());
 
     /**
@@ -115,7 +108,7 @@ public class ProcessCheck implements IProcessCheck, GroovyObject, GroovyIntercep
      *
      * @param process {@link IProcess} concerned by the check.
      */
-    public ProcessCheck(@Nullable IProcess process) {
+    public ProcessCheck(IProcess process) {
         this.process = process;
     }
 
@@ -125,7 +118,7 @@ public class ProcessCheck implements IProcessCheck, GroovyObject, GroovyIntercep
      * @param data {@link LinkedHashMap} containing the input data for the {@link IProcess} execution.
      * @return True if the process should continue, false otherwise.
      */
-    private boolean runNoClosure(@NotNull LinkedHashMap<String, Object> data) {
+    private boolean runNoClosure(LinkedHashMap<String, Object> data) {
         //First gather only the inputs as outputs can't be checked before any execution.
         List<IInput> inputs = inOutPuts.stream()
                 .filter(inOutPut -> inOutPut instanceof IInput)
@@ -145,8 +138,7 @@ public class ProcessCheck implements IProcessCheck, GroovyObject, GroovyIntercep
      * @param cl   {@link Closure} to execute for the check.
      * @return The {@link Closure} result or false if it can't be executed.
      */
-    @Nullable
-    private Object runWithClosure(@Nullable LinkedHashMap<String, Object> data, @NotNull Closure<?> cl) {
+    private Object runWithClosure(LinkedHashMap<String, Object> data, Closure<?> cl) {
         LinkedList<Object> dataList = new LinkedList<>();
         //Gather all the data (process output or input data)
         for (IInOutPut inOutPut : inOutPuts) {
@@ -172,7 +164,7 @@ public class ProcessCheck implements IProcessCheck, GroovyObject, GroovyIntercep
     }
 
     @Override
-    public boolean run(@Nullable LinkedHashMap<String, Object> data) {
+    public boolean run(LinkedHashMap<String, Object> data) {
         if (cl == null && (inOutPuts.isEmpty() || data == null || data.isEmpty())) {
             LOGGER.warn("No closure set and no In/Outputs or data to check, no check to do.");
             return false;
@@ -197,31 +189,31 @@ public class ProcessCheck implements IProcessCheck, GroovyObject, GroovyIntercep
     }
 
     @Override
-    public void onFail(@Nullable Action action, @Nullable String message) {
+    public void onFail(Action action, String message) {
         failAction = action == null ? STOP : action;
         failMessage = message;
     }
 
     @Override
-    public void onFail(@Nullable String message) {
+    public void onFail(String message) {
         failAction = STOP;
         failMessage = message;
     }
 
     @Override
-    public void onSuccess(@Nullable Action action, @Nullable String message) {
+    public void onSuccess(Action action, String message) {
         successAction = action == null ? STOP : action;
         successMessage = message;
     }
 
     @Override
-    public void onSuccess(@Nullable String message) {
+    public void onSuccess(String message) {
         successAction = CONTINUE;
         successMessage = message;
     }
 
     @Override
-    public void setInOutPuts(@Nullable IInOutPut... data) {
+    public void setInOutPuts(IInOutPut... data) {
         if(data != null) {
             this.inOutPuts.clear();
             Collections.addAll(this.inOutPuts, data);
@@ -229,18 +221,16 @@ public class ProcessCheck implements IProcessCheck, GroovyObject, GroovyIntercep
     }
 
     @Override
-    @NotNull
     public LinkedList<IInOutPut> getInOutPuts() {
         return inOutPuts;
     }
 
     @Override
-    public void setClosure(@Nullable Closure<?> cl) {
+    public void setClosure(Closure<?> cl) {
         this.cl = cl;
     }
 
     @Override
-    @NotNull
     public Optional<Closure<?>> getClosure() {
         return Optional.ofNullable(cl);
     }
@@ -274,21 +264,18 @@ public class ProcessCheck implements IProcessCheck, GroovyObject, GroovyIntercep
     }
 
     @Override
-    @NotNull
     public Optional<IProcess> getProcess() {
         return Optional.ofNullable(process);
     }
 
     @Override
-    public void setProperty(@Nullable String propertyName, @Nullable Object newValue) {
+    public void setProperty(String propertyName, Object newValue) {
         if(propertyName != null) {
             this.metaClass.setProperty(this, propertyName, newValue);
         }
     }
-
-    @Nullable
     @Override
-    public Object getProperty(@Nullable String propertyName){
+    public Object getProperty(String propertyName){
         Object obj = this.metaClass.getProperty(this, propertyName);
         if(obj instanceof Optional){
             return ((Optional<?>)obj).orElse(null);
@@ -297,10 +284,8 @@ public class ProcessCheck implements IProcessCheck, GroovyObject, GroovyIntercep
             return obj;
         }
     }
-
-    @Nullable
     @Override
-    public Object invokeMethod(@Nullable String name, @Nullable Object args) {
+    public Object invokeMethod(String name, Object args) {
         if(name != null) {
             Object obj = this.metaClass.invokeMethod(this, name, args);
             if(obj instanceof Optional){
@@ -316,18 +301,16 @@ public class ProcessCheck implements IProcessCheck, GroovyObject, GroovyIntercep
     }
 
     @Override
-    @Nullable
     public MetaClass getMetaClass() {
         return metaClass;
     }
 
     @Override
-    public void setMetaClass(@Nullable MetaClass metaClass) {
+    public void setMetaClass(MetaClass metaClass) {
         this.metaClass = metaClass == null ? InvokerHelper.getMetaClass(this.getClass()) : metaClass;
     }
 
     @Override
-    @NotNull
     public String toString() {
         StringBuilder builder = new StringBuilder();
         builder.append("ProcessCheck : \n");

@@ -77,9 +77,9 @@ public abstract class JdbcSpatialTable extends JdbcTable<StreamSpatialResultSet>
      * @param statement      Statement used to request the database.
      * @param jdbcDataSource DataSource to use for the creation of the resultSet.
      */
-    public JdbcSpatialTable(@NotNull DBTypes dataBaseType, @NotNull IJdbcDataSource jdbcDataSource,
-                            @Nullable TableLocation tableLocation, @NotNull Statement statement,
-                            @NotNull String baseQuery, @Nullable List <Object> params) {
+    public JdbcSpatialTable(DBTypes dataBaseType, IJdbcDataSource jdbcDataSource,
+                            TableLocation tableLocation, Statement statement,
+                            String baseQuery, List <Object> params) {
         super(dataBaseType, jdbcDataSource, tableLocation, statement, params, baseQuery);
     }
 
@@ -96,20 +96,22 @@ public abstract class JdbcSpatialTable extends JdbcTable<StreamSpatialResultSet>
                 return rs.getGeometry(columnIndex);
             }
         } catch (SQLException e) {
-            LOGGER.error("Unable to get the geometry at '" + columnIndex + "'.", e);
+            LOGGER.error("Unable to get the geometry at '" + columnIndex + "'.");
+            LOGGER.debug(e.getLocalizedMessage());
         }
         return null;
     }
 
     @Override
-    public Geometry getGeometry(@NotNull String columnLabel) {
+    public Geometry getGeometry(String columnLabel) {
         try {
             SpatialResultSet rs = (SpatialResultSet)getResultSet();
             if(rs != null) {
                 return rs.getGeometry(columnLabel);
             }
         } catch (SQLException e) {
-            LOGGER.error("Unable to get the geometry of '" + columnLabel + "'.", e);
+            LOGGER.error("Unable to get the geometry of '" + columnLabel + "'.");
+            LOGGER.debug(e.getLocalizedMessage());
         }
         return null;
     }
@@ -122,7 +124,8 @@ public abstract class JdbcSpatialTable extends JdbcTable<StreamSpatialResultSet>
                 return rs.getGeometry();
             }
         } catch (SQLException e) {
-            LOGGER.error("Unable to get the geometry.", e);
+            LOGGER.error("Unable to get the geometry.");
+            LOGGER.debug(e.getLocalizedMessage());
         }
         return null;
     }
@@ -133,7 +136,7 @@ public abstract class JdbcSpatialTable extends JdbcTable<StreamSpatialResultSet>
     }
 
     @Override
-    public IRaster getRaster(@NotNull String columnLabel) {
+    public IRaster getRaster(String columnLabel) {
         throw new UnsupportedOperationException();
     }
 
@@ -153,7 +156,6 @@ public abstract class JdbcSpatialTable extends JdbcTable<StreamSpatialResultSet>
     }
 
     @Override
-    @NotNull
     public List<String> getRasterColumns() {
         return new ArrayList<>();
     }
@@ -167,7 +169,8 @@ public abstract class JdbcSpatialTable extends JdbcTable<StreamSpatialResultSet>
                     return new ArrayList<>(GeometryTableUtilities.getGeometryColumnNames(rs.getMetaData()));
                 }
             } catch (SQLException e) {
-                LOGGER.error("Unable to get the geometric columns on ResultSet.", e);
+                LOGGER.error("Unable to get the geometric columns on ResultSet.");
+                LOGGER.debug(e.getLocalizedMessage());
             }
         } else {
             try {
@@ -178,7 +181,8 @@ public abstract class JdbcSpatialTable extends JdbcTable<StreamSpatialResultSet>
                 }
                 return new ArrayList<>(GeometryTableUtilities.getGeometryColumnNames(con, getTableLocation()));
             } catch (SQLException e) {
-                LOGGER.error("Unable to get the geometric columns.", e);
+                LOGGER.error("Unable to get the geometric columns.");
+                LOGGER.debug(e.getLocalizedMessage());
             }
         }
         return null;
@@ -195,7 +199,8 @@ public abstract class JdbcSpatialTable extends JdbcTable<StreamSpatialResultSet>
                 }
                 return GeometryTableUtilities.getEnvelope(con, getBaseQuery(), geometryColumns, filter);
             } catch (SQLException e) {
-                LOGGER.error("Unable to get the table estimated extend.", e);
+                LOGGER.error("Unable to get the table estimated extend.");
+                LOGGER.debug(e.getLocalizedMessage());
             }
         }
         else{
@@ -207,7 +212,8 @@ public abstract class JdbcSpatialTable extends JdbcTable<StreamSpatialResultSet>
                 }
                 return GeometryTableUtilities.getEnvelope(con, getTableLocation(), geometryColumns, filter);
             } catch (SQLException e) {
-                LOGGER.error("Unable to get the table estimated extend.", e);
+                LOGGER.error("Unable to get the table estimated extend.");
+                LOGGER.debug(e.getLocalizedMessage());
             }
         }
         return null;
@@ -224,7 +230,8 @@ public abstract class JdbcSpatialTable extends JdbcTable<StreamSpatialResultSet>
                 }
                 return GeometryTableUtilities.getEnvelope(con, getBaseQuery(), geometryColumns);
             } catch (SQLException e) {
-                LOGGER.error("Unable to get the table estimated extend.", e);
+                LOGGER.error("Unable to get the table estimated extend.");
+                LOGGER.debug(e.getLocalizedMessage());
             }
         }
         else{
@@ -236,7 +243,8 @@ public abstract class JdbcSpatialTable extends JdbcTable<StreamSpatialResultSet>
                 }
                 return GeometryTableUtilities.getEnvelope(con, getTableLocation(), geometryColumns);
             } catch (SQLException e) {
-                LOGGER.error("Unable to get the table estimated extend.", e);
+                LOGGER.error("Unable to get the table estimated extend.");
+                LOGGER.debug(e.getLocalizedMessage());
             }
         }
         return null;
@@ -260,12 +268,14 @@ public abstract class JdbcSpatialTable extends JdbcTable<StreamSpatialResultSet>
                 try {
                     geomMeta = GeometryTableUtilities.getFirstGeometryColumnNameAndIndex(con, getTableLocation());
                 } catch (SQLException e) {
-                    LOGGER.error("There is no geometric field.", e);
+                    LOGGER.error("There is no geometric field.");
+                    LOGGER.debug(e.getLocalizedMessage());
                 }
                 return GeometryTableUtilities.getEnvelope(rs0, geomMeta.first());
 
             } catch (SQLException e) {
-                LOGGER.error("Unable to get the table estimated extend on ResultSet.", e);
+                LOGGER.error("Unable to get the table estimated extend on ResultSet.");
+                LOGGER.debug(e.getLocalizedMessage());
             }
         } else {
             try {
@@ -278,11 +288,13 @@ public abstract class JdbcSpatialTable extends JdbcTable<StreamSpatialResultSet>
                 try {
                     geomMeta = GeometryTableUtilities.getFirstGeometryColumnNameAndIndex(con, getTableLocation());
                 } catch (SQLException e) {
-                    LOGGER.error("There is no geometric field.", e);
+                    LOGGER.error("There is no geometric field.");
+                    LOGGER.debug(e.getLocalizedMessage());
                 }
                 return GeometryTableUtilities.getEnvelope(con, getTableLocation(), geomMeta.first());
             } catch (SQLException e) {
-                LOGGER.error("Unable to get the table estimated extend.", e);
+                LOGGER.error("Unable to get the table estimated extend.");
+                LOGGER.debug(e.getLocalizedMessage());
             }
         }
         return null;
@@ -307,7 +319,8 @@ public abstract class JdbcSpatialTable extends JdbcTable<StreamSpatialResultSet>
             }
             return GeometryTableUtilities.getEstimatedExtent(con, getTableLocation(), geomMeta.first());
         } catch (SQLException e) {
-            LOGGER.error("Unable to get the table estimated extend.", e);
+            LOGGER.error("Unable to get the table estimated extend.");
+            LOGGER.debug(e.getLocalizedMessage());
         }
         return null;
     }
@@ -329,7 +342,8 @@ public abstract class JdbcSpatialTable extends JdbcTable<StreamSpatialResultSet>
             con.createStatement().execute(
                     "ALTER TABLE "+getLocation()+" ALTER COLUMN "+geomColumn+" TYPE geometry("+type+", "+srid+") USING ST_SetSRID("+geomColumn+","+srid+");");
         } catch (SQLException e) {
-            LOGGER.error("Unable to set the table SRID.", e);
+            LOGGER.error("Unable to set the table SRID.");
+            LOGGER.debug(e.getLocalizedMessage());
         }
     }
 
@@ -347,7 +361,8 @@ public abstract class JdbcSpatialTable extends JdbcTable<StreamSpatialResultSet>
                         .forEach((key, value) -> map.put(key, value.getGeometryType()));
                 return map;
             } catch (SQLException e) {
-                LOGGER.error("Unable to get the metadata of the query.", e);
+                LOGGER.error("Unable to get the metadata of the query.");
+                LOGGER.debug(e.getLocalizedMessage());
             }
         }
         try {
@@ -361,7 +376,8 @@ public abstract class JdbcSpatialTable extends JdbcTable<StreamSpatialResultSet>
                     .forEach((s, meta) -> map.put(s, meta.getGeometryType()));
             return map;
         } catch (SQLException e) {
-            LOGGER.error("Unable to get the geometry types.", e);
+            LOGGER.error("Unable to get the geometry types.");
+            LOGGER.debug(e.getLocalizedMessage());
             return null;
         }
     }
@@ -376,7 +392,8 @@ public abstract class JdbcSpatialTable extends JdbcTable<StreamSpatialResultSet>
             }
             return rs.getMetaData().unwrap(SpatialResultSetMetaData.class);
         } catch (SQLException e) {
-            LOGGER.error("Unable to get the metadata.", e);
+            LOGGER.error("Unable to get the metadata.");
+            LOGGER.debug(e.getLocalizedMessage());
             return null;
         }
     }
@@ -385,8 +402,6 @@ public abstract class JdbcSpatialTable extends JdbcTable<StreamSpatialResultSet>
     public Iterator<StreamSpatialResultSet> iterator() {
         return new ResultSetIterator(this);
     }
-
-    @Nullable
     @Override
     public Stream<StreamSpatialResultSet> stream() {
         Spliterator<StreamSpatialResultSet> spliterator = new ResultSetSpliterator<>(this.getRowCount(), new StreamSpatialResultSet((SpatialResultSet)getResultSet()));

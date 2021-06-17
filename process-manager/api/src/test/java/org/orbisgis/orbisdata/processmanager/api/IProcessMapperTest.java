@@ -99,55 +99,39 @@ public class IProcessMapperTest {
      * Simple implementtion of the {@link IProcessMapper} interface.
      */
     private class DummyProcessMapper implements IProcessMapper {
-
-        @NotNull
         @Override
-        public ILinker link(@NotNull IInOutPut... inOutPuts) {
+        public ILinker link(IInOutPut... inOutPuts) {
             return null;
         }
-
-        @NotNull
         @Override
-        public ICheckDataBuilder before(@NotNull IProcess process) {
+        public ICheckDataBuilder before(IProcess process) {
             return null;
         }
-
-        @NotNull
         @Override
-        public ICheckDataBuilder after(@NotNull IProcess process) {
+        public ICheckDataBuilder after(IProcess process) {
             return null;
         }
-
-        @NotNull
         @Override
         public IProcessMapper newInstance() {
             return null;
         }
 
         @Override
-        public boolean execute(@NotNull LinkedHashMap<String, Object> inputDataMap) {
+        public boolean execute(LinkedHashMap<String, Object> inputDataMap) {
             return false;
         }
-
-        @NotNull
         @Override
         public Optional<String> getTitle() {
             return Optional.empty();
         }
-
-        @NotNull
         @Override
         public Map<String, Object> getResults() {
             return null;
         }
-
-        @NotNull
         @Override
         public List<IInput> getInputs() {
             return null;
         }
-
-        @NotNull
         @Override
         public List<IOutput> getOutputs() {
             return null;
@@ -157,8 +141,6 @@ public class IProcessMapperTest {
         public boolean call(LinkedHashMap<String, Object> inputDataMap) {
             return false;
         }
-
-        @NotNull
         @Override
         public IProcessMapper copy() {
             return null;

@@ -63,7 +63,7 @@ public class JdbcTableSummary implements IJdbcTableSummary {
      */
     private final TableLocation tableLocation;
 
-    public JdbcTableSummary(@Nullable TableLocation tableLocation, int columnCount, int rowCount) {
+    public JdbcTableSummary(TableLocation tableLocation, int columnCount, int rowCount) {
         this.tableLocation = tableLocation;
         this.columnCount = columnCount;
         this.rowCount = rowCount;
@@ -95,8 +95,6 @@ public class JdbcTableSummary implements IJdbcTableSummary {
     public int getColumnCount() {
         return columnCount;
     }
-
-    @NotNull
     @Override
     public String toString() {
         return (tableLocation == null ? IJdbcTable.QUERY_LOCATION : tableLocation.toString()) + "; row count : " +
@@ -104,7 +102,7 @@ public class JdbcTableSummary implements IJdbcTableSummary {
     }
 
     @Override
-    public Object asType(@NotNull Class<?> clazz) {
+    public Object asType(Class<?> clazz) {
         return null;
     }
 }

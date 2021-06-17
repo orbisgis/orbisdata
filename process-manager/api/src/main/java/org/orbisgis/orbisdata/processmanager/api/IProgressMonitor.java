@@ -82,7 +82,6 @@ public interface IProgressMonitor {
      *
      * @return The {@link IProgressMonitor} name.
      */
-    @NotNull
     String getName();
 
     /**
@@ -91,8 +90,7 @@ public interface IProgressMonitor {
      * @param taskName Name of the task.
      * @return A child {@link IProgressMonitor}.
      */
-    @NotNull
-    IProgressMonitor getSubProgress(@Nullable String taskName);
+    IProgressMonitor getSubProgress(String taskName);
 
     /**
      * Returns a child {@link IProgressMonitor} with the given maximum as maximum step count.
@@ -100,7 +98,6 @@ public interface IProgressMonitor {
      * @param maximum Maximum step number.
      * @return A child {@link IProgressMonitor}.
      */
-    @NotNull
     IProgressMonitor getSubProgress(int maximum);
 
     /**
@@ -109,7 +106,6 @@ public interface IProgressMonitor {
      * @param autoLog Log the progression if true, otherwise do not log.
      * @return A child {@link IProgressMonitor}.
      */
-    @NotNull
     IProgressMonitor getSubProgress(boolean autoLog);
 
     /**
@@ -120,8 +116,7 @@ public interface IProgressMonitor {
      * @param maximum Maximum step number.
      * @return A child {@link IProgressMonitor}.
      */
-    @NotNull
-    IProgressMonitor getSubProgress(@Nullable String taskName, int maximum);
+    IProgressMonitor getSubProgress(String taskName, int maximum);
 
     /**
      * Returns a child {@link IProgressMonitor} with the given name as task name, without maximum step count and
@@ -131,8 +126,7 @@ public interface IProgressMonitor {
      * @param autoLog Log the progression if true, otherwise do not log.
      * @return A child {@link IProgressMonitor}.
      */
-    @NotNull
-    IProgressMonitor getSubProgress(@Nullable String taskName, boolean autoLog);
+    IProgressMonitor getSubProgress(String taskName, boolean autoLog);
 
     /**
      * Returns a child {@link IProgressMonitor} with the given maximum as maximum step count and logging the
@@ -142,7 +136,6 @@ public interface IProgressMonitor {
      * @param autoLog Log the progression if true, otherwise do not log.
      * @return A child {@link IProgressMonitor}.
      */
-    @NotNull
     IProgressMonitor getSubProgress(int maximum, boolean autoLog);
 
     /**
@@ -154,6 +147,5 @@ public interface IProgressMonitor {
      * @param autoLog Log the progression if true, otherwise do not log.
      * @return A child {@link IProgressMonitor}.
      */
-    @NotNull
-    IProgressMonitor getSubProgress(@Nullable String taskName, int maximum, boolean autoLog);
+    IProgressMonitor getSubProgress(String taskName, int maximum, boolean autoLog);
 }

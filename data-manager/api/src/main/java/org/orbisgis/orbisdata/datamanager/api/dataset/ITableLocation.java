@@ -53,7 +53,6 @@ public interface ITableLocation {
      *
      * @return The name of the table
      */
-    @NotNull
     String getTable();
 
     /**
@@ -61,7 +60,6 @@ public interface ITableLocation {
      *
      * @return The schema or null.
      */
-    @Nullable
     String getSchema();
 
     /**
@@ -69,7 +67,6 @@ public interface ITableLocation {
      *
      * @return The catalog or null.
      */
-    @Nullable
     String getCatalog();
 
     /**
@@ -77,7 +74,6 @@ public interface ITableLocation {
      *
      * @return The name of the dataSource
      */
-    @NotNull
     String getDataSource();
 
     /**
@@ -86,8 +82,7 @@ public interface ITableLocation {
      * @param type Type of the database.
      * @return The String representation of the table location.
      */
-    @NotNull
-    String toString(@NotNull DBTypes type);
+    String toString(DBTypes type);
 
     /**
      * Convert the current object into another with the given class.
@@ -95,10 +90,8 @@ public interface ITableLocation {
      * @param clazz New class of the result.
      * @return The current object into an other class.
      */
-    @Nullable
-    Object asType(@NotNull Class<?> clazz);
+    Object asType(Class<?> clazz);
 
     @Override
-    @NotNull
     String toString();
 }

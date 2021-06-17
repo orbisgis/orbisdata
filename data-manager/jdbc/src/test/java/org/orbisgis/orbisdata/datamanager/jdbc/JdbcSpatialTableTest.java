@@ -292,8 +292,6 @@ public class JdbcSpatialTableTest {
         public void setSrid(int srid) {
             this.srid=srid;
         }
-
-        @NotNull
         @Override
         public ISpatialTable reproject(int srid) {
             throw new IllegalArgumentException("Unsupported operation");
@@ -310,42 +308,32 @@ public class JdbcSpatialTableTest {
         }
 
         @Override
-        public IJdbcTable getTable(@NotNull String tableName) {
+        public IJdbcTable getTable(String tableName) {
             return null;
         }
-
-        @Nullable
         @Override
-        public IJdbcTable getTable(@NotNull GString nameOrQuery) {
+        public IJdbcTable getTable(GString nameOrQuery) {
             return null;
         }
-
-        @Nullable
         @Override
-        public IJdbcTable getTable(@NotNull String nameOrQuery, List<Object> params) {
+        public IJdbcTable getTable(String nameOrQuery, List<Object> params) {
             return null;
         }
-
-        @Nullable
         @Override
-        public IJdbcTable getTable(@NotNull String tableName, @NotNull Statement statement) {
+        public IJdbcTable getTable(String tableName, Statement statement) {
             return null;
         }
-
-        @Nullable
         @Override
-        public IJdbcTable getTable(@NotNull GString nameOrQuery, @NotNull Statement statement) {
+        public IJdbcTable getTable(GString nameOrQuery, Statement statement) {
             return null;
         }
-
-        @Nullable
         @Override
-        public IJdbcTable getTable(@NotNull String nameOrQuery, @Nullable List<Object> params, @NotNull Statement statement) {
+        public IJdbcTable getTable(String nameOrQuery, List<Object> params, Statement statement) {
             return null;
         }
 
         @Override
-        public IJdbcSpatialTable getSpatialTable(@NotNull String tableName) {
+        public IJdbcSpatialTable getSpatialTable(String tableName) {
             TableLocation location = TableLocation.parse(tableName, getDataBaseType());
             try {
                 if (!JDBCUtilities.tableExists(connection, location)) {
@@ -363,38 +351,26 @@ public class JdbcSpatialTableTest {
             String query = String.format("SELECT * FROM %s", location.toString());
             return new DummyJdbcSpatialTable(location, query, statement, this, null);
         }
-
-        @Nullable
         @Override
-        public IJdbcSpatialTable getSpatialTable(@NotNull GString nameOrQuery) {
+        public IJdbcSpatialTable getSpatialTable(GString nameOrQuery) {
             return null;
         }
-
-        @Nullable
         @Override
-        public IJdbcSpatialTable getSpatialTable(@NotNull String nameOrQuery, List<Object> params) {
+        public IJdbcSpatialTable getSpatialTable(String nameOrQuery, List<Object> params) {
             return null;
         }
-
-        @Nullable
         @Override
-        public IJdbcSpatialTable getSpatialTable(@NotNull String tableName, @NotNull Statement statement) {
+        public IJdbcSpatialTable getSpatialTable(String tableName, Statement statement) {
             return null;
         }
-
-        @Nullable
         @Override
-        public IJdbcSpatialTable getSpatialTable(@NotNull GString nameOrQuery, @NotNull Statement statement) {
+        public IJdbcSpatialTable getSpatialTable(GString nameOrQuery, Statement statement) {
             return null;
         }
-
-        @Nullable
         @Override
-        public IJdbcSpatialTable getSpatialTable(@NotNull String nameOrQuery, @Nullable List<Object> params, @NotNull Statement statement) {
+        public IJdbcSpatialTable getSpatialTable(String nameOrQuery, List<Object> params, Statement statement) {
             return null;
         }
-
-        @NotNull
         @Override
         public Collection<String> getTableNames() {
             try {
@@ -405,18 +381,16 @@ public class JdbcSpatialTableTest {
         }
 
         @Override
-        public IJdbcTable getDataSet(@NotNull String name) {
+        public IJdbcTable getDataSet(String name) {
             return null;
         }
-
-        @Nullable
         @Override
-        public Object asType(@NotNull Class<?> clazz) {
+        public Object asType(Class<?> clazz) {
             return null;
         }
 
         @Override
-        public boolean hasTable(@NotNull String tableName) {
+        public boolean hasTable(String tableName) {
             try {
                 return JDBCUtilities.tableExists(connection, org.h2gis.utilities.TableLocation.parse(tableName, DBTypes.H2));
             } catch (SQLException ex) {
@@ -442,6 +416,21 @@ public class JdbcSpatialTableTest {
         @Override
         public String link(Map dataSourceProperties, String sourceTableName, String targetTableName, boolean delete) {
             return null;
+        }
+
+        @Override
+        public void createIndex(String tableName, String columnName) throws SQLException {
+
+        }
+
+        @Override
+        public void createSpatialIndex(String tableName, String columnName) throws SQLException {
+
+        }
+
+        @Override
+        public void dropIndex(String tableName, String columnName) throws SQLException {
+
         }
     }
 }

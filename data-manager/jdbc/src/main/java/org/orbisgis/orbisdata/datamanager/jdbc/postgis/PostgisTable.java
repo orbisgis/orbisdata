@@ -72,14 +72,14 @@ public class PostgisTable extends JdbcTable<StreamResultSet> {
      * @param statement      Statement used to request the database.
      * @param jdbcDataSource DataSource to use for the creation of the resultSet.
      */
-    public PostgisTable(@Nullable TableLocation tableLocation, @NotNull String baseQuery,
-                        @NotNull Statement statement, @Nullable List<Object> params,
-                        @NotNull IJdbcDataSource jdbcDataSource) {
+    public PostgisTable(TableLocation tableLocation, String baseQuery,
+                        Statement statement, List<Object> params,
+                        IJdbcDataSource jdbcDataSource) {
         super(DBTypes.POSTGIS, jdbcDataSource, tableLocation, statement, params, baseQuery);
     }
 
     @Override
-    public Object asType(@NotNull Class<?> clazz) {
+    public Object asType(Class<?> clazz) {
         if (ISpatialTable.class.isAssignableFrom(clazz)) {
             return new PostgisSpatialTable(getTableLocation(), getBaseQuery(), getStatement(), getParams(),
                     getJdbcDataSource());
@@ -92,13 +92,9 @@ public class PostgisTable extends JdbcTable<StreamResultSet> {
     }
 
     @Override
-    @NotNull
     public ResultSetIterator iterator() {
         return new ResultSetIterator(this);
     }
-
-
-    @Nullable
     @Override
     public Stream<? extends StreamResultSet> stream() {
         Spliterator<StreamResultSet> spliterator = new ResultSetSpliterator<>(this.getRowCount(), new StreamResultSet(getResultSet()));

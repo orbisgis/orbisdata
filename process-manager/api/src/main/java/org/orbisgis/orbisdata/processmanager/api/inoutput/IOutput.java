@@ -51,6 +51,5 @@ public interface IOutput extends IInOutPut {
      *
      * @return A copy of the current object.
      */
-    @Nullable
     IOutput copy();
 }

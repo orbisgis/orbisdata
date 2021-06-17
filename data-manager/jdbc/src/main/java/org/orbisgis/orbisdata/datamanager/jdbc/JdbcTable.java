@@ -301,20 +301,38 @@ public abstract class JdbcTable<T extends ResultSet> extends DefaultResultSet im
 
     @Override
     public Collection<String> getColumns() {
+        Connection con;
         try {
-            ResultSet rs = getResultSetLimit(0);
-            if(rs == null){
-                LOGGER.error("Unable to get the ResultSet");
+            con = jdbcDataSource.getConnection();
+        } catch (SQLException e) {
+            LOGGER.error("Unable to get the connection.");
+            return null;
+        }
+        if (tableLocation == null) {
+            try {
+                ResultSet rs = getResultSetLimit(0);
+                if (rs == null) {
+                    LOGGER.error("Unable to get the ResultSet");
+                    return null;
+                }
+                return JDBCUtilities
+                        .getColumnNames(rs.getMetaData())
+                        .stream()
+                        .map(this::formatColumnName)
+                        .collect(Collectors.toCollection(ArrayList::new));
+            } catch (SQLException e) {
+                LOGGER.error("Unable to get the collection of columns names");
                 return null;
             }
-            return JDBCUtilities
-                    .getColumnNames(rs.getMetaData())
-                    .stream()
-                    .map(this::formatColumnName)
-                    .collect(Collectors.toCollection(ArrayList::new));
-        } catch (SQLException e) {
-            LOGGER.error("Unable to get the collection of columns names");
-            return null;
+        } else {
+            try {
+                Collection<String> cols = JDBCUtilities.getColumnNames(con, tableLocation);
+                return cols;
+            } catch (SQLException e) {
+                LOGGER.error("Unable to get the column names of the table " + tableLocation + ".");
+                LOGGER.debug(e.getLocalizedMessage());
+                return null;
+            }
         }
     }
 
@@ -470,12 +488,12 @@ public abstract class JdbcTable<T extends ResultSet> extends DefaultResultSet im
         }
         String query = "";
         if (tableLocation == null) {
-           query = getBaseQuery();
+           query = "SELECT COUNT(*) FROM ("+getBaseQuery()+") AS FOO";
         } else  {
-           query =  "SELECT * FROM "+tableLocation.toString(getDbType());
+           query =  "SELECT count(*) FROM "+tableLocation.toString(getDbType());
         }
         try {
-            ResultSet rowCountRs = con.createStatement().executeQuery("SELECT COUNT(*) FROM (" + query + ") as foo");
+            ResultSet rowCountRs = con.createStatement().executeQuery(query );
             rowCountRs.next();
             int c = rowCountRs.getInt(1);
             if(!con.getAutoCommit()) {

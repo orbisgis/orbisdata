@@ -36,6 +36,7 @@
  */
 package org.orbisgis.orbisdata.datamanager.jdbc
 
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.locationtech.jts.geom.Geometry
 import org.locationtech.jts.geom.MultiPolygon
@@ -464,6 +465,7 @@ class GroovyH2GISTest {
     }
 
 
+    @Disabled
     @Test
     void loadOSMFile() {
         def h2GIS = H2GIS.open([databaseName: './target/loadH2GIS'])
@@ -488,7 +490,6 @@ class GroovyH2GISTest {
         }
         h2GIS.load(outputOSMFile.absolutePath, 'map', true)
         assertEquals 10, h2GIS.tableNames.count { it.startsWith('LOADH2GIS.PUBLIC.MAP') }
-
     }
 
     @Test

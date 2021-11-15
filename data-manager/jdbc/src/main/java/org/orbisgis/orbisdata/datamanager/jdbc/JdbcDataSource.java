@@ -124,11 +124,12 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, IRe
                     put("FLOAT", Float.class);
                     put("REAL", Float.class);
                     put("DOUBLE", Double.class);
+                    put("DOUBLE PRECISION", Double.class);
                     put("FLOAT8", Double.class);
                     put("BOOL", Boolean.class);
                     put("BOOLEAN", Boolean.class);
                     put("VARCHAR", String.class);
-                    put("VARCHAR", String.class);
+                    put("CHARACTER VARYING", String.class);
                     put("DATE", java.sql.Date.class);
                     put("TIME", java.sql.Time.class);
                     put("TIMESTAMP", java.sql.Timestamp.class);

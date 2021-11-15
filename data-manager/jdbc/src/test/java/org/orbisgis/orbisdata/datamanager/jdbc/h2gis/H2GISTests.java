@@ -332,7 +332,7 @@ public class H2GISTests {
         Map<String, String> map = new HashMap<>();
         map.put(DataSourceFactory.JDBC_DATABASE_NAME, "./target/addNetworkFunctionsTest" + UUID.randomUUID().toString());
         H2GIS h2GIS = H2GIS.open(map);
-        ITable table = h2GIS.getTable("INFORMATION_SCHEMA.FUNCTION_ALIASES");
+        ITable table = h2GIS.getTable("INFORMATION_SCHEMA.ROUTINES");
         assertNotNull(table);
         try {
             assertTrue(table.first());
@@ -341,23 +341,21 @@ public class H2GISTests {
             e.printStackTrace();
         }
         //Collect the functions names
-        List<Object> list = (List<Object>)table.stream()
-                .map(t -> {
-                    try {
-                        return ((ResultSet)t).getString(3);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                    return null;
-                })
-                .collect(Collectors.toList());
-        assertFalse(list.contains(fcts[0]));
-        assertFalse(list.contains(fcts[1]));
-        assertFalse(list.contains(fcts[2]));
-        assertFalse(list.contains(fcts[3]));
-        assertFalse(list.contains(fcts[4]));
+        HashSet<String> routineNames = new HashSet();
+        table.forEach(t -> {
+            try {
+                routineNames.add (((ResultSet)t).getString(6));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
+        assertFalse(routineNames.contains(fcts[0]));
+        assertFalse(routineNames.contains(fcts[1]));
+        assertFalse(routineNames.contains(fcts[2]));
+        assertFalse(routineNames.contains(fcts[3]));
+        assertFalse(routineNames.contains(fcts[4]));
 
-        table = h2GIS.getTable("INFORMATION_SCHEMA.FUNCTION_ALIASES");
+        table = h2GIS.getTable("INFORMATION_SCHEMA.ROUTINES");
         assertTrue(h2GIS.addNetworkFunctions());
         try {
             assertTrue(table.first());
@@ -365,21 +363,19 @@ public class H2GISTests {
             e.printStackTrace();
         }
         //Collect the functions names
-        list = (List<Object>)table.stream()
-                .map(t -> {
-                    try {
-                        return ((ResultSet)t).getString(3);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                    return null;
-                })
-                .collect(Collectors.toList());
-        assertTrue(list.contains(fcts[0]));
-        assertTrue(list.contains(fcts[1]));
-        assertTrue(list.contains(fcts[2]));
-        assertTrue(list.contains(fcts[3]));
-        assertTrue(list.contains(fcts[4]));
+        HashSet routineNames2 = new HashSet();
+        table.forEach(t -> {
+            try {
+                routineNames2.add (((ResultSet)t).getString(6));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
+        assertTrue(routineNames2.contains(fcts[0]));
+        assertTrue(routineNames2.contains(fcts[1]));
+        assertTrue(routineNames2.contains(fcts[2]));
+        assertTrue(routineNames2.contains(fcts[3]));
+        assertTrue(routineNames2.contains(fcts[4]));
     }
 
     @Test

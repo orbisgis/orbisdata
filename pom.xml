@@ -8,7 +8,7 @@
     <parent>
         <groupId>org.orbisgis</groupId>
         <artifactId>orbisparent</artifactId>
-        <version>1.0.3-SNAPSHOT</version>
+        <version>1.0.4-SNAPSHOT</version>
     </parent>
     <artifactId>orbisdata</artifactId>
     <version>1.0.1-SNAPSHOT</version>
@@ -24,11 +24,71 @@
         <maven.build.timestamp.format>YYYY-MM-dd</maven.build.timestamp.format>
         <buildNumber>${maven.build.timestamp}</buildNumber>
         <site.basedir>${project.basedir}</site.basedir>
+        <h2gis-version>2.0.0-SNAPSHOT</h2gis-version>
+        <orbisparent-version>1.0.4-SNAPSHOT</orbisparent-version>
+        <cts-version>1.6.0-SNAPSHOT</cts-version>
+        <junit-version>5.7.0-M1</junit-version>
+
     </properties>
 
     <!-- Dependencies -->
     <dependencyManagement>
         <dependencies>
+            <dependency>
+                <groupId>org.locationtech.jts</groupId>
+                <artifactId>jts-core</artifactId>
+                <version>1.18.2</version>
+            </dependency>
+            <dependency>
+                <groupId>org.junit.jupiter</groupId>
+                <artifactId>junit-jupiter-api</artifactId>
+                <version>${junit-version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.junit.jupiter</groupId>
+                <artifactId>junit-jupiter-engine</artifactId>
+                <version>${junit-version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.junit.jupiter</groupId>
+                <artifactId>junit-jupiter-params</artifactId>
+                <version>${junit-version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.orbisgis</groupId>
+                <artifactId>commons</artifactId>
+                <version>${orbisparent-version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.orbisgis</groupId>
+                <artifactId>h2gis</artifactId>
+                <version>${h2gis-version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.orbisgis</groupId>
+                <artifactId>h2gis-utilities</artifactId>
+                <version>${h2gis-version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.orbisgis</groupId>
+                <artifactId>h2gis-network</artifactId>
+                <version>${h2gis-version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.orbisgis</groupId>
+                <artifactId>postgis-jts</artifactId>
+                <version>${h2gis-version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.orbisgis</groupId>
+                <artifactId>postgis-jts-osgi</artifactId>
+                <version>${h2gis-version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.orbisgis</groupId>
+                <artifactId>cts</artifactId>
+                <version>${cts-version}</version>
+            </dependency>
             <dependency>
                 <groupId>org.orbisgis.orbisdata.datamanager</groupId>
                 <artifactId>api</artifactId>
@@ -131,10 +191,6 @@
         <system>Github</system>
         <url>https://github.com/orbisgis/orbisdata/issues</url>
     </issueManagement>
-    <ciManagement>
-        <system>Travis CI</system>
-        <url>https://travis-ci.com/orbisgis/orbisdata</url>
-    </ciManagement>
     <scm>
         <connection>scm:git:git://github.com/orbisgis/orbisdata</connection>
     </scm>
@@ -142,7 +198,7 @@
     <repositories>
         <repository>
             <id>orbisgis-release</id>
-            <url>https://nexus.orbisgis.org/repository/orbisgis-release</url>
+            <url>https://oss.sonatype.org/content/repositories/releases/</url>
             <snapshots>
                 <enabled>false</enabled>
             </snapshots>
@@ -152,10 +208,9 @@
         </repository>
         <repository>
             <id>orbisgis-snapshot</id>
-            <url>https://nexus.orbisgis.org/repository/orbisgis-snapshot</url>
+            <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
             <snapshots>
                 <enabled>true</enabled>
-                <updatePolicy>always</updatePolicy>
             </snapshots>
             <releases>
                 <enabled>false</enabled>

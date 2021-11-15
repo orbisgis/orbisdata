@@ -711,7 +711,7 @@ class JdbcTableTest {
         tables.forEach(table -> {
             assertEquals("GEOMETRY", getTable().getColumnType(COL_THE_GEOM));
             assertEquals("INTEGER", getTable().getColumnType(COL_ID));
-            assertEquals("VARCHAR", getTable().getColumnType(COL_MEANING));
+            assertEquals("CHARACTER VARYING", getTable().getColumnType(COL_MEANING));
             assertNull(getTable().getColumnType("NOT_A_COLUMN"));
         });
     }
@@ -725,7 +725,7 @@ class JdbcTableTest {
         tables.forEach(table -> {
             Map<String, String> map = table.getColumnsTypes();
             String[] keys = {COL_THE_GEOM, COL_THE_GEOM2.toUpperCase(), COL_ID, COL_VALUE, COL_MEANING};
-            String[] values = {"GEOMETRY", "GEOMETRY", "INTEGER", "DOUBLE", "VARCHAR"};
+            String[] values = {"GEOMETRY", "GEOMETRY", "INTEGER", "DOUBLE PRECISION", "CHARACTER VARYING"};
             Arrays.sort(keys);
             String[] actual = map.keySet().toArray(new String[0]);
             Arrays.sort(actual);
@@ -739,7 +739,7 @@ class JdbcTableTest {
         JdbcTable table = getBuiltTable();
         Map<String, String> map = table.getColumnsTypes();
         String[] keys = {COL_THE_GEOM, COL_THE_GEOM2.toUpperCase(), COL_ID, COL_VALUE, COL_MEANING};
-        String[] values =  {"GEOMETRY", "GEOMETRY", "INTEGER", "DOUBLE", "VARCHAR"};
+        String[] values =  {"GEOMETRY", "GEOMETRY", "INTEGER", "DOUBLE PRECISION", "CHARACTER VARYING"};
         Arrays.sort(keys);
         String[] actual = map.keySet().toArray(new String[0]);
         Arrays.sort(actual);
@@ -752,7 +752,7 @@ class JdbcTableTest {
         table = getLinkedTable();
         map = table.getColumnsTypes();
         keys = new String[]{COL_THE_GEOM, COL_THE_GEOM2.toUpperCase(), COL_ID, COL_VALUE, COL_MEANING};
-        values = new String[] {"GEOMETRY", "GEOMETRY", "INTEGER", "DOUBLE", "VARCHAR"};
+        values = new String[] {"GEOMETRY", "GEOMETRY", "INTEGER", "DOUBLE PRECISION", "CHARACTER VARYING"};
         Arrays.sort(keys);
         actual = map.keySet().toArray(new String[0]);
         Arrays.sort(actual);

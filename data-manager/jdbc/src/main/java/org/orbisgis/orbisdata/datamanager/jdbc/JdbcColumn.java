@@ -129,13 +129,13 @@ public class JdbcColumn implements IJdbcColumn, GroovyObject {
         }
         try {
             if(dataSource.getDataBaseType()==DBTypes.H2GIS|| dataSource.getDataBaseType()==DBTypes.H2) {
-                Map<?, ?> map = dataSource.firstRow("SELECT TYPE_NAME FROM INFORMATION_SCHEMA.COLUMNS " +
+                Map<?, ?> map = dataSource.firstRow("SELECT DATA_TYPE FROM INFORMATION_SCHEMA.COLUMNS " +
                                 "WHERE INFORMATION_SCHEMA.COLUMNS.TABLE_NAME=? " +
                                 "AND INFORMATION_SCHEMA.COLUMNS.TABLE_SCHEMA=? " +
                                 "AND INFORMATION_SCHEMA.COLUMNS.COLUMN_NAME=?;",
                         new Object[]{tableName.getTable(), tableName.getSchema("PUBLIC"), name});
-                if (map != null && map.containsKey("TYPE_NAME")) {
-                    return map.get("TYPE_NAME").toString();
+                if (map != null && map.containsKey("DATA_TYPE")) {
+                    return map.get("DATA_TYPE").toString();
                 }
             }else {
                 Map<?, ?> map = dataSource.firstRow("SELECT udt_name FROM INFORMATION_SCHEMA.COLUMNS " +

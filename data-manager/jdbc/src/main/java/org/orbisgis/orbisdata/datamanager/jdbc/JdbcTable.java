@@ -339,7 +339,7 @@ public abstract class JdbcTable<T extends ResultSet> extends DefaultResultSet im
     @Override
     @NotNull
     public Map<String, String> getColumnsTypes() {
-        Map<String, String> map = new HashMap<>();
+        Map<String, String> map = new LinkedHashMap<>();
         try {
             ResultSet rs = getResultSetLimit(0);
             if(rs == null){
@@ -356,6 +356,46 @@ public abstract class JdbcTable<T extends ResultSet> extends DefaultResultSet im
         }
 
         return map;
+    }
+
+    @Override
+    public boolean hasColumns(Map<String, Class<?>> columnMap) {
+        Map<String, Class> columnsWithClass = new HashMap<String, Class>();
+        try {
+            ResultSet rs = getResultSetLimit(0);
+            if(rs == null){
+                LOGGER.error("Unable to get data from the table.");
+                return false;
+            }
+            ResultSetMetaData metaData = rs.getMetaData();
+            for (int i = 1; i <= metaData.getColumnCount(); i++) {
+                String columnName = metaData.getColumnName(i);
+                    //Take into account the geometry type
+                    String type = metaData.getColumnTypeName(i);
+                    if(type.equalsIgnoreCase("GEOMETRY")){
+                        if (tableLocation != null && !getName().isEmpty()) {
+                            columnsWithClass.put(columnName.toLowerCase(), getJdbcDataSource().typeNameToClass(GeometryTableUtilities.getMetaData(jdbcDataSource.getConnection(),
+                                    tableLocation,
+                                    TableLocation.capsIdentifier(columnName, dataBaseType)
+                            ).getGeometryType()));
+                        }
+                    }else{
+                        columnsWithClass.put(columnName.toLowerCase(),  getJdbcDataSource().typeNameToClass(type));
+                    }
+
+            }
+        } catch (SQLException e) {
+            LOGGER.error("unable to request the metadata of the table.", e);
+            return false;
+        }
+
+        return columnMap.entrySet().stream().allMatch(entry -> {
+            Class class_in = columnsWithClass.get(entry.getKey().toLowerCase());
+            if(class_in==null){
+                return false;
+            }
+            return entry.getValue().isAssignableFrom(class_in);});
+
     }
 
     @Override

@@ -30,7 +30,7 @@ jobs:
 
       # Set up the postgis database
       - name: Postigs install
-      - uses: SPalominos/PostGIS-Installer-Action@v1.0.1
+        uses: SPalominos/PostGIS-Installer-Action@v1.0.1
         with:
           psql_version: '9.6'
           pgis_version: '2.5'

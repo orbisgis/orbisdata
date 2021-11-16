@@ -83,6 +83,7 @@ class JdbcDataSourceTest {
     private static final int TIMEOUT = 300;
     private static final int MAX_ROW = 400;
     private static final int FIELD_SIZE = 500;
+
     /**
      * Initialize three {@link JdbcDataSource} with each constructors.
      *

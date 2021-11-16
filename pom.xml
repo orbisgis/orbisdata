@@ -27,33 +27,11 @@
         <h2gis-version>2.0.0-SNAPSHOT</h2gis-version>
         <orbisparent-version>1.0.4-SNAPSHOT</orbisparent-version>
         <cts-version>1.6.0-SNAPSHOT</cts-version>
-        <junit-version>5.7.0-M1</junit-version>
-
     </properties>
 
     <!-- Dependencies -->
     <dependencyManagement>
         <dependencies>
-            <dependency>
-                <groupId>org.locationtech.jts</groupId>
-                <artifactId>jts-core</artifactId>
-                <version>1.18.2</version>
-            </dependency>
-            <dependency>
-                <groupId>org.junit.jupiter</groupId>
-                <artifactId>junit-jupiter-api</artifactId>
-                <version>${junit-version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.junit.jupiter</groupId>
-                <artifactId>junit-jupiter-engine</artifactId>
-                <version>${junit-version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.junit.jupiter</groupId>
-                <artifactId>junit-jupiter-params</artifactId>
-                <version>${junit-version}</version>
-            </dependency>
             <dependency>
                 <groupId>org.orbisgis</groupId>
                 <artifactId>commons</artifactId>
@@ -210,6 +188,7 @@
             <id>orbisgis-snapshot</id>
             <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
             <snapshots>
+                <updatePolicy>always</updatePolicy>
                 <enabled>true</enabled>
             </snapshots>
             <releases>

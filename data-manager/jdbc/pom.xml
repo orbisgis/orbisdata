@@ -28,7 +28,6 @@
         <dependency>
             <groupId>org.orbisgis.orbisdata.datamanager</groupId>
             <artifactId>api</artifactId>
-            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.orbisgis</groupId>

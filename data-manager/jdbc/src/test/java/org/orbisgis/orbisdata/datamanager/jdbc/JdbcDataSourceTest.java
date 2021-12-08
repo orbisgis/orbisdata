@@ -138,17 +138,17 @@ class JdbcDataSourceTest {
         GString gstring2 = new GStringImpl(new String[]{"test_h2gis"}, new String[]{"UPDATE ", " SET text='titi' WHERE id=3"});
         GString gstring3 = new GStringImpl(new String[]{}, new String[]{"SELECT * FROM test_h2gis"});
 
-        assertTrue(h2gis.execute(gstring1));
-        assertFalse(h2gis.execute(gstring2));
-        assertTrue(h2gis.execute(gstring3));
+        assertTrue(h2gis.execute(gstring1.toString()));
+        assertFalse(h2gis.execute(gstring2.toString()));
+        assertTrue(h2gis.execute(gstring3.toString()));
 
         gstring1 = new GStringImpl(new String[]{"test_postgis"}, new String[]{"SELECT * FROM "});
         gstring2 = new GStringImpl(new String[]{"test_postgis"}, new String[]{"UPDATE ", " SET text='titi' WHERE id=3"});
         gstring3 = new GStringImpl(new String[]{}, new String[]{"SELECT * FROM test_postgis"});
 
-        assertTrue(postgis.execute(gstring1));
-        assertFalse(postgis.execute(gstring2));
-        assertTrue(postgis.execute(gstring3));
+        assertTrue(postgis.execute(gstring1.toString()));
+        assertFalse(postgis.execute(gstring2.toString()));
+        assertTrue(postgis.execute(gstring3.toString()));
     }
 
     /**

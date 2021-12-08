@@ -21,7 +21,6 @@
         <maven.build.timestamp.format>YYYY-MM-dd</maven.build.timestamp.format>
         <buildNumber>${maven.build.timestamp}</buildNumber>
         <site.basedir>${project.parent.basedir}</site.basedir>
-        <smile-version>2.5.3</smile-version>
     </properties>
 
     <!-- Dependencies -->
@@ -94,12 +93,10 @@
         <dependency>
             <groupId>com.github.haifengl</groupId>
             <artifactId>smile-data</artifactId>
-            <version>${smile-version}</version>
         </dependency>
         <dependency>
             <groupId>com.github.haifengl</groupId>
             <artifactId>smile-core</artifactId>
-            <version>${smile-version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>

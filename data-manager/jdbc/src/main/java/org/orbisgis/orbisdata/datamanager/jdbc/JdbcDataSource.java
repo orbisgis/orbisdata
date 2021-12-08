@@ -434,24 +434,7 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, IRe
 
     @Override
     public boolean execute(GString gstring) throws SQLException {
-        boolean b;
-        try {
-            b = super.execute(gstring);
-            if(!getConnection().getAutoCommit()){
-                super.commit();
-            }
-            return b;
-        } catch (SQLException e) {
-            LOGGER.debug("Unable to execute the request as a GString.\n" + e.getLocalizedMessage());
-            try {
-                if(!getConnection().getAutoCommit()){
-                    super.rollback();
-                }
-            } catch (SQLException e2) {
-                LOGGER.error("Unable to rollback.", e2.getLocalizedMessage());
-            }
-        }
-        b = super.execute(gstring.toString());
+        boolean b = super.execute(gstring.toString());
         if(!getConnection().getAutoCommit()){
             super.commit();
         }
@@ -571,7 +554,6 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, IRe
             }
         } catch (SQLException e) {
             LOGGER.debug("Unable to execute the request as a String.\n" + e.getLocalizedMessage());
-
             try {
                 if(!getConnection().getAutoCommit()){
                     super.rollback();

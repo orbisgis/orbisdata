@@ -66,7 +66,6 @@ import java.sql.Time;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.IntStream;
@@ -662,7 +661,7 @@ public class DataFrameTest {
         RandomForest model = RandomForest.fit(formula, dfFactorized, ntrees, mtry, splitRule, maxDepth, maxNodes, nodeSize, subsample);
 
         // Finally, when we apply the random forest
-        int[] prediction = Validation.test(model, dfFactorized);
+        int[] prediction = model.predict(dfFactorized);
         assertTrue(IntStream.of(prediction).filter(it -> it >100).toArray().length>0);
     }
 }

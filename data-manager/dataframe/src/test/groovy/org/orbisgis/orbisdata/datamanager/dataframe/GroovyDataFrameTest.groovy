@@ -43,8 +43,6 @@ import smile.classification.RandomForest
 import smile.data.formula.Formula
 import smile.data.measure.NominalScale
 import smile.data.type.StructField
-import smile.validation.Validation
-
 import java.util.stream.IntStream
 
 import static org.junit.jupiter.api.Assertions.*
@@ -269,7 +267,7 @@ class GroovyDataFrameTest {
         RandomForest model = RandomForest.fit(formula, dfFactorized, ntrees, mtry, splitRule, maxDepth, maxNodes, nodeSize, subsample);
 
         // Finally, when we apply the random forest
-        int[] prediction = Validation.test(model, dfFactorized);
+        int[] prediction = model.predict(dfFactorized);
         assertTrue(IntStream.of(prediction).filter(it -> it >100).toArray().length>0);
     }
 }

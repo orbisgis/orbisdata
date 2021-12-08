@@ -1035,14 +1035,22 @@ public class DataFrame implements smile.data.DataFrame, ITable<BaseVector, Tuple
                         type.equalsIgnoreCase("CHARACTER VARYING")) {
                     type="VARCHAR";
                 }
-                if (type.equalsIgnoreCase("DOUBLE PRECISION")) {
+                else if (type.equalsIgnoreCase("DOUBLE PRECISION")) {
                     type="DOUBLE";
                 }
-                if (type.equalsIgnoreCase("DECFLOAT")) {
+                else if (type.equalsIgnoreCase("DECFLOAT")) {
                     type="FLOAT";
                 }
-                DataType dataType = DataType.of(JDBCType.valueOf(type), metadata.isNullable(i) != 0,(table).getDbType().toString());
-                fields[i-1] = new StructField(metadata.getColumnName(i), dataType);
+                else if(type.equalsIgnoreCase("TINYINT")){
+                    type="INTEGER";
+                }
+                else if(type.equalsIgnoreCase("SMALLINT")){
+                    type="INTEGER";
+                }
+
+                DataType dataType = DataType.of(JDBCType.valueOf(type), metadata.isNullable(i) != 0, (table).getDbType().toString());
+                fields[i - 1] = new StructField(metadata.getColumnName(i), dataType);
+
             }
             return new StructType(fields);
         } catch (SQLException e) {
@@ -1107,17 +1115,19 @@ public class DataFrame implements smile.data.DataFrame, ITable<BaseVector, Tuple
      */
     @NotNull
     private static Tuple toTuple(@NotNull ResultSet rs, @NotNull StructType schema) throws SQLException {
-        Object[] row = new Object[rs.getMetaData().getColumnCount()];
+        Object[] row = new Object[schema.length()];
         for (int i = 0; i < row.length; ++i) {
-            row[i] = rs.getObject(i + 1);
-            if (row[i] instanceof Date) {
-                row[i] = ((Date) row[i]).toLocalDate();
-            } else if (row[i] instanceof Time) {
-                row[i] = ((Time) row[i]).toLocalTime();
-            } else if (row[i] instanceof Timestamp) {
-                row[i] = ((Timestamp) row[i]).toLocalDateTime();
-            } else if (row[i] instanceof Geometry) {
-                row[i] = row[i].toString();
+            Object value = rs.getObject(i + 1);
+            if (value instanceof Date) {
+                row[i] = ((Date) value).toLocalDate();
+            } else if (value instanceof Time) {
+                row[i] = ((Time) value).toLocalTime();
+            } else if (value instanceof Timestamp) {
+                row[i] = ((Timestamp) value).toLocalDateTime();
+            } else if (value instanceof Geometry) {
+                row[i] = value.toString();
+            }else{
+                row[i] = value;
             }
         }
         return Tuple.of(row, schema);

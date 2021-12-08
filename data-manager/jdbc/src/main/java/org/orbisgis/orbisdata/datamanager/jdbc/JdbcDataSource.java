@@ -433,15 +433,6 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, IRe
     }
 
     @Override
-    public boolean execute(GString gstring) throws SQLException {
-        boolean b = super.execute(gstring.toString());
-        if(!getConnection().getAutoCommit()){
-            super.commit();
-        }
-        return b;
-    }
-
-    @Override
     public int[] executeBatch(String[] queries) throws SQLException {
         return new ResultSetBuilder(this).executeBatch(queries);
     }

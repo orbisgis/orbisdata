@@ -1030,7 +1030,7 @@ public class DataFrame implements smile.data.DataFrame, ITable<BaseVector, Tuple
             StructField[] fields = new StructField[columnCount];
             for (int i = 1; i <= columnCount; i++) {
                 String type = metadata.getColumnTypeName(i);
-                if (type.equalsIgnoreCase("geometry") ||
+                if (type.toLowerCase().startsWith("geometry") ||
                         type.equalsIgnoreCase("CHARACTER") ||
                         type.equalsIgnoreCase("CHARACTER VARYING")) {
                     type="VARCHAR";

@@ -372,7 +372,7 @@ public abstract class JdbcTable<T extends ResultSet> extends DefaultResultSet im
                 String columnName = metaData.getColumnName(i);
                     //Take into account the geometry type
                     String type = metaData.getColumnTypeName(i);
-                    if(type.equalsIgnoreCase("GEOMETRY")){
+                    if(type.toLowerCase().startsWith("geometry")){
                         if (tableLocation != null && !getName().isEmpty()) {
                             columnsWithClass.put(columnName.toLowerCase(), getJdbcDataSource().typeNameToClass(GeometryTableUtilities.getMetaData(jdbcDataSource.getConnection(),
                                     tableLocation,
@@ -411,7 +411,7 @@ public abstract class JdbcTable<T extends ResultSet> extends DefaultResultSet im
                 if(columnName.equalsIgnoreCase(metaData.getColumnName(i))){
                     //Take into account the geometry type
                     String type = metaData.getColumnTypeName(i);
-                    if(type.equalsIgnoreCase("GEOMETRY")){
+                    if(type.toLowerCase().startsWith("geometry")){
                         if (tableLocation != null && !getName().isEmpty()) {
                             return GeometryTableUtilities.getMetaData(jdbcDataSource.getConnection(),
                                     tableLocation,

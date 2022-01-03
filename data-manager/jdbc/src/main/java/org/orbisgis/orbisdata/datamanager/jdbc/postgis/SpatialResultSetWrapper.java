@@ -132,7 +132,7 @@ public class SpatialResultSetWrapper extends ResultSetWrapper implements Spatial
         public int getFirstGeometryFieldIndex() throws SQLException {
             if (this.firstGeometryFieldIndex == -1) {
                 for (int idColumn = 1; idColumn <= this.getColumnCount(); ++idColumn) {
-                    if (this.getColumnTypeName(idColumn).equalsIgnoreCase("geometry")) {
+                    if (this.getColumnTypeName(idColumn).toLowerCase().startsWith("geometry")) {
                         this.firstGeometryFieldIndex = idColumn;
                         break;
                     }

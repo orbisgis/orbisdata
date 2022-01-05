@@ -549,7 +549,7 @@ class JdbcTableTest {
         assertTrue(t.hasColumn(COL_THE_GEOM.toUpperCase(), Geometry.class));
         assertTrue(t.hasColumn(COL_THE_GEOM.toLowerCase(), Geometry.class));
         assertTrue(t.hasColumn(COL_THE_GEOM2, Geometry.class));
-        assertFalse(t.hasColumn(COL_THE_GEOM2, Point.class));
+        assertTrue(t.hasColumn(COL_THE_GEOM2, Point.class));
         assertTrue(t.hasColumn(COL_ID, Integer.class));
         assertFalse(t.hasColumn(COL_ID, Long.class));
         assertFalse(t.hasColumn(COL_VALUE, Float.class));
@@ -562,7 +562,7 @@ class JdbcTableTest {
         assertTrue(t.hasColumn(COL_THE_GEOM.toUpperCase(), Geometry.class));
         assertTrue(t.hasColumn(COL_THE_GEOM.toLowerCase(), Geometry.class));
         assertTrue(t.hasColumn(COL_THE_GEOM2, Geometry.class));
-        assertFalse(t.hasColumn(COL_THE_GEOM2, Point.class));
+        assertTrue(t.hasColumn(COL_THE_GEOM2, Point.class));
         assertTrue(t.hasColumn(COL_ID, Integer.class));
         assertFalse(t.hasColumn(COL_ID, Long.class));
         assertFalse(t.hasColumn(COL_VALUE, Float.class));
@@ -725,7 +725,7 @@ class JdbcTableTest {
         tables.forEach(table -> {
             Map<String, String> map = table.getColumnsTypes();
             String[] keys = {COL_THE_GEOM, COL_THE_GEOM2.toUpperCase(), COL_ID, COL_VALUE, COL_MEANING};
-            String[] values = {"GEOMETRY", "GEOMETRY", "INTEGER", "DOUBLE PRECISION", "CHARACTER VARYING"};
+            String[] values = {"GEOMETRY", "GEOMETRY(POINT Z)", "INTEGER", "DOUBLE PRECISION", "CHARACTER VARYING"};
             Arrays.sort(keys);
             String[] actual = map.keySet().toArray(new String[0]);
             Arrays.sort(actual);
@@ -739,7 +739,7 @@ class JdbcTableTest {
         JdbcTable table = getBuiltTable();
         Map<String, String> map = table.getColumnsTypes();
         String[] keys = {COL_THE_GEOM, COL_THE_GEOM2.toUpperCase(), COL_ID, COL_VALUE, COL_MEANING};
-        String[] values =  {"GEOMETRY", "GEOMETRY", "INTEGER", "DOUBLE PRECISION", "CHARACTER VARYING"};
+        String[] values =  {"GEOMETRY", "GEOMETRY(POINT Z)", "INTEGER", "DOUBLE PRECISION", "CHARACTER VARYING"};
         Arrays.sort(keys);
         String[] actual = map.keySet().toArray(new String[0]);
         Arrays.sort(actual);
@@ -752,7 +752,7 @@ class JdbcTableTest {
         table = getLinkedTable();
         map = table.getColumnsTypes();
         keys = new String[]{COL_THE_GEOM, COL_THE_GEOM2.toUpperCase(), COL_ID, COL_VALUE, COL_MEANING};
-        values = new String[] {"GEOMETRY", "GEOMETRY", "INTEGER", "DOUBLE PRECISION", "CHARACTER VARYING"};
+        values = new String[] {"GEOMETRY", "GEOMETRY(POINT Z)", "INTEGER", "DOUBLE PRECISION", "CHARACTER VARYING"};
         Arrays.sort(keys);
         actual = map.keySet().toArray(new String[0]);
         Arrays.sort(actual);

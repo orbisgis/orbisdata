@@ -37,7 +37,6 @@
 package org.orbisgis.orbisdata.datamanager.api.dataset;
 
 
-import org.h2gis.utilities.SpatialResultSet;
 
 /**
  * Extension of the {@link IJdbcTable} and {@link ISpatialTable} interfaces.

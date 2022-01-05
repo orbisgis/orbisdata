@@ -160,7 +160,7 @@ public class PostgisSpatialTable extends JdbcSpatialTable {
             String[] fieldNames = new String[columnCount];
             for (int i = 1; i <= columnCount; i++) {
                 String columnName = meta.getColumnName(i);
-                if (meta.getColumnTypeName(i).equalsIgnoreCase("geometry")) {
+                if (meta.getColumnTypeName(i).toLowerCase().startsWith("geometry")) {
                     fieldNames[i - 1] = "ST_TRANSFORM(" + columnName + ", " + srid + ") AS " + columnName;
                 } else {
                     fieldNames[i - 1] = columnName;

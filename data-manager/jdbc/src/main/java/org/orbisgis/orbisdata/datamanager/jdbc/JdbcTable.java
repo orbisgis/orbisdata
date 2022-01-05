@@ -412,7 +412,10 @@ public abstract class JdbcTable<T extends ResultSet> extends DefaultResultSet im
                     //Take into account the geometry type
                     String type = metaData.getColumnTypeName(i);
                     if(type.toLowerCase().startsWith("geometry")){
-                        if (tableLocation != null && !getName().isEmpty()) {
+                        if(dataBaseType==DBTypes.H2|| dataBaseType==DBTypes.H2GIS){
+                            return GeometryMetaData.getMetaDataFromTablePattern(type).getGeometryType();
+                        }
+                        else if (tableLocation != null && !getName().isEmpty()) {
                             return GeometryTableUtilities.getMetaData(jdbcDataSource.getConnection(),
                                     tableLocation,
                                     TableLocation.capsIdentifier(columnName, dataBaseType)

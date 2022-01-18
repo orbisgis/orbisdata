@@ -159,8 +159,8 @@ class JdbcTableTest {
             statementLinked.execute("DROP TABLE IF EXISTS " + TABLE_NAME + "," + TEMP_NAME);
             statementLinked.execute("CREATE TABLE " + TABLE_NAME + " (" + COL_THE_GEOM + " GEOMETRY, " + COL_THE_GEOM2 + " GEOMETRY(POINT Z)," +
                     COL_ID + " INTEGER, " + COL_VALUE + " DOUBLE PRECISION, " +  COL_MEANING + " VARCHAR)");
-            statementLinked.execute("INSERT INTO " + TABLE_NAME + " VALUES ('POINT(0 0)', 'POINT(1 1 0)', 1, 2.3, 'Simple points')");
-            statementLinked.execute("INSERT INTO " + TABLE_NAME + " VALUES ('POINT(0 1 2)', 'POINT(10 11 12)', 2, 0.568, '3D point')");
+            statementLinked.execute("INSERT INTO " + TABLE_NAME + " VALUES ('POINT(0 0)', 'POINTZ(1 1 0)', 1, 2.3, 'Simple points')");
+            statementLinked.execute("INSERT INTO " + TABLE_NAME + " VALUES ('POINT(0 1)', 'POINTZ(10 11 12)', 2, 0.568, '3D point')");
             statementLinked.execute("CREATE TEMPORARY TABLE " + TEMP_NAME + " (" + COL_THE_GEOM + " GEOMETRY, " + COL_THE_GEOM2 + " GEOMETRY(POINT Z)," +
                     COL_ID + " INTEGER, " + COL_VALUE + " DOUBLE PRECISION, " + COL_MEANING + " VARCHAR)");
 
@@ -168,14 +168,14 @@ class JdbcTableTest {
             statement.execute("DROP TABLE IF EXISTS " + TABLE_NAME + "," + LINKED_NAME + "," + TEMP_NAME + "," + EMPTY_NAME);
             statement.execute("CREATE TABLE " + TABLE_NAME + " (" + COL_THE_GEOM + " GEOMETRY, " + COL_THE_GEOM2 + " GEOMETRY(POINT Z)," +
                     COL_ID + " INTEGER, " + COL_VALUE + " DOUBLE PRECISION, " +  COL_MEANING + " VARCHAR)");
-            statement.execute("INSERT INTO " + TABLE_NAME + " VALUES ('POINT(0 0)', 'POINT(1 1 0)', 1, 2.3,  'Simple points')");
-            statement.execute("INSERT INTO " + TABLE_NAME + " VALUES ('POINT(0 1 2)', 'POINT(10 11 12)', 2, 0.568, '3D point')");
-            statement.execute("INSERT INTO " + TABLE_NAME + " VALUES ('POINT(10 11 12)', 'POINT(20 21 22)', 3, 7.18,'3D point')");
+            statement.execute("INSERT INTO " + TABLE_NAME + " VALUES ('POINT(0 0)', 'POINTZ(1 1 0)', 1, 2.3,  'Simple points')");
+            statement.execute("INSERT INTO " + TABLE_NAME + " VALUES ('POINT(0 1 )', 'POINTZ(10 11 12)', 2, 0.568, '3D point')");
+            statement.execute("INSERT INTO " + TABLE_NAME + " VALUES ('POINT(10 11)', 'POINTZ(20 21 22)', 3, 7.18,'3D point')");
             statement.execute("CREATE LINKED TABLE " + LINKED_NAME + "('org.h2.Driver','jdbc:h2:./target/test-resources/dbH2" + LINKED_DATABASE +
                     "','sa','sa','" + TABLE_NAME + "')");
             statement.execute("CREATE TEMPORARY TABLE " + TEMP_NAME + " (" + COL_THE_GEOM + " GEOMETRY, " + COL_THE_GEOM2 + " GEOMETRY(POINT Z)," +
                     COL_ID + " INTEGER, " + COL_VALUE + " DOUBLE PRECISION, " + COL_MEANING + " VARCHAR)");
-            statement.execute("INSERT INTO " + TEMP_NAME + " VALUES ('POINT(0 1 2)', 'POINT(10 11 12)', 2, 0.568, '3D point')");
+            statement.execute("INSERT INTO " + TEMP_NAME + " VALUES ('POINT(0 1)', 'POINTZ(10 11 12)', 2, 0.568, '3D point')");
 
             statement.execute("CREATE TABLE " + EMPTY_NAME + " (" + COL_THE_GEOM + " GEOMETRY, " + COL_THE_GEOM2 + " GEOMETRY(POINT Z)," +
                     COL_ID + " INTEGER, " + COL_VALUE + " DOUBLE PRECISION, " + COL_MEANING + " VARCHAR)");

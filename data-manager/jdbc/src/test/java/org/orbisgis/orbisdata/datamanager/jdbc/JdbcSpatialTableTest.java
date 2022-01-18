@@ -119,8 +119,8 @@ public class JdbcSpatialTableTest {
             statement.execute("DROP TABLE IF EXISTS " + TABLE_NAME);
             statement.execute("CREATE TABLE " + TABLE_NAME + " (" + COL_THE_GEOM + " GEOMETRY(GEOMETRY, 2020), " + COL_THE_GEOM2 + " GEOMETRY(POINT Z)," +
                     COL_ID + " INTEGER, " + COL_VALUE + " FLOAT, " + COL_MEANING + " VARCHAR)");
-            statement.execute("INSERT INTO " + TABLE_NAME + " VALUES (ST_SetSRID('POINT(0 0)', 2020), 'POINT(1 1 0)', 1, 2.3, 'Simple points')");
-            statement.execute("INSERT INTO " + TABLE_NAME + " VALUES (ST_SetSRID('POINT(0 1 2)', 2020), 'POINT(10 11 12)', 2, 0.568, '3D point')");
+            statement.execute("INSERT INTO " + TABLE_NAME + " VALUES (ST_SetSRID('POINT(0 0)', 2020), 'POINTZ(1 1 0)', 1, 2.3, 'Simple points')");
+            statement.execute("INSERT INTO " + TABLE_NAME + " VALUES (ST_SetSRID('POINT(0 1)', 2020), 'POINTZ(10 11 12)', 2, 0.568, '3D point')");
         } catch (Exception e) {
             fail(e);
         }

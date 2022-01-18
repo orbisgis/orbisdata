@@ -1,7 +1,6 @@
 
 # OrbisData 
 [![GitHub](https://img.shields.io/github/license/orbisgis/orbisdata.svg)](https://github.com/orbisgis/orbisdata/blob/master/docs/LICENSE.md) 
-[![codecov](https://img.shields.io/codecov/c/github/orbisgis/orbisdata.svg)](https://codecov.io/gh/orbisgis/orbisdata) 
 [![Codacy Badge](https://img.shields.io/codacy/grade/93899ea0675d43a2a3787ce5dd3c5595.svg)](https://www.codacy.com/app/orbisgis/orbisdata?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=orbisgis/orbisdata&amp;utm_campaign=Badge_Grade) 
 
 OrbisData is a library providing a unique access point to query, manage and retrieve data dedicated to Groovy scripting.

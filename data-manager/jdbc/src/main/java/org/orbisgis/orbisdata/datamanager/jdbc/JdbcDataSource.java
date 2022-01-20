@@ -183,11 +183,6 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, IRe
         this.metaClass = InvokerHelper.getMetaClass(getClass());
         this.databaseType = databaseType;
         LOG.setLevel(Level.OFF);
-        try {
-            getConnection().setAutoCommit(false);
-        } catch (SQLException e) {
-            LOGGER.warn("Unable to set the autocommit option of the connection to false.", e);
-        }
     }
 
     /**
@@ -202,11 +197,6 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, IRe
         this.metaClass = InvokerHelper.getMetaClass(getClass());
         this.databaseType = databaseType;
         LOG.setLevel(Level.OFF);
-        try {
-            getConnection().setAutoCommit(false);
-        } catch (SQLException e) {
-            LOGGER.warn("Unable to set the autocommit option of the connection to false.", e);
-        }
     }
 
     @Override

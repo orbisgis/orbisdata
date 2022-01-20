@@ -118,6 +118,7 @@ public class POSTGIS extends JdbcDataSource {
         Connection connection;
         try {
             connection = dataSourceFactory.createDataSource(properties).getConnection();
+            connection.setAutoCommit(true);
         } catch (SQLException e) {
             LOGGER.error("Unable to create the DataSource.\n" + e.getLocalizedMessage());
             return null;

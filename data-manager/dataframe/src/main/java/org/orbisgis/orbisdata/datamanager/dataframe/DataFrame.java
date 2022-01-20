@@ -838,12 +838,14 @@ public class DataFrame implements smile.data.DataFrame, ITable<BaseVector, Tuple
                     batch_size++;
                     if (batch_size >= batchSize) {
                         preparedStatement.executeBatch();
+                        outputconnection.commit();
                         preparedStatement.clearBatch();
                         batchSize = 0;
                     }
                 }
                 if (batch_size > 0) {
                     preparedStatement.executeBatch();
+                    outputconnection.commit();
                 }
             } catch (SQLException e) {
                 LOGGER.error("Cannot save the dataframe.\n", e);

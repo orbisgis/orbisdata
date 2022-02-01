@@ -1,5 +1,5 @@
 /*
- * Bundle ProcessManager API is part of the OrbisGIS platform
+ * Bundle Process is part of the OrbisGIS platform
  *
  * OrbisGIS is a java GIS application dedicated to research in GIScience.
  * OrbisGIS is developed by the GIS group of the DECIDE team of the
@@ -13,22 +13,22 @@
  * Institut Universitaire de Technologie de Vannes
  * 8, Rue Montaigne - BP 561 56017 Vannes Cedex
  *
- * ProcessManager API is distributed under LGPL 3 license.
+ * Process is distributed under LGPL 3 license.
  *
  * Copyright (C) 2018 CNRS (Lab-STICC UMR CNRS 6285)
  *
  *
- * ProcessManager API is free software: you can redistribute it and/or modify it under the
+ * Process is free software: you can redistribute it and/or modify it under the
  * terms of the GNU General Public License as published by the Free Software
  * Foundation, either version 3 of the License, or (at your option) any later
  * version.
  *
- * ProcessManager API is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Process is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
  * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License along with
- * ProcessManager API. If not, see <http://www.gnu.org/licenses/>.
+ * Process. If not, see <http://www.gnu.org/licenses/>.
  *
  * For more information, please consult: <http://www.orbisgis.org/>
  * or contact directly:
@@ -101,9 +101,9 @@ public interface IProcessFactory {
     Optional<IProcess> create(@Nullable @DelegatesTo(IProcessBuilder.class) Closure<?> cl);
 
     /**
-     * Return the {@link IProcessManager} containing the factory.
+     * Return the {@link IProcess} containing the factory.
      *
-     * @return The {@link IProcessManager} containing the factory.
+     * @return The {@link IProcess} containing the factory.
      */
     @NotNull
     Optional<IProcessManager> getProcessManager();

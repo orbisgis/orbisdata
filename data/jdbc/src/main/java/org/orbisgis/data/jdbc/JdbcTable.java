@@ -153,7 +153,7 @@ public abstract class JdbcTable<T extends ResultSet> extends DefaultResultSet im
      * @return The base query.
      */
     @NotNull
-    protected String getBaseQuery() {
+    public String getBaseQuery() {
         return baseQuery;
     }
 
@@ -234,7 +234,7 @@ public abstract class JdbcTable<T extends ResultSet> extends DefaultResultSet im
      *
      * @return The parent DataSource.
      */
-    protected IJdbcDataSource getJdbcDataSource() {
+    public IJdbcDataSource getJdbcDataSource() {
         return jdbcDataSource;
     }
 

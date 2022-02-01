@@ -42,7 +42,7 @@ import org.junit.jupiter.api.Test;
 import org.orbisgis.commons.printer.Ascii;
 import org.orbisgis.commons.printer.Html;
 import org.orbisgis.data.api.dataset.IJdbcTable;
-import org.orbisgis.data.jdbc.h2gis.H2GIS;
+import org.orbisgis.data.H2GIS;
 import smile.base.cart.SplitRule;
 import smile.classification.RandomForest;
 import smile.data.Tuple;

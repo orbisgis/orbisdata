@@ -36,11 +36,11 @@
  */
 package org.orbisgis.data.dataframe;
 
-import org.orbisgis.data.jdbc.h2gis.H2GIS;
+import org.orbisgis.data.H2GIS;
 
 import java.util.UUID;
 
-import static org.orbisgis.data.jdbc.h2gis.H2GIS.open;
+import static org.orbisgis.data.H2GIS.open;
 
 /**
  * Class containing utilities for the tests.

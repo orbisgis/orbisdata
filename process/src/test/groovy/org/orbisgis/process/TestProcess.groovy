@@ -40,7 +40,7 @@ package org.orbisgis.process
 import org.locationtech.jts.geom.Geometry
 import org.locationtech.jts.io.WKTReader
 import org.orbisgis.data.api.dataset.ITable
-import org.orbisgis.data.jdbc.h2gis.H2GIS
+import H2GIS
 import org.orbisgis.process.api.IProcessManager
 import org.orbisgis.process.inoutput.Input
 import org.orbisgis.process.inoutput.Output

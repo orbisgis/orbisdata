@@ -10,24 +10,24 @@ fluent framework to work with geospatial data.
 
 ## Getting Started
 
-OrbisData need at least Java 8 to work.
+OrbisData need at least Java 11 to work.
 
 ### Architecture
 
 Each module of OrbisData is divided in two : the API mainly, constituted 
 of interfaces, and its implementation.
 
-#### DataManager
+#### Data
 
-The DataManager modules are dedicated to the creation, the access and the 
+The Data modules are dedicated to the creation, the access and the 
 requesting of databases.
 `H2/H2GIS` and `Postgresql/Postgis` are supported.
 
-#### ProcessManager
+#### Process
 
-The ProcessManager modules are dedicated to the creation of processes 
+The Process modules are dedicated to the creation of processes 
 with the definition of the in/output. Processes can be executed with 
-input values and can also be chained using a ProcessMapper.
+input values and can also be chained.
 
 ### How to add OrbisData
 
@@ -70,23 +70,13 @@ and add the desired module :
             ...
             <plugin>
                 <groupId>org.orbisgis</groupId>
-                <artifactId>data-manager</artifactId>
-                <version>1.0.1-SNAPSHOT</version>
+                <artifactId>data</artifactId>
+                <version>2.0.0-SNAPSHOT</version>
             </plugin>
             <plugin>
                 <groupId>org.orbisgis</groupId>
-                <artifactId>data-manager-api</artifactId>
-                <version>1.0.1-SNAPSHOT</version>
-            </plugin>
-            <plugin>
-                <groupId>org.orbisgis</groupId>
-                <artifactId>process-manager</artifactId>
-                <version>1.0.1-SNAPSHOT</version>
-            </plugin>
-            <plugin>
-                <groupId>org.orbisgis</groupId>
-                <artifactId>process-manager-api</artifactId>
-                <version>1.0.1-SNAPSHOT</version>
+                <artifactId>process</artifactId>
+                <version>2.0.0-SNAPSHOT</version>
             </plugin>
             ...
         </plugins>
@@ -99,11 +89,10 @@ and add the desired module :
 
 Using Grab annotation :
 ``` groovy
-@GrabResolver(name='orbisgis', root='http://nexus-ng.orbisgis.org/')
-@Grab(group='org.orbisgis', module='data-manager', version='1.0.1-SNAPSHOT')
-@Grab(group='org.orbisgis', module='data-manager-api', version='1.0.1-SNAPSHOT')
-@Grab(group='org.orbisgis', module='process-manager', version='1.0.1-SNAPSHOT')
-@Grab(group='org.orbisgis', module='process-manager-api', version='1.0.1-SNAPSHOT')
+@GrabResolver(name='orbisgis', root='https://oss.sonatype.org/content/repositories/snapshots/')
+@Grab(group='org.orbisgis.data', module='h2gis', version='2.0.0-SNAPSHOT')
+@Grab(group='org.orbisgis.data', module='postgis', version='2.0.0-SNAPSHOT')
+@Grab(group='org.orbisgis', module='process', version='2.0.0-SNAPSHOT')
 ```
 
 ## Contributing

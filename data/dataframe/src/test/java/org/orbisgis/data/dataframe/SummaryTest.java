@@ -40,7 +40,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.orbisgis.commons.printer.Ascii;
 import org.orbisgis.commons.printer.Html;
-import org.orbisgis.data.jdbc.h2gis.H2GIS;
+import org.orbisgis.data.H2GIS;
 
 import java.sql.SQLException;
 import java.sql.Time;

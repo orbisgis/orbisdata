@@ -37,7 +37,7 @@
 package org.orbisgis.data.dataframe
 
 import org.junit.jupiter.api.Test
-import org.orbisgis.data.jdbc.h2gis.H2GIS
+import H2GIS
 import smile.base.cart.SplitRule
 import smile.classification.RandomForest
 import smile.data.formula.Formula

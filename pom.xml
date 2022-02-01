@@ -14,8 +14,8 @@
     <version>1.0.1-SNAPSHOT</version>
     <packaging>pom</packaging>
     <modules>
-        <module>data-manager</module>
-        <module>process-manager</module>
+        <module>data</module>
+        <module>process</module>
     </modules>
 
     <!-- Properties -->
@@ -68,25 +68,19 @@
                 <version>${cts-version}</version>
             </dependency>
             <dependency>
-                <groupId>org.orbisgis.orbisdata.datamanager</groupId>
-                <artifactId>api</artifactId>
+                <groupId>org.orbisgis.data</groupId>
+                <artifactId>data-api</artifactId>
                 <version>${project.version}</version>
                 <scope>compile</scope>
             </dependency>
             <dependency>
-                <groupId>org.orbisgis.orbisdata.datamanager</groupId>
+                <groupId>org.orbisgis.data</groupId>
                 <artifactId>jdbc</artifactId>
                 <version>${project.version}</version>
                 <scope>compile</scope>
             </dependency>
             <dependency>
-                <groupId>org.orbisgis.orbisdata.processmanager</groupId>
-                <artifactId>api</artifactId>
-                <version>${project.version}</version>
-                <scope>compile</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.orbisgis.orbisdata.processmanager</groupId>
+                <groupId>org.orbisgis.process</groupId>
                 <artifactId>process</artifactId>
                 <version>${project.version}</version>
                 <scope>compile</scope>

@@ -70,7 +70,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * @author Erwan Bocher (CNRS)
  * @author Sylvain PALOMINOS (UBS 2019)
  */
-class H2GISDATASOURCETEST {
+class H2GISDataSourceTest {
 
     private static final String DB_NAME = "./target/H2GISDATASOURCETEST";
     private static H2GIS h2gis;

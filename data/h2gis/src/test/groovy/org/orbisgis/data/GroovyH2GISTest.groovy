@@ -34,7 +34,7 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.data.jdbc
+package org.orbisgis.data
 
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test

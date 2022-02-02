@@ -103,8 +103,8 @@ public class PostGISSpatialTableTest {
             postGIS.execute("DROP TABLE IF EXISTS " + TABLE_NAME);
             postGIS.execute("CREATE TABLE " + TABLE_NAME + " (" + COL_THE_GEOM + " GEOMETRY(GEOMETRY, 2020), " + COL_THE_GEOM2 + " GEOMETRY(POINTZ, 4326)," +
                     COL_ID + " INTEGER, " + COL_VALUE + " FLOAT, " + COL_MEANING + " VARCHAR)");
-            postGIS.execute("INSERT INTO " + TABLE_NAME + " VALUES (ST_SetSRID('POINT(0 0)'::GEOMETRY, 2020), 'POINT Z(1 1 0)'::GEOMETRY, 1, 2.3, 'Simple points')");
-            postGIS.execute("INSERT INTO " + TABLE_NAME + " VALUES (ST_SetSRID('POINT(0 1)'::GEOMETRY, 2020), 'POINT Z(10 11 12)'::GEOMETRY, 2, 0.568, '3D point')");
+            postGIS.execute("INSERT INTO " + TABLE_NAME + " VALUES (ST_GEOMFROMTEXT('POINT(0 0)', 2020), ST_GEOMFROMTEXT('POINT Z(1 1 0)',4326), 1, 2.3, 'Simple points')");
+            postGIS.execute("INSERT INTO " + TABLE_NAME + " VALUES (ST_GEOMFROMTEXT('POINT(0 1)', 2020), ST_GEOMFROMTEXT('POINT Z(10 11 12)',4326), 2, 0.568, '3D point')");
         } catch (Exception e) {
             fail(e);
         }

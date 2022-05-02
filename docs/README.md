@@ -14,18 +14,21 @@ OrbisData need at least Java 11 to work.
 
 ### Architecture
 
-Each module of OrbisData is divided in two : the API mainly, constituted 
-of interfaces, and its implementation.
+OrbisData is organized around two modules : Data and Process.
 
 #### Data
 
-The Data modules are dedicated to the creation, the access and the 
+The Data module are dedicated to the creation, the access and the 
 requesting of databases.
 `H2/H2GIS` and `Postgresql/Postgis` are supported.
 
+It provides also a module to manage dataframe as R language proposes, 
+thanks to the Smile (Statistical Machine Intelligence and Learning Engine) library (https://haifengl.github.io/).
+
+
 #### Process
 
-The Process modules are dedicated to the creation of processes 
+The Process module are dedicated to the creation of processes 
 with the definition of the in/output. Processes can be executed with 
 input values and can also be chained.
 
@@ -95,6 +98,29 @@ Using Grab annotation :
 @Grab(group='org.orbisgis', module='process', version='2.0.0-SNAPSHOT')
 ```
 
+OrbisData encapsulates rows,columns from a database to a table or spatial table.
+
+The following code shows how to get the column names from an H2GIS table.
+
+``` groovy
+def h2GIS =  H2GIS.open('/tmp/myh2gis_db')
+println h2GIS.getTable("myTableName").columns
+```
+
+The next code shows how to iterate over the geometry stored in a table and apply a buffer
+on them. 
+the_geom refers to the column name and the object returned is a
+JTS geometry object (https://github.com/locationtech/jts).
+
+
+``` groovy
+def h2GIS =  H2GIS.open('/tmp/myh2gis_db')
+h2GIS.getSpatialTable("myTableName").each(it ->
+println it.the_geom.buffer(10)
+)
+```
+
+
 ## Contributing
 
 Please read [CONTRIBUTING.md](CONTRIBUTING.md) for details on our code 
@@ -107,7 +133,7 @@ This project is licensed under the LGPL v3 License - see the
 
 ##  Funding
 
-OrbisData is developed within the following frameworks :
+OrbisData has been developed within the following frameworks :
 
 
 * PAENDORA (Planification, Adaptation et Energie des DOnnées

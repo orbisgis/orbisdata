@@ -20,7 +20,7 @@ OrbisData is organized around two modules : Data and Process.
 
 The Data module are dedicated to the creation, the access and the 
 requesting of databases.
-`H2/H2GIS` and `Postgresql/Postgis` are supported.
+Currently, two spatial database are supported `H2/H2GIS` and `Postgresql/Postgis`.
 
 It provides also a module to manage dataframe as R language proposes, 
 thanks to the Smile (Statistical Machine Intelligence and Learning Engine) library (https://haifengl.github.io/).

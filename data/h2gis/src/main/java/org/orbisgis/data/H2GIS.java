@@ -39,6 +39,7 @@ package org.orbisgis.data;
 import groovy.lang.GString;
 import org.h2.Driver;
 import org.h2.util.OsgiDataSourceFactory;
+import org.h2gis.functions.factory.H2GISDBFactory;
 import org.h2gis.functions.factory.H2GISFunctions;
 import org.h2gis.functions.io.utility.IOMethods;
 import org.h2gis.network.functions.NetworkFunctions;
@@ -72,7 +73,7 @@ import java.util.*;
  */
 public class H2GIS extends JdbcDataSource {
 
-    private static final OsgiDataSourceFactory dataSourceFactory = new OsgiDataSourceFactory(new Driver());
+
     private static final Logger LOGGER = LoggerFactory.getLogger(H2GIS.class);
 
     /**
@@ -125,7 +126,7 @@ public class H2GIS extends JdbcDataSource {
         Connection connection;
         // Init spatial
         try {
-            connection = JDBCUtilities.wrapConnection(dataSourceFactory.createDataSource(properties).getConnection());
+            connection = JDBCUtilities.wrapSpatialDataSource(H2GISDBFactory.createDataSource(properties)).getConnection();
         } catch (SQLException e) {
             LOGGER.error("Unable to create the DataSource.\n" + e.getLocalizedMessage());
             return null;

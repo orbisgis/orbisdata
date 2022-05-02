@@ -37,7 +37,7 @@
 package org.orbisgis.data;
 
 import groovy.lang.GString;
-import org.h2gis.postgis_jts_osgi.DataSourceFactoryImpl;
+import org.h2gis.postgis_jts.PostGISDBFactory;
 import org.h2gis.utilities.FileUtilities;
 import org.h2gis.utilities.GeometryTableUtilities;
 import org.h2gis.utilities.JDBCUtilities;
@@ -50,7 +50,6 @@ import org.orbisgis.data.api.dataset.IJdbcTable;
 import org.orbisgis.data.api.dataset.ISpatialTable;
 import org.orbisgis.data.jdbc.JdbcDataSource;
 import org.orbisgis.data.jdbc.JdbcSpatialTable;
-import org.osgi.service.jdbc.DataSourceFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -70,7 +69,7 @@ import java.util.*;
 public class POSTGIS extends JdbcDataSource {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(POSTGIS.class);
-    private static final DataSourceFactory dataSourceFactory = new DataSourceFactoryImpl();
+    private static final PostGISDBFactory dataSourceFactory = new PostGISDBFactory();
 
 
     /**

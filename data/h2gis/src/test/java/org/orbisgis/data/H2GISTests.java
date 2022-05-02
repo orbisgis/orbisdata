@@ -38,6 +38,7 @@ package org.orbisgis.data;
 
 import groovy.lang.Closure;
 import org.apache.commons.dbcp.BasicDataSource;
+import org.h2gis.functions.factory.H2GISDBFactory;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.locationtech.jts.geom.Geometry;
@@ -45,7 +46,6 @@ import org.locationtech.jts.geom.Point;
 import org.orbisgis.data.api.dataset.IJdbcTable;
 import org.orbisgis.data.api.dataset.ISpatialTable;
 import org.orbisgis.data.api.dataset.ITable;
-import org.osgi.service.jdbc.DataSourceFactory;
 
 import java.io.File;
 import java.sql.ResultSet;
@@ -82,7 +82,7 @@ public class H2GISTests {
     @Test
     public void testColumnsType() throws SQLException {
         Map<String, String> map = new HashMap<>();
-        map.put(DataSourceFactory.JDBC_DATABASE_NAME, "./target/loadH2GIS");
+        map.put(H2GISDBFactory.JDBC_DATABASE_NAME, "./target/loadH2GIS");
         H2GIS h2GIS = H2GIS.open(map);
         assertNotNull(h2GIS);
         h2GIS.execute("DROP TABLE IF EXISTS TYPES");
@@ -107,7 +107,7 @@ public class H2GISTests {
     @Test
     public void loadH2GIS() {
         Map<String, String> map = new HashMap<>();
-        map.put(DataSourceFactory.JDBC_DATABASE_NAME, "./target/loadH2GIS");
+        map.put(H2GISDBFactory.JDBC_DATABASE_NAME, "./target/loadH2GIS");
         H2GIS h2GIS = H2GIS.open(map);
         assertNotNull(h2GIS);
     }
@@ -116,7 +116,7 @@ public class H2GISTests {
     @Test
     public void queryH2GIS() throws SQLException {
         Map<String, String> map = new HashMap<>();
-        map.put(DataSourceFactory.JDBC_DATABASE_NAME, "./target/loadH2GIS2");
+        map.put(H2GISDBFactory.JDBC_DATABASE_NAME, "./target/loadH2GIS2");
         H2GIS h2GIS = H2GIS.open(map);
         h2GIS.execute("DROP TABLE IF EXISTS h2gis; CREATE TABLE h2gis (id int, the_geom geometry(point));" +
                 "insert into h2gis values (1, 'POINT(10 10)'::GEOMETRY), (2, 'POINT(1 1)'::GEOMETRY);");
@@ -136,7 +136,7 @@ public class H2GISTests {
     @Test
     public void querySpatialTable() throws SQLException {
         Map<String, String> map = new HashMap<>();
-        map.put(DataSourceFactory.JDBC_DATABASE_NAME, "./target/loadH2GIS2");
+        map.put(H2GISDBFactory.JDBC_DATABASE_NAME, "./target/loadH2GIS2");
         H2GIS h2GIS = H2GIS.open(map);
         h2GIS.execute("DROP TABLE IF EXISTS h2gis, noGeom; CREATE TABLE h2gis (id int, the_geom geometry(point));" +
                 "insert into h2gis values (1, 'POINT(10 10)'::GEOMETRY), (2, 'POINT(1 1)'::GEOMETRY);" +
@@ -160,7 +160,7 @@ public class H2GISTests {
     @Test
     public void queryTableNames() throws SQLException {
         Map<String, String> map = new HashMap<>();
-        map.put(DataSourceFactory.JDBC_DATABASE_NAME, "./target/loadH2GIS");
+        map.put(H2GISDBFactory.JDBC_DATABASE_NAME, "./target/loadH2GIS");
         H2GIS h2GIS = H2GIS.open(map);
         h2GIS.execute("DROP TABLE IF EXISTS table1, table2; " +
                 "CREATE TABLE table1 (id int, the_geom geometry(point));" +
@@ -174,7 +174,7 @@ public class H2GISTests {
     @Test
     public void updateSpatialTable() throws SQLException {
         Map<String, String> map = new HashMap<>();
-        map.put(DataSourceFactory.JDBC_DATABASE_NAME, "./target/loadH2GIS");
+        map.put(H2GISDBFactory.JDBC_DATABASE_NAME, "./target/loadH2GIS");
         H2GIS h2GIS = H2GIS.open(map);
         h2GIS.execute("DROP TABLE IF EXISTS h2gis;" +
                 " CREATE TABLE h2gis (id int PRIMARY KEY, code int, the_geom geometry(point));" +
@@ -215,7 +215,7 @@ public class H2GISTests {
     @Test
     public void request() throws SQLException {
         Map<String, String> map = new HashMap<>();
-        map.put(DataSourceFactory.JDBC_DATABASE_NAME, "./target/loadH2GIS2");
+        map.put(H2GISDBFactory.JDBC_DATABASE_NAME, "./target/loadH2GIS2");
         H2GIS h2GIS = H2GIS.open(map);
         h2GIS.execute("DROP TABLE IF EXISTS h2gis; " +
                 "CREATE TABLE h2gis (id int PRIMARY KEY, code int, the_geom geometry(point));" +
@@ -300,7 +300,7 @@ public class H2GISTests {
     @Test
     public void hasTable() throws SQLException {
         Map<String, String> map = new HashMap<>();
-        map.put(DataSourceFactory.JDBC_DATABASE_NAME, "./target/loadH2GIS");
+        map.put(H2GISDBFactory.JDBC_DATABASE_NAME, "./target/loadH2GIS");
         H2GIS h2GIS = H2GIS.open(map);
         h2GIS.execute("DROP TABLE IF EXISTS table1, table2,OrbisGIS; " +
                 "CREATE TABLE table1 (id int, the_geom geometry(point));" +
@@ -315,7 +315,7 @@ public class H2GISTests {
     @Test
     void testGetTableOnEmptyTable() throws SQLException {
         Map<String, String> map = new HashMap<>();
-        map.put(DataSourceFactory.JDBC_DATABASE_NAME, "./target/loadH2GIS");
+        map.put(H2GISDBFactory.JDBC_DATABASE_NAME, "./target/loadH2GIS");
         H2GIS h2GIS = H2GIS.open(map);
         h2GIS.execute("DROP TABLE IF EXISTS table1, table2; " +
                 "CREATE TABLE table1 (id int, the_geom geometry(point));" +
@@ -330,7 +330,7 @@ public class H2GISTests {
         String[] fcts = new String[]{ "ST_ACCESSIBILITY", "ST_CONNECTEDCOMPONENTS", "ST_GRAPHANALYSIS",
                 "ST_SHORTESTPATHLENGTH", "ST_SHORTESTPATHTREE", "ST_SHORTESTPATH"};
         Map<String, String> map = new HashMap<>();
-        map.put(DataSourceFactory.JDBC_DATABASE_NAME, "./target/addNetworkFunctionsTest" + UUID.randomUUID().toString());
+        map.put(H2GISDBFactory.JDBC_DATABASE_NAME, "./target/addNetworkFunctionsTest" + UUID.randomUUID().toString());
         H2GIS h2GIS = H2GIS.open(map);
         ITable table = h2GIS.getTable("INFORMATION_SCHEMA.ROUTINES");
         assertNotNull(table);
@@ -421,7 +421,7 @@ public class H2GISTests {
     @Test
     public void getTableSelect() throws SQLException {
         Map<String, String> map = new HashMap<>();
-        map.put(DataSourceFactory.JDBC_DATABASE_NAME, "./target/selectTable");
+        map.put(H2GISDBFactory.JDBC_DATABASE_NAME, "./target/selectTable");
         H2GIS h2GIS = H2GIS.open(map);
         h2GIS.execute("DROP TABLE IF EXISTS h2gis; CREATE TABLE h2gis (id int, the_geom geometry(point));" +
                 "insert into h2gis values (1, 'POINT(10 10)'::GEOMETRY), (2, 'POINT(1 1)'::GEOMETRY);" );

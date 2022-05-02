@@ -62,16 +62,8 @@
             <artifactId>h2gis-utilities</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.osgi</groupId>
-            <artifactId>org.osgi.service.jdbc</artifactId>
-        </dependency>
-        <dependency>
             <groupId>org.orbisgis</groupId>
             <artifactId>postgis-jts</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.orbisgis</groupId>
-            <artifactId>postgis-jts-osgi</artifactId>
         </dependency>
         <dependency>
             <groupId>org.orbisgis</groupId>

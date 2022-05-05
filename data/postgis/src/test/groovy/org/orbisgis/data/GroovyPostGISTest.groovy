@@ -492,5 +492,8 @@ class GroovyPostGISTest {
         assertFalse postGIS.getTable("geotable").isEmpty()
         postGIS.execute("delete from geotable")
         assertTrue postGIS.getTable("geotable").isEmpty()
+        postGIS.execute("insert into geotable values(null)")
+        assertFalse postGIS.getTable("geotable").isEmpty()
+        postGIS.execute("drop table geotable")
     }
 }

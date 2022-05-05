@@ -1068,5 +1068,9 @@ class GroovyH2GISTest {
         assertFalse h2GIS.getTable("geotable").isEmpty()
         h2GIS.execute("delete from geotable")
         assertTrue h2GIS.getTable("geotable").isEmpty()
+        h2GIS.execute("insert into geotable values(null)")
+        assertFalse h2GIS.getTable("geotable").isEmpty()
+        h2GIS.execute("drop table geotable")
+
     }
     }

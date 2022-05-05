@@ -608,4 +608,10 @@ public interface ITable<T, U> extends IMatrix<T>, IQueryBuilder {
 
     @NotNull
     Map<String, Object> firstRow();
+
+    /**
+     * Return true if the table doesn't have any data
+     * @return
+     */
+    boolean isEmpty();
 }

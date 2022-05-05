@@ -483,4 +483,14 @@ class GroovyPostGISTest {
         assertEquals(4326, postGIS.getSpatialTable("(select st_setsrid(the_geom, 4326) from testtable)").srid)
     }
 
+    @Test
+    @EnabledIfSystemProperty(named = "test.postgis", matches = "true")
+    void isTableEmpty() {
+        postGIS.execute("DROP TABLE IF EXISTS geotable; CREATE TABLE geotable(id integer)")
+        assertTrue postGIS.getTable("geotable").isEmpty()
+        postGIS.execute("insert into geotable values(1)")
+        assertFalse postGIS.getTable("geotable").isEmpty()
+        postGIS.execute("delete from geotable")
+        assertTrue postGIS.getTable("geotable").isEmpty()
+    }
 }

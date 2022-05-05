@@ -1058,4 +1058,15 @@ class GroovyH2GISTest {
         h2GIS.getSpatialTable "h2gis_imported" eachRow { row -> concat += "$row.id $row.the_geom $row.geometry\n" }
         assertEquals("1 POINT (10 10) POINT (10 10)\n2 POINT (1 1) POINT (1 1)\n", concat)
     }
-}
+
+    @Test
+    void isTableEmpty() {
+        def h2GIS = H2GIS.open([databaseName: './target/loadH2GIS'])
+        h2GIS.execute("DROP TABLE IF EXISTS geotable; CREATE TABLE geotable(id integer)")
+        assertTrue h2GIS.getTable("geotable").isEmpty()
+        h2GIS.execute("insert into geotable values(1)")
+        assertFalse h2GIS.getTable("geotable").isEmpty()
+        h2GIS.execute("delete from geotable")
+        assertTrue h2GIS.getTable("geotable").isEmpty()
+    }
+    }

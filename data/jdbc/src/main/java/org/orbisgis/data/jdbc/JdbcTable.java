@@ -618,7 +618,7 @@ public abstract class JdbcTable<T extends ResultSet> extends DefaultResultSet im
             ioMethods.exportToFile(getJdbcDataSource().getConnection(), toSave,filePath, null, deleteFile);
             return filePath;
         } catch (SQLException e) {
-            LOGGER.error("Cannot import the file : "+ filePath);
+            LOGGER.error("Cannot save the file : "+ filePath);
             return null;
         }
     }
@@ -633,7 +633,7 @@ public abstract class JdbcTable<T extends ResultSet> extends DefaultResultSet im
             ioMethods.exportToFile(getJdbcDataSource().getConnection(), toSave,filePath, encoding, false);
             return filePath;
         } catch (SQLException e) {
-            LOGGER.error("Cannot import the file : "+ filePath);
+            LOGGER.error("Cannot save the file : "+ filePath);
             return null;
         }
     }
@@ -664,7 +664,7 @@ public abstract class JdbcTable<T extends ResultSet> extends DefaultResultSet im
 
             return IOMethods.exportToDataBase(getJdbcDataSource().getConnection(), inputTableName,dataSource.getConnection() , outputTableName, deleteTable?-1:0, batchSize);
         } catch (SQLException e) {
-            LOGGER.error("Unable to load the table "+inputTableName + " from " + dataSource.getLocation().toString());
+            LOGGER.error("Unable to save the table "+inputTableName + " to " + dataSource.getLocation().toString());
         }
         return null;
     }
@@ -679,7 +679,7 @@ public abstract class JdbcTable<T extends ResultSet> extends DefaultResultSet im
         try {
             return IOMethods.exportToDataBase(getJdbcDataSource().getConnection(), inputTableName,  dataSource.getConnection(), inputTableName, deleteTable?-1:0, batchSize);
         } catch (SQLException e) {
-            LOGGER.error("Unable to load the table "+inputTableName + " from " + dataSource.getLocation().toString());
+            LOGGER.error("Unable to save the table "+inputTableName + " to " + dataSource.getLocation().toString());
         }
         return null;
     }

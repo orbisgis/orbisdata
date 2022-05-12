@@ -69,8 +69,6 @@ import java.util.*;
 public class POSTGIS extends JdbcDataSource {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(POSTGIS.class);
-    private static final PostGISDBFactory dataSourceFactory = new PostGISDBFactory();
-
 
     /**
      * Private constructor.
@@ -152,7 +150,7 @@ public class POSTGIS extends JdbcDataSource {
     public static POSTGIS open(@NotNull Properties properties) {
         Connection connection;
         try {
-            connection = dataSourceFactory.createDataSource(properties).getConnection();
+            connection = PostGISDBFactory.createDataSource(properties).getConnection();
         } catch (SQLException e) {
             LOGGER.error("Unable to create the DataSource.\n" + e.getLocalizedMessage());
             return null;

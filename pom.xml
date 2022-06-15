@@ -26,17 +26,15 @@
         <site.basedir>${project.basedir}</site.basedir>
         <h2gis-version>2.1.0-SNAPSHOT</h2gis-version>
         <orbisparent-version>1.2.1-SNAPSHOT</orbisparent-version>
+        <groovy-version>3.0.11</groovy-version>
+        <picocli-version>4.6.3</picocli-version>
+        <h2-version>2.1.214</h2-version>
         <cts-version>1.6.0</cts-version>
     </properties>
 
     <!-- Dependencies -->
     <dependencyManagement>
         <dependencies>
-            <dependency>
-                <groupId>org.orbisgis</groupId>
-                <artifactId>commons</artifactId>
-                <version>${orbisparent-version}</version>
-            </dependency>
             <dependency>
                 <groupId>org.orbisgis</groupId>
                 <artifactId>h2gis</artifactId>

@@ -36,3 +36,4 @@ make it compatible with `smile` API)
 + Change the request building from a `ITable`, only use `columns(String...)` (optional) followed by `filter(String)` (optional) to make request.
   A sub request can be made by calling `getTable()` after calling again `columns(String...)` and `filter(String)`.
 + Use H2 2.0.206
++ Upgrade H2 to 2.1.214 and Groovy to 3.0.11

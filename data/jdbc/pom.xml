@@ -32,22 +32,22 @@
         <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.orbisgis</groupId>
-            <artifactId>commons</artifactId>
+            <version>${h2-version}</version>
         </dependency>
         <dependency>
             <groupId>org.codehaus.groovy</groupId>
             <artifactId>groovy</artifactId>
+            <version>${groovy-version}</version>
         </dependency>
         <dependency>
             <groupId>org.codehaus.groovy</groupId>
             <artifactId>groovy-sql</artifactId>
+            <version>${groovy-version}</version>
         </dependency>
         <dependency>
             <groupId>org.codehaus.groovy</groupId>
             <artifactId>groovy-templates</artifactId>
+            <version>${groovy-version}</version>
         </dependency>
         <dependency>
             <groupId>org.orbisgis</groupId>

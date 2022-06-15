@@ -28,10 +28,12 @@
         <dependency>
             <groupId>org.codehaus.groovy</groupId>
             <artifactId>groovy</artifactId>
+            <version>${groovy-version}</version>
         </dependency>
         <dependency>
             <groupId>org.codehaus.groovy</groupId>
             <artifactId>groovy-sql</artifactId>
+            <version>${groovy-version}</version>
         </dependency>
         <dependency>
             <groupId>org.locationtech.jts</groupId>
@@ -46,11 +48,6 @@
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
         </dependency>
-        <dependency>
-            <groupId>org.orbisgis</groupId>
-            <artifactId>commons</artifactId>
-        </dependency>
-
         <dependency>
             <groupId>org.orbisgis</groupId>
             <artifactId>h2gis</artifactId>

@@ -936,4 +936,34 @@ public abstract class JdbcTable<T extends ResultSet> extends DefaultResultSet im
             action.accept(t);
         }
     }
+
+    @Override
+    public boolean isEmpty() {
+        Connection con = null;
+        try {
+            con = jdbcDataSource.getConnection();
+        } catch (SQLException e) {
+            LOGGER.error("Unable to get the connection.");
+        }
+        String query = "";
+        if (tableLocation == null) {
+            query = "SELECT 1 FROM ("+getBaseQuery()+") AS FOO LIMIT 1";
+        } else  {
+            query =  "SELECT 1 FROM "+tableLocation.toString(getDbType())+ " LIMIT 1";
+        }
+        try {
+            ResultSet rowQuery = con.createStatement().executeQuery(query );
+            return !rowQuery.next();
+        } catch (SQLException e) {
+            LOGGER.error("Unable to get the number of rows.");
+            try {
+                if(con!=null  && !con.getAutoCommit()) {
+                    con.rollback();
+                }
+            } catch (SQLException e1) {
+                LOGGER.error("Unable to rollback.", e1);
+            }
+            throw new RuntimeException("Unable to read the table.");
+        }
+    }
 }

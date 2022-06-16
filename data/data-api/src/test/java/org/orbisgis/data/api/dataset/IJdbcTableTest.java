@@ -209,6 +209,11 @@ public class IJdbcTableTest {
             this.isIterable = isIterable;
         }
 
+        @Override
+        public boolean isEmpty() {
+            return false;
+        }
+
         /**
          * True if throws exception, false otherwise.
          *

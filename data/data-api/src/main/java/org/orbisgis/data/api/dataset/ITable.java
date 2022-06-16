@@ -329,10 +329,6 @@ public interface ITable<T, U> extends IMatrix<T>, IQueryBuilder {
         return 2;
     }
 
-    @Override
-    default boolean isEmpty() {
-        return getRowCount() == 0;
-    }
 
     @Override
     @NotNull

@@ -303,6 +303,11 @@ public class ITableTest {
             columns = new ArrayList<>();
         }
 
+        @Override
+        public boolean isEmpty() {
+            return columns.isEmpty();
+        }
+
         /**
          * Add a single column.
          *

@@ -37,8 +37,6 @@
 package org.orbisgis.data;
 
 import groovy.lang.GString;
-import org.h2.Driver;
-import org.h2.util.OsgiDataSourceFactory;
 import org.h2gis.functions.factory.H2GISDBFactory;
 import org.h2gis.functions.factory.H2GISFunctions;
 import org.h2gis.functions.io.utility.IOMethods;

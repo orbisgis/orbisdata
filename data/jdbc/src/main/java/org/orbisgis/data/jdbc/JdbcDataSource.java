@@ -659,7 +659,7 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, IRe
             ioMethods.exportToFile(getConnection(), tableName,filePath, null, delete);
             return true;
         } catch (SQLException e) {
-            LOGGER.error("Cannot import the file : "+ filePath);
+            LOGGER.error("Cannot save the file : "+ filePath, e);
         }
         return false;
     }
@@ -677,7 +677,7 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, IRe
             ioMethods.exportToFile(getConnection(), tableName,filePath, encoding, false);
             return true;
         } catch (SQLException e) {
-            LOGGER.error("Cannot import the file : "+ filePath);
+            LOGGER.error("Cannot save the file : "+ filePath, e);
         }
         return false;
     }

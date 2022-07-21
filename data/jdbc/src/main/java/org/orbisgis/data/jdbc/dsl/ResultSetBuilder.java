@@ -66,7 +66,7 @@ public class ResultSetBuilder implements IResultSetBuilder {
     /**
      * {@link IJdbcDataSource} to use to get the {@link ResultSet}.
      */
-    private IJdbcDataSource dataSource;
+    private final IJdbcDataSource dataSource;
     /**
      * {@link ResultSet} properties.
      */

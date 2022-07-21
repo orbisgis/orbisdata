@@ -37,10 +37,6 @@
 package org.orbisgis.data;
 
 
-import groovy.sql.Sql;
-import org.h2gis.functions.factory.H2GISDBFactory;
-import org.h2gis.utilities.JDBCUtilities;
-import org.h2gis.utilities.dbtypes.DBTypes;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -54,9 +50,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
-import java.sql.Connection;
 import java.sql.SQLException;
-import java.sql.Statement;
 
 import static org.junit.jupiter.api.Assertions.*;
 

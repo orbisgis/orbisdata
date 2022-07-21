@@ -292,7 +292,7 @@ public class ITableTest {
         /**
          * {@link List} of columns. A column is a list with the column name as first value.
          */
-        private List<List<Object>> columns;
+        private final List<List<Object>> columns;
 
         /**
          * Main constructor with an empty column list.
@@ -680,7 +680,7 @@ public class ITableTest {
     private static class DummyIterator implements Iterator {
 
         private int index = 0;
-        private int count = 10;
+        private final int count = 10;
 
         @Override
         public boolean hasNext() {

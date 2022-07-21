@@ -110,7 +110,7 @@ public class ProcessMapper implements IProcessMapper, GroovyObject, GroovyInterc
      * Main empty constructor.
      */
     public ProcessMapper() {
-        this("mapper_" + UUID.randomUUID().toString());
+        this("mapper_" + UUID.randomUUID());
     }
 
     /**

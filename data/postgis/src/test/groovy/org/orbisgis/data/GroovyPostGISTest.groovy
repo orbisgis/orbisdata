@@ -55,13 +55,13 @@ class GroovyPostGISTest {
                                password    : 'orbisgis',
                                url         : 'jdbc:postgresql://localhost:5432/'
     ]
-    static POSTGIS postGIS;
+    static POSTGIS postGIS
 
 
     @BeforeAll
     static void init() {
         postGIS = org.orbisgis.data.POSTGIS.open(dbProperties)
-        System.setProperty("test.postgis", Boolean.toString(postGIS != null));
+        System.setProperty("test.postgis", Boolean.toString(postGIS != null))
     }
 
     @Test
@@ -255,8 +255,8 @@ class GroovyPostGISTest {
                 CREATE TABLE testtable (id int, the_geom geometry(point, 0));
                 INSERT INTO testtable VALUES (1, 'POINT(10 10)'::GEOMETRY), (2, 'POINT(1 1)'::GEOMETRY);
         """)
-        postGIS.getSpatialTable("testtable").save("target/postgis_saved.geojson");
-        postGIS.load("target/postgis_saved.geojson");
+        postGIS.getSpatialTable("testtable").save("target/postgis_saved.geojson")
+        postGIS.load("target/postgis_saved.geojson")
         def concat = ""
         postGIS.getSpatialTable "postgis_saved" eachRow { row ->
              concat += "$row.id $row.the_geom $row.geometry\n" }
@@ -276,11 +276,11 @@ class GroovyPostGISTest {
         assertNotNull(sp)
         def spr = sp.reproject(2154)
         assertNotNull(spr)
-        assertEquals(2154, spr.getSrid());
+        assertEquals(2154, spr.getSrid())
         assertNotNull(spr.save("target/reprojected_table_postgis.shp", true))
         def reprojectedTable = postGIS.getSpatialTable(postGIS.load("target/reprojected_table_postgis.shp", true))
         assertNotNull(reprojectedTable)
-        reprojectedTable.next();
+        reprojectedTable.next()
         assertEquals(2154, reprojectedTable.getGeometry(2).getSRID())
     }
 
@@ -295,7 +295,7 @@ class GroovyPostGISTest {
         def tableName = postGIS.getTable("orbisgis").filter(" where id = 2").getSpatialTable().reproject(4326).save(postGIS, "output_filtered", true)
         assertNotNull(tableName)
         def reprojectedTable = postGIS.getSpatialTable(tableName)
-        reprojectedTable.next();
+        reprojectedTable.next()
         assertEquals(4326, reprojectedTable.getGeometry(2).getSRID())
         assertNotNull(reprojectedTable)
         //The SRID value is not set has constrained
@@ -327,12 +327,12 @@ class GroovyPostGISTest {
                  boundary GEOMETRY(MULTIPOLYGON, 0));
                 INSERT INTO forests VALUES(109, 'Green Forest', ST_MPolyFromText( 'MULTIPOLYGON(((28 26,28 0,84 0,
                 84 42,28 26), (52 18,66 23,73 9,48 6,52 18)),((59 18,67 18,67 13,59 13,59 18)))', 0));"""
-        postGIS.execute("ANALYZE forests");
+        postGIS.execute("ANALYZE forests")
         Geometry geom = postGIS.getSpatialTable("forests").getEstimatedExtent()
         assertEquals 0, geom.SRID
         assertTrue geom instanceof Polygon
-        WKTReader reader = new WKTReader();
-        assertEquals(0.0, geom.distance(reader.read("POLYGON ((28 0, 28 42, 84 42, 84 0, 28 0))")));
+        WKTReader reader = new WKTReader()
+        assertEquals(0.0, geom.distance(reader.read("POLYGON ((28 0, 28 42, 84 42, 84 0, 28 0))")))
     }
 
     @Test
@@ -346,7 +346,7 @@ class GroovyPostGISTest {
         Geometry geom = postGIS.getSpatialTable("forests").getExtent()
         assertEquals 4326, geom.SRID
         assertTrue geom instanceof Polygon
-        assertEquals("POLYGON ((28 0, 28 42, 84 42, 84 0, 28 0))", geom.toString());
+        assertEquals("POLYGON ((28 0, 28 42, 84 42, 84 0, 28 0))", geom.toString())
     }
 
     @Test
@@ -377,7 +377,7 @@ class GroovyPostGISTest {
                 INSERT INTO testtable VALUES (1, 'POINT(10 10)'::GEOMETRY), (2, 'POINT(1 1)'::GEOMETRY);
         """)
         def val = 2
-        def String[] arr = []
+        String[] arr = []
 
         def table = postGIS.scrollInsensitive().getTable("(SELECT * FROM testtable where id=$val)".toString())
         assert 2 == table.firstRow[0]
@@ -454,7 +454,7 @@ class GroovyPostGISTest {
         assertFalse(postGIS.getSpatialTable("orbisgis").id.isIndexed())
         postGIS.getSpatialTable("orbisgis").id.createIndex()
         assertTrue(postGIS.getSpatialTable("orbisgis").id.isIndexed())
-        postGIS.getSpatialTable("orbisgis").the_geom.dropIndex();
+        postGIS.getSpatialTable("orbisgis").the_geom.dropIndex()
         assertFalse(postGIS.getSpatialTable("orbisgis").the_geom.isIndexed())
     }
 
@@ -465,8 +465,8 @@ class GroovyPostGISTest {
                 DROP TABLE IF EXISTS big_geo;
                 CREATE TABLE big_geo as select st_makepoint(-60 + n*random()/500.00, 30 + n*random()/500.00), n as id from generate_series(1,100000) as n;
         """)
-        def spatialTable = postGIS.fetchSize(100).getSpatialTable("(select * from big_geo)");
-        assertEquals(100000, spatialTable.getRowCount());
+        def spatialTable = postGIS.fetchSize(100).getSpatialTable("(select * from big_geo)")
+        assertEquals(100000, spatialTable.getRowCount())
     }
 
 

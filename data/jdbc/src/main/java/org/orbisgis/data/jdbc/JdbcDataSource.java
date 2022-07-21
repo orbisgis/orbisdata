@@ -48,7 +48,6 @@ import groovy.transform.stc.SimpleType;
 import org.codehaus.groovy.runtime.InvokerHelper;
 import org.h2.util.ScriptReader;
 import org.h2gis.functions.io.utility.IOMethods;
-import org.h2gis.utilities.TableLocation;
 import org.h2gis.utilities.*;
 import org.h2gis.utilities.dbtypes.DBTypes;
 import org.locationtech.jts.geom.*;
@@ -528,7 +527,7 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, IRe
             } catch (SQLException e2) {
                 LOGGER.error("Unable to rollback.", e2.getLocalizedMessage());
             }
-            super.eachRow(sql.toString(), closure);
+            super.eachRow(sql, closure);
         }
     }
 
@@ -678,7 +677,7 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, IRe
         try {
             return save(tableName, url.toURI(), encoding);
         } catch (URISyntaxException e) {
-            LOGGER.error("Unable to get the file from the URL '" + url.toString() + "'\n" + e.getLocalizedMessage());
+            LOGGER.error("Unable to get the file from the URL '" + url + "'\n" + e.getLocalizedMessage());
         }
         return false;
     }
@@ -752,7 +751,7 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, IRe
         try {
             return link(url.toURI(), tableName, delete);
         } catch (URISyntaxException e) {
-            LOGGER.error("Unable to get the file from the URL '" + url.toString() + "'\n" + e.getLocalizedMessage());
+            LOGGER.error("Unable to get the file from the URL '" + url + "'\n" + e.getLocalizedMessage());
         }
         return null;
     }
@@ -762,7 +761,7 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, IRe
         try {
             return link(url.toURI(), tableName);
         } catch (URISyntaxException e) {
-            LOGGER.error("Unable to get the file from the URL '" + url.toString() + "'\n" + e.getLocalizedMessage());
+            LOGGER.error("Unable to get the file from the URL '" + url + "'\n" + e.getLocalizedMessage());
         }
         return null;
     }
@@ -772,7 +771,7 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, IRe
         try {
             return link(url.toURI(), delete);
         } catch (URISyntaxException e) {
-            LOGGER.error("Unable to get the file from the URL '" + url.toString() + "'\n" + e.getLocalizedMessage());
+            LOGGER.error("Unable to get the file from the URL '" + url + "'\n" + e.getLocalizedMessage());
         }
         return null;
     }
@@ -782,7 +781,7 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, IRe
         try {
             return link(url.toURI());
         } catch (URISyntaxException e) {
-            LOGGER.error("Unable to get the file from the URL '" + url.toString() + "'\n" + e.getLocalizedMessage());
+            LOGGER.error("Unable to get the file from the URL '" + url + "'\n" + e.getLocalizedMessage());
         }
         return null;
     }
@@ -874,7 +873,7 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, IRe
         try {
             return load(url.toURI(), tableName, null, false);
         } catch (URISyntaxException e) {
-            LOGGER.error("Unable to get the file from the URL '" + url.toString() + "'\n" + e.getLocalizedMessage());
+            LOGGER.error("Unable to get the file from the URL '" + url + "'\n" + e.getLocalizedMessage());
         }
         return null;
     }
@@ -884,7 +883,7 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, IRe
         try {
             return load(url.toURI(), tableName, null, delete);
         } catch (URISyntaxException e) {
-            LOGGER.error("Unable to get the file from the URL '" + url.toString() + "'\n" + e.getLocalizedMessage());
+            LOGGER.error("Unable to get the file from the URL '" + url + "'\n" + e.getLocalizedMessage());
         }
         return null;
     }
@@ -894,7 +893,7 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, IRe
         try {
             return load(url.toURI(), false);
         } catch (URISyntaxException e) {
-            LOGGER.error("Unable to get the file from the URL '" + url.toString() + "'\n" + e.getLocalizedMessage());
+            LOGGER.error("Unable to get the file from the URL '" + url + "'\n" + e.getLocalizedMessage());
         }
         return null;
     }
@@ -904,7 +903,7 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, IRe
         try {
             return load(url.toURI(), delete);
         } catch (URISyntaxException e) {
-            LOGGER.error("Unable to get the file from the URL '" + url.toString() + "'\n" + e.getLocalizedMessage());
+            LOGGER.error("Unable to get the file from the URL '" + url + "'\n" + e.getLocalizedMessage());
         }
         return null;
     }
@@ -914,7 +913,7 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, IRe
         try {
             return load(url.toURI(), tableName, encoding, delete);
         } catch (URISyntaxException e) {
-            LOGGER.error("Unable to get the file from the URL '" + url.toString() + "'\n" + e.getLocalizedMessage());
+            LOGGER.error("Unable to get the file from the URL '" + url + "'\n" + e.getLocalizedMessage());
         }
         return null;
     }

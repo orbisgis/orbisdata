@@ -51,7 +51,7 @@ import java.util.function.Consumer;
 public class ResultSetSpliterator<T extends IStreamResultSet> implements Spliterator<T> {
 
     private final long size;
-    private T rs;
+    private final T rs;
 
     public ResultSetSpliterator(long size, T rs){
         this.size = size;

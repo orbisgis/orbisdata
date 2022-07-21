@@ -204,8 +204,8 @@ class GroovyH2GISTest {
                 CREATE TABLE h2gis (id int, the_geom geometry(point));
                 INSERT INTO h2gis VALUES (1, 'POINT(10 10)'::GEOMETRY), (2, 'POINT(1 1)'::GEOMETRY);
         """)
-        h2GIS.save("h2gis", "target/h2gis_imported.shp");
-        h2GIS.load("target/h2gis_imported.shp", "h2gis_imported", null, false);
+        h2GIS.save("h2gis", "target/h2gis_imported.shp")
+        h2GIS.load("target/h2gis_imported.shp", "h2gis_imported", null, false)
         def concat = ""
         h2GIS.getSpatialTable "h2gis_imported" eachRow { row -> concat += "$row.id $row.the_geom $row.geometry\n" }
         assertEquals("1 POINT (10 10) POINT (10 10)\n2 POINT (1 1) POINT (1 1)\n", concat)
@@ -219,9 +219,9 @@ class GroovyH2GISTest {
                 CREATE TABLE h2gis (id int, the_geom geometry(point));
                 INSERT INTO h2gis VALUES (1, 'POINT(10 10)'::GEOMETRY), (2, 'POINT(1 1)'::GEOMETRY);
         """)
-        h2GIS.save("h2gis", "target/h2gis_imported.shp");
-        h2GIS.load("target/h2gis_imported.shp", "h2gis_imported", null, false);
-        h2GIS.load("target/h2gis_imported.shp", "h2gis_imported", null, true);
+        h2GIS.save("h2gis", "target/h2gis_imported.shp")
+        h2GIS.load("target/h2gis_imported.shp", "h2gis_imported", null, false)
+        h2GIS.load("target/h2gis_imported.shp", "h2gis_imported", null, true)
         def concat = ""
         h2GIS.getSpatialTable "h2gis_imported" eachRow { row -> concat += "$row.id $row.the_geom $row.geometry\n" }
         assertEquals("1 POINT (10 10) POINT (10 10)\n2 POINT (1 1) POINT (1 1)\n", concat)
@@ -235,8 +235,8 @@ class GroovyH2GISTest {
                 CREATE TABLE h2gis (id int, the_geom geometry(point));
                 INSERT INTO h2gis VALUES (1, 'POINT(10 10)'::GEOMETRY), (2, 'POINT(1 1)'::GEOMETRY);
         """)
-        h2GIS.save("h2gis", "target/h2gis_imported.shp");
-        h2GIS.load("target/h2gis_imported.shp", "h2gis_imported");
+        h2GIS.save("h2gis", "target/h2gis_imported.shp")
+        h2GIS.load("target/h2gis_imported.shp", "h2gis_imported")
         def concat = ""
         h2GIS.getSpatialTable "h2gis_imported" eachRow { row -> concat += "$row.id $row.the_geom $row.geometry\n" }
         assertEquals("1 POINT (10 10) POINT (10 10)\n2 POINT (1 1) POINT (1 1)\n", concat)
@@ -250,8 +250,8 @@ class GroovyH2GISTest {
                 CREATE TABLE h2gis (id int, the_geom geometry(point));
                 INSERT INTO h2gis VALUES (1, 'POINT(10 10)'::GEOMETRY), (2, 'POINT(1 1)'::GEOMETRY);
         """)
-        h2GIS.save("h2gis", "target/h2gis_imported.shp");
-        h2GIS.load("target/h2gis_imported.shp");
+        h2GIS.save("h2gis", "target/h2gis_imported.shp")
+        h2GIS.load("target/h2gis_imported.shp")
         def concat = ""
         h2GIS.getSpatialTable "h2gis_imported" eachRow { row -> concat += "$row.id $row.the_geom $row.geometry\n" }
         assertEquals("1 POINT (10 10) POINT (10 10)\n2 POINT (1 1) POINT (1 1)\n", concat)
@@ -404,7 +404,7 @@ class GroovyH2GISTest {
         def file = new File('target/myscript.sql')
         file.delete()
         file << 'CREATE TABLE super as SELECT * FROM $BINIOU;\n --COMMENTS HERE \nSELECT * FROM super;'
-        h2GIS.executeScript("target/myscript.sql", [BINIOU: 'h2gis']);
+        h2GIS.executeScript("target/myscript.sql", [BINIOU: 'h2gis'])
         def concat = ""
         h2GIS.spatialTable "super" eachRow { row -> concat += "$row.id $row.the_geom $row.geometry\n" }
         assertEquals("1 POINT (10 10) POINT (10 10)\n2 POINT (1 1) POINT (1 1)\n", concat)
@@ -421,7 +421,7 @@ class GroovyH2GISTest {
         def file = new File('target/myscript.sql')
         file.delete()
         file << 'CREATE TABLE super as SELECT * FROM h2gis;\n --COMMENTS HERE \nSELECT * FROM super;'
-        h2GIS.executeScript("target/myscript.sql");
+        h2GIS.executeScript("target/myscript.sql")
         def concat = ""
         h2GIS.getSpatialTable "super" eachRow { row -> concat += "$row.id $row.the_geom $row.geometry\n" }
         assertEquals("1 POINT (10 10) POINT (10 10)\n2 POINT (1 1) POINT (1 1)\n", concat)
@@ -438,7 +438,7 @@ class GroovyH2GISTest {
         def file = new File('target/myscript.sql')
         file.delete()
         file << 'CREATE TABLE super as SELECT * FROM h2gis;\n --COMMENTS HERE \nSELECT * FROM super;'
-        h2GIS.executeScript("target/myscript.sql", [:]);
+        h2GIS.executeScript("target/myscript.sql", [:])
         def concat = ""
         h2GIS.getSpatialTable "super" eachRow { row -> concat += "$row.id $row.the_geom $row.geometry\n" }
         assertEquals("1 POINT (10 10) POINT (10 10)\n2 POINT (1 1) POINT (1 1)\n", concat)
@@ -686,10 +686,10 @@ class GroovyH2GISTest {
         """)
         def sp = h2GIS.getSpatialTable("orbisgis")
         assertNotNull(sp)
-        assertEquals(4326, sp.getSrid());
+        assertEquals(4326, sp.getSrid())
         def spr = sp.reproject(2154)
         assertNotNull(spr)
-        assertThrows(UnsupportedOperationException.class, spr::getSrid);
+        assertThrows(UnsupportedOperationException.class, spr::getSrid)
         assertEquals("target/reprojected_table.shp", spr.save("target/reprojected_table.shp", true))
         def reprojectedTable = h2GIS.getSpatialTable(h2GIS.load("target/reprojected_table.shp", true))
         assertNotNull(reprojectedTable)
@@ -707,10 +707,10 @@ class GroovyH2GISTest {
         """)
         def sp = h2GIS.getSpatialTable("orbisgis")
         assertNotNull(sp)
-        assertEquals(4326, sp.getSrid());
+        assertEquals(4326, sp.getSrid())
         def spr = sp.reproject(2154)
         assertNotNull(spr)
-        assertThrows(UnsupportedOperationException.class, spr::getSrid);
+        assertThrows(UnsupportedOperationException.class, spr::getSrid)
         assertEquals("target/reprojected_table.geojson", spr.save("target/reprojected_table.geojson", true))
         def reprojectedTable = h2GIS.getSpatialTable(h2GIS.load("target/reprojected_table.geojson", true))
         assertNotNull(reprojectedTable)
@@ -792,10 +792,10 @@ class GroovyH2GISTest {
                  boundary GEOMETRY(MULTIPOLYGON, 4326));
                 INSERT INTO forests VALUES(109, 'Green Forest', ST_MPolyFromText( 'MULTIPOLYGON(((28 26,28 0,84 0,
                 84 42,28 26), (52 18,66 23,73 9,48 6,52 18)),((59 18,67 18,67 13,59 13,59 18)))', 4326));"""
-        Geometry geom = h2GIS.getSpatialTable("forests").getEstimatedExtent();
+        Geometry geom = h2GIS.getSpatialTable("forests").getEstimatedExtent()
         assertEquals 4326, geom.SRID
-        assertEquals("POLYGON ((28 0, 28 42, 84 42, 84 0, 28 0))", geom.toString());
-        h2GIS.execute("drop table forests");
+        assertEquals("POLYGON ((28 0, 28 42, 84 42, 84 0, 28 0))", geom.toString())
+        h2GIS.execute("drop table forests")
     }
 
     @Test
@@ -806,19 +806,19 @@ class GroovyH2GISTest {
                  boundary GEOMETRY(MULTIPOLYGON, 4326));
                 INSERT INTO forests VALUES(109, 'Green Forest', ST_MPolyFromText( 'MULTIPOLYGON(((28 26,28 0,84 0,
                 84 42,28 26), (52 18,66 23,73 9,48 6,52 18)),((59 18,67 18,67 13,59 13,59 18)))', 4326));"""
-        Geometry geom = h2GIS.getSpatialTable("forests").getExtent();
+        Geometry geom = h2GIS.getSpatialTable("forests").getExtent()
         assertEquals 4326, geom.SRID
-        assertEquals("POLYGON ((28 0, 28 42, 84 42, 84 0, 28 0))", geom.toString());
-        geom = h2GIS.getSpatialTable("forests").getExtent("boundary");
+        assertEquals("POLYGON ((28 0, 28 42, 84 42, 84 0, 28 0))", geom.toString())
+        geom = h2GIS.getSpatialTable("forests").getExtent("boundary")
         assertEquals 4326, geom.SRID
-        assertEquals("POLYGON ((28 0, 28 42, 84 42, 84 0, 28 0))", geom.toString());
-        geom = h2GIS.getSpatialTable("forests").getExtent("ST_Buffer(boundary,0)", "boundary");
+        assertEquals("POLYGON ((28 0, 28 42, 84 42, 84 0, 28 0))", geom.toString())
+        geom = h2GIS.getSpatialTable("forests").getExtent("ST_Buffer(boundary,0)", "boundary")
         assertEquals 4326, geom.SRID
-        assertEquals("POLYGON ((28 0, 28 42, 84 42, 84 0, 28 0))", geom.toString());
-        geom = h2GIS.getSpatialTable("forests").getExtent("boundary");
+        assertEquals("POLYGON ((28 0, 28 42, 84 42, 84 0, 28 0))", geom.toString())
+        geom = h2GIS.getSpatialTable("forests").getExtent("boundary")
         assertEquals 4326, geom.SRID
-        assertEquals("POLYGON ((28 0, 28 42, 84 42, 84 0, 28 0))", geom.toString());
-        h2GIS.execute("drop table forests");
+        assertEquals("POLYGON ((28 0, 28 42, 84 42, 84 0, 28 0))", geom.toString())
+        h2GIS.execute("drop table forests")
     }
 
     @Test
@@ -829,19 +829,19 @@ class GroovyH2GISTest {
                  boundary GEOMETRY(MULTIPOLYGON, 4326));
                 INSERT INTO forests VALUES(109, 'Green Forest', ST_MPolyFromText( 'MULTIPOLYGON(((28 26,28 0,84 0,
                 84 42,28 26), (52 18,66 23,73 9,48 6,52 18)),((59 18,67 18,67 13,59 13,59 18)))', 4326));"""
-        Geometry geom = h2GIS.getSpatialTable("forests").getExtent();
+        Geometry geom = h2GIS.getSpatialTable("forests").getExtent()
         assertEquals 4326, geom.SRID
-        assertEquals("POLYGON ((28 0, 28 42, 84 42, 84 0, 28 0))", geom.toString());
-        geom = h2GIS.getSpatialTable("forests").getExtent(["boundary"] as String[], "limit 1");
+        assertEquals("POLYGON ((28 0, 28 42, 84 42, 84 0, 28 0))", geom.toString())
+        geom = h2GIS.getSpatialTable("forests").getExtent(["boundary"] as String[], "limit 1")
         assertEquals 4326, geom.SRID
-        assertEquals("POLYGON ((28 0, 28 42, 84 42, 84 0, 28 0))", geom.toString());
-        geom = h2GIS.getSpatialTable("forests").getExtent(["ST_Buffer(boundary,0)", "boundary"]as String[],"limit 1");
+        assertEquals("POLYGON ((28 0, 28 42, 84 42, 84 0, 28 0))", geom.toString())
+        geom = h2GIS.getSpatialTable("forests").getExtent(["ST_Buffer(boundary,0)", "boundary"]as String[],"limit 1")
         assertEquals 4326, geom.SRID
-        assertEquals("POLYGON ((28 0, 28 42, 84 42, 84 0, 28 0))", geom.toString());
-        geom = h2GIS.getSpatialTable("forests").getExtent(["ST_Buffer(boundary,0)", "boundary"]as String[],"limit 1");
+        assertEquals("POLYGON ((28 0, 28 42, 84 42, 84 0, 28 0))", geom.toString())
+        geom = h2GIS.getSpatialTable("forests").getExtent(["ST_Buffer(boundary,0)", "boundary"]as String[],"limit 1")
         assertEquals 4326, geom.SRID
-        assertEquals("POLYGON ((28 0, 28 42, 84 42, 84 0, 28 0))", geom.toString());
-        h2GIS.execute("drop table forests");
+        assertEquals("POLYGON ((28 0, 28 42, 84 42, 84 0, 28 0))", geom.toString())
+        h2GIS.execute("drop table forests")
     }
 
     @Test
@@ -877,7 +877,7 @@ class GroovyH2GISTest {
         ]
         def postGIS = POSTGIS.open(dbProperties)
         if(postGIS) {
-            h2GIS.getSpatialTable("h2gis").save(postGIS, true);
+            h2GIS.getSpatialTable("h2gis").save(postGIS, true)
             def concat = ""
             postGIS.spatialTable "h2gis" eachRow { row -> concat += "$row.id $row.the_geom $row.geometry\n" }
             assertEquals("1 POINT (10 10) POINT (10 10)\n2 POINT (1 1) POINT (1 1)\n", concat)
@@ -921,7 +921,7 @@ class GroovyH2GISTest {
                 INSERT INTO h2gis VALUES (1, 'POINT(10 10)'::GEOMETRY), (2, 'POINT(1 1)'::GEOMETRY);
         """)
         def h2GISTarget = H2GIS.open([databaseName: './target/loadH2GIS_target'])
-        h2GIS.getSpatialTable("h2gis").save(h2GISTarget, true);
+        h2GIS.getSpatialTable("h2gis").save(h2GISTarget, true)
         def concat = ""
         h2GISTarget.spatialTable "H2GIS" eachRow { row -> concat += "$row.id $row.the_geom $row.geometry\n" }
         assertEquals("1 POINT (10 10) POINT (10 10)\n2 POINT (1 1) POINT (1 1)\n", concat)
@@ -962,7 +962,7 @@ class GroovyH2GISTest {
                 INSERT INTO h2gis VALUES (1, 'POINT(10 10)'::GEOMETRY), (2, 'POINT(1 1)'::GEOMETRY);
         """)
         def val = 2
-        def String[] arr = []
+        String[] arr = []
 
         def table = h2GIS.scrollInsensitive().getTable("(SELECT * FROM h2gis where id=$val)")
         assert 2 == table.firstRow[0]
@@ -1036,7 +1036,7 @@ class GroovyH2GISTest {
         assertNotNull(tableName)
         def reprojectedTable = h2GIS.getSpatialTable(tableName)
         assertNotNull(reprojectedTable)
-        reprojectedTable.next();
+        reprojectedTable.next()
         assertEquals(4326, reprojectedTable.getGeometry(2).getSRID())
         //H2GIS looks on the first geometry SRID
         assertEquals(4326,reprojectedTable.srid )

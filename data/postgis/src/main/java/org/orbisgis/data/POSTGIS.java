@@ -160,7 +160,7 @@ public class POSTGIS extends JdbcDataSource {
      */
     public static POSTGIS open(Map<String, String> properties) {
         Properties props = new Properties();
-        properties.forEach(props::put);
+        props.putAll(properties);
         return open(props);
 
     }

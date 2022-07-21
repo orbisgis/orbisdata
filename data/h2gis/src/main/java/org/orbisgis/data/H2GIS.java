@@ -126,8 +126,7 @@ public class H2GIS extends JdbcDataSource {
             return null;
         }
         check(connection);
-        H2GIS h2GIS = new H2GIS(connection);
-        return h2GIS;
+        return new H2GIS(connection);
     }
 
     /**
@@ -203,7 +202,7 @@ public class H2GIS extends JdbcDataSource {
      */
     public static H2GIS open(Map<String, String> properties) {
         Properties props = new Properties();
-        properties.forEach(props::put);
+        props.putAll(properties);
         return open(props);
     }
 

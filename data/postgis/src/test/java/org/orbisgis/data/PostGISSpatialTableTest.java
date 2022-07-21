@@ -54,7 +54,6 @@ import java.sql.SQLException;
 import java.util.Properties;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Test class dedicated to the {@link PostgisSpatialTable} class.

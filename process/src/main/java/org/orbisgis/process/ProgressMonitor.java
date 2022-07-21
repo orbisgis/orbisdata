@@ -95,7 +95,7 @@ public class ProgressMonitor implements IProgressMonitor {
      * @param autoLog Log the progression if true, otherwise do not log.
      */
     public ProgressMonitor(IProgressMonitor parent, String taskName, int maximum, boolean autoLog){
-        this.name = taskName == null ? "task_" + UUID.randomUUID().toString() : taskName;
+        this.name = taskName == null ? "task_" + UUID.randomUUID() : taskName;
         this.maximum = maximum;
         this.step = 0;
         this.children = new ArrayList<>();
@@ -213,10 +213,9 @@ public class ProgressMonitor implements IProgressMonitor {
         if(children.stream().map(IProgressMonitor::getProgress).anyMatch(d -> d==-1)){
             return -1;
         }
-        double tot = 100.0 /
+        return 100.0 /
                 (children.size() + maximum) *
                 (children.stream().map(IProgressMonitor::getProgress).reduce(0.0, Double::sum)/100 +step);
-        return tot;
     }
 
     @Override

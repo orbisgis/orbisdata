@@ -98,7 +98,7 @@ public class DummyProcessCheck implements IProcessCheck {
     public void setInOutPuts(IInOutPut... inputOrOutput) {
         this.inputOrOutput = inputOrOutput;
     }
-DataFrame
+
     @Override
     public LinkedList<IInOutPut> getInOutPuts() {
         return new LinkedList<>();
@@ -123,7 +123,7 @@ DataFrame
     public boolean success() {
         return false;
     }
-DataFrame
+
     @Override
     public Optional<IProcess> getProcess() {
         return Optional.ofNullable(process);

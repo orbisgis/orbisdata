@@ -100,27 +100,27 @@ public class IProcessMapperTest {
     /**
      * Simple implementtion of the {@link IProcessMapper} interface.
      */
-    private class DummyProcessMapper implements IProcessMapper {
+    private static class DummyProcessMapper implements IProcessMapper {
 
-        DataFrame
+
         @Override
         public ILinker link(IInOutPut... inOutPuts) {
             return null;
         }
 
-        DataFrame
+
         @Override
         public ICheckDataBuilder before(IProcess process) {
             return null;
         }
 
-        DataFrame
+
         @Override
         public ICheckDataBuilder after(IProcess process) {
             return null;
         }
 
-        DataFrame
+
         @Override
         public IProcessMapper newInstance() {
             return null;
@@ -131,25 +131,25 @@ public class IProcessMapperTest {
             return false;
         }
 
-        DataFrame
+
         @Override
         public Optional<String> getTitle() {
             return Optional.empty();
         }
 
-        DataFrame
+
         @Override
         public Map<String, Object> getResults() {
             return null;
         }
 
-        DataFrame
+
         @Override
         public List<IInput> getInputs() {
             return null;
         }
 
-        DataFrame
+
         @Override
         public List<IOutput> getOutputs() {
             return null;
@@ -160,7 +160,7 @@ public class IProcessMapperTest {
             return false;
         }
 
-        DataFrame
+
         @Override
         public IProcessMapper copy() {
             return null;

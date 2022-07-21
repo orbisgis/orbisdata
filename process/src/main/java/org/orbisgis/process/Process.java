@@ -342,7 +342,7 @@ public class Process implements IProcess, GroovyObject, GroovyInterceptable {
             LOGGER.debug("The output of the execution are not compatible with process output.");
             return false;
         } else {
-            map.forEach((key, value) -> resultMap.put(key, value));
+            resultMap.putAll(map);
             return true;
         }
     }

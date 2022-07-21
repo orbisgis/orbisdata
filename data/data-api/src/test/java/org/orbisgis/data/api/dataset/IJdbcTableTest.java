@@ -173,7 +173,7 @@ public class IJdbcTableTest {
         /**
          * Fake database type.
          */
-        private DBTypes databaseType;
+        private final DBTypes databaseType;
         /**
          * Fake row index.
          */
@@ -181,11 +181,11 @@ public class IJdbcTableTest {
         /**
          * Fake data.
          */
-        private Object[] data = new Object[]{"string", 0.2};
+        private final Object[] data = new Object[]{"string", 0.2};
         /**
          * True if iterable, false otherwise.
          */
-        private boolean isIterable;
+        private final boolean isIterable;
         /**
          * True if throws exception, false otherwise.
          */

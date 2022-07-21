@@ -135,7 +135,7 @@ public class ProcessManager implements IProcessManager, GroovyObject, GroovyInte
 
     public static IProcessFactory createFactory(String identifier) {
         return getProcessManager().factory(
-                identifier != null && !identifier.isEmpty() ? identifier : "factory_"+UUID.randomUUID().toString());
+                identifier != null && !identifier.isEmpty() ? identifier : "factory_"+ UUID.randomUUID());
     }
 
     @Override

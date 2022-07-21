@@ -319,8 +319,7 @@ public abstract class JdbcTable<T extends ResultSet> extends DefaultResultSet im
             }
         } else {
             try {
-                Collection<String> cols = JDBCUtilities.getColumnNames(con, tableLocation);
-                return cols;
+                return JDBCUtilities.getColumnNames(con, tableLocation);
             } catch (SQLException e) {
                 LOGGER.error("Unable to get the column names of the table " + tableLocation + ".");
                 LOGGER.debug(e.getLocalizedMessage());

@@ -39,12 +39,10 @@ package org.orbisgis.process.check
 import org.codehaus.groovy.runtime.InvokerHelper
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
-import org.orbisgis.commons.annotations.Nullable
 import org.orbisgis.process.api.IProcess
 import org.orbisgis.process.api.check.IProcessCheck
 import org.orbisgis.process.api.inoutput.IInOutPut
 import org.orbisgis.process.ProcessManager
-import org.orbisgis.process.check.ProcessCheck
 import org.orbisgis.process.inoutput.Input
 import org.orbisgis.process.inoutput.Output
 

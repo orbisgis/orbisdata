@@ -204,7 +204,7 @@ public class ProcessBuilderTest {
                 .getProcess();
 
         assertTrue(process.getTitle().isPresent());
-        assertEquals("title", process.getTitle().get());;
+        assertEquals("title", process.getTitle().get());
         assertEquals("id", process.getIdentifier());
         assertTrue(process.getDescription().isPresent());
         assertEquals("description", process.getDescription().get());
@@ -226,7 +226,7 @@ public class ProcessBuilderTest {
                 .getProcess();
 
         assertTrue(process.getTitle().isPresent());
-        assertEquals("title", process.getTitle().get());;
+        assertEquals("title", process.getTitle().get());
         assertNotNull(process.getIdentifier());
         assertTrue(process.getDescription().isPresent());
         assertEquals("description", process.getDescription().get());

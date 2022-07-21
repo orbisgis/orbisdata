@@ -8,9 +8,9 @@
     <version>2.0.0</version>
     <packaging>pom</packaging>
     <modules>
+        <module>commons</module>
         <module>data</module>
         <module>process</module>
-        <module>commons</module>
     </modules>
 
 
@@ -116,6 +116,12 @@
                 <version>${cts-version}</version>
             </dependency>
             <dependency>
+                <groupId>org.orbisgis</groupId>
+                <artifactId>commons</artifactId>
+                <version>${project.version}</version>
+                <scope>compile</scope>
+            </dependency>
+            <dependency>
                 <groupId>org.orbisgis.data</groupId>
                 <artifactId>data-api</artifactId>
                 <version>${project.version}</version>
@@ -145,13 +151,6 @@
                 <version>${project.version}</version>
                 <scope>compile</scope>
             </dependency>
-            <dependency>
-                <groupId>org.orbisgis</groupId>
-                <artifactId>commons</artifactId>
-                <version>${project.version}</version>
-                <scope>compile</scope>
-            </dependency>
-
             <dependency>
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-api</artifactId>

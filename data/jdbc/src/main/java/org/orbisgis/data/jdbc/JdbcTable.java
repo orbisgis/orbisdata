@@ -329,7 +329,6 @@ public abstract class JdbcTable<T extends ResultSet> extends DefaultResultSet im
     }
 
     @Override
-    
     public Map<String, String> getColumnsTypes() {
         Map<String, String> map = new LinkedHashMap<>();
         try {

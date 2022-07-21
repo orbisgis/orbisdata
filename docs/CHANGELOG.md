@@ -1,4 +1,4 @@
-# Changelog for v1.0.1
+# Changelog for v2.0.0
 
 + Add docs/CHANGELOG.md file
 + IJdbcDataSource now implements Java DataSource

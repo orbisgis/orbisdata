@@ -36,8 +36,6 @@
  */
 package org.orbisgis.process.api.check;
 
-import org.orbisgis.commons.annotations.NotNull;
-import org.orbisgis.commons.annotations.Nullable;
 import org.orbisgis.process.api.IProcess;
 import org.orbisgis.process.api.IProcessMapper;
 import org.orbisgis.process.api.inoutput.IInOutPut;
@@ -57,6 +55,5 @@ public interface ICheckDataBuilder {
      * @param data Input or output list to use to do the check.
      * @return A {@link ICheckClosureBuilder} to continue the check building.
      */
-    @NotNull
-    ICheckClosureBuilder with(@Nullable IInOutPut... data);
+    ICheckClosureBuilder with(IInOutPut... data);
 }

@@ -39,8 +39,6 @@ package org.orbisgis.data.api.dataset;
 import groovy.lang.Closure;
 import org.h2gis.utilities.TableLocation;
 import org.h2gis.utilities.dbtypes.DBTypes;
-import org.orbisgis.commons.annotations.NotNull;
-import org.orbisgis.commons.annotations.Nullable;
 import org.orbisgis.data.api.dsl.IResultSetProperties;
 
 import java.sql.ResultSet;
@@ -71,7 +69,6 @@ public interface IJdbcTable<T> extends ITable<T, T>, ResultSet {
      *
      * @return The {@link ITableLocation}.
      */
-    @Nullable
     TableLocation getTableLocation();
 
     /**
@@ -79,11 +76,9 @@ public interface IJdbcTable<T> extends ITable<T, T>, ResultSet {
      *
      * @return The {@link DBTypes} type
      */
-    @NotNull
     DBTypes getDbType();
 
     @Override
-    @Nullable
     ResultSetMetaData getMetaData();
 
     /**
@@ -111,7 +106,6 @@ public interface IJdbcTable<T> extends ITable<T, T>, ResultSet {
     }
 
     @Override
-    @NotNull
     default String getName() {
         TableLocation location = getTableLocation();
         if (location == null || location.getTable().isEmpty()) {
@@ -122,12 +116,11 @@ public interface IJdbcTable<T> extends ITable<T, T>, ResultSet {
     }
 
     @Override
-    default void eachRow(@NotNull Closure<Object> closure) {
+    default void eachRow(Closure<Object> closure) {
         this.forEach(closure::call);
     }
 
     @Override
-    @NotNull
     IJdbcTableSummary getSummary();
 
     /**
@@ -135,7 +128,6 @@ public interface IJdbcTable<T> extends ITable<T, T>, ResultSet {
      *
      * @return The list of the parametrized query.
      */
-    @NotNull
     List<Object> getParams();
 
     /**
@@ -143,13 +135,12 @@ public interface IJdbcTable<T> extends ITable<T, T>, ResultSet {
      *
      * @param properties {@link ResultSet} properties.
      */
-    void setResultSetProperties(@Nullable IResultSetProperties properties);
+    void setResultSetProperties(IResultSetProperties properties);
 
     /**
      * Returns the {@link IResultSetProperties}.
      *
      * @return {@link ResultSet} properties.
      */
-    @NotNull
     IResultSetProperties getResultSetProperties();
 }

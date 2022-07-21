@@ -36,8 +36,6 @@
  */
 package org.orbisgis.process.check;
 
-import org.orbisgis.commons.annotations.NotNull;
-import org.orbisgis.commons.annotations.Nullable;
 import org.orbisgis.process.api.check.ICheckClosureBuilder;
 import org.orbisgis.process.api.check.ICheckDataBuilder;
 import org.orbisgis.process.api.check.IProcessCheck;
@@ -64,13 +62,12 @@ public class CheckDataBuilder implements ICheckDataBuilder {
      *
      * @param processCheck {@link IProcessCheck} to build.
      */
-    public CheckDataBuilder(@NotNull IProcessCheck processCheck) {
+    public CheckDataBuilder(IProcessCheck processCheck) {
         this.processCheck = processCheck;
     }
 
     @Override
-    @NotNull
-    public ICheckClosureBuilder with(@Nullable IInOutPut... data) {
+    public ICheckClosureBuilder with(IInOutPut... data) {
         if(data != null && (data.length == 0 || Arrays.stream(data).allMatch(Objects::isNull))) {
             processCheck.setInOutPuts((IInOutPut[]) null);
         }

@@ -37,8 +37,6 @@
 package org.orbisgis.data.api.dataset;
 
 import groovy.lang.Closure;
-import org.orbisgis.commons.annotations.NotNull;
-import org.orbisgis.commons.annotations.Nullable;
 import org.orbisgis.data.api.datasource.IJdbcDataSource;
 import org.orbisgis.data.api.dsl.IQueryBuilder;
 
@@ -66,7 +64,7 @@ public interface ITable<T, U> extends IMatrix<T>, IQueryBuilder {
      *
      * @param closure {@link Closure} to apply to each row.
      */
-    default void eachRow(@NotNull Closure<Object> closure) {
+    default void eachRow(Closure<Object> closure) {
         this.forEach(closure::call);
     }
 
@@ -76,7 +74,6 @@ public interface ITable<T, U> extends IMatrix<T>, IQueryBuilder {
      *
      * @return A {@link Collection} containing the name of the column.
      */
-    @Nullable
     Collection<String> getColumns();
 
     /**
@@ -84,7 +81,6 @@ public interface ITable<T, U> extends IMatrix<T>, IQueryBuilder {
      *
      * @return A {@link Map} containing the information of the column.
      */
-    @NotNull
     Map<String, String> getColumnsTypes();
 
     /**
@@ -93,8 +89,7 @@ public interface ITable<T, U> extends IMatrix<T>, IQueryBuilder {
      * @param columnName set the name of the column
      * @return The type of the column.
      */
-    @Nullable
-    String getColumnType(@NotNull String columnName);
+    String getColumnType(String columnName);
 
     /**
      * Return true if the {@link ITable} contains a column with the given name with the given type (case sensible).
@@ -103,7 +98,7 @@ public interface ITable<T, U> extends IMatrix<T>, IQueryBuilder {
      * @param clazz      Class of the column to check.
      * @return True if the column is found, false otherwise.
      */
-    boolean hasColumn(@NotNull String columnName, @NotNull Class<?> clazz);
+    boolean hasColumn(String columnName, Class<?> clazz);
 
     /**
      * Return true if the {@link ITable} contains a column with the given name (case sensible).
@@ -111,7 +106,7 @@ public interface ITable<T, U> extends IMatrix<T>, IQueryBuilder {
      * @param columnName Name of the column to check.
      * @return True if the column is found, false otherwise.
      */
-    default boolean hasColumn(@NotNull String columnName) {
+    default boolean hasColumn(String columnName) {
         return getColumns().contains(columnName);
     }
 
@@ -122,7 +117,7 @@ public interface ITable<T, U> extends IMatrix<T>, IQueryBuilder {
      * @return True if the columns are found, false otherwise.
      */
     //TODO : do not iterate resulset set each time
-    default boolean hasColumns(@NotNull Map<String, Class<?>> columnMap) {
+    default boolean hasColumns(Map<String, Class<?>> columnMap) {
         return columnMap.entrySet().stream().allMatch(entry -> hasColumn(entry.getKey(), entry.getValue()));
     }
 
@@ -132,7 +127,7 @@ public interface ITable<T, U> extends IMatrix<T>, IQueryBuilder {
      * @param columnList {@link List} containing the columns with the column name as key and the column type as value.
      * @return True if the columns are found, false otherwise.
      */
-    default boolean hasColumns(@NotNull List<String> columnList) {
+    default boolean hasColumns(List<String> columnList) {
         return columnList.stream().allMatch(this::hasColumn);
     }
 
@@ -209,8 +204,7 @@ public interface ITable<T, U> extends IMatrix<T>, IQueryBuilder {
      * @param column Name of the column to request.
      * @return A {@link Collection} of all the unique values of the {@link ITable}.
      */
-    @Nullable
-    Collection<String> getUniqueValues(@NotNull String column);
+    Collection<String> getUniqueValues(String column);
 
     /**
      * Save the {@link ITable} into a file.
@@ -219,7 +213,7 @@ public interface ITable<T, U> extends IMatrix<T>, IQueryBuilder {
      * @return the full path of the saved file.
      * If the file cannot be saved return null.
      */
-    default String save(@NotNull String filePath) {
+    default String save(String filePath) {
         return save(filePath, null);
     }
 
@@ -231,7 +225,7 @@ public interface ITable<T, U> extends IMatrix<T>, IQueryBuilder {
      * @return the full path of the saved file.
      * If the file cannot be saved return null.
      */
-    String save(@NotNull String filePath,  boolean delete);
+    String save(String filePath,  boolean delete);
 
     /**
      * Save the {@link ITable} into a file.
@@ -241,7 +235,7 @@ public interface ITable<T, U> extends IMatrix<T>, IQueryBuilder {
      * @return the full path of the saved file.
      * If the file cannot be saved return null.
      */
-    String save(@NotNull String filePath, @Nullable String encoding);
+    String save(String filePath,String encoding);
 
 
     /**
@@ -251,7 +245,7 @@ public interface ITable<T, U> extends IMatrix<T>, IQueryBuilder {
      * @return The name of the saved table, formatted according the output datasource
      * Null is the table cannot be saved.
      */
-    default String save(@Nullable IJdbcDataSource dataSource) {
+    default String save(IJdbcDataSource dataSource) {
         return save(dataSource, false);
     }
 
@@ -263,7 +257,7 @@ public interface ITable<T, U> extends IMatrix<T>, IQueryBuilder {
      * @return The name of the saved table, formatted according the output datasource
      * Null is the table cannot be saved.
      */
-    String save(@Nullable IJdbcDataSource dataSource, int batchSize);
+    String save(IJdbcDataSource dataSource, int batchSize);
 
     /**
      * Save the {@link ITable} into another database.
@@ -273,7 +267,7 @@ public interface ITable<T, U> extends IMatrix<T>, IQueryBuilder {
      * @return The name of the saved table, formatted according the output datasource
      * Null is the table cannot be saved.
      */
-    String save(@Nullable IJdbcDataSource dataSource, boolean deleteTable);
+    String save(IJdbcDataSource dataSource, boolean deleteTable);
 
     /**
      * Save the {@link ITable} into another database.
@@ -284,7 +278,7 @@ public interface ITable<T, U> extends IMatrix<T>, IQueryBuilder {
      * @return The name of the saved table, formatted according the output datasource.
      * Null is the table cannot be saved.
      */
-    String save(@Nullable IJdbcDataSource dataSource, boolean deleteTable, int batchSize);
+    String save(IJdbcDataSource dataSource, boolean deleteTable, int batchSize);
 
     /**
      * Save the {@link ITable} into another database.
@@ -295,7 +289,7 @@ public interface ITable<T, U> extends IMatrix<T>, IQueryBuilder {
      * @return The name of the saved table, formatted according the output datasource
      * Null is the table cannot be saved.
      */
-    String save(@Nullable IJdbcDataSource dataSource, @NotNull String outputTableName, boolean deleteTable);
+    String save(IJdbcDataSource dataSource, String outputTableName, boolean deleteTable);
 
     /**
      * Save the {@link ITable} into another database.
@@ -307,14 +301,13 @@ public interface ITable<T, U> extends IMatrix<T>, IQueryBuilder {
      * @return The name of the saved table, formatted according the output datasource
      * Null is the table cannot be saved.
      */
-    String save(@Nullable IJdbcDataSource dataSource, @NotNull String outputTableName, boolean deleteTable, int batchSize);
+    String save(IJdbcDataSource dataSource, String outputTableName, boolean deleteTable, int batchSize);
 
     /**
      * Return the values of the first row in a {@link List}. If there is no row, return an empty list.
      *
      * @return The values of the first row in a {@link List}.
      */
-    @NotNull
     List<Object> getFirstRow();
 
     /**
@@ -331,7 +324,6 @@ public interface ITable<T, U> extends IMatrix<T>, IQueryBuilder {
 
 
     @Override
-    @NotNull
     default int[] getSize() {
         return new int[]{getColumnCount(), getRowCount()};
     }
@@ -342,7 +334,6 @@ public interface ITable<T, U> extends IMatrix<T>, IQueryBuilder {
      * @param column Index of the column.
      * @return The {@link String} in the current row on the given column.
      */
-    @Nullable
     String getString(int column) throws Exception;
 
     /**
@@ -407,7 +398,6 @@ public interface ITable<T, U> extends IMatrix<T>, IQueryBuilder {
      * @param column Index of the column.
      * @return The byte array in the current row on the given column.
      */
-    @Nullable
     byte[] getBytes(int column) throws Exception;
 
     /**
@@ -416,7 +406,6 @@ public interface ITable<T, U> extends IMatrix<T>, IQueryBuilder {
      * @param column Index of the column.
      * @return The {@link Date} in the current row on the given column.
      */
-    @Nullable
     Date getDate(int column) throws Exception;
 
     /**
@@ -425,7 +414,6 @@ public interface ITable<T, U> extends IMatrix<T>, IQueryBuilder {
      * @param column Index of the column.
      * @return The {@link Time} in the current row on the given column.
      */
-    @Nullable
     Time getTime(int column) throws Exception;
 
     /**
@@ -434,7 +422,6 @@ public interface ITable<T, U> extends IMatrix<T>, IQueryBuilder {
      * @param column Index of the column.
      * @return The {@link Timestamp} in the current row on the given column.
      */
-    @Nullable
     Timestamp getTimestamp(int column) throws Exception;
 
     /**
@@ -443,7 +430,6 @@ public interface ITable<T, U> extends IMatrix<T>, IQueryBuilder {
      * @param column Index of the column.
      * @return The {@link Object} in the current row on the given column.
      */
-    @Nullable
     Object getObject(int column) throws Exception;
 
     /**
@@ -452,7 +438,6 @@ public interface ITable<T, U> extends IMatrix<T>, IQueryBuilder {
      * @param column Index of the column.
      * @return The {@link BigDecimal} in the current row on the given column.
      */
-    @Nullable
     BigDecimal getBigDecimal(int column) throws Exception;
 
     /**
@@ -461,8 +446,7 @@ public interface ITable<T, U> extends IMatrix<T>, IQueryBuilder {
      * @param column Name of the column.
      * @return The {@link String} in the current row on the given column.
      */
-    @Nullable
-    String getString(@NotNull String column) throws Exception;
+    String getString(String column) throws Exception;
 
     /**
      * Return the boolean in the current row on the given column.
@@ -470,7 +454,7 @@ public interface ITable<T, U> extends IMatrix<T>, IQueryBuilder {
      * @param column Name of the column.
      * @return The boolean in the current row on the given column.
      */
-    boolean getBoolean(@NotNull String column) throws Exception;
+    boolean getBoolean(String column) throws Exception;
 
     /**
      * Return the byte in the current row on the given column.
@@ -478,7 +462,7 @@ public interface ITable<T, U> extends IMatrix<T>, IQueryBuilder {
      * @param column Name of the column.
      * @return The byte in the current row on the given column.
      */
-    byte getByte(@NotNull String column) throws Exception;
+    byte getByte(String column) throws Exception;
 
     /**
      * Return the short in the current row on the given column.
@@ -486,7 +470,7 @@ public interface ITable<T, U> extends IMatrix<T>, IQueryBuilder {
      * @param column Name of the column.
      * @return The short in the current row on the given column.
      */
-    short getShort(@NotNull String column) throws Exception;
+    short getShort(String column) throws Exception;
 
     /**
      * Return the int in the current row on the given column.
@@ -494,7 +478,7 @@ public interface ITable<T, U> extends IMatrix<T>, IQueryBuilder {
      * @param column Name of the column.
      * @return The int in the current row on the given column.
      */
-    int getInt(@NotNull String column) throws Exception;
+    int getInt(String column) throws Exception;
 
     /**
      * Return the long in the current row on the given column.
@@ -502,7 +486,7 @@ public interface ITable<T, U> extends IMatrix<T>, IQueryBuilder {
      * @param column Name of the column.
      * @return The long in the current row on the given column.
      */
-    long getLong(@NotNull String column) throws Exception;
+    long getLong(String column) throws Exception;
 
     /**
      * Return the float in the current row on the given column.
@@ -510,7 +494,7 @@ public interface ITable<T, U> extends IMatrix<T>, IQueryBuilder {
      * @param column Name of the column.
      * @return The float in the current row on the given column.
      */
-    float getFloat(@NotNull String column) throws Exception;
+    float getFloat(String column) throws Exception;
 
     /**
      * Return the double in the current row on the given column.
@@ -518,7 +502,7 @@ public interface ITable<T, U> extends IMatrix<T>, IQueryBuilder {
      * @param column Name of the column.
      * @return The double in the current row on the given column.
      */
-    double getDouble(@NotNull String column) throws Exception;
+    double getDouble(String column) throws Exception;
 
     /**
      * Return the byte array in the current row on the given column.
@@ -526,8 +510,7 @@ public interface ITable<T, U> extends IMatrix<T>, IQueryBuilder {
      * @param column Name of the column.
      * @return The byte array in the current row on the given column.
      */
-    @Nullable
-    byte[] getBytes(@NotNull String column) throws Exception;
+    byte[] getBytes(String column) throws Exception;
 
     /**
      * Return the {@link Date} in the current row on the given column.
@@ -535,8 +518,7 @@ public interface ITable<T, U> extends IMatrix<T>, IQueryBuilder {
      * @param column Name of the column.
      * @return The {@link Date} in the current row on the given column.
      */
-    @Nullable
-    Date getDate(@NotNull String column) throws Exception;
+    Date getDate(String column) throws Exception;
 
     /**
      * Return the {@link Time} in the current row on the given column.
@@ -544,8 +526,7 @@ public interface ITable<T, U> extends IMatrix<T>, IQueryBuilder {
      * @param column Name of the column.
      * @return The {@link Time} in the current row on the given column.
      */
-    @Nullable
-    Time getTime(@NotNull String column) throws Exception;
+    Time getTime(String column) throws Exception;
 
     /**
      * Return the {@link Timestamp} in the current row on the given column.
@@ -553,8 +534,7 @@ public interface ITable<T, U> extends IMatrix<T>, IQueryBuilder {
      * @param column Name of the column.
      * @return The {@link Timestamp} in the current row on the given column.
      */
-    @Nullable
-    Timestamp getTimestamp(@NotNull String column) throws Exception;
+    Timestamp getTimestamp(String column) throws Exception;
 
     /**
      * Return the {@link Object} in the current row on the given column.
@@ -562,8 +542,7 @@ public interface ITable<T, U> extends IMatrix<T>, IQueryBuilder {
      * @param column Name of the column.
      * @return The {@link Object} in the current row on the given column.
      */
-    @Nullable
-    Object getObject(@NotNull String column) throws Exception;
+    Object getObject(String column) throws Exception;
 
     /**
      * Return the {@link BigDecimal} in the current row on the given column.
@@ -571,8 +550,7 @@ public interface ITable<T, U> extends IMatrix<T>, IQueryBuilder {
      * @param column Name of the column.
      * @return The {@link BigDecimal} in the current row on the given column.
      */
-    @Nullable
-    BigDecimal getBigDecimal(@NotNull String column) throws Exception;
+    BigDecimal getBigDecimal(String column) throws Exception;
 
     /**
      * Return the {@link V} in the current row on the given column.
@@ -581,8 +559,7 @@ public interface ITable<T, U> extends IMatrix<T>, IQueryBuilder {
      * @param clazz {@link Class} of the object.
      * @return The {@link V} in the current row on the given column.
      */
-    @Nullable
-    <V> V getObject(int column, @NotNull Class<V> clazz) throws Exception;
+    <V> V getObject(int column, Class<V> clazz) throws Exception;
 
     /**
      * Return the {@link V} in the current row on the given column.
@@ -591,17 +568,14 @@ public interface ITable<T, U> extends IMatrix<T>, IQueryBuilder {
      * @param clazz {@link Class} of the object.
      * @return The {@link V} in the current row on the given column.
      */
-    @Nullable
-    <V> V getObject(@NotNull String column, @NotNull Class<V> clazz) throws Exception;
+    <V> V getObject(String column, Class<V> clazz) throws Exception;
 
     /**
      * Return a {@link Stream} of {@link T} objects.
      *
      * @return A {@link Stream} of {@link T} objects.
      */
-    @Nullable
     Stream<? extends U> stream();
 
-    @NotNull
     Map<String, Object> firstRow();
 }

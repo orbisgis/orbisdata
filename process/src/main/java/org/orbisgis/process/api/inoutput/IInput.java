@@ -36,8 +36,6 @@
  */
 package org.orbisgis.process.api.inoutput;
 
-import org.orbisgis.commons.annotations.NotNull;
-import org.orbisgis.commons.annotations.Nullable;
 
 import java.util.Optional;
 
@@ -55,8 +53,7 @@ public interface IInput extends IInOutPut {
      * @param dfltValue Default value to use if no value is provided.
      * @return The {@link IInput} to continue its configuration.
      */
-    @NotNull
-    IInOutPut optional(@Nullable Object dfltValue);
+    IInOutPut optional(Object dfltValue);
 
     /**
      * Return true if the input is optional, false otherwise.
@@ -70,7 +67,6 @@ public interface IInput extends IInOutPut {
      *
      * @return The {@link IInput} to continue its configuration.
      */
-    @NotNull
     IInOutPut mandatory();
 
     /**
@@ -85,7 +81,6 @@ public interface IInput extends IInOutPut {
      *
      * @return The default value of the input.
      */
-    @NotNull
     Optional<Object> getDefaultValue();
 
     /**
@@ -93,6 +88,5 @@ public interface IInput extends IInOutPut {
      *
      * @return A copy of the current object.
      */
-    @Nullable
     IInput copy();
 }

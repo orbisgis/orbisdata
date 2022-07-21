@@ -36,8 +36,6 @@
  */
 package org.orbisgis.process;
 
-import org.orbisgis.commons.annotations.NotNull;
-import org.orbisgis.commons.annotations.Nullable;
 import org.orbisgis.process.api.ILinker;
 import org.orbisgis.process.api.inoutput.IInOutPut;
 import org.orbisgis.process.api.inoutput.IInput;
@@ -82,7 +80,7 @@ public class Linker implements ILinker {
      *
      * @param inOutPuts Inputs or outputs to link.
      */
-    protected Linker(@Nullable IInOutPut... inOutPuts) {
+    protected Linker(IInOutPut... inOutPuts) {
         inputOutputMap = new HashMap<>();
         aliases = new HashMap<>();
         if (inOutPuts == null || inOutPuts.length == 0) {
@@ -117,7 +115,7 @@ public class Linker implements ILinker {
     }
 
     @Override
-    public void to(@Nullable IInOutPut... inOutPuts) {
+    public void to(IInOutPut... inOutPuts) {
         if (inOutPuts == null || inOutPuts.length == 0) {
             LOGGER.error("The input/output list should not be empty.");
             return;
@@ -148,7 +146,7 @@ public class Linker implements ILinker {
     }
 
     @Override
-    public void to(@NotNull String alias) {
+    public void to(String alias) {
         List<IInOutPut> inOutPuts = new ArrayList<>();
         inOutPuts.addAll(inputList);
         inOutPuts.addAll(outputList);

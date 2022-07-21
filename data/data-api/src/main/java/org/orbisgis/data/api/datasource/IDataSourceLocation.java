@@ -37,8 +37,6 @@
 package org.orbisgis.data.api.datasource;
 
 
-import org.orbisgis.commons.annotations.NotNull;
-import org.orbisgis.commons.annotations.Nullable;
 
 /**
  * Location of the IDataSource which can be converted in several type.
@@ -54,10 +52,8 @@ public interface IDataSourceLocation {
      * @param type Type used for the cast
      * @return The {@link IDataSourceLocation} into the given type
      */
-    @Nullable
     Object asType(Class<?> type);
 
     @Override
-    @NotNull
     String toString();
 }

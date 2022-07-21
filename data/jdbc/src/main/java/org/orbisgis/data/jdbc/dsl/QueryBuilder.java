@@ -38,7 +38,6 @@ package org.orbisgis.data.jdbc.dsl;
 
 import groovy.lang.GString;
 import org.h2gis.utilities.TableLocation;
-import org.orbisgis.commons.annotations.NotNull;
 import org.orbisgis.data.api.dataset.ISpatialTable;
 import org.orbisgis.data.api.dataset.ITable;
 import org.orbisgis.data.api.datasource.IJdbcDataSource;
@@ -63,7 +62,7 @@ public class QueryBuilder extends BuilderResult implements IQueryBuilder {
     private final IJdbcDataSource dataSource;
     private final IResultSetProperties rsp;
 
-    public QueryBuilder(IJdbcDataSource dataSource, @NotNull String nameOrQuery, IResultSetProperties properties) {
+    public QueryBuilder(IJdbcDataSource dataSource, String nameOrQuery, IResultSetProperties properties) {
         this.dataSource = dataSource;
         if(nameOrQuery.startsWith("(") && nameOrQuery.endsWith(")")) {
             location = nameOrQuery + " as foo";

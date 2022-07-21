@@ -37,8 +37,6 @@
 package org.orbisgis.process;
 
 import groovy.lang.Closure;
-import org.orbisgis.commons.annotations.NotNull;
-import org.orbisgis.commons.annotations.Nullable;
 import org.orbisgis.commons.utilities.CheckUtils;
 import org.orbisgis.process.api.IProcess;
 import org.orbisgis.process.api.IProcessBuilder;
@@ -65,42 +63,34 @@ public class ProcessBuilder implements IProcessBuilder {
     /**
      * Identifier of the process.
      */
-    @Nullable
     private String id;
     /**
      * Title of the process.
      */
-    @Nullable
     private String title;
     /**
      * Human readable description of the process.
      */
-    @Nullable
     private String description;
     /**
      * List of simple keyword (one word) of the process.
      */
-    @Nullable
     private String[] keywords;
     /**
      * @link LinkedHashMap} of inputs with the name as key and the input Object as value.
      */
-    @Nullable
     private LinkedHashMap<String, Object> inputs;
     /**
      * {@link LinkedHashMap} of outputs with the name as key and the output Object as value.
      */
-    @Nullable
     private LinkedHashMap<String, Object> outputs;
     /**
      * Process version.
      */
-    @Nullable
     private String version;
     /**
      * {@link Closure} containing the code to execute on the process execution.
      */
-    @Nullable
     private Closure<?> closure;
 
     /**
@@ -109,65 +99,57 @@ public class ProcessBuilder implements IProcessBuilder {
      * @param factory  {@link IProcessFactory} used to register the process.
      * @param delegate Delegate for the closure.
      */
-    public ProcessBuilder(@NotNull IProcessFactory factory, @NotNull Object delegate) {
+    public ProcessBuilder(IProcessFactory factory, Object delegate) {
         CheckUtils.checkNotNull(factory, "The ProcessFactory should not be null.");
         CheckUtils.checkNotNull(delegate, "The Closure delegate object should not be null.");
         this.factory = factory;
         this.delegate = delegate;
     }
 
-    @NotNull
     @Override
-    public IProcessBuilder id(@Nullable String id) {
+    public IProcessBuilder id(String id) {
         this.id = id;
         return this;
     }
 
     @Override
-    @NotNull
-    public IProcessBuilder title(@Nullable String title) {
+    public IProcessBuilder title(String title) {
         this.title = title;
         return this;
     }
 
     @Override
-    @NotNull
-    public IProcessBuilder description(@Nullable String description) {
+    public IProcessBuilder description(String description) {
         this.description = description;
         return this;
     }
 
     @Override
-    @NotNull
-    public IProcessBuilder keywords(@Nullable String[] keywords) {
+    public IProcessBuilder keywords(String[] keywords) {
         this.keywords = keywords;
         return this;
     }
 
     @Override
-    @NotNull
-    public IProcessBuilder inputs(@Nullable LinkedHashMap<String, Object> inputs) {
+    public IProcessBuilder inputs(LinkedHashMap<String, Object> inputs) {
         this.inputs = inputs;
         return this;
     }
 
     @Override
-    @NotNull
-    public IProcessBuilder outputs(@Nullable LinkedHashMap<String, Object> outputs) {
+    public IProcessBuilder outputs(LinkedHashMap<String, Object> outputs) {
         this.outputs = outputs;
         return this;
     }
 
-    @NotNull
     @Override
-    public IProcessBuilder version(@Nullable String version) {
+    public IProcessBuilder version(String version) {
         this.version = version;
         return this;
     }
 
-    @NotNull
     @Override
-    public IProcessBuilder run(@Nullable Closure<?> closure) {
+    public IProcessBuilder run(Closure<?> closure) {
         this.closure = closure;
         if (closure != null) {
             this.closure.setDelegate(delegate);
@@ -177,7 +159,6 @@ public class ProcessBuilder implements IProcessBuilder {
     }
 
     @Override
-    @NotNull
     public IProcess getProcess() {
         IProcess process = new Process(id, title, description, keywords, inputs, outputs, version, closure);
         factory.registerProcess(process);

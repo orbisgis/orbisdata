@@ -38,8 +38,6 @@ package org.orbisgis.process.api;
 
 import groovy.lang.Closure;
 import groovy.lang.DelegatesTo;
-import org.orbisgis.commons.annotations.NotNull;
-import org.orbisgis.commons.annotations.Nullable;
 
 import java.util.Optional;
 
@@ -56,7 +54,7 @@ public interface IProcessFactory {
      *
      * @param process {@link IProcess} to register.
      */
-    void registerProcess(@Nullable IProcess process);
+    void registerProcess(IProcess process);
 
     /**
      * Return true if the process creation is locked, false otherwise.
@@ -78,8 +76,7 @@ public interface IProcessFactory {
      * @param processId Identifier of the process to get.
      * @return The process with the given identifier.
      */
-    @NotNull
-    Optional<IProcess> getProcess(@Nullable String processId);
+    Optional<IProcess> getProcess(String processId);
 
     /**
      * Return a {@link IProcessBuilder} to create a {@link IProcess}. Once the process created, it will be register
@@ -87,7 +84,6 @@ public interface IProcessFactory {
      *
      * @return A {@link IProcessBuilder} to create a {@link IProcess}.
      */
-    @NotNull
     IProcessBuilder create();
 
     /**
@@ -97,15 +93,13 @@ public interface IProcessFactory {
      * @param cl {@link Closure} delegated to {@link IProcessBuilder}.
      * @return A {@link IProcess}.
      */
-    @NotNull
-    Optional<IProcess> create(@Nullable @DelegatesTo(IProcessBuilder.class) Closure<?> cl);
+    Optional<IProcess> create(@DelegatesTo(IProcessBuilder.class) Closure<?> cl);
 
     /**
      * Return the {@link IProcess} containing the factory.
      *
      * @return The {@link IProcess} containing the factory.
      */
-    @NotNull
     Optional<IProcessManager> getProcessManager();
 
     /**
@@ -113,5 +107,5 @@ public interface IProcessFactory {
      *
      * @param processManager The {@link IProcessManager} containing the factory.
      */
-    void setProcessManager(@Nullable IProcessManager processManager);
+    void setProcessManager(IProcessManager processManager);
 }

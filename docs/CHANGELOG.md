@@ -1,4 +1,4 @@
-# Changelog for v1.0.1
+# Changelog for v2.0.0
 
 + Add docs/CHANGELOG.md file
 + IJdbcDataSource now implements Java DataSource
@@ -37,3 +37,6 @@ make it compatible with `smile` API)
   A sub request can be made by calling `getTable()` after calling again `columns(String...)` and `filter(String)`.
 + Use H2 2.0.206
 + Upgrade H2 to 2.1.214 and Groovy to 3.0.11
++ Upgrade to H2GIS 2.1.0
++ Remove OrbisParents
++ Add commons as a module

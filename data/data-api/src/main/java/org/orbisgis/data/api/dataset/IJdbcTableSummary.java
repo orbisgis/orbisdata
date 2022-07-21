@@ -37,7 +37,6 @@
 package org.orbisgis.data.api.dataset;
 
 import org.h2gis.utilities.TableLocation;
-import org.orbisgis.commons.annotations.Nullable;
 
 /**
  * Extension of the {@link ISummary} interface dedicated to the {@link IJdbcTable}.
@@ -51,7 +50,6 @@ public interface IJdbcTableSummary extends ISummary {
      *
      * @return The {@link TableLocation} of the summarized {@link IJdbcTable}.
      */
-    @Nullable
     TableLocation getLocation();
 
     /**

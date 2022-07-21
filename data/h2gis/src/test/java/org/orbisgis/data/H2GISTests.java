@@ -330,7 +330,7 @@ public class H2GISTests {
         String[] fcts = new String[]{ "ST_ACCESSIBILITY", "ST_CONNECTEDCOMPONENTS", "ST_GRAPHANALYSIS",
                 "ST_SHORTESTPATHLENGTH", "ST_SHORTESTPATHTREE", "ST_SHORTESTPATH"};
         Map<String, String> map = new HashMap<>();
-        map.put(H2GISDBFactory.JDBC_DATABASE_NAME, "./target/addNetworkFunctionsTest" + UUID.randomUUID().toString());
+        map.put(H2GISDBFactory.JDBC_DATABASE_NAME, "./target/addNetworkFunctionsTest" + UUID.randomUUID());
         H2GIS h2GIS = H2GIS.open(map);
         ITable table = h2GIS.getTable("INFORMATION_SCHEMA.ROUTINES");
         assertNotNull(table);

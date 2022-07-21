@@ -37,8 +37,6 @@
 package org.orbisgis.process.check;
 
 import groovy.lang.Closure;
-import org.orbisgis.commons.annotations.NotNull;
-import org.orbisgis.commons.annotations.Nullable;
 import org.orbisgis.process.api.check.ICheckClosureBuilder;
 import org.orbisgis.process.api.check.ICheckOptionBuilder;
 import org.orbisgis.process.api.check.IProcessCheck;
@@ -61,13 +59,12 @@ public class CheckClosureBuilder implements ICheckClosureBuilder {
      *
      * @param processCheck {@link IProcessCheck} to build.
      */
-    protected CheckClosureBuilder(@NotNull IProcessCheck processCheck) {
+    protected CheckClosureBuilder(IProcessCheck processCheck) {
         this.processCheck = processCheck;
     }
 
     @Override
-    @NotNull
-    public ICheckOptionBuilder check(@Nullable Closure<?> cl) {
+    public ICheckOptionBuilder check(Closure<?> cl) {
         processCheck.setClosure(cl);
         return new CheckOptionBuilder(processCheck);
     }

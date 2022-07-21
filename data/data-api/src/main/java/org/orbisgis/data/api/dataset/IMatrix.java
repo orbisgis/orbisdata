@@ -36,7 +36,6 @@
  */
 package org.orbisgis.data.api.dataset;
 
-import org.orbisgis.commons.annotations.NotNull;
 
 /**
  * Multi-dimensional structured data.
@@ -60,6 +59,5 @@ public interface IMatrix<T> extends IDataSet<T> {
      *
      * @return The size of the {@link IMatrix} as an int array.
      */
-    @NotNull
     int[] getSize();
 }

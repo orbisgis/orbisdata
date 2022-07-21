@@ -38,8 +38,6 @@ package org.orbisgis.process;
 
 import groovy.lang.*;
 import org.codehaus.groovy.runtime.InvokerHelper;
-import org.orbisgis.commons.annotations.NotNull;
-import org.orbisgis.commons.annotations.Nullable;
 import org.orbisgis.process.api.IProcess;
 import org.orbisgis.process.api.IProcessBuilder;
 import org.orbisgis.process.api.IProcessFactory;
@@ -59,13 +57,11 @@ public abstract class GroovyProcessFactory extends Script implements IProcessFac
     /**
      * MetaClass use for groovy methods/properties binding
      */
-    @NotNull
     protected MetaClass metaClass = InvokerHelper.getMetaClass(ProcessManager.class);
-    @Nullable
     private IProcessManager processManager;
 
     @Override
-    public void registerProcess(@Nullable IProcess process) {
+    public void registerProcess(IProcess process) {
         factory.registerProcess(process);
     }
 
@@ -80,20 +76,17 @@ public abstract class GroovyProcessFactory extends Script implements IProcessFac
     }
 
     @Override
-    @NotNull
-    public Optional<IProcess> getProcess(@Nullable String processId) {
+    public Optional<IProcess> getProcess(String processId) {
         return factory.getProcess(processId);
     }
 
     @Override
-    @NotNull
     public IProcessBuilder create() {
         return factory.create();
     }
 
     @Override
-    @NotNull
-    public Optional<IProcess> create(@Nullable @DelegatesTo(IProcessBuilder.class) Closure<?> cl) {
+    public Optional<IProcess> create(@DelegatesTo(IProcessBuilder.class) Closure<?> cl) {
         if(cl == null) {
             return Optional.empty();
         }
@@ -105,9 +98,8 @@ public abstract class GroovyProcessFactory extends Script implements IProcessFac
         }
     }
 
-    @Nullable
     @Override
-    public Object invokeMethod(@Nullable String name, @Nullable Object args) {
+    public Object invokeMethod(String name, Object args) {
         if(name != null) {
             Object obj = getMetaClass().invokeMethod(this, name, args);
             if(obj instanceof Optional){
@@ -122,9 +114,8 @@ public abstract class GroovyProcessFactory extends Script implements IProcessFac
         }
     }
 
-    @Nullable
     @Override
-    public Object getProperty(@Nullable String name) {
+    public Object getProperty(String name) {
         if(name == null) {
             return null;
         }
@@ -141,14 +132,13 @@ public abstract class GroovyProcessFactory extends Script implements IProcessFac
         }
     }
 
-    @NotNull
     @Override
     public Optional<IProcessManager> getProcessManager() {
         return Optional.ofNullable(processManager);
     }
 
     @Override
-    public void setProcessManager(@Nullable IProcessManager processManager) {
+    public void setProcessManager(IProcessManager processManager) {
         this.processManager = processManager;
     }
 

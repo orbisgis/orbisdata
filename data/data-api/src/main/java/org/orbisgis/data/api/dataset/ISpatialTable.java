@@ -37,8 +37,6 @@
 package org.orbisgis.data.api.dataset;
 
 import org.locationtech.jts.geom.Geometry;
-import org.orbisgis.commons.annotations.NotNull;
-import org.orbisgis.commons.annotations.Nullable;
 
 import java.util.List;
 import java.util.Map;
@@ -59,7 +57,6 @@ public interface ISpatialTable<T> extends ITable<T, T> {
      * @param columnIndex Index of the geometric column.
      * @return The {@link Geometry} value of the given column at the current row.
      */
-    @Nullable
     Geometry getGeometry(int columnIndex);
 
     /**
@@ -68,15 +65,13 @@ public interface ISpatialTable<T> extends ITable<T, T> {
      * @param columnLabel Label of the geometric column.
      * @return The {@link Geometry} value of the given column at the current row.
      */
-    @Nullable
-    Geometry getGeometry(@NotNull String columnLabel);
+    Geometry getGeometry(String columnLabel);
 
     /**
      * Returns the {@link Geometry} value of the first geometric column at the current row.
      *
      * @return The {@link Geometry} value of the first geometric column at the current row.
      */
-    @Nullable
     Geometry getGeometry();
 
     /**
@@ -85,7 +80,6 @@ public interface ISpatialTable<T> extends ITable<T, T> {
      * @param columnIndex Index of the raster column.
      * @return The {@link IRaster} value of the given column at the current row.
      */
-    @Nullable
     IRaster getRaster(int columnIndex);
 
     /**
@@ -94,15 +88,13 @@ public interface ISpatialTable<T> extends ITable<T, T> {
      * @param columnLabel Label of the raster column.
      * @return The {@link IRaster} value of the given column at the current row.
      */
-    @Nullable
-    IRaster getRaster(@NotNull String columnLabel);
+    IRaster getRaster(String columnLabel);
 
     /**
      * Returns the {@link IRaster} value of the first raster column at the current row.
      *
      * @return The {@link IRaster} value of the first raster column at the current row.
      */
-    @Nullable
     IRaster getRaster();
 
     /**
@@ -110,7 +102,6 @@ public interface ISpatialTable<T> extends ITable<T, T> {
      *
      * @return The list of the table spatial columns.
      */
-    @Nullable
     List<String> getSpatialColumns();
 
     /**
@@ -118,7 +109,6 @@ public interface ISpatialTable<T> extends ITable<T, T> {
      *
      * @return The list of the table raster columns.
      */
-    @NotNull
     List<String> getRasterColumns();
 
     /**
@@ -126,7 +116,6 @@ public interface ISpatialTable<T> extends ITable<T, T> {
      *
      * @return The list of the table geometric columns.
      */
-    @Nullable
     List<String> getGeometricColumns();
 
     /**
@@ -137,7 +126,6 @@ public interface ISpatialTable<T> extends ITable<T, T> {
      *
      * @return The full extent {@link Geometry}.
      */
-    @Nullable
     Geometry getExtent(String... geometryColumns);
 
     /**
@@ -153,7 +141,6 @@ public interface ISpatialTable<T> extends ITable<T, T> {
      *
      * @return The full extent {@link Geometry}.
      */
-    @Nullable
     Geometry getExtent(String[] geometryColumns, String filter);
 
     /**
@@ -161,7 +148,6 @@ public interface ISpatialTable<T> extends ITable<T, T> {
      *
      * @return The full extent {@link Geometry} of the first geometry column of the table.
      */
-    @Nullable
     Geometry getExtent();
 
     /**
@@ -169,7 +155,6 @@ public interface ISpatialTable<T> extends ITable<T, T> {
      *
      * @return The estimated extent {@link Geometry} of the first geometry column of the table.
      */
-    @Nullable
     Geometry getEstimatedExtent();
 
     /**
@@ -191,7 +176,6 @@ public interface ISpatialTable<T> extends ITable<T, T> {
      *
      * @return The field names as key and geometry types as value.
      */
-    @Nullable
     Map<String, String> getGeometryTypes();
 
     /**
@@ -201,6 +185,5 @@ public interface ISpatialTable<T> extends ITable<T, T> {
      * @param srid EPSG code as specified by the EPSG spatial reference system database.
      * @return A reproject {@link ISpatialTable}.
      */
-    @Nullable
     ISpatialTable<T> reproject(int srid);
 }

@@ -37,7 +37,6 @@
 package org.orbisgis.process.inoutput;
 
 import org.codehaus.groovy.runtime.InvokerHelper;
-import org.orbisgis.commons.annotations.Nullable;
 import org.orbisgis.process.api.inoutput.IInOutPut;
 
 /**
@@ -62,7 +61,6 @@ public class DummyInOutPut extends InOutPut {
         return notOptional;
     }
 
-    @Nullable
     @Override
     public IInOutPut copy() {
         return null;

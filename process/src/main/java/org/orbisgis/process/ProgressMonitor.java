@@ -36,8 +36,6 @@
  */
 package org.orbisgis.process;
 
-import org.orbisgis.commons.annotations.NotNull;
-import org.orbisgis.commons.annotations.Nullable;
 import org.orbisgis.process.api.IProgressMonitor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -69,22 +67,18 @@ public class ProgressMonitor implements IProgressMonitor {
     /**
      * {@link Logger} used to log progression.
      */
-    @NotNull
     private final Logger logger;
     /**
      * List of child.
      */
-    @NotNull
     private final List<IProgressMonitor> children;
     /**
      * Name of the task.
      */
-    @NotNull
     private final String name;
     /**
      * Reference to the parent {@link IProgressMonitor}
      */
-    @Nullable
     private final IProgressMonitor parent;
     /**
      * Indicates if the progression has end.
@@ -100,8 +94,8 @@ public class ProgressMonitor implements IProgressMonitor {
      * @param maximum Maximum step number.
      * @param autoLog Log the progression if true, otherwise do not log.
      */
-    public ProgressMonitor(@Nullable IProgressMonitor parent, @Nullable String taskName, int maximum, boolean autoLog){
-        this.name = taskName == null ? "task_" + UUID.randomUUID().toString() : taskName;
+    public ProgressMonitor(IProgressMonitor parent, String taskName, int maximum, boolean autoLog){
+        this.name = taskName == null ? "task_" + UUID.randomUUID() : taskName;
         this.maximum = maximum;
         this.step = 0;
         this.children = new ArrayList<>();
@@ -119,7 +113,7 @@ public class ProgressMonitor implements IProgressMonitor {
      * @param maximum Maximum step number.
      * @param autoLog Log the progression if true, otherwise do not log.
      */
-    public ProgressMonitor(@Nullable String taskName, int maximum, boolean autoLog){
+    public ProgressMonitor(String taskName, int maximum, boolean autoLog){
         this(null, taskName, maximum, autoLog);
     }
 
@@ -141,7 +135,7 @@ public class ProgressMonitor implements IProgressMonitor {
      * @param taskName Name of the task.
      * @param autoLog Log the progression if true, otherwise do not log.
      */
-    public ProgressMonitor(@Nullable String taskName, boolean autoLog){
+    public ProgressMonitor(String taskName, boolean autoLog){
         this(null, taskName, -1, autoLog);
     }
 
@@ -152,7 +146,7 @@ public class ProgressMonitor implements IProgressMonitor {
      * @param taskName Name of the task.
      * @param maximum Maximum step number.
      */
-    public ProgressMonitor(@Nullable String taskName, int maximum){
+    public ProgressMonitor(String taskName, int maximum){
         this(null, taskName, maximum, false);
     }
 
@@ -161,7 +155,7 @@ public class ProgressMonitor implements IProgressMonitor {
      *
      * @param taskName Name of the task.
      */
-    public ProgressMonitor(@Nullable String taskName){
+    public ProgressMonitor(String taskName){
         this(null, taskName, -1, false);
     }
 
@@ -219,10 +213,9 @@ public class ProgressMonitor implements IProgressMonitor {
         if(children.stream().map(IProgressMonitor::getProgress).anyMatch(d -> d==-1)){
             return -1;
         }
-        double tot = 100.0 /
+        return 100.0 /
                 (children.size() + maximum) *
                 (children.stream().map(IProgressMonitor::getProgress).reduce(0.0, Double::sum)/100 +step);
-        return tot;
     }
 
     @Override
@@ -231,50 +224,42 @@ public class ProgressMonitor implements IProgressMonitor {
     }
 
     @Override
-    @NotNull
     public String getName() {
         return name;
     }
 
     @Override
-    @NotNull
-    public IProgressMonitor getSubProgress(@Nullable String taskName) {
+    public IProgressMonitor getSubProgress(String taskName) {
         return getSubProgress(taskName, -1, autoLog);
     }
 
     @Override
-    @NotNull
     public IProgressMonitor getSubProgress(boolean autoLog) {
         return getSubProgress(null, -1, autoLog);
     }
 
     @Override
-    @NotNull
     public IProgressMonitor getSubProgress(int maximum) {
         return getSubProgress(null, maximum, autoLog);
     }
 
     @Override
-    @NotNull
-    public IProgressMonitor getSubProgress(@Nullable String taskName, int maximum) {
+    public IProgressMonitor getSubProgress(String taskName, int maximum) {
         return getSubProgress(taskName, maximum, autoLog);
     }
 
     @Override
-    @NotNull
-    public IProgressMonitor getSubProgress(@Nullable String taskName, boolean autoLog) {
+    public IProgressMonitor getSubProgress(String taskName, boolean autoLog) {
         return getSubProgress(taskName, -1, autoLog);
     }
 
     @Override
-    @NotNull
     public IProgressMonitor getSubProgress(int maximum, boolean autoLog) {
         return getSubProgress(null, maximum, autoLog);
     }
 
     @Override
-    @NotNull
-    public IProgressMonitor getSubProgress(@Nullable String taskName, int maximum, boolean autoLog) {
+    public IProgressMonitor getSubProgress(String taskName, int maximum, boolean autoLog) {
         IProgressMonitor pm = new ProgressMonitor(this, taskName, maximum, autoLog);
         children.add(pm);
         return pm;

@@ -42,7 +42,6 @@ import groovy.lang.GroovyShell;
 import org.codehaus.groovy.runtime.InvokerHelper;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.orbisgis.commons.annotations.Nullable;
 import org.orbisgis.process.api.IProcess;
 import org.orbisgis.process.api.check.IProcessCheck;
 import org.orbisgis.process.api.inoutput.IInOutPut;
@@ -69,7 +68,6 @@ public class ProcessCheckTest {
 
     private static IProcess PROCESS;
 
-    @Nullable
     private static IProcess NULL_PROCESS;
 
     @BeforeAll

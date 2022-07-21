@@ -37,7 +37,6 @@
 package org.orbisgis.process
 
 import org.junit.jupiter.api.Test
-import org.orbisgis.commons.annotations.Nullable
 import org.orbisgis.process.api.IProcess
 
 /**
@@ -99,13 +98,13 @@ class TestGroovyProcessFactory {
 
     private static class DummyFactory extends GroovyProcessFactory {
         @Override
-        @Nullable
+       
         Object run() {
             return null
         }
 
         @Override
-        Object invokeMethod(@Nullable String name, @Nullable Object args) {
+        Object invokeMethod(String name, Object args) {
             super.invokeMethod(name, args)
         }
     }

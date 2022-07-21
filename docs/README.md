@@ -73,12 +73,12 @@ and add the desired module :
             <plugin>
                 <groupId>org.orbisgis</groupId>
                 <artifactId>data</artifactId>
-                <version>2.0.0-SNAPSHOT</version>
+                <version>2.0.0</version>
             </plugin>
             <plugin>
                 <groupId>org.orbisgis</groupId>
                 <artifactId>process</artifactId>
-                <version>2.0.0-SNAPSHOT</version>
+                <version>2.0.0</version>
             </plugin>
             ...
         </plugins>
@@ -92,9 +92,9 @@ and add the desired module :
 Using Grab annotation :
 ``` groovy
 @GrabResolver(name='orbisgis', root='https://oss.sonatype.org/content/repositories/snapshots/')
-@Grab(group='org.orbisgis.data', module='h2gis', version='2.0.0-SNAPSHOT')
-@Grab(group='org.orbisgis.data', module='postgis', version='2.0.0-SNAPSHOT')
-@Grab(group='org.orbisgis', module='process', version='2.0.0-SNAPSHOT')
+@Grab(group='org.orbisgis.data', module='h2gis', version='2.0.0')
+@Grab(group='org.orbisgis.data', module='postgis', version='2.0.0')
+@Grab(group='org.orbisgis', module='process', version='2.0.0')
 ```
 
 OrbisData encapsulates rows,columns from a database to a table or spatial table.

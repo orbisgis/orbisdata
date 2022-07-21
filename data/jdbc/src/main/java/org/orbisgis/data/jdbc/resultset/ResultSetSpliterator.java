@@ -36,7 +36,6 @@
  */
 package org.orbisgis.data.jdbc.resultset;
 
-import org.orbisgis.commons.annotations.Nullable;
 import org.orbisgis.data.api.dataset.IStreamResultSet;
 
 import java.sql.ResultSet;
@@ -52,7 +51,7 @@ import java.util.function.Consumer;
 public class ResultSetSpliterator<T extends IStreamResultSet> implements Spliterator<T> {
 
     private final long size;
-    private T rs;
+    private final T rs;
 
     public ResultSetSpliterator(long size, T rs){
         this.size = size;
@@ -70,7 +69,6 @@ public class ResultSetSpliterator<T extends IStreamResultSet> implements Spliter
     }
 
     @Override
-    @Nullable
     public Spliterator<T> trySplit() {
         return null;
     }

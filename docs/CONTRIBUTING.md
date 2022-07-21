@@ -35,7 +35,7 @@ Each class should start with a header which template can be found
 [here](HEADER.md). The author declaration should be follow the pattern 
 `@author Name Structure`.
 
-The parameters and the methods should be annotated with the `@Nullable` or `@NotNull` annotations. The not null 
+The parameters and the methods should be annotated with the `@Nullable` or `DataFrame` annotations. The not null 
 parameters should be checked with the utility method `CheckUtils.checkNotNull(Object)` or 
 `CheckUtils.checkNotNull(Object, String)` (which throws an `InvalidParameterException` in case of null value) on the 
 very beginning of the method.

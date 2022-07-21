@@ -36,8 +36,6 @@
  */
 package org.orbisgis.data.api.datasource;
 
-import org.orbisgis.commons.annotations.NotNull;
-import org.orbisgis.commons.annotations.Nullable;
 import org.orbisgis.data.api.dataset.IDataSet;
 
 /**
@@ -54,15 +52,13 @@ public interface IDataSource<T> {
      * @param name Name of the {@link IDataSet}.
      * @return The implementation of {@link IDataSet} corresponding to the given name or null.
      */
-    @Nullable
-    IDataSet<T> getDataSet(@NotNull String name);
+    IDataSet<T> getDataSet(String name);
 
     /**
      * Return the location of the {@link IDataSourceLocation}
      *
      * @return The location of the {@link IDataSourceLocation}
      */
-    @Nullable
     IDataSourceLocation getLocation();
 
     /**
@@ -71,11 +67,9 @@ public interface IDataSource<T> {
      * @param clazz New class of the result.
      * @return The current object into an other class.
      */
-    @Nullable
-    Object asType(@NotNull Class<?> clazz);
+    Object asType(Class<?> clazz);
 
     @Override
-    @NotNull
     String toString();
 
 }

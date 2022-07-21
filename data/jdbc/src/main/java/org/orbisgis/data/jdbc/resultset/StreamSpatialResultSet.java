@@ -37,7 +37,6 @@
 package org.orbisgis.data.jdbc.resultset;
 
 import org.h2gis.utilities.SpatialResultSet;
-import org.orbisgis.commons.annotations.NotNull;
 import org.orbisgis.commons.utilities.CheckUtils;
 import org.orbisgis.data.api.dataset.IStreamSpatialResultSet;
 import org.orbisgis.data.api.dataset.ITable;
@@ -62,7 +61,7 @@ public class StreamSpatialResultSet extends StreamResultSet implements IStreamSp
      */
     private final SpatialResultSet resultSet;
 
-    public StreamSpatialResultSet(@NotNull SpatialResultSet resultSet){
+    public StreamSpatialResultSet(SpatialResultSet resultSet){
         super(resultSet);
         CheckUtils.checkNotNull(resultSet, "The given ResultSet should not be null.");
         this.resultSet = resultSet;

@@ -43,7 +43,6 @@ import groovy.lang.MetaClass;
 import org.codehaus.groovy.runtime.InvokerHelper;
 import org.codehaus.groovy.runtime.metaclass.MissingPropertyExceptionNoStack;
 import org.junit.jupiter.api.Test;
-import org.orbisgis.commons.annotations.Nullable;
 import org.orbisgis.process.api.IProcess;
 import org.orbisgis.process.api.IProcessManager;
 import org.slf4j.Logger;
@@ -184,7 +183,7 @@ public class GroovyProcessFactoryTest {
 
     private static class DummyFactory extends GroovyProcessFactory {
         @Override
-        @Nullable
+       
         public Object run() {
             return null;
         }

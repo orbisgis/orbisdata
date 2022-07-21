@@ -61,7 +61,6 @@ class TestProcessCheck {
 
     private static IProcess PROCESS
 
-    @Nullable
     private static IProcess NULL_PROCESS
 
     @BeforeAll

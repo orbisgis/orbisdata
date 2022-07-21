@@ -38,8 +38,6 @@ package org.orbisgis.data;
 
 import org.h2gis.utilities.TableLocation;
 import org.h2gis.utilities.dbtypes.DBTypes;
-import org.orbisgis.commons.annotations.NotNull;
-import org.orbisgis.commons.annotations.Nullable;
 import org.orbisgis.data.api.dataset.ISpatialTable;
 import org.orbisgis.data.api.dataset.ITable;
 import org.orbisgis.data.api.datasource.IJdbcDataSource;
@@ -69,14 +67,14 @@ public class H2gisTable extends JdbcTable<StreamResultSet> {
      * @param params         Map containing the parameters for the query.
      * @param jdbcDataSource DataSource to use for the creation of the resultSet.
      */
-    public H2gisTable(@Nullable TableLocation tableLocation, @NotNull String baseQuery,
-                      @NotNull Statement statement, @Nullable List<Object> params,
-                      @NotNull IJdbcDataSource jdbcDataSource) {
+    public H2gisTable(TableLocation tableLocation, String baseQuery,
+                      Statement statement, List<Object> params,
+                      IJdbcDataSource jdbcDataSource) {
         super(DBTypes.H2GIS, jdbcDataSource, tableLocation, statement, params, baseQuery);
     }
 
     @Override
-    public Object asType(@NotNull Class<?> clazz) {
+    public Object asType(Class<?> clazz) {
         if (ISpatialTable.class.isAssignableFrom(clazz)) {
             return new H2gisSpatialTable(getTableLocation(), getBaseQuery(), getStatement(), getParams(),
                     getJdbcDataSource());
@@ -95,7 +93,6 @@ public class H2gisTable extends JdbcTable<StreamResultSet> {
     }
 
     @Override
-    @NotNull
     public ResultSetIterator iterator() {
         return new ResultSetIterator(this);
     }

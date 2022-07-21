@@ -11,11 +11,12 @@
         <version>1.2.1-SNAPSHOT</version>
     </parent>
     <artifactId>orbisdata</artifactId>
-    <version>2.0.0-SNAPSHOT</version>
+    <version>2.0.0</version>
     <packaging>pom</packaging>
     <modules>
         <module>data</module>
         <module>process</module>
+        <module>commons</module>
     </modules>
 
     <!-- Properties -->
@@ -24,17 +25,40 @@
         <maven.build.timestamp.format>YYYY-MM-dd</maven.build.timestamp.format>
         <buildNumber>${maven.build.timestamp}</buildNumber>
         <site.basedir>${project.basedir}</site.basedir>
-        <h2gis-version>2.1.0-SNAPSHOT</h2gis-version>
-        <orbisparent-version>1.2.1-SNAPSHOT</orbisparent-version>
+        <h2gis-version>2.1.0</h2gis-version>
+        <jts-version>1.19.0</jts-version>
         <groovy-version>3.0.11</groovy-version>
         <picocli-version>4.6.3</picocli-version>
         <h2-version>2.1.214</h2-version>
         <cts-version>1.6.0</cts-version>
+        <commons-io-version>2.11.0</commons-io-version>
+        <commons-compress-version>1.21</commons-compress-version>
+        <slf4j-version>1.7.36</slf4j-version>
     </properties>
 
     <!-- Dependencies -->
     <dependencyManagement>
         <dependencies>
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-api</artifactId>
+                <version>${slf4j-version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.locationtech.jts</groupId>
+                <artifactId>jts-core</artifactId>
+                <version>${jts-version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-compress</artifactId>
+                <version>${commons-compress-version}</version>
+            </dependency>
+            <dependency>
+                <groupId>commons-io</groupId>
+                <artifactId>commons-io</artifactId>
+                <version>${commons-io-version}</version>
+            </dependency>
             <dependency>
                 <groupId>org.orbisgis</groupId>
                 <artifactId>h2gis</artifactId>
@@ -87,6 +111,12 @@
             <dependency>
                 <groupId>org.orbisgis.data</groupId>
                 <artifactId>postgis</artifactId>
+                <version>${project.version}</version>
+                <scope>compile</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.orbisgis</groupId>
+                <artifactId>commons</artifactId>
                 <version>${project.version}</version>
                 <scope>compile</scope>
             </dependency>

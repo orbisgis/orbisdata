@@ -36,7 +36,6 @@
  */
 package org.orbisgis.data.jdbc.resultset;
 
-import org.orbisgis.commons.annotations.NotNull;
 import org.orbisgis.commons.utilities.CheckUtils;
 import org.orbisgis.data.api.dataset.IStreamResultSet;
 import org.orbisgis.data.api.dataset.ITable;
@@ -64,7 +63,7 @@ public class StreamResultSet implements IStreamResultSet {
      */
     private final ResultSet resultSet;
     
-    public StreamResultSet(@NotNull ResultSet resultSet){
+    public StreamResultSet(ResultSet resultSet){
         CheckUtils.checkNotNull(resultSet, "The given ResultSet should not be null.");
         this.resultSet = resultSet;
     }

@@ -37,7 +37,6 @@
 package org.orbisgis.process;
 
 import org.junit.jupiter.api.Test;
-import org.orbisgis.commons.annotations.NotNull;
 import org.orbisgis.process.api.ILinker;
 import org.orbisgis.process.api.IProcess;
 import org.orbisgis.process.api.IProcessMapper;
@@ -103,54 +102,54 @@ public class IProcessMapperTest {
      */
     private class DummyProcessMapper implements IProcessMapper {
 
-        @NotNull
+        DataFrame
         @Override
-        public ILinker link(@NotNull IInOutPut... inOutPuts) {
+        public ILinker link(IInOutPut... inOutPuts) {
             return null;
         }
 
-        @NotNull
+        DataFrame
         @Override
-        public ICheckDataBuilder before(@NotNull IProcess process) {
+        public ICheckDataBuilder before(IProcess process) {
             return null;
         }
 
-        @NotNull
+        DataFrame
         @Override
-        public ICheckDataBuilder after(@NotNull IProcess process) {
+        public ICheckDataBuilder after(IProcess process) {
             return null;
         }
 
-        @NotNull
+        DataFrame
         @Override
         public IProcessMapper newInstance() {
             return null;
         }
 
         @Override
-        public boolean execute(@NotNull LinkedHashMap<String, Object> inputDataMap) {
+        public boolean execute(LinkedHashMap<String, Object> inputDataMap) {
             return false;
         }
 
-        @NotNull
+        DataFrame
         @Override
         public Optional<String> getTitle() {
             return Optional.empty();
         }
 
-        @NotNull
+        DataFrame
         @Override
         public Map<String, Object> getResults() {
             return null;
         }
 
-        @NotNull
+        DataFrame
         @Override
         public List<IInput> getInputs() {
             return null;
         }
 
-        @NotNull
+        DataFrame
         @Override
         public List<IOutput> getOutputs() {
             return null;
@@ -161,7 +160,7 @@ public class IProcessMapperTest {
             return false;
         }
 
-        @NotNull
+        DataFrame
         @Override
         public IProcessMapper copy() {
             return null;

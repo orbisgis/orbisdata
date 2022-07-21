@@ -41,8 +41,6 @@ import groovy.lang.GroovyInterceptable;
 import groovy.lang.GroovyObject;
 import groovy.lang.MetaClass;
 import org.codehaus.groovy.runtime.InvokerHelper;
-import org.orbisgis.commons.annotations.NotNull;
-import org.orbisgis.commons.annotations.Nullable;
 import org.orbisgis.process.api.IProcess;
 import org.orbisgis.process.api.inoutput.IInOutPut;
 import org.orbisgis.process.api.inoutput.IInput;
@@ -69,22 +67,18 @@ public class Process implements IProcess, GroovyObject, GroovyInterceptable {
     /**
      * Title of the process
      */
-    @Nullable
     private String title;
     /**
      * Process version
      */
-    @Nullable
     private String version;
     /**
      * Human readable description of the process
      */
-    @Nullable
     private String description;
     /**
      * List of simple keyword (one word) of the process
      */
-    @Nullable
     private String[] keywords;
     /**
      * List of inputs
@@ -97,7 +91,6 @@ public class Process implements IProcess, GroovyObject, GroovyInterceptable {
     /**
      * Closure containing the code to execute on the process execution
      */
-    @Nullable
     private Closure<?> closure;
     /**
      * Map of the process Result
@@ -132,8 +125,8 @@ public class Process implements IProcess, GroovyObject, GroovyInterceptable {
      * @param version     Process version.
      * @param closure     Closure containing the code to execute on the process execution.
      */
-    Process(@Nullable String title, @Nullable String description, @Nullable String[] keywords, @Nullable LinkedHashMap<String, Object> inputs,
-            @Nullable LinkedHashMap<String, Object> outputs, @Nullable String version, @Nullable Closure<?> closure) {
+    Process(String title, String description, String[] keywords, LinkedHashMap<String, Object> inputs,
+            LinkedHashMap<String, Object> outputs, String version, Closure<?> closure) {
         this(null, title, description, keywords, inputs, outputs, version, closure);
     }
 
@@ -154,8 +147,8 @@ public class Process implements IProcess, GroovyObject, GroovyInterceptable {
      * @param version     Process version.
      * @param closure     Closure containing the code to execute on the process execution.
      */
-    Process(@Nullable String id, @Nullable String title, @Nullable String description, @Nullable String[] keywords, @Nullable LinkedHashMap<String, Object> inputs,
-            @Nullable LinkedHashMap<String, Object> outputs, @Nullable String version, @Nullable Closure<?> closure) {
+    Process(String id, String title, String description, String[] keywords, LinkedHashMap<String, Object> inputs,
+            LinkedHashMap<String, Object> outputs, String version, Closure<?> closure) {
         if (inputs != null && closure != null && closure.getMaximumNumberOfParameters() != inputs.size()) {
             LOGGER.error("The number of the closure parameters and the number of process input names are different.");
             return;
@@ -206,7 +199,6 @@ public class Process implements IProcess, GroovyObject, GroovyInterceptable {
     }
 
     @Override
-    @NotNull
     public IProcess newInstance() {
         Process process = new Process(title, description, keywords, null, null,
                 version, closure);
@@ -219,7 +211,6 @@ public class Process implements IProcess, GroovyObject, GroovyInterceptable {
     }
 
     @Override
-    @NotNull
     public IProcess copy() {
         Process process = new Process(title, description, keywords, null, null,
                 version, closure);
@@ -240,8 +231,7 @@ public class Process implements IProcess, GroovyObject, GroovyInterceptable {
      * @param cl Closure to curry.
      * @return The closure if the missing inputs are all optional, false otherwise.
      */
-    @Nullable
-    private Closure<?> getClosureWithCurry(@NotNull LinkedHashMap<String, Object> inputDataMap, @NotNull Closure<?> cl) {
+    private Closure<?> getClosureWithCurry(LinkedHashMap<String, Object> inputDataMap, Closure<?> cl) {
         int curryIndex = 0;
         List<String> names = inputs.stream().map(IInOutPut::getName).map(Optional::get).collect(Collectors.toCollection(LinkedList::new));
         for (String name : names) {
@@ -264,8 +254,7 @@ public class Process implements IProcess, GroovyObject, GroovyInterceptable {
      * @param inputDataMap Map containing the data for the execution of the closure.
      * @return The casted input data as an Object array.
      */
-    @NotNull
-    private Object[] getClosureArgs(@NotNull LinkedHashMap<String, Object> inputDataMap) {
+    private Object[] getClosureArgs(LinkedHashMap<String, Object> inputDataMap) {
         return inputs
                 .stream()
                 .map(IInOutPut::getName)
@@ -277,7 +266,7 @@ public class Process implements IProcess, GroovyObject, GroovyInterceptable {
     }
 
     @Override
-    public boolean execute(@Nullable LinkedHashMap<String, Object> inputDataMap) {
+    public boolean execute(LinkedHashMap<String, Object> inputDataMap) {
         LinkedHashMap<String, Object> map = (inputDataMap == null ? new LinkedHashMap<>() : inputDataMap);
         if (closure == null) {
             LOGGER.error("The process should have a Closure defined.");
@@ -336,7 +325,7 @@ public class Process implements IProcess, GroovyObject, GroovyInterceptable {
      * @param result Result of the process execution.
      * @return True if the execution hes been successful, false otherwise.
      */
-    private boolean checkResults(@Nullable Object result) {
+    private boolean checkResults(Object result) {
         Map<String, Object> map;
         if (!(result instanceof Map)) {
             return false;
@@ -359,57 +348,48 @@ public class Process implements IProcess, GroovyObject, GroovyInterceptable {
     }
 
     @Override
-    @NotNull
     public Optional<String> getTitle() {
         return Optional.ofNullable(title);
     }
 
     @Override
-    @NotNull
     public Optional<String> getVersion() {
         return Optional.ofNullable(version);
     }
 
     @Override
-    @NotNull
     public Optional<String> getDescription() {
         return Optional.ofNullable(description);
     }
 
     @Override
-    @NotNull
     public Optional<String[]> getKeywords() {
         return Optional.ofNullable(keywords);
     }
 
     @Override
-    @NotNull
     public Map<String, Object> getResults() {
         return resultMap;
     }
 
     @Override
-    @NotNull
     public String getIdentifier() {
         return identifier;
     }
 
     @Override
-    @NotNull
     public List<IInput> getInputs() {
         return inputs;
     }
 
     @Override
-    @NotNull
     public List<IOutput> getOutputs() {
         return outputs;
     }
 
     //Groovy object methods
     @Override
-    @Nullable
-    public Object invokeMethod(@Nullable String name, @Nullable Object args) {
+    public Object invokeMethod(String name, Object args) {
         if(name == null) {
             return null;
         }
@@ -423,7 +403,6 @@ public class Process implements IProcess, GroovyObject, GroovyInterceptable {
     }
 
     @Override
-    @Nullable
     public Object getProperty(String propertyName) {
         if(propertyName == null){
             return null;
@@ -457,12 +436,12 @@ public class Process implements IProcess, GroovyObject, GroovyInterceptable {
     }
 
     @Override
-    public void setMetaClass(@Nullable MetaClass metaClass) {
+    public void setMetaClass(MetaClass metaClass) {
         this.metaClass = metaClass == null ? InvokerHelper.getMetaClass(this.getClass()) : metaClass;
     }
 
     @Override
-    public boolean call(@Nullable LinkedHashMap<String, Object> inputDataMap) {
+    public boolean call(LinkedHashMap<String, Object> inputDataMap) {
         return execute(inputDataMap);
     }
 

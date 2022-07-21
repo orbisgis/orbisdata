@@ -37,8 +37,6 @@
 package org.orbisgis.process.api.check;
 
 import groovy.lang.Closure;
-import org.orbisgis.commons.annotations.NotNull;
-import org.orbisgis.commons.annotations.Nullable;
 import org.orbisgis.process.api.IProcess;
 import org.orbisgis.process.api.inoutput.IInOutPut;
 
@@ -70,7 +68,7 @@ public interface IProcessCheck {
      * @param processInData {@link LinkedHashMap} containing the input data for the {@link IProcess} execution.
      * @return True if the process should continue, false otherwise
      */
-    boolean run(@Nullable LinkedHashMap<String, Object> processInData);
+    boolean run(LinkedHashMap<String, Object> processInData);
 
     /**
      * Set the action to do on check fail. If action is null, use {@link Action#STOP} by default.
@@ -78,14 +76,14 @@ public interface IProcessCheck {
      * @param action  Action to do on fail.
      * @param message Message to log.
      */
-    void onFail(@Nullable Action action, @Nullable String message);
+    void onFail(Action action, String message);
 
     /**
      * Set the message on check fail. By default use {@link Action#STOP}.
      *
      * @param message Message to log.
      */
-    void onFail(@Nullable String message);
+    void onFail(String message);
 
     /**
      * Set the action to do on check success. If action is null, use {@link Action#STOP} by default.
@@ -93,28 +91,27 @@ public interface IProcessCheck {
      * @param action  Action to do on success.
      * @param message Message to log.
      */
-    void onSuccess(@Nullable Action action, @Nullable String message);
+    void onSuccess(Action action, String message);
 
     /**
      * Set the message on check success. By default use {@link Action#CONTINUE}.
      *
      * @param message Message to log.
      */
-    void onSuccess(@Nullable String message);
+    void onSuccess(String message);
 
     /**
      * Sets the input and output to use inside the check.
      *
      * @param inputOrOutput Input or output list to use for the check.
      */
-    void setInOutPuts(@Nullable IInOutPut... inputOrOutput);
+    void setInOutPuts(IInOutPut... inputOrOutput);
 
     /**
      * Returns the input and output to use inside the check.
      *
      * @return The input or output list to use for the check.
      */
-    @NotNull
     LinkedList<IInOutPut> getInOutPuts();
 
     /**
@@ -122,14 +119,13 @@ public interface IProcessCheck {
      *
      * @param cl {@link Closure} to call to execute the check.
      */
-    void setClosure(@Nullable Closure<?> cl);
+    void setClosure(Closure<?> cl);
 
     /**
      * Returns the {@link Closure} to call to execute the check.
      *
      * @return The {@link Closure} to call to execute the check.
      */
-    @NotNull
     Optional<Closure<?>> getClosure();
 
     /**
@@ -153,6 +149,5 @@ public interface IProcessCheck {
      *
      * @return The {@link IProcess} concerned by the check.
      */
-    @NotNull
     Optional<IProcess> getProcess();
 }

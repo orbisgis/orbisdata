@@ -44,7 +44,6 @@ import org.h2gis.utilities.GeometryTableUtilities;
 import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.TableLocation;
 import org.h2gis.utilities.dbtypes.DBTypes;
-import org.orbisgis.commons.annotations.Nullable;
 import org.orbisgis.data.api.dataset.IJdbcColumn;
 import org.orbisgis.data.api.datasource.IJdbcDataSource;
 import org.slf4j.Logger;
@@ -172,7 +171,6 @@ public class JdbcColumn implements IJdbcColumn, GroovyObject {
         return -1;
     }
 
-    @Nullable
     @Override
     public Object asType(Class<?> clazz) {
         return null;

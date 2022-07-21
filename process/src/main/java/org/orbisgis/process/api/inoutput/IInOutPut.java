@@ -36,8 +36,6 @@
  */
 package org.orbisgis.process.api.inoutput;
 
-import org.orbisgis.commons.annotations.NotNull;
-import org.orbisgis.commons.annotations.Nullable;
 import org.orbisgis.process.api.IProcess;
 
 import java.util.Optional;
@@ -55,7 +53,6 @@ public interface IInOutPut {
      *
      * @return The input/output name.
      */
-    @NotNull
     Optional<String> getName();
 
     /**
@@ -63,7 +60,7 @@ public interface IInOutPut {
      *
      * @param name Name of the input/output.
      */
-    void setName(@Nullable String name);
+    void setName(String name);
 
     /**
      * Sets the name of the input/output.
@@ -71,15 +68,13 @@ public interface IInOutPut {
      * @param name Name of the input/output.
      * @return Itself.
      */
-    @NotNull
-    IInOutPut name(@Nullable String name);
+    IInOutPut name(String name);
 
     /**
      * Return the {@link IProcess} of the input/output.
      *
      * @return The {@link IProcess} of the input/output.
      */
-    @NotNull
     Optional<IProcess> getProcess();
 
     /**
@@ -87,7 +82,7 @@ public interface IInOutPut {
      *
      * @param process The {@link IProcess} of the input/output.
      */
-    void setProcess(@Nullable IProcess process);
+    void setProcess(IProcess process);
 
     /**
      * Sets the {@link IProcess} of the input/output.
@@ -95,15 +90,13 @@ public interface IInOutPut {
      * @param process The {@link IProcess} of the input/output.
      * @return Itself.
      */
-    @NotNull
-    IInOutPut process(@Nullable IProcess process);
+    IInOutPut process(IProcess process);
 
     /**
      * Return the type of the input/output.
      *
      * @return The type of the input/output.
      */
-    @NotNull
     Optional<Class<?>> getType();
 
     /**
@@ -111,7 +104,7 @@ public interface IInOutPut {
      *
      * @param type The type of the input/output.
      */
-    void setType(@Nullable Class<?> type);
+    void setType(Class<?> type);
 
     /**
      * Sets the type of the input/output.
@@ -119,15 +112,13 @@ public interface IInOutPut {
      * @param type The type of the input/output.
      * @return Itself.
      */
-    @NotNull
-    IInOutPut type(@Nullable Class<?> type);
+    IInOutPut type(Class<?> type);
 
     /**
      * Return the title or the input/output.
      *
      * @return The title of the input/output.
      */
-    @NotNull
     Optional<String> getTitle();
 
     /**
@@ -135,7 +126,7 @@ public interface IInOutPut {
      *
      * @param title The title of the input/output.
      */
-    void setTitle(@Nullable String title);
+    void setTitle(String title);
 
     /**
      * Sets the title of the input/output.
@@ -143,15 +134,13 @@ public interface IInOutPut {
      * @param title The title of the input/output.
      * @return Itself.
      */
-    @NotNull
-    IInOutPut title(@Nullable String title);
+    IInOutPut title(String title);
 
     /**
      * Return the description of the input/output.
      *
      * @return The description of the input/output.
      */
-    @NotNull
     Optional<String> getDescription();
 
     /**
@@ -159,7 +148,7 @@ public interface IInOutPut {
      *
      * @param description The description of the input/output.
      */
-    void setDescription(@Nullable String description);
+    void setDescription(String description);
 
     /**
      * Sets the description of the input/output.
@@ -167,15 +156,13 @@ public interface IInOutPut {
      * @param description The description of the input/output.
      * @return Itself.
      */
-    @NotNull
-    IInOutPut description(@Nullable String description);
+    IInOutPut description(String description);
 
     /**
      * Return the keywords of the input/output.
      *
      * @return The keywords of the input/output.
      */
-    @NotNull
     Optional<String[]> getKeywords();
 
     /**
@@ -183,7 +170,7 @@ public interface IInOutPut {
      *
      * @param keywords The keywords of the input/output.
      */
-    void setKeywords(@Nullable String[] keywords);
+    void setKeywords(String[] keywords);
 
     /**
      * Sets the keywords of the input/output.
@@ -191,14 +178,12 @@ public interface IInOutPut {
      * @param keywords The keywords of the input/output.
      * @return Itself.
      */
-    @NotNull
-    IInOutPut keywords(@Nullable String[] keywords);
+    IInOutPut keywords(String[] keywords);
 
     /**
      * Returns a copy the the current object.
      *
      * @return A copy of the current object.
      */
-    @Nullable
     IInOutPut copy();
 }

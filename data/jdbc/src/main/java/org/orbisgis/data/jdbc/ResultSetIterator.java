@@ -36,7 +36,6 @@
  */
 package org.orbisgis.data.jdbc;
 
-import org.orbisgis.commons.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -60,7 +59,6 @@ public class ResultSetIterator<T extends ResultSet> implements Iterator<T> {
     /**
      * Iterated {@link ResultSet}
      */
-    @Nullable
     private final T resultSet;
 
     private boolean nextDone = false;
@@ -70,7 +68,7 @@ public class ResultSetIterator<T extends ResultSet> implements Iterator<T> {
      *
      * @param resultSet {@link ResultSet} to iterate.
      */
-    public ResultSetIterator(@Nullable T resultSet) {
+    public ResultSetIterator(T resultSet) {
         this.resultSet = resultSet;
         if(this.resultSet == null) {
             LOGGER.warn("There is no ResultSet so there will no data.");
@@ -90,7 +88,6 @@ public class ResultSetIterator<T extends ResultSet> implements Iterator<T> {
     }
 
     @Override
-    @Nullable
     public T next() {
         if(!nextDone) {
             if(!hasNext()) {

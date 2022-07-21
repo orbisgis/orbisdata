@@ -99,13 +99,13 @@ class TestGroovyProcessFactory {
 
     private static class DummyFactory extends GroovyProcessFactory {
         @Override
-        @Nullable
+       
         Object run() {
             return null
         }
 
         @Override
-        Object invokeMethod(@Nullable String name, @Nullable Object args) {
+        Object invokeMethod(String name, Object args) {
             super.invokeMethod(name, args)
         }
     }

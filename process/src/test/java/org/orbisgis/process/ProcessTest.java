@@ -42,7 +42,6 @@ import groovy.lang.GroovyShell;
 import org.codehaus.groovy.runtime.InvokerHelper;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.orbisgis.commons.annotations.Nullable;
 import org.orbisgis.process.api.IProcess;
 import org.orbisgis.process.api.inoutput.IInOutPut;
 import org.orbisgis.process.api.inoutput.IInput;
@@ -70,7 +69,7 @@ public class ProcessTest {
     static void beforeAll() {
 
         Closure<Object> cl1 = new Closure<Object>(null) {
-            @Nullable
+           
             @Override
             public Object call() {
                 return null;
@@ -109,7 +108,7 @@ public class ProcessTest {
     @Test
     void nullResultTest() {
         Closure<Object> cl = new Closure<Object>(null) {
-            @Nullable
+           
             @Override
             public Object call() {
                 return null;

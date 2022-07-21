@@ -38,15 +38,13 @@ package org.orbisgis.data.api.dsl;
 
 
 import groovy.lang.Closure;
-import org.orbisgis.commons.annotations.NotNull;
-import org.orbisgis.commons.annotations.Nullable;
 import org.orbisgis.data.api.dataset.ISpatialTable;
 import org.orbisgis.data.api.dataset.ITable;
 
 import java.util.List;
 
 /**
- * Define the methods use to get the result of a SQL request built throw the {@link org.orbisgis.orbisdata.datamanager.api.dsl}
+ * Define the methods use to get the result of a SQL request built throw the {@link org.orbisgis.data.api.dsl}
  * package interfaces.
  *
  * @author Erwan Bocher (CNRS)
@@ -59,7 +57,7 @@ public interface IBuilderResult {
      *
      * @param closure {@link Closure} to apply to each row.
      */
-    void eachRow(@NotNull Closure<Object> closure);
+    void eachRow(Closure<Object> closure);
 
     /**
      * Convert the result of the SQL request into a {@link ITable} or {@link ISpatialTable}.
@@ -67,15 +65,13 @@ public interface IBuilderResult {
      * @param clazz New class of the result.
      * @return The result wrapped into the given class.
      */
-    @Nullable
-    Object asType(@NotNull Class<?> clazz);
+    Object asType(Class<?> clazz);
 
     /**
      * Return the {@link ITable} representing the result of the SQL query.
      *
      * @return The {@link ITable} representing the result of the SQL query.
      */
-    @Nullable
     ITable<?,?> getTable();
 
     /**
@@ -83,11 +79,9 @@ public interface IBuilderResult {
      *
      * @return The {@link ISpatialTable} representing the result of the SQL query.
      */
-    @Nullable
     ISpatialTable<?> getSpatialTable();
 
     @Override
-    @NotNull
     String toString();
 
     List<Object> getParams();

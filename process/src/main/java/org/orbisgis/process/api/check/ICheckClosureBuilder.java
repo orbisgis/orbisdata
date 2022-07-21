@@ -38,8 +38,6 @@
 package org.orbisgis.process.api.check;
 
 import groovy.lang.Closure;
-import org.orbisgis.commons.annotations.NotNull;
-import org.orbisgis.commons.annotations.Nullable;
 import org.orbisgis.process.api.inoutput.IInOutPut;
 
 /**
@@ -58,6 +56,5 @@ public interface ICheckClosureBuilder {
      * @param cl {@link Closure} to execute to perform the check.
      * @return A {@link ICheckClosureBuilder} to continue the check building.
      */
-    @NotNull
-    ICheckOptionBuilder check(@Nullable Closure<?> cl);
+    ICheckOptionBuilder check(Closure<?> cl);
 }

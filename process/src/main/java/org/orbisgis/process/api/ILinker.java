@@ -36,7 +36,6 @@
  */
 package org.orbisgis.process.api;
 
-import org.orbisgis.commons.annotations.NotNull;
 import org.orbisgis.process.api.inoutput.IInOutPut;
 
 /**
@@ -54,12 +53,12 @@ public interface ILinker {
      *
      * @param inOutPuts Inputs or Outputs to link.
      */
-    void to(@NotNull IInOutPut... inOutPuts);
+    void to(IInOutPut... inOutPuts);
 
     /**
      * Alias to give to the inputs or outputs.
      *
      * @param alias Alias to use.
      */
-    void to(@NotNull String alias);
+    void to(String alias);
 }

@@ -36,7 +36,6 @@
  */
 package org.orbisgis.process.api.inoutput;
 
-import org.orbisgis.commons.annotations.Nullable;
 
 /**
  * This interface defines the methods dedicated the wrapping of output.
@@ -51,6 +50,5 @@ public interface IOutput extends IInOutPut {
      *
      * @return A copy of the current object.
      */
-    @Nullable
     IOutput copy();
 }

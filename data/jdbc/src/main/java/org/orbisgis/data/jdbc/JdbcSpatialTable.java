@@ -39,8 +39,6 @@ package org.orbisgis.data.jdbc;
 import org.h2gis.utilities.*;
 import org.h2gis.utilities.dbtypes.DBTypes;
 import org.locationtech.jts.geom.Geometry;
-import org.orbisgis.commons.annotations.NotNull;
-import org.orbisgis.commons.annotations.Nullable;
 import org.orbisgis.data.api.dataset.IJdbcSpatialTable;
 import org.orbisgis.data.api.dataset.IRaster;
 import org.orbisgis.data.api.datasource.IJdbcDataSource;
@@ -77,9 +75,9 @@ public abstract class JdbcSpatialTable extends JdbcTable<StreamSpatialResultSet>
      * @param statement      Statement used to request the database.
      * @param jdbcDataSource DataSource to use for the creation of the resultSet.
      */
-    public JdbcSpatialTable(@NotNull DBTypes dataBaseType, @NotNull IJdbcDataSource jdbcDataSource,
-                            @Nullable TableLocation tableLocation, @NotNull Statement statement,
-                            @NotNull String baseQuery, @Nullable List <Object> params) {
+    public JdbcSpatialTable(DBTypes dataBaseType, IJdbcDataSource jdbcDataSource,
+                            TableLocation tableLocation, Statement statement,
+                            String baseQuery, List <Object> params) {
         super(dataBaseType, jdbcDataSource, tableLocation, statement, params, baseQuery);
     }
 
@@ -102,7 +100,7 @@ public abstract class JdbcSpatialTable extends JdbcTable<StreamSpatialResultSet>
     }
 
     @Override
-    public Geometry getGeometry(@NotNull String columnLabel) {
+    public Geometry getGeometry(String columnLabel) {
         try {
             SpatialResultSet rs = (SpatialResultSet)getResultSet();
             if(rs != null) {
@@ -133,7 +131,7 @@ public abstract class JdbcSpatialTable extends JdbcTable<StreamSpatialResultSet>
     }
 
     @Override
-    public IRaster getRaster(@NotNull String columnLabel) {
+    public IRaster getRaster(String columnLabel) {
         throw new UnsupportedOperationException();
     }
 
@@ -153,7 +151,6 @@ public abstract class JdbcSpatialTable extends JdbcTable<StreamSpatialResultSet>
     }
 
     @Override
-    @NotNull
     public List<String> getRasterColumns() {
         return new ArrayList<>();
     }
@@ -386,7 +383,6 @@ public abstract class JdbcSpatialTable extends JdbcTable<StreamSpatialResultSet>
         return new ResultSetIterator(this);
     }
 
-    @Nullable
     @Override
     public Stream<StreamSpatialResultSet> stream() {
         Spliterator<StreamSpatialResultSet> spliterator = new ResultSetSpliterator<>(this.getRowCount(), new StreamSpatialResultSet((SpatialResultSet)getResultSet()));

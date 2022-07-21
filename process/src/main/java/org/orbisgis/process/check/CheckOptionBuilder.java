@@ -36,8 +36,6 @@
  */
 package org.orbisgis.process.check;
 
-import org.orbisgis.commons.annotations.NotNull;
-import org.orbisgis.commons.annotations.Nullable;
 import org.orbisgis.process.api.check.ICheckOptionBuilder;
 import org.orbisgis.process.api.check.IProcessCheck;
 import org.slf4j.Logger;
@@ -66,13 +64,12 @@ public class CheckOptionBuilder implements ICheckOptionBuilder {
      *
      * @param processCheck {@link IProcessCheck} to build.
      */
-    protected CheckOptionBuilder(@NotNull IProcessCheck processCheck) {
+    protected CheckOptionBuilder(IProcessCheck processCheck) {
         this.processCheck = processCheck;
     }
 
-    @NotNull
     @Override
-    public ICheckOptionBuilder stopOnFail(@Nullable String message) {
+    public ICheckOptionBuilder stopOnFail(String message) {
         if(message == null) {
             LOGGER.warn("No message provided for the ProcessCheck stopOnFail.");
         }
@@ -80,16 +77,14 @@ public class CheckOptionBuilder implements ICheckOptionBuilder {
         return this;
     }
 
-    @NotNull
     @Override
     public ICheckOptionBuilder stopOnFail() {
         processCheck.onFail(IProcessCheck.Action.STOP, null);
         return this;
     }
 
-    @NotNull
     @Override
-    public ICheckOptionBuilder stopOnSuccess(@Nullable String message) {
+    public ICheckOptionBuilder stopOnSuccess(String message) {
         if(message == null) {
             LOGGER.warn("No message provided for the ProcessCheck stopOnSuccess.");
         }
@@ -97,16 +92,14 @@ public class CheckOptionBuilder implements ICheckOptionBuilder {
         return this;
     }
 
-    @NotNull
     @Override
     public ICheckOptionBuilder stopOnSuccess() {
         processCheck.onSuccess(IProcessCheck.Action.STOP, null);
         return this;
     }
 
-    @NotNull
     @Override
-    public ICheckOptionBuilder continueOnFail(@Nullable String message) {
+    public ICheckOptionBuilder continueOnFail(String message) {
         if(message == null) {
             LOGGER.warn("No message provided for the ProcessCheck continueOnFail.");
         }
@@ -114,16 +107,14 @@ public class CheckOptionBuilder implements ICheckOptionBuilder {
         return this;
     }
 
-    @NotNull
     @Override
     public ICheckOptionBuilder continueOnFail() {
         processCheck.onFail(IProcessCheck.Action.CONTINUE, null);
         return this;
     }
 
-    @NotNull
     @Override
-    public ICheckOptionBuilder continueOnSuccess(@Nullable String message) {
+    public ICheckOptionBuilder continueOnSuccess(String message) {
         if(message == null) {
             LOGGER.warn("No message provided for the ProcessCheck continueOnSuccess.");
         }
@@ -131,7 +122,6 @@ public class CheckOptionBuilder implements ICheckOptionBuilder {
         return this;
     }
 
-    @NotNull
     @Override
     public ICheckOptionBuilder continueOnSuccess() {
         processCheck.onSuccess(IProcessCheck.Action.CONTINUE, null);

@@ -140,6 +140,7 @@ public class ProcessMapperTest {
     }
 
     /**
+     * {@code
      *  --> ----
      *     | pB | -----> ---- -->
      * |--> ----        | pC |
@@ -149,6 +150,7 @@ public class ProcessMapperTest {
      * --> ----     |
      *    | pA | ---|
      *     ----
+     *     }
      */
     @Test
     public void mapping1Test() {
@@ -191,6 +193,7 @@ public class ProcessMapperTest {
 
 
     /**
+     * {@code
      * --> -----  |-----> ----
      *    |  pA |-|      | pB |--->
      * --> -----  |-\ /-> ----
@@ -198,6 +201,7 @@ public class ProcessMapperTest {
      * --> -----  |-/ \-> ----
      *    |  pA |-|      | pB |--->
      * --> -----  |-----> ----
+     * }
      */
     @Test
     public void mapping2Test() {
@@ -244,6 +248,7 @@ public class ProcessMapperTest {
 
 
     /**
+     * {@code
      * --> -----
      * |  pA |-->
      * --> -----
@@ -251,6 +256,7 @@ public class ProcessMapperTest {
      * --> -----
      * |  pA |-->
      * --> -----
+     * }
      */
     @Test
     public void mapping4Test() {

@@ -170,8 +170,8 @@ class TestProcessBuilder {
         assert "description" == process.description
         assert "version" == process.version
         assert ["key1", "key2"] == process.keywords
-        assert 3 == process.inputs.size
-        assert 2 == process.outputs.size
+        assert 3 == process.inputs.size()
+        assert 2 == process.outputs.size()
 
         process = new ProcessBuilder(factory, delegate)
                 .title(null)

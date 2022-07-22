@@ -40,3 +40,4 @@ make it compatible with `smile` API)
 + Upgrade to H2GIS 2.1.0
 + Remove OrbisParents
 + Add commons as a module
++ Fix several tests

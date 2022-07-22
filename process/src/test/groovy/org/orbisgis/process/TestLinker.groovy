@@ -125,7 +125,7 @@ class TestLinker {
         assert 1 == linker[0].aliases.size()
         assert linker[0].aliases.containsKey("toto")
         assert !linker[0].inputOutputMap
-        assert 1 == linker[0].inputs.size
+        assert 1 == linker[0].inputs.size()
         assert !linker[0].outputs
 
         linker[0] = new Linker(in1, in2)
@@ -142,7 +142,7 @@ class TestLinker {
         assert linker[0].aliases.containsKey("toto")
         assert !linker[0].inputOutputMap
         assert !linker[0].inputs
-        assert 1 == linker[0].outputs.size
+        assert 1 == linker[0].outputs.size()
 
         linker[0] = new Linker(out1)
         linker[0].to("out1")

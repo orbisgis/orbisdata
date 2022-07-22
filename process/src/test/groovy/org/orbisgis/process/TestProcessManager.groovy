@@ -77,8 +77,8 @@ class TestProcessManager {
         assert "description", process.description
         assert "version", process.version
         assert ["key1", "key2"] == process.keywords
-        assert 2, process.inputs.size
-        assert 1 == process.outputs.size
+        assert 2, process.inputs.size()
+        assert 1 == process.outputs.size()
 
         process = pm.create(null)
         assert !process

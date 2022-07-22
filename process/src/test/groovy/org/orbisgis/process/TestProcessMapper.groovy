@@ -148,9 +148,9 @@ class TestProcessMapper {
         def dataMap = [inputD: "D", inputK: "K", commonInput: "common"]
         assert mapper(dataMap)
 
-        assert 3 == mapper.inputs.size
+        assert 3 == mapper.inputs.size()
 
-        assert 4 == mapper.outputs.size
+        assert 4 == mapper.outputs.size()
 
         assert !mapper.results.containsKey("outB1")
         assert "commonD or commonK" == mapper.results.get("outD")
@@ -195,9 +195,9 @@ class TestProcessMapper {
         def dataMap = [inC1: null, inC2: "K"]
         assert mapper(dataMap)
 
-        assert 2 == mapper.inputs.size
+        assert 2 == mapper.inputs.size()
 
-        assert 2 == mapper.outputs.size
+        assert 2 == mapper.outputs.size()
 
         assert 2 == mapper.results.size()
         assert !mapper.results.containsKey("outC1")

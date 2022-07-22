@@ -598,7 +598,8 @@
         <url>https://github.com/orbisgis/orbisdata/issues</url>
     </issueManagement>
     <scm>
-        <connection>scm:git:git://github.com/orbisgis/orbisdata</connection>
+        <connection>scm:git:https://github.com/orbisgis/orbisdata.git</connection>
+        <developerConnection>scm:git:https://github.com/orbisgis/orbisdata.git</developerConnection>
     </scm>
 
     <repositories>

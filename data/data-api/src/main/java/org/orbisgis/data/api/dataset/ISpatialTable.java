@@ -133,10 +133,10 @@ public interface ISpatialTable<T> extends ITable<T, T> {
      * and a filter
      *
      * The filter depends to the input datasource
-     * e.g. WHERE ID>12 for a SQL database
+     * e.g. {@code WHERE ID>12} for a SQL database
      *
      * Note that a geometry column can be a geometry function
-     * e.g. ST_Buffer(the_geom, 20)
+     * e.g. {@code ST_Buffer(the_geom, 20)}
      *
      *
      * @return The full extent {@link Geometry}.

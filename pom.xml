@@ -24,7 +24,7 @@
 
         <!-- Dependencies versions -->
         <junit-version>5.8.2</junit-version>
-        <h2gis-version>2.1.0</h2gis-version>
+        <h2gis-version>2.2.0-SNAPSHOT</h2gis-version>
         <jts-version>1.19.0</jts-version>
         <groovy-version>3.0.11</groovy-version>
         <picocli-version>4.6.3</picocli-version>

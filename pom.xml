@@ -24,12 +24,12 @@
 
         <!-- Dependencies versions -->
         <junit-version>5.8.2</junit-version>
-        <h2gis-version>2.2.0-SNAPSHOT</h2gis-version>
+        <h2gis-version>2.2.0</h2gis-version>
         <jts-version>1.19.0</jts-version>
         <groovy-version>3.0.11</groovy-version>
         <picocli-version>4.6.3</picocli-version>
         <h2-version>2.1.214</h2-version>
-        <cts-version>1.6.0</cts-version>
+        <cts-version>1.7.0</cts-version>
         <commons-io-version>2.11.0</commons-io-version>
         <commons-compress-version>1.21</commons-compress-version>
         <slf4j-version>1.7.36</slf4j-version>

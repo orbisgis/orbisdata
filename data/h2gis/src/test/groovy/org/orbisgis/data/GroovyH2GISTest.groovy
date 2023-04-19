@@ -1080,7 +1080,7 @@ class GroovyH2GISTest {
                 INSERT INTO h2gis VALUES (1, 'corn', 'SRID=4326;POINT(10.2322222666 10)'::GEOMETRY), (2, 'grass', 'SRID=4326;POINT(1 1)'::GEOMETRY);
         """)
         ISpatialTable table  = h2GIS.getSpatialTable("h2gis").columns("land", "st_precisionreducer(st_transform(the_geom, 4326), 3) as the_geom")
-                .filter("limit 1").getSpatialTable();
+                .filter("limit 1").getSpatialTable()
         assertEquals(1, table.getRowCount())
         assertEquals("POINT (10.232 10)", table.getExtent().getEnvelope().toString())
     }

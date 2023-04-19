@@ -521,7 +521,11 @@ public abstract class JdbcTable<T extends ResultSet> extends DefaultResultSet im
         }
         String query = "";
         if (tableLocation == null) {
-           query = "SELECT COUNT(*) FROM ("+getBaseQuery()+") AS FOO";
+            if(getBaseQuery().startsWith("(") && getBaseQuery().endsWith(")")) {
+                query= "SELECT COUNT(*) FROM " +getBaseQuery() + "AS FOO";
+            }else {
+                query = "SELECT COUNT(*) FROM (" + getBaseQuery() + ") AS FOO";
+            }
         } else  {
            query =  "SELECT count(*) FROM "+tableLocation.toString(getDbType());
         }

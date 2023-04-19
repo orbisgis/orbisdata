@@ -43,9 +43,7 @@ import org.locationtech.jts.geom.MultiPolygon
 import org.locationtech.jts.geom.Point
 import org.orbisgis.commons.printer.Ascii
 import org.orbisgis.commons.printer.Html
-import org.orbisgis.data.H2GIS
 import org.orbisgis.data.api.dataset.ISpatialTable
-import org.orbisgis.data.POSTGIS
 
 import java.sql.SQLException
 import java.sql.Time
@@ -628,7 +626,7 @@ class GroovyH2GISTest {
                         "|                   1|POINT (10 10)       |just a string a b...|\n" +
                         "|                   2|POINT (1 1)         |another string      |\n" +
                         "+--------------------+--------------------+--------------------+\n",
-                (h2GIS.getSpatialTable("orbisgis") as Ascii).toString())
+                        (h2GIS.getSpatialTable("orbisgis") as Ascii).toString())
         assertEquals(
                 "+--------------------+\n" +
                         "|       query        |\n" +
@@ -1071,5 +1069,19 @@ class GroovyH2GISTest {
         h2GIS.execute("insert into geotable values(null)")
         assertFalse h2GIS.getTable("geotable").isEmpty()
         h2GIS.execute("drop table geotable")
+    }
+
+    @Test
+    void filterExtend2() {
+        def h2GIS = H2GIS.open([databaseName: './target/loadH2GIS'])
+        h2GIS.execute("""
+                DROP TABLE IF EXISTS h2gis;
+                CREATE TABLE h2gis (id int, land varchar, the_geom geometry(point));
+                INSERT INTO h2gis VALUES (1, 'corn', 'SRID=4326;POINT(10.2322222666 10)'::GEOMETRY), (2, 'grass', 'SRID=4326;POINT(1 1)'::GEOMETRY);
+        """)
+        ISpatialTable table  = h2GIS.getSpatialTable("h2gis").columns("land", "st_precisionreducer(st_transform(the_geom, 4326), 3) as the_geom")
+                .filter("limit 1").getSpatialTable();
+        assertEquals(1, table.getRowCount())
+        assertEquals("POINT (10.232 10)", table.getExtent().getEnvelope().toString())
     }
 }

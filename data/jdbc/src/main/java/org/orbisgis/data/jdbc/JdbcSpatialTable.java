@@ -255,7 +255,12 @@ public abstract class JdbcSpatialTable extends JdbcTable<StreamSpatialResultSet>
                 }
                 Tuple<String, Integer> geomMeta=null;
                 try {
-                    geomMeta = GeometryTableUtilities.getFirstGeometryColumnNameAndIndex(con, getTableLocation());
+                    TableLocation tableLocation = getTableLocation();
+                    if (tableLocation == null) {
+                        geomMeta = GeometryTableUtilities.getFirstGeometryColumnNameAndIndex(rs0.getMetaData());
+                    }else {
+                        geomMeta = GeometryTableUtilities.getFirstGeometryColumnNameAndIndex(con, tableLocation);
+                    }
                 } catch (SQLException e) {
                     LOGGER.error("There is no geometric field.", e);
                 }

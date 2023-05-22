@@ -4,3 +4,4 @@
 - Fix getTable method when the user set a subquery
 eg h2GIS.getSpatialTable("h2gis").columns("land", "st_precisionreducer(st_transform(the_geom, 4326), 3) as the_geom")
   .filter("limit 1").getSpatialTable()
+- Add methods on datasource to create, drop indexes, drop table, drop columns

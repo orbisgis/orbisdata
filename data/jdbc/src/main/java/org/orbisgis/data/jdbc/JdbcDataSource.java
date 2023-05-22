@@ -197,37 +197,37 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, IRe
     }
 
     @Override
-    public Collection<String> getTableNames(String namePattern){
+    public Collection<String> getTableNames(String namePattern) {
         return getTableNames(null, null, namePattern, (TableType[]) null);
     }
 
     @Override
-    public Collection<String> getTableNames(String namePattern, TableType... types){
+    public Collection<String> getTableNames(String namePattern, TableType... types) {
         return getTableNames(null, null, namePattern, types);
     }
 
     @Override
-    public Collection<String> getTableNames(String schemaPattern, String namePattern){
+    public Collection<String> getTableNames(String schemaPattern, String namePattern) {
         return getTableNames(null, schemaPattern, namePattern, (TableType[]) null);
     }
 
     @Override
     public Collection<String> getTableNames(String schemaPattern, String namePattern,
-                                     TableType... types){
+                                            TableType... types) {
         return getTableNames(null, schemaPattern, namePattern, types);
     }
 
     @Override
     public Collection<String> getTableNames(String catalogPattern, String schemaPattern,
-                                     String namePattern){
+                                            String namePattern) {
         return getTableNames(catalogPattern, schemaPattern, namePattern, (TableType[]) null);
     }
 
     @Override
     public Collection<String> getTableNames(String catalogPattern, String schemaPattern,
-                                     String namePattern, TableType... types){
+                                            String namePattern, TableType... types) {
         String[] array = null;
-        if(types != null){
+        if (types != null) {
             array = Arrays.stream(types).filter(Objects::nonNull).map(Enum::toString).toArray(String[]::new);
         }
         try {
@@ -442,14 +442,14 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, IRe
         GroovyRowResult row;
         try {
             row = super.firstRow(gstring);
-            if(!getConnection().getAutoCommit()){
+            if (!getConnection().getAutoCommit()) {
                 super.commit();
             }
             return row;
         } catch (SQLException e) {
             LOGGER.debug("Unable to execute the request as a GString.", e.getLocalizedMessage());
             try {
-                if(!getConnection().getAutoCommit()){
+                if (!getConnection().getAutoCommit()) {
                     super.rollback();
                 }
             } catch (SQLException e2) {
@@ -457,7 +457,7 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, IRe
             }
         }
         row = super.firstRow(gstring.toString());
-        if(!getConnection().getAutoCommit()){
+        if (!getConnection().getAutoCommit()) {
             super.commit();
         }
         return row;
@@ -467,13 +467,13 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, IRe
     public boolean execute(String sql) throws SQLException {
         try {
             boolean b = super.execute(sql);
-            if(!getConnection().getAutoCommit()){
+            if (!getConnection().getAutoCommit()) {
                 super.commit();
             }
             return b;
         } catch (SQLException e) {
             try {
-                if(!getConnection().getAutoCommit()){
+                if (!getConnection().getAutoCommit()) {
                     super.rollback();
                 }
             } catch (SQLException e2) {
@@ -488,14 +488,14 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, IRe
         List<GroovyRowResult> rows;
         try {
             rows = super.rows(gstring);
-            if(!getConnection().getAutoCommit()){
+            if (!getConnection().getAutoCommit()) {
                 super.commit();
             }
             return rows;
         } catch (SQLException e) {
             LOGGER.debug("Unable to execute the request as a GString.\n" + e.getLocalizedMessage());
             try {
-                if(!getConnection().getAutoCommit()){
+                if (!getConnection().getAutoCommit()) {
                     super.rollback();
                 }
             } catch (SQLException e2) {
@@ -503,7 +503,7 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, IRe
             }
         }
         rows = super.rows(gstring.toString());
-        if(!getConnection().getAutoCommit()){
+        if (!getConnection().getAutoCommit()) {
             super.commit();
         }
         return rows;
@@ -515,13 +515,13 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, IRe
             throws SQLException {
         try {
             super.eachRow(sql, closure);
-            if(!getConnection().getAutoCommit()){
+            if (!getConnection().getAutoCommit()) {
                 super.commit();
             }
         } catch (SQLException e) {
             LOGGER.debug("Unable to execute the request as a String.\n" + e.getLocalizedMessage());
             try {
-                if(!getConnection().getAutoCommit()){
+                if (!getConnection().getAutoCommit()) {
                     super.rollback();
                 }
             } catch (SQLException e2) {
@@ -537,14 +537,14 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, IRe
             throws SQLException {
         try {
             super.eachRow(gstring, closure);
-            if(!getConnection().getAutoCommit()){
+            if (!getConnection().getAutoCommit()) {
                 super.commit();
             }
         } catch (SQLException e) {
             LOGGER.debug("Unable to execute the request as a GString.\n" + e.getLocalizedMessage());
 
             try {
-                if(!getConnection().getAutoCommit()){
+                if (!getConnection().getAutoCommit()) {
                     super.rollback();
                 }
             } catch (SQLException e2) {
@@ -561,7 +561,7 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, IRe
         try {
             if (FileUtilities.isExtensionWellFormated(file, "sql")) {
                 b = executeScript(new FileInputStream(file), bindings);
-                if(!getConnection().getAutoCommit()){
+                if (!getConnection().getAutoCommit()) {
                     super.commit();
                 }
                 return b;
@@ -569,7 +569,7 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, IRe
         } catch (IOException | SQLException e) {
             LOGGER.error("Unable to read the SQL file.", e.getLocalizedMessage());
             try {
-                if(!getConnection().getAutoCommit()){
+                if (!getConnection().getAutoCommit()) {
                     super.rollback();
                 }
             } catch (SQLException e2) {
@@ -604,7 +604,7 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, IRe
                 }
                 try {
                     execute(commandSQL);
-                    if(!getConnection().getAutoCommit()){
+                    if (!getConnection().getAutoCommit()) {
                         super.commit();
                     }
                 } catch (SQLException e) {
@@ -633,36 +633,36 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, IRe
 
     @Override
     public boolean save(String tableName, String filePath, boolean delete) {
-        if(getConnection() == null){
+        if (getConnection() == null) {
             LOGGER.error("No connection, cannot save.");
             return false;
         }
         try {
-            if(ioMethods==null) {
+            if (ioMethods == null) {
                 ioMethods = new IOMethods();
             }
-            ioMethods.exportToFile(getConnection(), tableName,filePath, null, delete);
+            ioMethods.exportToFile(getConnection(), tableName, filePath, null, delete);
             return true;
         } catch (SQLException e) {
-            LOGGER.error("Cannot save the file : "+ filePath, e);
+            LOGGER.error("Cannot save the file : " + filePath, e);
         }
         return false;
     }
 
     @Override
     public boolean save(String tableName, String filePath, String encoding) {
-        if(getConnection() == null){
+        if (getConnection() == null) {
             LOGGER.error("No connection, cannot save.");
             return false;
         }
         try {
-            if(ioMethods==null) {
+            if (ioMethods == null) {
                 ioMethods = new IOMethods();
             }
-            ioMethods.exportToFile(getConnection(), tableName,filePath, encoding, false);
+            ioMethods.exportToFile(getConnection(), tableName, filePath, encoding, false);
             return true;
         } catch (SQLException e) {
-            LOGGER.error("Cannot save the file : "+ filePath, e);
+            LOGGER.error("Cannot save the file : " + filePath, e);
         }
         return false;
     }
@@ -704,10 +704,10 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, IRe
 
     private String getTableNameFromPath(String filePath) {
         String name = URIUtilities.fileFromString(filePath).getName();
-        if(name.contains(".")) {
+        if (name.contains(".")) {
             name = name.substring(0, name.lastIndexOf("."));
         }
-        if(databaseType == DBTypes.H2GIS){
+        if (databaseType == DBTypes.H2GIS) {
             return name.toUpperCase();
         }
         return name.toLowerCase();
@@ -715,12 +715,12 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, IRe
 
     @Override
     public String link(String filePath, String tableName, boolean delete) {
-        String formatedTableName = TableLocation.parse(tableName, getDataBaseType() ).toString();
+        String formatedTableName = TableLocation.parse(tableName, getDataBaseType()).toString();
         try {
             IOMethods.linkedFile(getConnection(), filePath, tableName, delete);
             return formatedTableName;
         } catch (SQLException e) {
-            LOGGER.error("Cannot link the file : "+ filePath);
+            LOGGER.error("Cannot link the file : " + filePath);
         }
         return formatedTableName;
     }
@@ -828,16 +828,16 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, IRe
 
     @Override
     public String load(String filePath, String tableName, String encoding,
-                           boolean delete) {
+                       boolean delete) {
         String formatedTableName = TableLocation.parse(tableName, getDataBaseType()).toString();
         try {
-            if(ioMethods==null) {
+            if (ioMethods == null) {
                 ioMethods = new IOMethods();
             }
             ioMethods.importFile(getConnection(), filePath, tableName, encoding, delete);
             return formatedTableName;
         } catch (SQLException e) {
-            LOGGER.error("Cannot import the file : "+ filePath);
+            LOGGER.error("Cannot import the file : " + filePath);
         }
         return null;
     }
@@ -981,11 +981,11 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, IRe
     @Override
     public String load(IJdbcDataSource dataSource, String inputTableName, boolean deleteIfExists) {
         try {
-            IOMethods.exportToDataBase(dataSource.getConnection(), inputTableName, getConnection(), inputTableName, deleteIfExists?-1:0, 1000);
+            IOMethods.exportToDataBase(dataSource.getConnection(), inputTableName, getConnection(), inputTableName, deleteIfExists ? -1 : 0, 1000);
             TableLocation targetTableLocation = TableLocation.parse(inputTableName, this.getDataBaseType());
             return targetTableLocation.toString();
         } catch (SQLException e) {
-            LOGGER.error("Unable to load the table "+inputTableName + " from " + dataSource.getLocation().toString());
+            LOGGER.error("Unable to load the table " + inputTableName + " from " + dataSource.getLocation().toString());
         }
         return null;
     }
@@ -995,7 +995,7 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, IRe
         try {
             return IOMethods.exportToDataBase(dataSource.getConnection(), inputTableName, getConnection(), inputTableName, 0, 1000);
         } catch (SQLException e) {
-            LOGGER.error("Unable to load the table "+inputTableName + " from " + dataSource.getLocation().toString());
+            LOGGER.error("Unable to load the table " + inputTableName + " from " + dataSource.getLocation().toString());
         }
         return null;
     }
@@ -1003,9 +1003,9 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, IRe
     @Override
     public String load(IJdbcDataSource dataSource, String inputTableName, String outputTableName, boolean deleteIfExists, int batchSize) {
         try {
-            return IOMethods.exportToDataBase(dataSource.getConnection(), inputTableName, getConnection(), outputTableName, deleteIfExists?-1:0, 1000);
-          } catch (SQLException e) {
-            LOGGER.error("Unable to load the table "+inputTableName + " from " + dataSource.getLocation().toString());
+            return IOMethods.exportToDataBase(dataSource.getConnection(), inputTableName, getConnection(), outputTableName, deleteIfExists ? -1 : 0, 1000);
+        } catch (SQLException e) {
+            LOGGER.error("Unable to load the table " + inputTableName + " from " + dataSource.getLocation().toString());
         }
         return null;
     }
@@ -1014,7 +1014,7 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, IRe
     public IDataSourceLocation getLocation() {
         try {
             Connection con = getConnection();
-            if(con == null){
+            if (con == null) {
                 LOGGER.error("Unable to get the connection.");
                 return null;
             }
@@ -1028,11 +1028,12 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, IRe
 
     /**
      * Return the IOMethods used to load and save data
+     *
      * @return
      */
     public IOMethods getIoMethods() {
-        if(ioMethods==null){
-            ioMethods= new IOMethods();
+        if (ioMethods == null) {
+            ioMethods = new IOMethods();
         }
         return ioMethods;
     }
@@ -1041,7 +1042,7 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, IRe
     public Collection<String> getTableNames() {
         try {
             Connection con = getConnection();
-            if(con == null){
+            if (con == null) {
                 LOGGER.error("Unable to get the connection.");
                 return new ArrayList<>();
             }
@@ -1057,7 +1058,7 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, IRe
         List<String> geomFields;
         try {
             Connection con = getConnection();
-            if(con == null){
+            if (con == null) {
                 LOGGER.error("Unable to get the connection.");
                 return getTable(dataSetName);
             }
@@ -1079,10 +1080,9 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, IRe
             return null;
         }
         IJdbcTable table = getTable(propertyName);
-        if(table == null) {
+        if (table == null) {
             return getMetaClass().getProperty(this, propertyName);
-        }
-        else {
+        } else {
             return table;
         }
     }
@@ -1111,83 +1111,68 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, IRe
      */
     public void setStatementParameters(PreparedStatement preparedStatement, List<Object> params) throws SQLException {
         for (int i = 1; i <= params.size(); i++) {
-            Object param = params.get(i-1);
-            if(param instanceof Array) {
-                preparedStatement.setArray(i, (Array)param);
+            Object param = params.get(i - 1);
+            if (param instanceof Array) {
+                preparedStatement.setArray(i, (Array) param);
             }
             /*else if(param instanceof InputStream) {
                 preparedStatement.setAsciiStream(i, (InputStream) param);
             }*/
-            else if(param instanceof BigDecimal) {
+            else if (param instanceof BigDecimal) {
                 preparedStatement.setBigDecimal(i, (BigDecimal) param);
             }
             /*else if(param instanceof InputStream) {
                 preparedStatement.set(i, (InputStream) param);
             }*/
-            else if(param instanceof Blob) {
+            else if (param instanceof Blob) {
                 preparedStatement.setBlob(i, (Blob) param);
             }
             /*else if(param instanceof InputStream) {
                 preparedStatement.setBinaryStream(i, (InputStream) param);
             }*/
-            else if(param instanceof Boolean) {
+            else if (param instanceof Boolean) {
                 preparedStatement.setBoolean(i, (Boolean) param);
-            }
-            else if(param instanceof Byte) {
+            } else if (param instanceof Byte) {
                 preparedStatement.setByte(i, (Byte) param);
-            }
-            else if(param instanceof byte[]) {
+            } else if (param instanceof byte[]) {
                 preparedStatement.setBytes(i, (byte[]) param);
             }
             /*else if(param instanceof Reader) {
                 preparedStatement.setCharacterStream(i, (Reader) param);
             }*/
-            else if(param instanceof Clob) {
+            else if (param instanceof Clob) {
                 preparedStatement.setClob(i, (Clob) param);
-            }
-            else if(param instanceof Date) {
+            } else if (param instanceof Date) {
                 preparedStatement.setDate(i, (Date) param);
-            }
-            else if(param instanceof Double) {
+            } else if (param instanceof Double) {
                 preparedStatement.setDouble(i, (Double) param);
-            }
-            else if(param instanceof Float) {
+            } else if (param instanceof Float) {
                 preparedStatement.setFloat(i, (Float) param);
-            }
-            else if(param instanceof Integer) {
+            } else if (param instanceof Integer) {
                 preparedStatement.setInt(i, (Integer) param);
-            }
-            else if(param instanceof Long) {
+            } else if (param instanceof Long) {
                 preparedStatement.setLong(i, (Long) param);
             }
             /*else if(param instanceof Reader) {
                 preparedStatement.setNCharacterStream(i, (Reader) param);
             }*/
-            else if(param instanceof NClob) {
+            else if (param instanceof NClob) {
                 preparedStatement.setNClob(i, (NClob) param);
-            }
-            else if(param instanceof Ref) {
+            } else if (param instanceof Ref) {
                 preparedStatement.setRef(i, (Ref) param);
-            }
-            else if(param instanceof Short) {
+            } else if (param instanceof Short) {
                 preparedStatement.setShort(i, (Short) param);
-            }
-            else if(param instanceof SQLXML) {
+            } else if (param instanceof SQLXML) {
                 preparedStatement.setSQLXML(i, (SQLXML) param);
-            }
-            else if(param instanceof String) {
+            } else if (param instanceof String) {
                 preparedStatement.setString(i, (String) param);
-            }
-            else if(param instanceof Time) {
+            } else if (param instanceof Time) {
                 preparedStatement.setTime(i, (Time) param);
-            }
-            else if(param instanceof Timestamp) {
+            } else if (param instanceof Timestamp) {
                 preparedStatement.setTimestamp(i, (Timestamp) param);
-            }
-            else if(param instanceof URL) {
+            } else if (param instanceof URL) {
                 preparedStatement.setURL(i, (URL) param);
-            }
-            else {
+            } else {
                 preparedStatement.setObject(i, param);
             }
         }
@@ -1197,11 +1182,10 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, IRe
     public JdbcDataSource autoCommit(boolean autoCommit) {
         try {
             Connection con = getConnection();
-            if(con != null){
+            if (con != null) {
                 con.setAutoCommit(autoCommit);
                 return this;
-            }
-            else {
+            } else {
                 LOGGER.error("Unable to get the connection.");
             }
         } catch (SQLException e) {
@@ -1212,6 +1196,136 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, IRe
 
     @Override
     public Class<?> typeNameToClass(String typeName) {
-        return  TYPE_NAME_TO_CLASS.get(typeName);
+        return TYPE_NAME_TO_CLASS.get(typeName);
     }
+
+    @Override
+    public boolean createSpatialIndex(String tableName, String columnName) {
+        if (columnName == null || tableName == null) {
+            LOGGER.error("Unable to create a spatial index");
+        }
+        try {
+            return JDBCUtilities.createSpatialIndex(getConnection(), tableName, columnName);
+        } catch (SQLException e) {
+            LOGGER.error("Unable to create a spatial index on the column '" + columnName + "' in the table '" + tableName + "'.\n" +
+                    e.getLocalizedMessage());
+        }
+        return false;
+    }
+
+    @Override
+    public boolean createIndex(String tableName, String columnName) {
+        if (columnName == null || tableName == null) {
+            LOGGER.error("Unable to create an index");
+        }
+        try {
+            return JDBCUtilities.createIndex(getConnection(), tableName, columnName);
+        } catch (SQLException e) {
+            LOGGER.error("Unable to create an index on the column '" + columnName + "' in the table '" + tableName + "'.\n" +
+                    e.getLocalizedMessage());
+        }
+        return false;
+    }
+
+    @Override
+    public boolean hasGeometryColumn(String tableName) {
+        if (tableName == null) {
+            LOGGER.error("Unable to get the table");
+        }
+        try {
+            return GeometryTableUtilities.hasGeometryColumn(getConnection(), TableLocation.parse(tableName, getDataBaseType()));
+        } catch (SQLException e) {
+            LOGGER.error("Unable to get the table.\n" +
+                    e.getLocalizedMessage());
+        }
+        return false;
+    }
+
+    @Override
+    public List<String> getGeometryColumns(String tableName) {
+        if (tableName == null) {
+            LOGGER.error("Unable to get the table");
+        }
+        try {
+            return GeometryTableUtilities.getGeometryColumnNames(getConnection(), TableLocation.parse(tableName, getDataBaseType()));
+        } catch (SQLException e) {
+            LOGGER.error("Unable to get the table.\n" +
+                    e.getLocalizedMessage());
+        }
+        return null;
+    }
+
+    @Override
+    public String getGeometryColumn(String tableName) {
+        if (tableName == null) {
+            LOGGER.error("Unable to get the table");
+        }
+        try {
+            return GeometryTableUtilities.getFirstGeometryColumnNameAndIndex(getConnection(), TableLocation.parse(tableName, getDataBaseType())).first();
+        } catch (SQLException e) {
+            LOGGER.error("Unable to get the table.\n" +
+                    e.getLocalizedMessage());
+        }
+        return null;
+    }
+
+    @Override
+    public boolean isIndexed(String tableName, String columnName) {
+        try {
+            return JDBCUtilities.isIndexed(getConnection(), tableName, columnName);
+        } catch (SQLException e) {
+            LOGGER.error("Unable to check if the column '" + columnName + "' from the table '" + tableName + "' is indexed.\n" +
+                    e.getLocalizedMessage());
+        }
+        return false;
+    }
+
+    @Override
+    public boolean isSpatialIndexed(String tableName, String columnName) {
+        try {
+            return JDBCUtilities.isSpatialIndexed(getConnection(), tableName, columnName);
+        } catch (SQLException e) {
+            LOGGER.error("Unable to check if the column '" + columnName + "' from the table '" + tableName + "' is indexed.\n" +
+                    e.getLocalizedMessage());
+        }
+        return false;
+    }
+
+    @Override
+    public void dropIndex(String tableName, String columnName) {
+        if (columnName == null || tableName == null) {
+            LOGGER.error("Unable to drop index");
+        }
+        try {
+            JDBCUtilities.dropIndex(getConnection(), tableName, columnName);
+        } catch (SQLException e) {
+            LOGGER.error("Unable to drop the indexes of the column '" + columnName + "' in the table '" + tableName + "'.\n" +
+                    e.getLocalizedMessage());
+        }
+    }
+
+    @Override
+    public void dropTable(String... tableName) {
+        if (tableName == null) {
+            LOGGER.error("Unable to drop the tables");
+        }
+        try {
+            execute("DROP TABLE IF EXISTS " + String.join(",", tableName));
+        } catch (SQLException e) {
+            LOGGER.error("Unable to drop the tables '" + String.join(",", tableName) + "'.\n" +
+                    e.getLocalizedMessage());
+        }
+    }
+
+    @Override
+    public boolean setSrid(String tableName, String columnName, int srid) {
+        try {
+            return GeometryTableUtilities.alterSRID(getConnection(), tableName, columnName, srid);
+        } catch (SQLException e) {
+            LOGGER.error("Unable to set the table SRID.", e);
+        }
+        return false;
+    }
+
+
 }

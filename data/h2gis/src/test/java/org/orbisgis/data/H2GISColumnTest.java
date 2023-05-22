@@ -293,10 +293,9 @@ public class H2GISColumnTest {
         assertEquals(0, column.getSrid());
         column.setSrid(2121);
         assertEquals(2121, column.getSrid());
-
         JdbcColumn column2 = getColumn(COL_ID);
         assertEquals(-1, column2.getSrid());
-        assertThrows(UnsupportedOperationException.class, () -> column2.setSrid(2121));
+        assertFalse(column2.setSrid(2121));
     }
 
     /**

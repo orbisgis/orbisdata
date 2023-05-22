@@ -282,6 +282,100 @@ public interface IJdbcDataSource extends IDataSource<ResultSet>, GroovyObject, D
      */
     Collection<String> getColumnNames(String location);
 
+
+    /**
+     * Create a spatial index on the column. If the column already has an index, no new index is created.
+     * @param tableName name of the table
+     * @param columnName name of the column
+     * @return
+     */
+    boolean createSpatialIndex(String tableName, String columnName);
+
+    /**
+     * Create an index of the column. If the column already has an index, no new index is created.
+     * @param tableName name of the table
+     * @param columnName name of the column
+     * @return
+     */
+    boolean createIndex(String tableName, String columnName);
+
+
+    /**
+     * Return true if the table has a geometry column.
+     *
+     * @param tableName name of the table
+     * @return True if the table has a geometry column.
+     */
+    boolean hasGeometryColumn(String tableName);
+
+    /**
+     * Return a list of geometry column names.
+     *
+     * @param tableName name of the table
+     * @return a list of geometry column names.
+     */
+    List<String> getGeometryColumns(String tableName);
+
+    /**
+     * Return the first geometry column name.
+     *
+     * @param tableName name of the table
+     * @return the first geometry column name.
+     */
+    String getGeometryColumn(String tableName);
+
+    /**
+     * Return true if the column from the table has an index, false otherwise.
+     *
+     * @param tableName name of the table
+     * @param columnName name of the column
+     * @return True if the column has an index, false otherwise.
+     */
+    boolean isIndexed(String tableName, String columnName);
+
+    /**
+     * Return true if the column from the table has a spatial index, false otherwise.
+     *
+     * @param tableName name of the table
+     * @param columnName name of the column
+     * @return True if the column has a spatial index, false otherwise.
+     */
+    boolean isSpatialIndexed(String tableName, String columnName);
+
+
+    /**
+     * Drop the index of the column from the table if exists.
+     *
+     * @param tableName name of the table
+     * @param columnName name of the column
+     */
+    void dropIndex(String tableName, String columnName);
+
+
+    /**
+     * Drop the tables if exists.
+     *
+     * @param tableName name of the table
+     */
+    void dropTable(String... tableName);
+
+    /**
+     * Drop the column if the table exists.
+     *
+     * @param tableName name of the table
+     * @param columnName name of the columns
+     */
+    void dropColumn(String tableName, String... columnName);
+
+    /**
+     * Sets a new SRID code to the column of the table.
+     *
+     * @param tableName name of the table
+     * @param columnName name of the column
+     * @param srid The SRID code of the column.
+     */
+    boolean setSrid(String tableName, String columnName, int srid);
+
     /* ********************** */
     /*      Load methods      */
     /* ********************** */

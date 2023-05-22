@@ -45,6 +45,7 @@ import org.locationtech.jts.geom.MultiPolygon
 import org.locationtech.jts.geom.Polygon
 import org.locationtech.jts.io.WKTReader
 
+import java.sql.SQLException
 
 import static org.junit.jupiter.api.Assertions.*
 
@@ -259,7 +260,8 @@ class GroovyPostGISTest {
         postGIS.load("target/postgis_saved.geojson")
         def concat = ""
         postGIS.getSpatialTable "postgis_saved" eachRow { row ->
-             concat += "$row.id $row.the_geom $row.geometry\n" }
+            concat += "$row.id $row.the_geom $row.geometry\n"
+        }
         assertEquals("1 POINT (10 10) POINT (10 10)\n2 POINT (1 1) POINT (1 1)\n", concat)
     }
 
@@ -299,7 +301,7 @@ class GroovyPostGISTest {
         assertEquals(4326, reprojectedTable.getGeometry(2).getSRID())
         assertNotNull(reprojectedTable)
         //The SRID value is not set has constrained
-        assertEquals(4326,reprojectedTable.srid )
+        assertEquals(4326, reprojectedTable.srid)
     }
 
     @Test
@@ -321,8 +323,8 @@ class GroovyPostGISTest {
 
     @Test
     @EnabledIfSystemProperty(named = "test.postgis", matches = "true")
-    void testEstimateExtent(){
-        postGIS.execute"""DROP TABLE  IF EXISTS forests;
+    void testEstimateExtent() {
+        postGIS.execute """DROP TABLE  IF EXISTS forests;
                 CREATE TABLE forests ( fid INTEGER, name CHARACTER VARYING(64),
                  boundary GEOMETRY(MULTIPOLYGON, 0));
                 INSERT INTO forests VALUES(109, 'Green Forest', ST_MPolyFromText( 'MULTIPOLYGON(((28 26,28 0,84 0,
@@ -337,8 +339,8 @@ class GroovyPostGISTest {
 
     @Test
     @EnabledIfSystemProperty(named = "test.postgis", matches = "true")
-    void testExtend(){
-        postGIS.execute"""DROP TABLE  IF EXISTS forests;
+    void testExtend() {
+        postGIS.execute """DROP TABLE  IF EXISTS forests;
                 CREATE TABLE forests ( fid INTEGER NOT NULL PRIMARY KEY, name CHARACTER VARYING(64),
                  boundary GEOMETRY(MULTIPOLYGON, 4326));
                 INSERT INTO forests VALUES(109, 'Green Forest', ST_MPolyFromText( 'MULTIPOLYGON(((28 26,28 0,84 0,
@@ -495,6 +497,30 @@ class GroovyPostGISTest {
         postGIS.execute("insert into geotable values(null)")
         assertFalse postGIS.getTable("geotable").isEmpty()
         postGIS.execute("drop table geotable")
+    }
+
+
+    @Test
+    void testDataSourceIndex() throws SQLException {
+        postGIS.execute("DROP TABLE IF EXISTS geodata; CREATE TABLE  geodata (ID INT,LAND VARCHAR, THE_GEOM GEOMETRY); " +
+                "INSERT INTO geodata VALUES (1,'grass', 'POINT(0 0)'::GEOMETRY);");
+
+        assertTrue(postGIS.createIndex("geodata", "id"));
+        assertTrue(postGIS.isIndexed("geodata", "id"));
+        postGIS.dropIndex("geodata", "id");
+        assertFalse(postGIS.isIndexed("geodata", "id"));
+
+        assertTrue(postGIS.createSpatialIndex("geodata", "the_geom"));
+        assertTrue(postGIS.isSpatialIndexed("geodata", "the_geom"));
+        postGIS.dropIndex("geodata", "the_geom");
+        assertFalse(postGIS.isSpatialIndexed("geodata", "the_geom"));
+
+        postGIS.dropColumn("geodata", "id", "land", "type");
+        assertEquals(1,postGIS.getColumnNames("geodata").size());
+
+        postGIS.dropTable("geodata");
+        assertFalse(postGIS.hasTable("geodata"));
+
     }
 
 }

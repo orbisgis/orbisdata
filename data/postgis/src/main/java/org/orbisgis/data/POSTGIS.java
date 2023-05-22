@@ -536,7 +536,7 @@ public class POSTGIS extends JdbcDataSource {
                 if(col!=null && !col.isEmpty()){
                     sb.append(" DROP COLUMN IF EXISTS "+ col);
                 }
-                if(i<=count){
+                if(i<count-1){
                     sb.append(",");
                 }
             }

@@ -96,6 +96,8 @@ public interface IJdbcColumn extends IColumn {
      * Sets the SRID code of the column.
      *
      * @param srid The SRID code of the column.
+     *
+     * @return TRUE is the SRID is updated
      */
-    void setSrid(int srid);
+    boolean setSrid(int srid);
 }

@@ -847,4 +847,28 @@ class H2GISDataSourceTest {
         assertTrue(rsp.isPoolable());
         assertEquals(FIELD_SIZE, rsp.getMaxFieldSize());
     }
+    @Test
+    public void testDataSourceIndex() throws SQLException {
+        h2gis.execute("DROP TABLE IF EXISTS geodata; CREATE TABLE  geodata (ID INT, LAND VARCHAR, THE_GEOM GEOMETRY); " +
+                "INSERT INTO geodata VALUES (1, 'grass', 'POINT(0 0)'::GEOMETRY);");
+
+        assertTrue(h2gis.createIndex("geodata", "id"));
+        assertTrue(h2gis.isIndexed("geodata", "id"));
+        h2gis.dropIndex("geodata", "id");
+        assertFalse(h2gis.isIndexed("geodata", "id"));
+
+        assertTrue(h2gis.createSpatialIndex("geodata", "the_geom"));
+        assertTrue(h2gis.isSpatialIndexed("geodata", "the_geom"));
+        h2gis.dropIndex("geodata", "the_geom");
+        assertFalse(h2gis.isSpatialIndexed("geodata", "the_geom"));
+        assertTrue(h2gis.hasGeometryColumn("geodata"));
+        assertEquals("THE_GEOM",h2gis.getGeometryColumn("geodata"));
+
+        h2gis.dropColumn("geodata", "id", "land");
+        assertEquals(1,h2gis.getColumnNames("geodata").size());
+
+        h2gis.dropTable("geodata");
+        assertFalse(h2gis.hasTable("geodata"));
+
+    }
 }

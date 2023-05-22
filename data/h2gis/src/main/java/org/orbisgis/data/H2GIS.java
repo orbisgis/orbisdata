@@ -41,7 +41,10 @@ import org.h2gis.functions.factory.H2GISDBFactory;
 import org.h2gis.functions.factory.H2GISFunctions;
 import org.h2gis.functions.io.utility.IOMethods;
 import org.h2gis.network.functions.NetworkFunctions;
-import org.h2gis.utilities.*;
+import org.h2gis.utilities.FileUtilities;
+import org.h2gis.utilities.GeometryTableUtilities;
+import org.h2gis.utilities.JDBCUtilities;
+import org.h2gis.utilities.TableLocation;
 import org.h2gis.utilities.dbtypes.DBTypes;
 import org.orbisgis.data.api.dataset.IJdbcSpatialTable;
 import org.orbisgis.data.api.dataset.IJdbcTable;
@@ -224,7 +227,7 @@ public class H2GIS extends JdbcDataSource {
      * @param password Password for the user.
      * @return An instantiated {@link H2GIS} object wrapping the Sql object connected to the database.
      */
-    public static H2GIS open(String path,String user,String password) {
+    public static H2GIS open(String path, String user, String password) {
         Map<String, String> map = new HashMap<>();
         map.put("databaseName", path);
         map.put("user", user);
@@ -239,7 +242,7 @@ public class H2GIS extends JdbcDataSource {
 
     @Override
     public JdbcTable<? extends IStreamResultSet> getTable(GString nameOrQuery, Statement statement) {
-        if(nameOrQuery.getValueCount() == 0 ||
+        if (nameOrQuery.getValueCount() == 0 ||
                 !nameOrQuery.toString().startsWith("(") && !nameOrQuery.toString().endsWith("(")) {
             return getTable(nameOrQuery.toString(), statement);
         }
@@ -250,28 +253,28 @@ public class H2GIS extends JdbcDataSource {
 
     @Override
     public JdbcTable<? extends IStreamResultSet> getTable(String nameOrQuery, List<Object> params,
-                               Statement statement) {
+                                                          Statement statement) {
         Connection connection = getConnection();
         String query;
         TableLocation location;
-        if(!nameOrQuery.startsWith("(") && !nameOrQuery.endsWith(")")) {
+        if (!nameOrQuery.startsWith("(") && !nameOrQuery.endsWith(")")) {
             TableLocation inputLocation = TableLocation.parse(nameOrQuery, DBTypes.H2GIS);
             try {
                 boolean table = JDBCUtilities.tableExists(connection, inputLocation);
-                if(!getConnection().getAutoCommit()) {
+                if (!getConnection().getAutoCommit()) {
                     super.commit();
                 }
                 if (!table) {
                     LOGGER.error("Unable to find table " + nameOrQuery);
                     return null;
                 }
-                if(!getConnection().getAutoCommit()) {
+                if (!getConnection().getAutoCommit()) {
                     super.commit();
                 }
             } catch (SQLException e) {
                 LOGGER.error("Unable to find table.\n" + e.getLocalizedMessage());
                 try {
-                    if(!getConnection().getAutoCommit()) {
+                    if (!getConnection().getAutoCommit()) {
                         super.rollback();
                     }
                 } catch (SQLException e2) {
@@ -281,45 +284,41 @@ public class H2GIS extends JdbcDataSource {
             }
             query = String.format("SELECT * FROM %s", inputLocation);
             location = new TableLocation(inputLocation.getCatalog(), inputLocation.getSchema(), inputLocation.getTable(), DBTypes.H2GIS);
-        }
-        else {
+        } else {
             query = nameOrQuery;
             location = null;
         }
         try {
             Connection con = getConnection();
-            if(con != null){
-                if(location != null){
+            if (con != null) {
+                if (location != null) {
                     boolean hasGeom = GeometryTableUtilities.hasGeometryColumn(con, location);
-                    if(!getConnection().getAutoCommit()) {
+                    if (!getConnection().getAutoCommit()) {
                         super.commit();
                     }
-                    if(hasGeom) {
+                    if (hasGeom) {
                         return new H2gisSpatialTable(location, query, statement, params, this);
-                    }
-                    else {
+                    } else {
                         return new H2gisTable(location, query, statement, params, this);
                     }
-                }
-                else {
+                } else {
                     ResultSet rs;
-                    if(statement instanceof PreparedStatement) {
+                    if (statement instanceof PreparedStatement) {
                         PreparedStatement st = con.prepareStatement("(SELECT * FROM " + query + "AS foo WHERE 1=0)");
-                        for(int i = 0; i<params.size(); i++) {
-                            st.setObject(i+1, params.get(i));
+                        for (int i = 0; i < params.size(); i++) {
+                            st.setObject(i + 1, params.get(i));
                         }
                         rs = st.executeQuery();
                     } else {
                         rs = statement.executeQuery("(SELECT * FROM " + query + "AS foo WHERE 1=0)");
                     }
                     boolean hasGeom = GeometryTableUtilities.hasGeometryColumn(rs);
-                    if(!getConnection().getAutoCommit()) {
+                    if (!getConnection().getAutoCommit()) {
                         super.commit();
                     }
-                    if(hasGeom) {
+                    if (hasGeom) {
                         return new H2gisSpatialTable(location, query, statement, params, this);
-                    }
-                    else {
+                    } else {
                         return new H2gisTable(location, query, statement, params, this);
                     }
                 }
@@ -328,7 +327,7 @@ public class H2GIS extends JdbcDataSource {
             LOGGER.error("Unable to check if table '" + location + "' contains geometric fields.\n" +
                     e.getLocalizedMessage());
             try {
-                if(!getConnection().getAutoCommit()) {
+                if (!getConnection().getAutoCommit()) {
                     super.rollback();
                 }
             } catch (SQLException e2) {
@@ -364,7 +363,7 @@ public class H2GIS extends JdbcDataSource {
 
     @Override
     public IJdbcTable<? extends IStreamResultSet> getTable(GString nameOrQuery) {
-        if(nameOrQuery.getValueCount() == 0 ||
+        if (nameOrQuery.getValueCount() == 0 ||
                 !nameOrQuery.toString().startsWith("(") && !nameOrQuery.toString().endsWith("(")) {
             return getTable(nameOrQuery.toString());
         }
@@ -375,7 +374,7 @@ public class H2GIS extends JdbcDataSource {
 
     @Override
     public IJdbcTable<? extends IStreamResultSet> getTable(String query, List<Object> params) {
-        if(params == null || params.isEmpty()) {
+        if (params == null || params.isEmpty()) {
             return getTable(query);
         }
         PreparedStatement prepStatement;
@@ -408,7 +407,7 @@ public class H2GIS extends JdbcDataSource {
             return (JdbcSpatialTable) table;
         } else {
             String name = "";
-            if(table != null){
+            if (table != null) {
                 name = "'" + table.getName() + "' ";
             }
             LOGGER.error("The table " + name + "is not a spatial table.");
@@ -418,7 +417,7 @@ public class H2GIS extends JdbcDataSource {
 
     @Override
     public IJdbcSpatialTable<StreamSpatialResultSet> getSpatialTable(GString nameOrQuery, Statement statement) {
-        if(nameOrQuery.getValueCount() == 0 ||
+        if (nameOrQuery.getValueCount() == 0 ||
                 !nameOrQuery.toString().startsWith("(") && !nameOrQuery.toString().endsWith("(")) {
             return getSpatialTable(nameOrQuery.toString(), statement);
         }
@@ -428,13 +427,13 @@ public class H2GIS extends JdbcDataSource {
     }
 
     @Override
-    public IJdbcSpatialTable<StreamSpatialResultSet> getSpatialTable(String nameOrQuery,List<Object> params, Statement statement) {
+    public IJdbcSpatialTable<StreamSpatialResultSet> getSpatialTable(String nameOrQuery, List<Object> params, Statement statement) {
         IJdbcTable<? extends ResultSet> table = getTable(nameOrQuery, params, statement);
         if (table instanceof ISpatialTable) {
             return (JdbcSpatialTable) table;
         } else {
             String name = "";
-            if(table != null){
+            if (table != null) {
                 name = "'" + table.getName() + "' ";
             }
             LOGGER.error("The table " + name + "is not a spatial table.");
@@ -443,13 +442,13 @@ public class H2GIS extends JdbcDataSource {
     }
 
     @Override
-    public IJdbcSpatialTable<StreamSpatialResultSet> getSpatialTable(String query,List<Object> params) {
+    public IJdbcSpatialTable<StreamSpatialResultSet> getSpatialTable(String query, List<Object> params) {
         IJdbcTable<? extends ResultSet> table = getTable(query, params);
         if (table instanceof ISpatialTable) {
             return (JdbcSpatialTable) table;
         } else {
             String name = "";
-            if(table != null){
+            if (table != null) {
                 name = "'" + table.getName() + "' ";
             }
             LOGGER.error("The table " + name + "is not a spatial table.");
@@ -464,7 +463,7 @@ public class H2GIS extends JdbcDataSource {
             return (JdbcSpatialTable) table;
         } else {
             String name = "";
-            if(table != null){
+            if (table != null) {
                 name = "'" + table.getName() + "' ";
             }
             LOGGER.error("The table " + name + "is not a spatial table.");
@@ -474,7 +473,7 @@ public class H2GIS extends JdbcDataSource {
 
     @Override
     public IJdbcSpatialTable<StreamSpatialResultSet> getSpatialTable(GString nameOrQuery) {
-        if(nameOrQuery.getValueCount() == 0 ||
+        if (nameOrQuery.getValueCount() == 0 ||
                 !nameOrQuery.toString().startsWith("(") && !nameOrQuery.toString().endsWith("(")) {
             return getSpatialTable(nameOrQuery.toString());
         }
@@ -496,17 +495,17 @@ public class H2GIS extends JdbcDataSource {
     }
 
     @Override
-    public Collection<String> getColumnNames(String location){
+    public Collection<String> getColumnNames(String location) {
         try {
             Collection<String> cols = JDBCUtilities.getColumnNames(getConnection(), TableLocation.parse(location, DBTypes.H2GIS).toString());
-            if(!getConnection().getAutoCommit()) {
+            if (!getConnection().getAutoCommit()) {
                 getConnection().commit();
             }
             return cols;
         } catch (SQLException e) {
             LOGGER.error("Unable to get the column names of the table " + location + ".", e);
-            try{
-                if(!getConnection().getAutoCommit()) {
+            try {
+                if (!getConnection().getAutoCommit()) {
                     getConnection().rollback();
                 }
             } catch (SQLException e2) {
@@ -517,23 +516,37 @@ public class H2GIS extends JdbcDataSource {
     }
 
     @Override
+    public void dropColumn(String tableName, String... columnName) {
+        if (tableName == null || columnName == null) {
+            LOGGER.error("Unable to drop the columns");
+        }
+        try {
+            execute("ALTER TABLE IF EXISTS " + TableLocation.parse(tableName, DBTypes.H2GIS).toString() + " DROP COLUMN IF EXISTS (" + String.join(",", columnName) + ")");
+        } catch (SQLException e) {
+            LOGGER.error("Unable to drop the columns '" + String.join(",", columnName) + "'.\n" +
+                    e.getLocalizedMessage());
+        }
+    }
+
+    @Override
     public String link(Map dataSourceProperties, String sourceTableName, boolean delete) {
-        return link(dataSourceProperties,sourceTableName,sourceTableName, delete );
+        return link(dataSourceProperties, sourceTableName, sourceTableName, delete);
     }
 
     @Override
     public String link(Map dataSourceProperties, String sourceTableName, String targetTableName, boolean delete) {
         try {
-            return  IOMethods.linkedTable(getConnection(), dataSourceProperties, sourceTableName, targetTableName, delete);
+            return IOMethods.linkedTable(getConnection(), dataSourceProperties, sourceTableName, targetTableName, delete);
         } catch (SQLException ex) {
             LOGGER.error("Cannot link the table '" + sourceTableName + ".\n" +
                     ex.getLocalizedMessage());
             return null;
         }
     }
+
     @Override
     public String link(Map dataSourceProperties, String sourceTableName) {
-        return link(dataSourceProperties,sourceTableName,sourceTableName, false );
+        return link(dataSourceProperties, sourceTableName, sourceTableName, false);
     }
 
     /**
@@ -541,9 +554,9 @@ public class H2GIS extends JdbcDataSource {
      *
      * @return True if the functions have been successfully loaded, false otherwise.
      */
-    public boolean addNetworkFunctions(){
+    public boolean addNetworkFunctions() {
         Connection connection = getConnection();
-        if(connection == null){
+        if (connection == null) {
             LOGGER.error("Cannot load the H2GIS Network extension.\n");
             return false;
         }

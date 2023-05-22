@@ -183,30 +183,18 @@ public class JdbcColumn implements IJdbcColumn, GroovyObject {
 
     @Override
     public boolean isIndexed() {
-        if(dataSource == null || name == null || tableName == null){
+        if(name == null || tableName == null){
             LOGGER.error("Unable to find an index");
         }
-        try {
-            return JDBCUtilities.isIndexed(dataSource.getConnection(), tableName, name);
-        } catch (SQLException e) {
-            LOGGER.error("Unable to check if the column '" + name + "' from the table '" + tableName + "' is indexed.\n" +
-                    e.getLocalizedMessage());
-        }
-        return false;
+        return dataSource.isIndexed(tableName.toString(dataSource.getDataBaseType()), name);
     }
 
     @Override
     public boolean isSpatialIndexed() {
-        if(dataSource == null || name == null || tableName == null){
+        if(dataSource == null){
             LOGGER.error("Unable to find a spatial index");
         }
-        try {
-            return JDBCUtilities.isSpatialIndexed(dataSource.getConnection(), tableName, name);
-        } catch (SQLException e) {
-            LOGGER.error("Unable to check if the column '" + name + "' from the table '" + tableName + "' is indexed.\n" +
-                    e.getLocalizedMessage());
-        }
-        return false;
+       return dataSource.isSpatialIndexed(tableName.toString(dataSource.getDataBaseType()), name);
     }
 
     @Override
@@ -214,41 +202,23 @@ public class JdbcColumn implements IJdbcColumn, GroovyObject {
         if(dataSource == null || name == null || tableName == null){
             LOGGER.error("Unable to create a spatial index");
         }
-        try {
-            return  JDBCUtilities.createSpatialIndex(dataSource.getConnection(), tableName, name);
-        } catch (SQLException e) {
-            LOGGER.error("Unable to create a spatial index on the column '" + name + "' in the table '" + tableName + "'.\n" +
-                    e.getLocalizedMessage());
-        }
-        return false;
+        return dataSource.createSpatialIndex(tableName.toString(dataSource.getDataBaseType()), name);
     }
 
     @Override
     public boolean createIndex() {
-        if(dataSource == null || name == null || tableName == null){
+        if(dataSource == null){
             LOGGER.error("Unable to create an index");
         }
-        try {
-            return  JDBCUtilities.createIndex(dataSource.getConnection(), tableName, name);
-        } catch (SQLException e) {
-            LOGGER.error("Unable to create an index on the column '" + name + "' in the table '" + tableName + "'.\n" +
-                    e.getLocalizedMessage());
-        }
-        return false;
+        return dataSource.createIndex(tableName.toString(dataSource.getDataBaseType()), name);
     }
 
     @Override
     public void dropIndex() {
-        if(dataSource == null || name == null || tableName == null){
+        if( name == null || tableName == null){
             LOGGER.error("Unable to drop index");
         }
-        List<String> indexes = new ArrayList<>();
-        try {
-           JDBCUtilities.dropIndex(dataSource.getConnection(), tableName, name);
-        } catch (SQLException e) {
-            LOGGER.error("Unable to drop the indexes of the column '" + name + "' in the table '" + tableName + "'.\n" +
-                    e.getLocalizedMessage());
-        }
+        dataSource.dropIndex(tableName.toString(dataSource.getDataBaseType()), name);
     }
 
     @Override
@@ -270,18 +240,11 @@ public class JdbcColumn implements IJdbcColumn, GroovyObject {
     }
 
     @Override
-    public void setSrid(int srid) {
-        if(dataSource == null || name == null || tableName == null){
+    public boolean setSrid(int srid) {
+        if( name == null || tableName == null){
             LOGGER.error("Unable to set the srid");
         }
-        if (!isSpatial()) {
-            throw new UnsupportedOperationException();
-        }
-        try {
-            GeometryTableUtilities.alterSRID(dataSource.getConnection(), tableName, name, srid);
-        } catch (SQLException e) {
-            LOGGER.error("Unable to set the table SRID.", e);
-        }
+        return dataSource.setSrid(tableName.toString(dataSource.getDataBaseType()), name, srid);
     }
 
     @Override

@@ -641,6 +641,61 @@ public class IJdbcDataSourceTest {
         }
 
         @Override
+        public boolean createSpatialIndex(String tableName, String columnName) {
+            return false;
+        }
+
+        @Override
+        public boolean createIndex(String tableName, String columnName) {
+            return false;
+        }
+
+        @Override
+        public boolean hasGeometryColumn(String tableName) {
+            return false;
+        }
+
+        @Override
+        public List<String> getGeometryColumns(String tableName) {
+            return null;
+        }
+
+        @Override
+        public String getGeometryColumn(String tableName) {
+            return null;
+        }
+
+        @Override
+        public boolean isIndexed(String tableName, String columnName) {
+            return false;
+        }
+
+        @Override
+        public boolean isSpatialIndexed(String tableName, String columnName) {
+            return false;
+        }
+
+        @Override
+        public void dropIndex(String tableName, String columnName) {
+
+        }
+
+        @Override
+        public void dropTable(String... tableName) {
+
+        }
+
+        @Override
+        public void dropColumn(String tableName, String... columnName) {
+
+        }
+
+        @Override
+        public boolean setSrid(String tableName, String columnName, int srid) {
+            return false;
+        }
+
+        @Override
         public Connection getConnection() throws SQLException {
             return null;
         }

@@ -473,6 +473,34 @@ public class POSTGIS extends JdbcDataSource {
     }
 
     @Override
+    public boolean createSpatialIndex(String tableName, String columnName) {
+        if(columnName == null || tableName == null){
+            LOGGER.error("Unable to create a spatial index");
+        }
+        try {
+            return  JDBCUtilities.createSpatialIndex(getConnection(), tableName, columnName);
+        } catch (SQLException e) {
+            LOGGER.error("Unable to create a spatial index on the column '" + columnName + "' in the table '" + tableName + "'.\n" +
+                    e.getLocalizedMessage());
+        }
+        return false;
+    }
+
+    @Override
+    public boolean createIndex(String tableName, String columnName) {
+        if(columnName == null || tableName == null){
+            LOGGER.error("Unable to create an index");
+        }
+        try {
+            return  JDBCUtilities.createIndex(getConnection(), tableName, columnName);
+        } catch (SQLException e) {
+            LOGGER.error("Unable to create an index on the column '" + columnName + "' in the table '" + tableName + "'.\n" +
+                    e.getLocalizedMessage());
+        }
+        return false;
+    }
+
+    @Override
     public String link(Map dataSourceProperties, String tableName) {
         LOGGER.error("Not supported");
         return null;
@@ -493,5 +521,29 @@ public class POSTGIS extends JdbcDataSource {
     @Override
     public Object asType(Class<?> clazz) {
         return null;
+    }
+
+    @Override
+    public void dropColumn(String tableName, String... columnName) {
+        if (tableName == null || columnName == null) {
+            LOGGER.error("Unable to drop the columns");
+        }
+        try {
+            StringBuilder sb =  new StringBuilder("ALTER TABLE IF EXISTS " + TableLocation.parse(tableName, DBTypes.POSTGIS).toString());
+            int count = columnName.length;
+            for (int i = 0; i < count; i++) {
+                String col = columnName[i];
+                if(col!=null && !col.isEmpty()){
+                    sb.append(" DROP COLUMN IF EXISTS "+ col);
+                }
+                if(i<count-1){
+                    sb.append(",");
+                }
+            }
+            execute(sb.toString());
+        } catch (SQLException e) {
+            LOGGER.error("Unable to drop the columns '" + String.join(",", columnName) + "'.\n" +
+                    e.getLocalizedMessage());
+        }
     }
 }

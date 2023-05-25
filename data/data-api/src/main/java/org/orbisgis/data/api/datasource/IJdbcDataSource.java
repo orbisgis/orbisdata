@@ -284,7 +284,7 @@ public interface IJdbcDataSource extends IDataSource<ResultSet>, GroovyObject, D
      *
      * @return The count of lines or -1 if not able to find the given table.
      */
-    int getRowCount(String tableName);
+    long getRowCount(String tableName);
 
     /* ********************** */
     /*      Load methods      */

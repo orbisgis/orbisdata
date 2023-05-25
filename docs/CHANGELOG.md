@@ -41,3 +41,4 @@ make it compatible with `smile` API)
 + Remove OrbisParents
 + Add commons as a module
 + Fix several tests
++ Add row count method on datasource

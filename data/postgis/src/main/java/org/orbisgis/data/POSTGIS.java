@@ -452,6 +452,20 @@ public class POSTGIS extends JdbcDataSource {
     }
 
     @Override
+    public long getRowCount(String tableName) {
+        if(tableName==null || tableName.isEmpty()){
+            LOGGER.error("Unable to get the number of row on empty or null table.");
+            return -1;
+        }
+        try {
+            return JDBCUtilities.getRowCount(getConnection(), TableLocation.parse(tableName, DBTypes.POSTGIS));
+        } catch (SQLException e) {
+            LOGGER.error("Unable to get the number of row.");
+            return -1;
+        }
+    }
+
+    @Override
     public Collection<String> getColumnNames(String location){
         try {
             Collection<String> cols = JDBCUtilities.getColumnNames(getConnection(), TableLocation.parse(location, DBTypes.POSTGIS).toString());

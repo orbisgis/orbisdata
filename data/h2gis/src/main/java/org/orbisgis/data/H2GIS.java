@@ -496,6 +496,20 @@ public class H2GIS extends JdbcDataSource {
     }
 
     @Override
+    public long getRowCount(String tableName) {
+        if(tableName==null || tableName.isEmpty()){
+            LOGGER.error("Unable to get the number of row on empty or null table.");
+            return -1;
+        }
+        try {
+            return JDBCUtilities.getRowCount(getConnection(), TableLocation.parse(tableName, DBTypes.H2GIS));
+        } catch (SQLException e) {
+            LOGGER.error("Unable to get the number of row.");
+            return -1;
+        }
+    }
+
+    @Override
     public Collection<String> getColumnNames(String tableName){
         try {
             Collection<String> cols = JDBCUtilities.getColumnNames(getConnection(), TableLocation.parse(tableName, DBTypes.H2GIS).toString());

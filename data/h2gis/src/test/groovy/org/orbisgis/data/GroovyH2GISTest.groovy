@@ -128,7 +128,7 @@ class GroovyH2GISTest {
             h2GIS.eachRow "SELECT id FROM h2gis", { row ->
                 stmt.addBatch """INSERT INTO  h2gis VALUES(${row.id+10})""" }
         }
-        assertEquals(4, h2GIS.getTable("H2GIS").getRowCount())
+        assertEquals(4, h2GIS.getRowCount("H2GIS"))
     }
 
     @Test

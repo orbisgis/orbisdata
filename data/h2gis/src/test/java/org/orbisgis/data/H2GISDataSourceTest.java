@@ -852,6 +852,7 @@ class H2GISDataSourceTest {
         h2gis.execute("DROP TABLE IF EXISTS geodata; CREATE TABLE  geodata (ID INT, LAND VARCHAR, THE_GEOM GEOMETRY); " +
                 "INSERT INTO geodata VALUES (1, 'grass', 'POINT(0 0)'::GEOMETRY);");
 
+        assertEquals(1, h2gis.getRowCount("geodata"));
         assertTrue(h2gis.createIndex("geodata", "id"));
         assertTrue(h2gis.isIndexed("geodata", "id"));
         h2gis.dropIndex("geodata", "id");

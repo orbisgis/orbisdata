@@ -696,6 +696,11 @@ public class IJdbcDataSourceTest {
         }
 
         @Override
+        public long getRowCount(String tableName) {
+            return 0;
+        }
+
+        @Override
         public Connection getConnection() throws SQLException {
             return null;
         }

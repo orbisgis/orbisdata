@@ -40,10 +40,7 @@ import groovy.lang.GString;
 import groovy.lang.GroovyObject;
 import groovy.lang.MissingMethodException;
 import org.h2gis.utilities.dbtypes.DBTypes;
-import org.orbisgis.data.api.dataset.IDataSet;
-import org.orbisgis.data.api.dataset.IJdbcSpatialTable;
-import org.orbisgis.data.api.dataset.IJdbcTable;
-import org.orbisgis.data.api.dataset.ISpatialTable;
+import org.orbisgis.data.api.dataset.*;
 
 import javax.sql.DataSource;
 import java.io.File;
@@ -277,10 +274,17 @@ public interface IJdbcDataSource extends IDataSource<ResultSet>, GroovyObject, D
     /**
      * Returns the names of the column of the given table.
      *
-     * @param location Location of the table with the pattern : [[catalog.]schema.]table
+     * @param tableName Location of the table with the pattern : [[catalog.]schema.]table
      * @return The names of the column of the given table.
      */
-    Collection<String> getColumnNames(String location);
+    Collection<String> getColumnNames(String tableName);
+
+    /**
+     * Return the count of lines or -1 if not able to find the given table.
+     *
+     * @return The count of lines or -1 if not able to find the given table.
+     */
+    int getRowCount(String tableName);
 
     /* ********************** */
     /*      Load methods      */

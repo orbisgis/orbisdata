@@ -496,15 +496,15 @@ public class H2GIS extends JdbcDataSource {
     }
 
     @Override
-    public Collection<String> getColumnNames(String location){
+    public Collection<String> getColumnNames(String tableName){
         try {
-            Collection<String> cols = JDBCUtilities.getColumnNames(getConnection(), TableLocation.parse(location, DBTypes.H2GIS).toString());
+            Collection<String> cols = JDBCUtilities.getColumnNames(getConnection(), TableLocation.parse(tableName, DBTypes.H2GIS).toString());
             if(!getConnection().getAutoCommit()) {
                 getConnection().commit();
             }
             return cols;
         } catch (SQLException e) {
-            LOGGER.error("Unable to get the column names of the table " + location + ".", e);
+            LOGGER.error("Unable to get the column names of the table " + tableName + ".", e);
             try{
                 if(!getConnection().getAutoCommit()) {
                     getConnection().rollback();

@@ -1214,4 +1214,19 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, IRe
     public Class<?> typeNameToClass(String typeName) {
         return  TYPE_NAME_TO_CLASS.get(typeName);
     }
+
+
+    @Override
+    public int getRowCount(String tableName) {
+        if(tableName==null || tableName.isEmpty()){
+            LOGGER.error("Unable to get the number of row on emptry or null table.");
+            return -1;
+        }
+        try {
+            return (int) firstRow("select count(*) as count from "+tableName).get("count");
+        } catch (SQLException e) {
+            LOGGER.error("Unable to get the number of row.");
+            return -1;
+        }
+    }
 }

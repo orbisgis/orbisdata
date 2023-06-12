@@ -732,6 +732,8 @@ public class IJdbcDataSourceTest {
 
         @Override
         public int getSrid(String tableName, String columnName) {
+
+        public long getRowCount(String tableName) {
             return 0;
         }
 

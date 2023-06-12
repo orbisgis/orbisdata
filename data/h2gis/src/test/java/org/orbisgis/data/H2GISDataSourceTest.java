@@ -853,7 +853,7 @@ class H2GISDataSourceTest {
                 "INSERT INTO geodata VALUES (1, 'grass', 'POINT(0 0)'::GEOMETRY);");
 
         assertFalse(h2gis.isEmpty("geodata"));
-
+        assertEquals(1, h2gis.getRowCount("geodata"));
         assertTrue(h2gis.createIndex("geodata", "id"));
         assertTrue(h2gis.isIndexed("geodata", "id"));
         h2gis.dropIndex("geodata", "id");

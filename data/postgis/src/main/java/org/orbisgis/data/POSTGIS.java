@@ -546,4 +546,28 @@ public class POSTGIS extends JdbcDataSource {
                     e.getLocalizedMessage());
         }
     }
+
+    @Override
+    public void dropColumn(String tableName, List columnNames) {
+        if (tableName == null || columnNames == null || columnNames.isEmpty()) {
+            LOGGER.error("Unable to drop the columns");
+        }
+        try {
+            StringBuilder sb =  new StringBuilder("ALTER TABLE IF EXISTS " + TableLocation.parse(tableName, DBTypes.POSTGIS));
+            int count = columnNames.size();
+            for (int i = 0; i < count; i++) {
+                String col = (String) columnNames.get(i);
+                if(col!=null && !col.isEmpty()){
+                    sb.append(" DROP COLUMN IF EXISTS "+ col);
+                }
+                if(i<count-1){
+                    sb.append(",");
+                }
+            }
+            execute(sb.toString());
+        } catch (SQLException e) {
+            LOGGER.error("Unable to drop the columns '" + String.join(",", columnNames) + "'.\n" +
+                    e.getLocalizedMessage());
+        }
+    }
 }

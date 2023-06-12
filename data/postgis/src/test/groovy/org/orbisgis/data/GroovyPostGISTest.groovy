@@ -501,9 +501,11 @@ class GroovyPostGISTest {
 
 
     @Test
-    void testDataSourceIndex() throws SQLException {
+    void testDataSourceMethods() throws SQLException {
         postGIS.execute("DROP TABLE IF EXISTS geodata; CREATE TABLE  geodata (ID INT,LAND VARCHAR, THE_GEOM GEOMETRY); " +
                 "INSERT INTO geodata VALUES (1,'grass', 'POINT(0 0)'::GEOMETRY);");
+
+        assertFalse(postGIS.isEmpty("geodata"));
 
         assertTrue(postGIS.createIndex("geodata", "id"));
         assertTrue(postGIS.isIndexed("geodata", "id"));
@@ -515,11 +517,16 @@ class GroovyPostGISTest {
         postGIS.dropIndex("geodata", "the_geom");
         assertFalse(postGIS.isSpatialIndexed("geodata", "the_geom"));
 
+        assertTrue(postGIS.createSpatialIndex("geodata"));
+        assertTrue(postGIS.isSpatialIndexed("geodata"));
+
+
         postGIS.dropColumn("geodata", "id", "land", "type");
         assertEquals(1,postGIS.getColumnNames("geodata").size());
 
         postGIS.dropTable("geodata");
         assertFalse(postGIS.hasTable("geodata"));
+
 
     }
 

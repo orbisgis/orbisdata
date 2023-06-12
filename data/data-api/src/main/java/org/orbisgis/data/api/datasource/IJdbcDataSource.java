@@ -291,6 +291,14 @@ public interface IJdbcDataSource extends IDataSource<ResultSet>, GroovyObject, D
      */
     boolean createSpatialIndex(String tableName, String columnName);
 
+
+    /**
+     * Create a spatial index on the first geometry column.
+     * @param tableName name of the table
+     * @return
+     */
+    boolean createSpatialIndex(String tableName);
+
     /**
      * Create an index of the column. If the column already has an index, no new index is created.
      * @param tableName name of the table
@@ -342,6 +350,14 @@ public interface IJdbcDataSource extends IDataSource<ResultSet>, GroovyObject, D
      */
     boolean isSpatialIndexed(String tableName, String columnName);
 
+    /**
+     * Return true if the first geometry column from the table has a spatial index, false otherwise.
+     *
+     * @param tableName name of the table
+     * @return True if the column has a spatial index, false otherwise.
+     */
+    boolean isSpatialIndexed(String tableName);
+
 
     /**
      * Drop the index of the column from the table if exists.
@@ -359,6 +375,14 @@ public interface IJdbcDataSource extends IDataSource<ResultSet>, GroovyObject, D
      */
     void dropTable(String... tableName);
 
+
+    /**
+     * Drop the tables if exists.
+     *
+     * @param tableNames name of the tables
+     */
+    void dropTable(List tableNames);
+
     /**
      * Drop the column if the table exists.
      *
@@ -366,6 +390,15 @@ public interface IJdbcDataSource extends IDataSource<ResultSet>, GroovyObject, D
      * @param columnName name of the columns
      */
     void dropColumn(String tableName, String... columnName);
+
+
+    /**
+     * Drop the column if the table exists.
+     *
+     * @param tableName name of the table
+     * @param columnNames name of the columns
+     */
+    void dropColumn(String tableName, List columnNames);
 
     /**
      * Sets a new SRID code to the column of the table.
@@ -375,6 +408,33 @@ public interface IJdbcDataSource extends IDataSource<ResultSet>, GroovyObject, D
      * @param srid The SRID code of the column.
      */
     boolean setSrid(String tableName, String columnName, int srid);
+
+
+    /**
+     * Sets a new SRID code on the first geometry column.
+     * If there is no geometry, the method does nothing.
+     *
+     * @param tableName name of the table
+     * @param srid The SRID code of the column.
+     */
+    boolean setSrid(String tableName, int srid);
+
+
+    /**
+     * Return the SRID code of the first geometry column of the tableName.
+     *
+     * @return The SRID code of the first geometry column of the tableName.
+     */
+    int getSrid(String tableName);
+
+
+    /**
+     * Return the SRID code of a geometry column of the tableName.
+     *
+     * @return The SRID code of the geometry column of the tableName.
+     */
+    int getSrid(String tableName, String columnName);
+
 
     /* ********************** */
     /*      Load methods      */
@@ -1043,4 +1103,11 @@ public interface IJdbcDataSource extends IDataSource<ResultSet>, GroovyObject, D
      * Null is the table cannot be linked.
      */
     String link(File file);
+
+    /**
+     * Return true if the tableName is empty, false otherwise.
+     *
+     * @return True if the tableName is empty, false otherwise.
+     */
+    boolean isEmpty(String tableName);
 }

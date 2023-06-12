@@ -553,6 +553,11 @@ public class IJdbcDataSourceTest {
         }
 
         @Override
+        public boolean isEmpty(String tableName) {
+            return false;
+        }
+
+        @Override
         public String link(Map dataSourceProperties, String tableName) {
             return null;
         }
@@ -646,6 +651,11 @@ public class IJdbcDataSourceTest {
         }
 
         @Override
+        public boolean createSpatialIndex(String tableName) {
+            return false;
+        }
+
+        @Override
         public boolean createIndex(String tableName, String columnName) {
             return false;
         }
@@ -676,6 +686,11 @@ public class IJdbcDataSourceTest {
         }
 
         @Override
+        public boolean isSpatialIndexed(String tableName) {
+            return false;
+        }
+
+        @Override
         public void dropIndex(String tableName, String columnName) {
 
         }
@@ -686,13 +701,38 @@ public class IJdbcDataSourceTest {
         }
 
         @Override
+        public void dropTable(List tableNames) {
+
+        }
+
+        @Override
         public void dropColumn(String tableName, String... columnName) {
+
+        }
+
+        @Override
+        public void dropColumn(String tableName, List columnNames) {
 
         }
 
         @Override
         public boolean setSrid(String tableName, String columnName, int srid) {
             return false;
+        }
+
+        @Override
+        public boolean setSrid(String tableName, int srid) {
+            return false;
+        }
+
+        @Override
+        public int getSrid(String tableName) {
+            return 0;
+        }
+
+        @Override
+        public int getSrid(String tableName, String columnName) {
+            return 0;
         }
 
         @Override

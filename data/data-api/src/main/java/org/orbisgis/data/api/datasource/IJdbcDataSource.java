@@ -435,7 +435,8 @@ public interface IJdbcDataSource extends IDataSource<ResultSet>, GroovyObject, D
      */
     int getSrid(String tableName, String columnName);
 
-     * Return the count of lines or -1 if not able to find the given table.
+    /**
+     *  Return the count of lines or -1 if not able to find the given table.
      *
      * @return The count of lines or -1 if not able to find the given table.
      */

@@ -1205,9 +1205,28 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, IRe
             LOGGER.error("Unable to create a spatial index");
         }
         try {
-            return JDBCUtilities.createSpatialIndex(getConnection(), tableName, columnName);
+            return JDBCUtilities.createSpatialIndex(getConnection(), TableLocation.parse(tableName, getDataBaseType()), columnName);
         } catch (SQLException e) {
             LOGGER.error("Unable to create a spatial index on the column '" + columnName + "' in the table '" + tableName + "'.\n" +
+                    e.getLocalizedMessage());
+        }
+        return false;
+    }
+
+    @Override
+    public boolean createSpatialIndex(String tableName) {
+        if (tableName == null) {
+            LOGGER.error("Unable to create a spatial index");
+        }
+        try {
+            TableLocation table = TableLocation.parse(tableName, getDataBaseType());
+            String geomColumn = GeometryTableUtilities.getFirstGeometryColumnNameAndIndex(getConnection(), table).first();
+            if(geomColumn==null || geomColumn.isEmpty()){
+                return false;
+            }
+            return JDBCUtilities.createSpatialIndex(getConnection(), table, geomColumn);
+        } catch (SQLException e) {
+            LOGGER.error("Unable to create a spatial index on the table '" + tableName + "'.\n" +
                     e.getLocalizedMessage());
         }
         return false;
@@ -1219,7 +1238,7 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, IRe
             LOGGER.error("Unable to create an index");
         }
         try {
-            return JDBCUtilities.createIndex(getConnection(), tableName, columnName);
+            return JDBCUtilities.createIndex(getConnection(), TableLocation.parse(tableName, getDataBaseType()), columnName);
         } catch (SQLException e) {
             LOGGER.error("Unable to create an index on the column '" + columnName + "' in the table '" + tableName + "'.\n" +
                     e.getLocalizedMessage());
@@ -1272,7 +1291,7 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, IRe
     @Override
     public boolean isIndexed(String tableName, String columnName) {
         try {
-            return JDBCUtilities.isIndexed(getConnection(), tableName, columnName);
+            return JDBCUtilities.isIndexed(getConnection(), TableLocation.parse(tableName, getDataBaseType()), columnName);
         } catch (SQLException e) {
             LOGGER.error("Unable to check if the column '" + columnName + "' from the table '" + tableName + "' is indexed.\n" +
                     e.getLocalizedMessage());
@@ -1283,9 +1302,25 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, IRe
     @Override
     public boolean isSpatialIndexed(String tableName, String columnName) {
         try {
-            return JDBCUtilities.isSpatialIndexed(getConnection(), tableName, columnName);
+            return JDBCUtilities.isSpatialIndexed(getConnection(), TableLocation.parse(tableName, getDataBaseType()), columnName);
         } catch (SQLException e) {
             LOGGER.error("Unable to check if the column '" + columnName + "' from the table '" + tableName + "' is indexed.\n" +
+                    e.getLocalizedMessage());
+        }
+        return false;
+    }
+
+    @Override
+    public boolean isSpatialIndexed(String tableName) {
+        try {
+            TableLocation table = TableLocation.parse(tableName, getDataBaseType());
+            String geomColumn = GeometryTableUtilities.getFirstGeometryColumnNameAndIndex(getConnection(), table).first();
+            if(geomColumn==null || geomColumn.isEmpty()){
+                return false;
+            }
+            return JDBCUtilities.isSpatialIndexed(getConnection(), tableName, geomColumn);
+        } catch (SQLException e) {
+            LOGGER.error("Unable to check if  the table '" + tableName + "' has a spatial index.\n" +
                     e.getLocalizedMessage());
         }
         return false;
@@ -1297,7 +1332,7 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, IRe
             LOGGER.error("Unable to drop index");
         }
         try {
-            JDBCUtilities.dropIndex(getConnection(), tableName, columnName);
+            JDBCUtilities.dropIndex(getConnection(), TableLocation.parse(tableName, getDataBaseType()), columnName);
         } catch (SQLException e) {
             LOGGER.error("Unable to drop the indexes of the column '" + columnName + "' in the table '" + tableName + "'.\n" +
                     e.getLocalizedMessage());
@@ -1318,9 +1353,62 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, IRe
     }
 
     @Override
+    public void dropTable(List tableNames) {
+        if (tableNames == null || tableNames.isEmpty()) {
+            LOGGER.error("Unable to drop the tables");
+        }
+        try {
+            execute("DROP TABLE IF EXISTS " + String.join(",", tableNames));
+        } catch (SQLException e) {
+            LOGGER.error("Unable to drop the tables '" + String.join(",", tableNames) + "'.\n" +
+                    e.getLocalizedMessage());
+        }
+    }
+
+    @Override
     public boolean setSrid(String tableName, String columnName, int srid) {
         try {
-            return GeometryTableUtilities.alterSRID(getConnection(), tableName, columnName, srid);
+            return GeometryTableUtilities.alterSRID(getConnection(), TableLocation.parse(tableName, getDataBaseType()), columnName, srid);
+        } catch (SQLException e) {
+            LOGGER.error("Unable to set the table SRID.", e);
+        }
+        return false;
+    }
+
+    @Override
+    public int getSrid(String tableName) {
+        if (tableName == null) {
+            LOGGER.error("Unable to get the srid");
+        }
+        try {
+            return GeometryTableUtilities.getSRID(getConnection(), TableLocation.parse(tableName, getDataBaseType()));
+        } catch (SQLException e) {
+            LOGGER.error("Unable to get the table SRID.", e);
+        }
+        return -1;
+    }
+
+    @Override
+    public int getSrid(String tableName, String columnName) {
+        if (tableName == null) {
+            LOGGER.error("Unable to get the srid");
+        }
+        try {
+            return GeometryTableUtilities.getSRID(getConnection(), TableLocation.parse(tableName, getDataBaseType()), columnName);
+        } catch (SQLException e) {
+            LOGGER.error("Unable to get the table SRID.", e);
+        }
+        return -1;
+    }
+
+    @Override
+    public boolean setSrid(String tableName, int srid) {
+        try {
+            String geomColumn = GeometryTableUtilities.getFirstGeometryColumnNameAndIndex(getConnection(), TableLocation.parse(tableName, getDataBaseType())).first();
+            if(geomColumn==null || geomColumn.isEmpty()){
+                return false;
+            }
+            return GeometryTableUtilities.alterSRID(getConnection(), tableName, geomColumn, srid);
         } catch (SQLException e) {
             LOGGER.error("Unable to set the table SRID.", e);
         }
@@ -1328,4 +1416,16 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, IRe
     }
 
 
+    @Override
+    public boolean isEmpty(String tableName) {
+        if (tableName == null) {
+            LOGGER.error("Unable to drop the tables");
+        }
+        try {
+            return firstRow("SELECT 1 FROM " +tableName+ " LIMIT 1 ").isEmpty();
+        } catch (SQLException e) {
+            LOGGER.error("Unable to check if the table is empty.", e);
+        }
+        return false;
+    }
 }

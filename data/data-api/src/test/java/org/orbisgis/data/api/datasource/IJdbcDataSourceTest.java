@@ -52,7 +52,10 @@ import java.io.InputStream;
 import java.io.PrintWriter;
 import java.net.URI;
 import java.net.URL;
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.SQLFeatureNotSupportedException;
+import java.sql.Statement;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -198,13 +201,13 @@ public class IJdbcDataSourceTest {
             return null;
         }
 
-       
+
         @Override
         public IJdbcTable getTable(GString nameOrQuery) {
             return null;
         }
 
-       
+
         @Override
         public IJdbcTable getTable(String nameOrQuery, List<Object> params) {
             return null;
@@ -216,13 +219,13 @@ public class IJdbcDataSourceTest {
             return null;
         }
 
-       
+
         @Override
         public IJdbcTable getTable(GString nameOrQuery, Statement statement) {
             return null;
         }
 
-       
+
         @Override
         public IJdbcTable getTable(String nameOrQuery, List<Object> params, Statement statement) {
             return null;
@@ -233,31 +236,31 @@ public class IJdbcDataSourceTest {
             return null;
         }
 
-       
+
         @Override
         public IJdbcSpatialTable getSpatialTable(GString nameOrQuery) {
             return null;
         }
 
-       
+
         @Override
         public IJdbcSpatialTable getSpatialTable(String nameOrQuery, List<Object> params) {
             return null;
         }
 
-       
+
         @Override
         public IJdbcSpatialTable getSpatialTable(String tableName, Statement statement) {
             return null;
         }
 
-       
+
         @Override
         public IJdbcSpatialTable getSpatialTable(GString nameOrQuery, Statement statement) {
             return null;
         }
 
-       
+
         @Override
         public IJdbcSpatialTable getSpatialTable(String nameOrQuery, List<Object> params, Statement statement) {
             return null;
@@ -553,6 +556,11 @@ public class IJdbcDataSourceTest {
         }
 
         @Override
+        public boolean isEmpty(String tableName) {
+            return false;
+        }
+
+        @Override
         public String link(Map dataSourceProperties, String tableName) {
             return null;
         }
@@ -623,7 +631,7 @@ public class IJdbcDataSourceTest {
             return null;
         }
 
-       
+
         @Override
         public Object asType(Class<?> clazz) {
             return null;
@@ -634,7 +642,7 @@ public class IJdbcDataSourceTest {
             return false;
         }
 
-       
+
         @Override
         public Collection<String> getColumnNames(String location) {
             return null;
@@ -642,6 +650,11 @@ public class IJdbcDataSourceTest {
 
         @Override
         public boolean createSpatialIndex(String tableName, String columnName) {
+            return false;
+        }
+
+        @Override
+        public boolean createSpatialIndex(String tableName) {
             return false;
         }
 
@@ -676,6 +689,11 @@ public class IJdbcDataSourceTest {
         }
 
         @Override
+        public boolean isSpatialIndexed(String tableName) {
+            return false;
+        }
+
+        @Override
         public void dropIndex(String tableName, String columnName) {
 
         }
@@ -686,7 +704,17 @@ public class IJdbcDataSourceTest {
         }
 
         @Override
+        public void dropTable(List tableNames) {
+
+        }
+
+        @Override
         public void dropColumn(String tableName, String... columnName) {
+
+        }
+
+        @Override
+        public void dropColumn(String tableName, List columnNames) {
 
         }
 
@@ -696,6 +724,20 @@ public class IJdbcDataSourceTest {
         }
 
         @Override
+        public boolean setSrid(String tableName, int srid) {
+            return false;
+        }
+
+        @Override
+        public int getSrid(String tableName) {
+            return 0;
+        }
+
+        @Override
+        public int getSrid(String tableName, String columnName) {
+            return 0;
+        }
+
         public long getRowCount(String tableName) {
             return 0;
         }

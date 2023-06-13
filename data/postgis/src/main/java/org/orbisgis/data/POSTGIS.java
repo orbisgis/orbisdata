@@ -476,6 +476,7 @@ public class POSTGIS extends JdbcDataSource {
     public boolean createSpatialIndex(String tableName, String columnName) {
         if(columnName == null || tableName == null){
             LOGGER.error("Unable to create a spatial index");
+            return false;
         }
         try {
             return  JDBCUtilities.createSpatialIndex(getConnection(), tableName, columnName);
@@ -490,6 +491,7 @@ public class POSTGIS extends JdbcDataSource {
     public boolean createIndex(String tableName, String columnName) {
         if(columnName == null || tableName == null){
             LOGGER.error("Unable to create an index");
+            return false;
         }
         try {
             return  JDBCUtilities.createIndex(getConnection(), tableName, columnName);
@@ -541,6 +543,7 @@ public class POSTGIS extends JdbcDataSource {
     public void dropColumn(String tableName, String... columnName) {
         if (tableName == null || columnName == null) {
             LOGGER.error("Unable to drop the columns");
+            return;
         }
         try {
             StringBuilder sb =  new StringBuilder("ALTER TABLE IF EXISTS " + TableLocation.parse(tableName, DBTypes.POSTGIS).toString());
@@ -562,15 +565,16 @@ public class POSTGIS extends JdbcDataSource {
     }
 
     @Override
-    public void dropColumn(String tableName, List columnNames) {
+    public void dropColumn(String tableName, List<String> columnNames) {
         if (tableName == null || columnNames == null || columnNames.isEmpty()) {
             LOGGER.error("Unable to drop the columns");
+            return ;
         }
         try {
             StringBuilder sb =  new StringBuilder("ALTER TABLE IF EXISTS " + TableLocation.parse(tableName, DBTypes.POSTGIS));
             int count = columnNames.size();
             for (int i = 0; i < count; i++) {
-                String col = (String) columnNames.get(i);
+                String col = columnNames.get(i);
                 if(col!=null && !col.isEmpty()){
                     sb.append(" DROP COLUMN IF EXISTS "+ col);
                 }

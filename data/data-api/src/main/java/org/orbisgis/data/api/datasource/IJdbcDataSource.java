@@ -381,7 +381,7 @@ public interface IJdbcDataSource extends IDataSource<ResultSet>, GroovyObject, D
      *
      * @param tableNames name of the tables
      */
-    void dropTable(List tableNames);
+    void dropTable(List<String>  tableNames);
 
     /**
      * Drop the column if the table exists.
@@ -398,7 +398,7 @@ public interface IJdbcDataSource extends IDataSource<ResultSet>, GroovyObject, D
      * @param tableName name of the table
      * @param columnNames name of the columns
      */
-    void dropColumn(String tableName, List columnNames);
+    void dropColumn(String tableName, List<String>  columnNames);
 
     /**
      * Sets a new SRID code to the column of the table.

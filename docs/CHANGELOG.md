@@ -8,3 +8,4 @@ eg h2GIS.getSpatialTable("h2gis").columns("land", "st_precisionreducer(st_transf
 - Update H2GIS to 2.2.1-SNAPSHOT
 - Add row count method on datasource
 - Add method to create spatial index on first geometry column
+- Filter null or empty table name before executing the drop table command 

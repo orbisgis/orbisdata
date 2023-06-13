@@ -70,6 +70,8 @@ import java.sql.*;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Abstract class used to implements the request builder methods (select, from ...) in order to give a base to all the
@@ -1203,6 +1205,7 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, IRe
     public boolean createSpatialIndex(String tableName, String columnName) {
         if (columnName == null || tableName == null) {
             LOGGER.error("Unable to create a spatial index");
+            return false;
         }
         try {
             return JDBCUtilities.createSpatialIndex(getConnection(), TableLocation.parse(tableName, getDataBaseType()), columnName);
@@ -1217,6 +1220,7 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, IRe
     public boolean createSpatialIndex(String tableName) {
         if (tableName == null) {
             LOGGER.error("Unable to create a spatial index");
+            return false;
         }
         try {
             TableLocation table = TableLocation.parse(tableName, getDataBaseType());
@@ -1236,6 +1240,7 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, IRe
     public boolean createIndex(String tableName, String columnName) {
         if (columnName == null || tableName == null) {
             LOGGER.error("Unable to create an index");
+            return false;
         }
         try {
             return JDBCUtilities.createIndex(getConnection(), TableLocation.parse(tableName, getDataBaseType()), columnName);
@@ -1250,6 +1255,7 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, IRe
     public boolean hasGeometryColumn(String tableName) {
         if (tableName == null) {
             LOGGER.error("Unable to get the table");
+            return false;
         }
         try {
             return GeometryTableUtilities.hasGeometryColumn(getConnection(), TableLocation.parse(tableName, getDataBaseType()));
@@ -1264,6 +1270,7 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, IRe
     public List<String> getGeometryColumns(String tableName) {
         if (tableName == null) {
             LOGGER.error("Unable to get the table");
+            return null;
         }
         try {
             return GeometryTableUtilities.getGeometryColumnNames(getConnection(), TableLocation.parse(tableName, getDataBaseType()));
@@ -1278,6 +1285,7 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, IRe
     public String getGeometryColumn(String tableName) {
         if (tableName == null) {
             LOGGER.error("Unable to get the table");
+            return null;
         }
         try {
             return GeometryTableUtilities.getFirstGeometryColumnNameAndIndex(getConnection(), TableLocation.parse(tableName, getDataBaseType())).first();
@@ -1330,6 +1338,7 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, IRe
     public void dropIndex(String tableName, String columnName) {
         if (columnName == null || tableName == null) {
             LOGGER.error("Unable to drop index");
+            return;
         }
         try {
             JDBCUtilities.dropIndex(getConnection(), TableLocation.parse(tableName, getDataBaseType()), columnName);
@@ -1343,24 +1352,34 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, IRe
     public void dropTable(String... tableName) {
         if (tableName == null) {
             LOGGER.error("Unable to drop the tables");
+            return;
         }
+        String query = Stream.of(tableName).filter(s -> s != null && !s.isEmpty())
+                .collect(Collectors.joining(" , "));
         try {
-            execute("DROP TABLE IF EXISTS " + String.join(",", tableName));
+            if(!query.isEmpty()) {
+                execute("DROP TABLE IF EXISTS " + query);
+            }
         } catch (SQLException e) {
-            LOGGER.error("Unable to drop the tables '" + String.join(",", tableName) + "'.\n" +
+            LOGGER.error("Unable to drop the tables '" + query + "'.\n" +
                     e.getLocalizedMessage());
         }
     }
 
     @Override
-    public void dropTable(List tableNames) {
-        if (tableNames == null || tableNames.isEmpty()) {
+    public void dropTable(List<String>  tableNames) {
+        if (tableNames == null ) {
             LOGGER.error("Unable to drop the tables");
+            return;
         }
+        String query = tableNames.stream().filter(s -> s != null && !s.isEmpty())
+                .collect(Collectors.joining(","));
         try {
-            execute("DROP TABLE IF EXISTS " + String.join(",", tableNames));
+            if(!query.isEmpty()) {
+                execute("DROP TABLE IF EXISTS " + query);
+            }
         } catch (SQLException e) {
-            LOGGER.error("Unable to drop the tables '" + String.join(",", tableNames) + "'.\n" +
+            LOGGER.error("Unable to drop the tables '" + query + "'.\n" +
                     e.getLocalizedMessage());
         }
     }
@@ -1379,6 +1398,7 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, IRe
     public int getSrid(String tableName) {
         if (tableName == null) {
             LOGGER.error("Unable to get the srid");
+            return -1;
         }
         try {
             return GeometryTableUtilities.getSRID(getConnection(), TableLocation.parse(tableName, getDataBaseType()));
@@ -1392,6 +1412,7 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, IRe
     public int getSrid(String tableName, String columnName) {
         if (tableName == null) {
             LOGGER.error("Unable to get the srid");
+            return -1;
         }
         try {
             return GeometryTableUtilities.getSRID(getConnection(), TableLocation.parse(tableName, getDataBaseType()), columnName);
@@ -1420,6 +1441,7 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, IRe
     public boolean isEmpty(String tableName) {
         if (tableName == null) {
             LOGGER.error("Unable to drop the tables");
+            return false;
         }
         try {
             return firstRow("SELECT 1 FROM " +tableName+ " LIMIT 1 ").isEmpty();

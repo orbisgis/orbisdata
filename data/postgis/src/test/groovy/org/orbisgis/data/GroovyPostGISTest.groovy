@@ -523,8 +523,13 @@ class GroovyPostGISTest {
         postGIS.dropColumn("geodata", "id", "land", "type");
         assertEquals(1,postGIS.getColumnNames("geodata").size());
 
+
         postGIS.dropTable("geodata");
         assertFalse(postGIS.hasTable("geodata"));
+
+        postGIS.dropTable("", "")
+        postGIS.dropTable([])
+        postGIS.dropTable(['', null])
 
     }
 

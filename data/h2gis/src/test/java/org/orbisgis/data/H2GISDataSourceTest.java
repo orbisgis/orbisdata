@@ -883,6 +883,10 @@ class H2GISDataSourceTest {
 
         h2gis.execute("CREATE TABLE  geodata ()");
 
+
+        h2gis.dropTable(new ArrayList());
+        h2gis.dropTable("","");
+
         assertTrue(h2gis.getColumnNames("geodata").isEmpty());
 
     }

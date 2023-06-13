@@ -63,6 +63,8 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.sql.*;
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Implementation of the {@link JdbcDataSource} interface dedicated to the usage of an H2/H2GIS database.
@@ -516,12 +518,17 @@ public class H2GIS extends JdbcDataSource {
     }
 
     @Override
-    public void dropColumn(String tableName, List columnNames) {
+    public void dropColumn(String tableName, List<String>  columnNames) {
         if (tableName == null || columnNames == null || columnNames.isEmpty()) {
             LOGGER.error("Unable to drop the columns");
+            return;
         }
+        String query = columnNames.stream().filter(s -> s != null && !s.isEmpty())
+                .collect(Collectors.joining(" , "));
         try {
-            execute("ALTER TABLE IF EXISTS " + TableLocation.parse(tableName, DBTypes.H2GIS) + " DROP COLUMN IF EXISTS (" + String.join(",", columnNames) + ")");
+            if(!query.isEmpty()) {
+                execute("ALTER TABLE IF EXISTS " + TableLocation.parse(tableName, DBTypes.H2GIS) + " DROP COLUMN IF EXISTS (" + query + ")");
+            }
         } catch (SQLException e) {
             LOGGER.error("Unable to drop the columns '" + String.join(",", columnNames) + "'.\n" +
                     e.getLocalizedMessage());
@@ -532,9 +539,14 @@ public class H2GIS extends JdbcDataSource {
     public void dropColumn(String tableName, String... columnName) {
         if (tableName == null || columnName == null) {
             LOGGER.error("Unable to drop the columns");
+            return;
         }
+        String query = Stream.of(columnName).filter(s -> s != null && !s.isEmpty())
+                .collect(Collectors.joining(" , "));
         try {
-            execute("ALTER TABLE IF EXISTS " + TableLocation.parse(tableName, DBTypes.H2GIS) + " DROP COLUMN IF EXISTS (" + String.join(",", columnName) + ")");
+            if(!query.isEmpty()) {
+                execute("ALTER TABLE IF EXISTS " + TableLocation.parse(tableName, DBTypes.H2GIS) + " DROP COLUMN IF EXISTS (" + query + ")");
+            }
         } catch (SQLException e) {
             LOGGER.error("Unable to drop the columns '" + String.join(",", columnName) + "'.\n" +
                     e.getLocalizedMessage());

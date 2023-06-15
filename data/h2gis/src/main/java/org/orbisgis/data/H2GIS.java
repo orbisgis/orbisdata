@@ -46,6 +46,7 @@ import org.h2gis.utilities.GeometryTableUtilities;
 import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.TableLocation;
 import org.h2gis.utilities.dbtypes.DBTypes;
+import org.locationtech.jts.geom.Geometry;
 import org.orbisgis.data.api.dataset.IJdbcSpatialTable;
 import org.orbisgis.data.api.dataset.IJdbcTable;
 import org.orbisgis.data.api.dataset.ISpatialTable;
@@ -518,7 +519,7 @@ public class H2GIS extends JdbcDataSource {
     }
 
     @Override
-    public void dropColumn(String tableName, List<String>  columnNames) {
+    public void dropColumn(String tableName, List<String> columnNames) {
         if (tableName == null || columnNames == null || columnNames.isEmpty()) {
             LOGGER.error("Unable to drop the columns");
             return;
@@ -526,7 +527,7 @@ public class H2GIS extends JdbcDataSource {
         String query = columnNames.stream().filter(s -> s != null && !s.isEmpty())
                 .collect(Collectors.joining(" , "));
         try {
-            if(!query.isEmpty()) {
+            if (!query.isEmpty()) {
                 execute("ALTER TABLE IF EXISTS " + TableLocation.parse(tableName, DBTypes.H2GIS) + " DROP COLUMN IF EXISTS (" + query + ")");
             }
         } catch (SQLException e) {
@@ -544,7 +545,7 @@ public class H2GIS extends JdbcDataSource {
         String query = Stream.of(columnName).filter(s -> s != null && !s.isEmpty())
                 .collect(Collectors.joining(" , "));
         try {
-            if(!query.isEmpty()) {
+            if (!query.isEmpty()) {
                 execute("ALTER TABLE IF EXISTS " + TableLocation.parse(tableName, DBTypes.H2GIS) + " DROP COLUMN IF EXISTS (" + query + ")");
             }
         } catch (SQLException e) {
@@ -556,7 +557,7 @@ public class H2GIS extends JdbcDataSource {
 
     @Override
     public long getRowCount(String tableName) {
-        if(tableName==null || tableName.isEmpty()){
+        if (tableName == null || tableName.isEmpty()) {
             LOGGER.error("Unable to get the number of row on empty or null table.");
             return -1;
         }
@@ -565,6 +566,36 @@ public class H2GIS extends JdbcDataSource {
         } catch (SQLException e) {
             LOGGER.error("Unable to get the number of row.");
             return -1;
+        }
+    }
+
+    @Override
+    public Geometry getExtent(String tableName) {
+        if (tableName == null || tableName.isEmpty()) {
+            LOGGER.error("Unable to get the extent on empty or null table.");
+            return null;
+        }
+        try {
+            return GeometryTableUtilities.getEnvelope(getConnection(), TableLocation.parse(tableName, DBTypes.H2GIS));
+
+        } catch (SQLException e) {
+            LOGGER.error("Unable to get the extent of table.");
+            return null;
+        }
+    }
+
+    @Override
+    public Geometry getExtent(String tableName, String... geometryColumns) {
+        if (tableName == null || tableName.isEmpty()) {
+            LOGGER.error("Unable to get the extent on empty or null table.");
+            return null;
+        }
+        try {
+            return GeometryTableUtilities.getEnvelope(getConnection(), TableLocation.parse(tableName, DBTypes.H2GIS), geometryColumns);
+
+        } catch (SQLException e) {
+            LOGGER.error("Unable to get the extent of table.");
+            return null;
         }
     }
 

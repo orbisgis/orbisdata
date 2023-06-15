@@ -44,6 +44,7 @@ import org.codehaus.groovy.runtime.InvokerHelper;
 import org.codehaus.groovy.runtime.InvokerInvocationException;
 import org.h2gis.utilities.dbtypes.DBTypes;
 import org.junit.jupiter.api.Test;
+import org.locationtech.jts.geom.Geometry;
 import org.orbisgis.data.api.dataset.IJdbcSpatialTable;
 import org.orbisgis.data.api.dataset.IJdbcTable;
 
@@ -731,6 +732,16 @@ public class IJdbcDataSourceTest {
         @Override
         public int getSrid(String tableName) {
             return 0;
+        }
+
+        @Override
+        public Geometry getExtent(String tableName) {
+            return null;
+        }
+
+        @Override
+        public Geometry getExtent(String tableName, String... geometryColumns) {
+            return null;
         }
 
         @Override

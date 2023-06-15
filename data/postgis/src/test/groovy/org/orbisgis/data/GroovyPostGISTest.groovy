@@ -519,6 +519,8 @@ class GroovyPostGISTest {
         assertTrue(postGIS.createSpatialIndex("geodata"));
         assertTrue(postGIS.isSpatialIndexed("geodata"));
 
+        assertEquals(postGIS.firstRow("select 'POINT(0 0)'::GEOMETRY AS the_geom").get("THE_GEOM"), postGIS.getExtent("geodata"));
+
 
         postGIS.dropColumn("geodata", "id", "land", "type");
         assertEquals(1,postGIS.getColumnNames("geodata").size());

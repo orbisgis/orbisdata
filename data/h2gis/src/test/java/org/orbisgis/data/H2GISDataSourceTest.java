@@ -870,6 +870,7 @@ class H2GISDataSourceTest {
         assertTrue(h2gis.createSpatialIndex("geodata"));
         assertTrue(h2gis.isSpatialIndexed("geodata"));
 
+        assertEquals(h2gis.firstRow("select 'POINT(0 0)'::GEOMETRY AS the_geom").get("THE_GEOM"), h2gis.getExtent("geodata"));
 
         assertTrue(h2gis.setSrid("geodata", 4326));
         assertEquals(4326,h2gis.getSrid("geodata"));

@@ -43,6 +43,7 @@ import org.h2gis.utilities.GeometryTableUtilities;
 import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.TableLocation;
 import org.h2gis.utilities.dbtypes.DBTypes;
+import org.locationtech.jts.geom.Geometry;
 import org.orbisgis.data.api.dataset.IJdbcSpatialTable;
 import org.orbisgis.data.api.dataset.IJdbcTable;
 import org.orbisgis.data.api.dataset.ISpatialTable;
@@ -586,6 +587,36 @@ public class POSTGIS extends JdbcDataSource {
         } catch (SQLException e) {
             LOGGER.error("Unable to drop the columns '" + String.join(",", columnNames) + "'.\n" +
                     e.getLocalizedMessage());
+        }
+    }
+
+    @Override
+    public Geometry getExtent(String tableName) {
+        if (tableName == null || tableName.isEmpty()) {
+            LOGGER.error("Unable to get the extent on empty or null table.");
+            return null;
+        }
+        try {
+            return GeometryTableUtilities.getEnvelope(getConnection(), TableLocation.parse(tableName, DBTypes.POSTGIS));
+
+        } catch (SQLException e) {
+            LOGGER.error("Unable to get the extent of table.");
+            return null;
+        }
+    }
+
+    @Override
+    public Geometry getExtent(String tableName, String... geometryColumns) {
+        if (tableName == null || tableName.isEmpty()) {
+            LOGGER.error("Unable to get the extent on empty or null table.");
+            return null;
+        }
+        try {
+            return GeometryTableUtilities.getEnvelope(getConnection(), TableLocation.parse(tableName, DBTypes.POSTGIS), geometryColumns);
+
+        } catch (SQLException e) {
+            LOGGER.error("Unable to get the extent of table.");
+            return null;
         }
     }
 }

@@ -40,6 +40,7 @@ import groovy.lang.GString;
 import groovy.lang.GroovyObject;
 import groovy.lang.MissingMethodException;
 import org.h2gis.utilities.dbtypes.DBTypes;
+import org.locationtech.jts.geom.Geometry;
 import org.orbisgis.data.api.dataset.IDataSet;
 import org.orbisgis.data.api.dataset.IJdbcSpatialTable;
 import org.orbisgis.data.api.dataset.IJdbcTable;
@@ -427,6 +428,22 @@ public interface IJdbcDataSource extends IDataSource<ResultSet>, GroovyObject, D
      */
     int getSrid(String tableName);
 
+    /**
+     * Return the full extent {@link Geometry} of the first geometry column of the table.
+     *
+     * @return The full extent {@link Geometry} of the first geometry column of the table.
+     */
+    Geometry getExtent(String tableName);
+
+    /**
+     * Return the full extent {@link Geometry} of a list of geometry columns.
+     *
+     * Note that a geometry column can be a geometry function
+     * e.g. ST_Buffer(the_geom, 20)
+     *
+     * @return The full extent {@link Geometry}.
+     */
+    Geometry getExtent(String tableName, String... geometryColumns);
 
     /**
      * Return the SRID code of a geometry column of the tableName.

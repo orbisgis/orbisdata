@@ -10,3 +10,4 @@ eg h2GIS.getSpatialTable("h2gis").columns("land", "st_precisionreducer(st_transf
 - Add method to create spatial index on first geometry column
 - Filter null or empty table name before executing the drop table command 
 - Add getExtent method on datasource
+- Fix isEmpty when the table doesn't have any columns

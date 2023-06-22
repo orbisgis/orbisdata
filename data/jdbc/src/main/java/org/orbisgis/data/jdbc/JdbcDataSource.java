@@ -1444,7 +1444,11 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, IRe
             return false;
         }
         try {
-            return firstRow("SELECT 1 FROM " +tableName+ " LIMIT 1 ").isEmpty();
+            GroovyRowResult row = firstRow("SELECT * FROM " + tableName + " LIMIT 1 ");
+            if(row==null){
+                return true;
+            }
+            return row.isEmpty();
         } catch (SQLException e) {
             LOGGER.error("Unable to check if the table is empty.", e);
         }

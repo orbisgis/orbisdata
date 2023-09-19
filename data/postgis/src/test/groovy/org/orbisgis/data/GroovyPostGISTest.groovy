@@ -501,6 +501,7 @@ class GroovyPostGISTest {
 
 
     @Test
+    @EnabledIfSystemProperty(named = "test.postgis", matches = "true")
     void testDataSourceMethods() throws SQLException {
         postGIS.execute("DROP TABLE IF EXISTS geodata; CREATE TABLE  geodata (ID INT,LAND VARCHAR, THE_GEOM GEOMETRY); " +
                 "INSERT INTO geodata VALUES (1,'grass', 'POINT(0 0)'::GEOMETRY);");
@@ -532,7 +533,6 @@ class GroovyPostGISTest {
         postGIS.dropTable("", "")
         postGIS.dropTable([])
         postGIS.dropTable(['', null])
-
     }
 
 }

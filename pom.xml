@@ -28,11 +28,11 @@
         <jts-version>1.19.0</jts-version>
         <groovy-version>3.0.11</groovy-version>
         <picocli-version>4.6.3</picocli-version>
-        <h2-version>2.1.214</h2-version>
-        <cts-version>1.7.0</cts-version>
+        <h2-version>2.2.224</h2-version>
+        <cts-version>1.7.1-SNAPSHOT</cts-version>
         <commons-io-version>2.11.0</commons-io-version>
         <commons-compress-version>1.21</commons-compress-version>
-        <slf4j-version>1.7.36</slf4j-version>
+        <slf4j-version>2.0.9</slf4j-version>
         <smile-version>2.5.3</smile-version>
         <xstream-version>1.4.18</xstream-version>
 

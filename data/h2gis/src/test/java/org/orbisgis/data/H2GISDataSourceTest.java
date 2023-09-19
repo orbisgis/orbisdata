@@ -46,6 +46,7 @@ import org.h2gis.utilities.dbtypes.DBTypes;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledIfSystemProperty;
 import org.orbisgis.data.api.dataset.ISpatialTable;
 import org.orbisgis.data.api.dataset.ITable;
 import org.orbisgis.data.api.dsl.IResultSetProperties;
@@ -106,12 +107,14 @@ class H2GISDataSourceTest {
         postgis.execute("INSERT INTO test_postgis VALUES (1, 'POINT(0 0)', 'toto')");
         postgis.execute("INSERT INTO test_postgis VALUES (2, 'LINESTRING(0 0, 1 1, 2 2)', 'tata')");
         postgis.execute("INSERT INTO test_postgis VALUES (3, 'POINT(4 5)', 'titi')");
+        System.setProperty("test.postgis", Boolean.toString(postgis != null));
     }
 
     /**
      * Test the {@link JdbcDataSource#getConnection()} method.
      */
     @Test
+    @EnabledIfSystemProperty(named = "test.postgis", matches = "true")
     void testGetConnection() {
         assertNotNull(h2gis.getConnection());
         assertNotNull(postgis.getConnection());
@@ -121,6 +124,7 @@ class H2GISDataSourceTest {
      * Test the {@link JdbcDataSource#getDataBaseType()} method.
      */
     @Test
+    @EnabledIfSystemProperty(named = "test.postgis", matches = "true")
     void testGetDataBaseType() {
         assertEquals(DBTypes.H2GIS, h2gis.getDataBaseType());
         assertEquals(DBTypes.POSTGIS, postgis.getDataBaseType());
@@ -130,6 +134,7 @@ class H2GISDataSourceTest {
      * Test the {@link JdbcDataSource#execute(GString)} method.
      */
     @Test
+    @EnabledIfSystemProperty(named = "test.postgis", matches = "true")
     void testExecute() throws SQLException {
         GString gstring1 = new GStringImpl(new String[]{"test_h2gis"}, new String[]{"SELECT * FROM "});
         GString gstring2 = new GStringImpl(new String[]{"test_h2gis"}, new String[]{"UPDATE ", " SET text='titi' WHERE id=3"});
@@ -152,6 +157,7 @@ class H2GISDataSourceTest {
      * Test the {@link JdbcDataSource#firstRow(GString)} method.
      */
     @Test
+    @EnabledIfSystemProperty(named = "test.postgis", matches = "true")
     void testFirstRow() throws SQLException {
         GString gstring1_h2gis = new GStringImpl(new String[]{"test_h2gis"}, new String[]{"SELECT * FROM "});
         GString gstring3_h2gis = new GStringImpl(new String[]{}, new String[]{"SELECT * FROM test_h2gis"});
@@ -174,6 +180,7 @@ class H2GISDataSourceTest {
      * Test the {@link JdbcDataSource#rows(GString)} method.
      */
     @Test
+    @EnabledIfSystemProperty(named = "test.postgis", matches = "true")
     void testRows() throws SQLException {
         GString gstring1_h2gis = new GStringImpl(new String[]{"test_h2gis"}, new String[]{"SELECT * FROM "});
         GString gstring3_h2gis = new GStringImpl(new String[]{}, new String[]{"SELECT * FROM test_h2gis"});
@@ -213,6 +220,7 @@ class H2GISDataSourceTest {
      * Test the {@link JdbcDataSource#eachRow(GString, Closure)} method.
      */
     @Test
+    @EnabledIfSystemProperty(named = "test.postgis", matches = "true")
     void testEachRow() throws SQLException {
         GString gstring1_h2gis = new GStringImpl(new String[]{"test_h2gis"}, new String[]{"SELECT * FROM "});
         GString gstring3_h2gis = new GStringImpl(new String[]{}, new String[]{"SELECT * FROM test_h2gis"});
@@ -257,6 +265,7 @@ class H2GISDataSourceTest {
      * Test the {@link JdbcDataSource#executeScript(String, Map)} method.
      */
     @Test
+    @EnabledIfSystemProperty(named = "test.postgis", matches = "true")
     void testExecuteMethod1() throws URISyntaxException, SQLException {
         Map<String, String> map = new HashMap<>();
         map.put("intArg", "51");
@@ -293,6 +302,7 @@ class H2GISDataSourceTest {
      * Test the {@link JdbcDataSource#executeScript(InputStream, Map)} method.
      */
     @Test
+    @EnabledIfSystemProperty(named = "test.postgis", matches = "true")
     void testExecuteMethod2() throws SQLException {
         Map<String, String> map = new HashMap<>();
         map.put("intArg", "51");
@@ -315,6 +325,7 @@ class H2GISDataSourceTest {
      * Test the {@link JdbcDataSource#setMetaClass(MetaClass)} and {@link JdbcDataSource#getMetaClass()} methods.
      */
     @Test
+    @EnabledIfSystemProperty(named = "test.postgis", matches = "true")
     void testMetaClassMethods() {
         assertEquals(InvokerHelper.getMetaClass(H2GIS.class), h2gis.getMetaClass());
         h2gis.setMetaClass(InvokerHelper.getMetaClass(this));
@@ -329,6 +340,7 @@ class H2GISDataSourceTest {
      * Test the save methods.
      */
     @Test
+    @EnabledIfSystemProperty(named = "test.postgis", matches = "true")
     void testSave() throws SQLException, MalformedURLException {
         h2gis.execute("DROP TABLE IF EXISTS load");
         postgis.execute("DROP TABLE IF EXISTS load");
@@ -369,6 +381,7 @@ class H2GISDataSourceTest {
      * Test the link methods.
      */
     @Test
+    @EnabledIfSystemProperty(named = "test.postgis", matches = "true")
     void testLink() throws SQLException, URISyntaxException, MalformedURLException {
         URL url = this.getClass().getResource("linkTable.dbf");
         URI uri = url.toURI();
@@ -533,6 +546,7 @@ class H2GISDataSourceTest {
      * Test the load file path methods.
      */
     @Test
+    @EnabledIfSystemProperty(named = "test.postgis", matches = "true")
     void testLoadPath() throws SQLException, URISyntaxException {
         URL url = this.getClass().getResource("loadTable.dbf");
         URI uri = url.toURI();
@@ -706,6 +720,7 @@ class H2GISDataSourceTest {
      * Test the {@link JdbcDataSource#getLocation()} method.
      */
     @Test
+    @EnabledIfSystemProperty(named = "test.postgis", matches = "true")
     void testGetLocation() {
         assertNotNull(h2gis.getLocation());
         assertEquals(DB_NAME, h2gis.getLocation().toString());
@@ -717,6 +732,7 @@ class H2GISDataSourceTest {
      * Test the {@link JdbcDataSource#getTableNames()} method.
      */
     @Test
+    @EnabledIfSystemProperty(named = "test.postgis", matches = "true")
     void testGetTableNames() {
         Collection<String> names = h2gis.getTableNames();
         assertNotNull(names);
@@ -736,6 +752,7 @@ class H2GISDataSourceTest {
      * Test the {@link JdbcDataSource#getColumnNames(String)} method.
      */
     @Test
+    @EnabledIfSystemProperty(named = "test.postgis", matches = "true")
     void testGetColumnNames() {
         Collection<String> names = h2gis.getColumnNames("H2GISDATASOURCETEST.PUBLIC.TEST_H2GIS");
         assertNotNull(names);
@@ -774,6 +791,7 @@ class H2GISDataSourceTest {
      * Test the {@link JdbcDataSource#hasTable(String)} method.
      */
     @Test
+    @EnabledIfSystemProperty(named = "test.postgis", matches = "true")
     void testHasTable() {
         Collection<String> names = h2gis.getTableNames();
         assertNotNull(names);
@@ -787,6 +805,7 @@ class H2GISDataSourceTest {
      * Test the {@link JdbcDataSource#getDataSet(String)} method.
      */
     @Test
+    @EnabledIfSystemProperty(named = "test.postgis", matches = "true")
     void testGetDataSet() {
         Object dataset = h2gis.getDataSet("TEST_H2GIS");
         assertTrue(dataset instanceof ISpatialTable);
@@ -810,6 +829,7 @@ class H2GISDataSourceTest {
      * {@link JdbcDataSource#poolable()}, {@link JdbcDataSource#maxFieldSize(int)}france methods.
      */
     @Test
+    @EnabledIfSystemProperty(named = "test.postgis", matches = "true")
     void testResultSetBuilder() {
         ITable<?,?> table = h2gis.forwardOnly().readOnly().holdCursorOverCommit().fetchForward()
                 .fetchSize(SIZE).timeout(TIMEOUT).maxRow(MAX_ROW).cursorName("name").poolable()
@@ -848,6 +868,7 @@ class H2GISDataSourceTest {
         assertEquals(FIELD_SIZE, rsp.getMaxFieldSize());
     }
     @Test
+    @EnabledIfSystemProperty(named = "test.postgis", matches = "true")
     public void testDataSourceMethods() throws SQLException {
         h2gis.execute("DROP TABLE IF EXISTS geodata; CREATE TABLE  geodata (ID INT, LAND VARCHAR, THE_GEOM GEOMETRY); " +
                 "INSERT INTO geodata VALUES (1, 'grass', 'POINT(0 0)'::GEOMETRY);");

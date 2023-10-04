@@ -51,6 +51,7 @@ import org.h2gis.functions.io.utility.IOMethods;
 import org.h2gis.utilities.*;
 import org.h2gis.utilities.dbtypes.DBTypes;
 import org.locationtech.jts.geom.*;
+import org.orbisgis.commons.printer.Ascii;
 import org.orbisgis.data.api.dataset.IJdbcTable;
 import org.orbisgis.data.api.datasource.IDataSourceLocation;
 import org.orbisgis.data.api.datasource.IJdbcDataSource;
@@ -72,6 +73,8 @@ import java.util.logging.Level;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import static org.orbisgis.commons.printer.ICustomPrinter.CellPosition.*;
 
 /**
  * Abstract class used to implements the request builder methods (select, from ...) in order to give a base to all the
@@ -1453,5 +1456,68 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, IRe
             LOGGER.error("Unable to check if the table is empty.", e);
         }
         return false;
+    }
+
+    @Override
+    public void print(String tableName) {
+        if (tableName == null || tableName.isEmpty()) {
+            System.out.println("The table name is null or empty.");
+        }
+        Connection con = getConnection();
+        if(con==null){
+            System.out.println( "Unable to get the connection to the database");
+        }
+        try (Statement statement = con.createStatement()) {
+            ResultSet rs = statement.executeQuery("SELECT * FROM " + tableName + " as foo");
+            StringBuilder builder = new StringBuilder();
+            Ascii printer = new Ascii(builder);
+            List<String> columnNames = JDBCUtilities.getColumnNames(rs.getMetaData());
+            if(columnNames == null){
+                printer.endTable();
+                System.out.print(printer);
+                return;
+            }
+            printer.startTable(20, columnNames.size());
+            printer.appendTableTitle(tableName);
+            printer.appendTableLineSeparator();
+            for (String column : columnNames) {
+                printer.appendTableHeaderValue(column, CENTER);
+            }
+            printer.appendTableLineSeparator();
+            boolean tooManyRows =false;
+            if(rs != null) {
+                try {
+                    int limit = 1000;
+                    int count=0;
+
+                    while (rs.next()) {
+                        if(count>limit){
+                            tooManyRows=true;
+                            break;
+                        }
+                        for (String column : columnNames) {
+                            Object obj = rs.getObject(column);
+                            if (obj instanceof Number) {
+                                printer.appendTableValue(rs.getObject(column), RIGHT);
+                            } else {
+                                printer.appendTableValue(rs.getObject(column), LEFT);
+                            }
+                        }
+                        count++;
+                    }
+                } catch (Exception e) {
+                    LOGGER.error("Error while reading the table '" + tableName + "'.\n" + e.getLocalizedMessage());
+                }
+            }
+            if(tooManyRows){
+                printer.appendText(".... more than 1000 rows");
+            }else {
+                printer.appendTableLineSeparator();
+            }
+            printer.endTable();
+            System.out.println(printer);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

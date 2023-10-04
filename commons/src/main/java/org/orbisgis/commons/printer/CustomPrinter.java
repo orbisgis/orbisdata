@@ -104,4 +104,11 @@ public abstract class CustomPrinter implements ICustomPrinter {
         checkNotNull(value, "The value to append should not be null.");
         appendTableValue(value, CellPosition.LEFT);
     }
+
+    @Override
+    public void appendText(String text) {
+        if (isDrawingTable) {
+            builder.append(text);
+        }
+    }
 }

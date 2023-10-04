@@ -562,6 +562,10 @@ public class IJdbcDataSourceTest {
         }
 
         @Override
+        public void print(String tableName) {
+        }
+
+        @Override
         public String link(Map dataSourceProperties, String tableName) {
             return null;
         }

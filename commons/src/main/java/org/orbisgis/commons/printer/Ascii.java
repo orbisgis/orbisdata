@@ -80,6 +80,7 @@ public class Ascii extends CustomPrinter {
         }
     }
 
+
     @Override
     public void appendTableValue(Object value, CellPosition position) {
         checkNotNull(value, "The value to append should not be null.");

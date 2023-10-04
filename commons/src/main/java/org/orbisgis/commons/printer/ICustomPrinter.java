@@ -109,4 +109,6 @@ public interface ICustomPrinter {
      * @return The not null string representation of the data contained by the {@link ICustomPrinter}
      */
     String toString();
+
+     void appendText(String text) ;
 }

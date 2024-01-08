@@ -36,7 +36,7 @@
  */
 package org.orbisgis.process.inoutput;
 
-import org.codehaus.groovy .runtime.InvokerHelper;
+import org.codehaus.groovy.runtime.InvokerHelper;
 import org.orbisgis.process.api.inoutput.IInOutPut;
 
 /**

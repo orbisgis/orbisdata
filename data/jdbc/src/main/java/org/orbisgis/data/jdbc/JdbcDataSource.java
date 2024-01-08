@@ -45,7 +45,7 @@ import groovy.sql.Sql;
 import groovy.text.SimpleTemplateEngine;
 import groovy.transform.stc.ClosureParams;
 import groovy.transform.stc.SimpleType;
-import org.codehaus.groovy .runtime.InvokerHelper;
+import org.codehaus.groovy.runtime.InvokerHelper;
 import org.h2.util.ScriptReader;
 import org.h2gis.functions.io.utility.IOMethods;
 import org.h2gis.utilities.*;

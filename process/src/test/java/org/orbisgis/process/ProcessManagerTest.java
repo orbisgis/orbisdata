@@ -39,7 +39,7 @@ package org.orbisgis.process;
 import groovy.lang.Closure;
 import groovy.lang.GroovyShell;
 import groovy.lang.MetaClass;
-import org.codehaus.groovy .runtime.InvokerHelper;
+import org.codehaus.groovy.runtime.InvokerHelper;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.orbisgis.process.api.IProcess;

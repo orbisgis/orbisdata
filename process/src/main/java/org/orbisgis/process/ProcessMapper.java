@@ -39,7 +39,7 @@ package org.orbisgis.process;
 import groovy.lang.GroovyInterceptable;
 import groovy.lang.GroovyObject;
 import groovy.lang.MetaClass;
-import org.codehaus.groovy .runtime.InvokerHelper;
+import org.codehaus.groovy.runtime.InvokerHelper;
 import org.orbisgis.process.api.ILinker;
 import org.orbisgis.process.api.IProcess;
 import org.orbisgis.process.api.IProcessMapper;

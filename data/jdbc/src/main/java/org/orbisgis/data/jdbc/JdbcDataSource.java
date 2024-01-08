@@ -1093,7 +1093,7 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, IRe
     }
 
     @Override
-    public int call(GString gstring) throws Exception {
+    public int call(GString gstring) throws SQLException {
         return super.call(gstring.toString());
     }
 

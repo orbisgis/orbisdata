@@ -145,7 +145,7 @@ public class H2gisTableTest {
         try {
             connection = H2GISDBFactory.createSpatialDataBase(BASE_DATABASE, true, ";AUTO_SERVER=TRUE");
             connectionLinked = H2GISDBFactory.createSpatialDataBase(LINKED_DATABASE, true,";AUTO_SERVER=TRUE");
-        } catch (SQLException | ClassNotFoundException e) {
+        } catch (SQLException e) {
             fail(e);
         }
         dataSource = H2GIS.open(connection);

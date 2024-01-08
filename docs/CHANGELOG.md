@@ -15,3 +15,5 @@ eg h2GIS.getSpatialTable("h2gis").columns("land", "st_precisionreducer(st_transf
 - Set slf4j-simple as scope test
 - Update to groovy 3.0.19
 - Add a print method to display the content of a table
+- Update to groovy 4.0.17
+- Update to H2GIS 2.2.1

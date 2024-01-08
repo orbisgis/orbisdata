@@ -39,7 +39,7 @@ package org.orbisgis.data.jdbc;
 import groovy.lang.GroovyObject;
 import groovy.lang.MetaClass;
 import groovy.lang.MissingMethodException;
-import org.codehaus.groovy.runtime.InvokerHelper;
+import org.codehaus.groovy .runtime.InvokerHelper;
 import org.h2gis.utilities.GeometryTableUtilities;
 import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.TableLocation;

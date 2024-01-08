@@ -41,10 +41,7 @@ import groovy.lang.GroovyObject;
 import groovy.lang.MissingMethodException;
 import org.h2gis.utilities.dbtypes.DBTypes;
 import org.locationtech.jts.geom.Geometry;
-import org.orbisgis.data.api.dataset.IDataSet;
-import org.orbisgis.data.api.dataset.IJdbcSpatialTable;
-import org.orbisgis.data.api.dataset.IJdbcTable;
-import org.orbisgis.data.api.dataset.ISpatialTable;
+import org.orbisgis.data.api.dataset.*;
 
 import javax.sql.DataSource;
 import java.io.File;

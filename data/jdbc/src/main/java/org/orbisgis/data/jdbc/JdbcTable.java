@@ -37,7 +37,7 @@
 package org.orbisgis.data.jdbc;
 
 import groovy.lang.*;
-import org.codehaus.groovy.runtime.InvokerHelper;
+import org.codehaus.groovy .runtime.InvokerHelper;
 import org.h2gis.functions.io.utility.IOMethods;
 import org.h2gis.utilities.GeometryMetaData;
 import org.h2gis.utilities.GeometryTableUtilities;

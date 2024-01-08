@@ -37,7 +37,7 @@
 package org.orbisgis.data;
 
 import groovy.lang.MetaClass;
-import org.codehaus.groovy.runtime.InvokerHelper;
+import org.codehaus.groovy .runtime.InvokerHelper;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

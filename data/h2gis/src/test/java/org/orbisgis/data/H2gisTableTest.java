@@ -41,8 +41,8 @@ import groovy.lang.Closure;
 import groovy.lang.MetaClass;
 import groovy.lang.MissingMethodException;
 import groovy.lang.MissingPropertyException;
-import org.codehaus.groovy.runtime.InvokerHelper;
-import org.codehaus.groovy.runtime.metaclass.MissingPropertyExceptionNoStack;
+import org.codehaus.groovy .runtime.InvokerHelper;
+import org.codehaus.groovy .runtime.metaclass.MissingPropertyExceptionNoStack;
 import org.h2.jdbc.JdbcResultSetMetaData;
 import org.h2gis.functions.factory.H2GISDBFactory;
 import org.h2gis.utilities.TableLocation;
@@ -145,7 +145,7 @@ public class H2gisTableTest {
         try {
             connection = H2GISDBFactory.createSpatialDataBase(BASE_DATABASE, true, ";AUTO_SERVER=TRUE");
             connectionLinked = H2GISDBFactory.createSpatialDataBase(LINKED_DATABASE, true,";AUTO_SERVER=TRUE");
-        } catch (SQLException | ClassNotFoundException e) {
+        } catch (SQLException e) {
             fail(e);
         }
         dataSource = H2GIS.open(connection);

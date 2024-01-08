@@ -24,13 +24,8 @@
     <!-- Dependencies -->
     <dependencies>
         <dependency>
-            <groupId>org.codehaus.groovy</groupId>
+            <groupId>org.apache.groovy</groupId>
             <artifactId>groovy</artifactId>
-            <version>${groovy-version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.codehaus.groovy</groupId>
-            <artifactId>groovy-sql</artifactId>
             <version>${groovy-version}</version>
         </dependency>
         <dependency>

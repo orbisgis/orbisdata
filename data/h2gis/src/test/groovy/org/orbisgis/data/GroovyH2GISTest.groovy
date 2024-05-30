@@ -1098,4 +1098,17 @@ class GroovyH2GISTest {
         h2GIS.print("(SELECT * FROM generate_series(0, 10000) where x > 1000 limit 10)")
         h2GIS.print("(SELECT * FROM generate_series(0, 10000))")
     }
+
+    @Test
+    void testInteporlateString() throws SQLException {
+        def h2GIS = H2GIS.open('./target/orbisgis')
+        def tableName="mytable"
+        h2GIS.execute("""
+                DROP TABLE IF EXISTS $tableName;
+                CREATE TABLE $tableName (id int, the_geom geometry(point), very_long_title_to_test_size_limits varchar);
+                INSERT INTO orbisgis VALUES (1, 'POINT(10 10)'::GEOMETRY, 'just a string a bit too long'), 
+                (2, 'POINT(1 1)'::GEOMETRY, 'another string');
+                DROP TABLE IF EXISTS $tableName;
+        """)
+    }
 }

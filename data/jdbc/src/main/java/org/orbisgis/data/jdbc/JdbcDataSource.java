@@ -470,6 +470,11 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, IRe
     }
 
     @Override
+    public boolean execute(GString gstring) throws SQLException {
+        return execute(gstring.toString());
+    }
+
+    @Override
     public boolean execute(String sql) throws SQLException {
         try {
             boolean b = super.execute(sql);

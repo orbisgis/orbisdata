@@ -753,7 +753,7 @@ public class IJdbcDataSourceTest {
             return 0;
         }
 
-        public long getRowCount(String tableName) {
+        public long getRowCount(String tableName){
             return 0;
         }
 

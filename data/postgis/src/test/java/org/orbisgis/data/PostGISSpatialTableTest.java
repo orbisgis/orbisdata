@@ -46,6 +46,7 @@ import org.orbisgis.data.api.dataset.IJdbcSpatialTable;
 import org.orbisgis.data.api.dataset.IJdbcTable;
 import org.orbisgis.data.api.dataset.ISpatialTable;
 import org.orbisgis.data.api.dataset.ITable;
+import org.orbisgis.data.api.datasource.DataException;
 import org.orbisgis.data.jdbc.JdbcSpatialTable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -130,7 +131,7 @@ public class PostGISSpatialTableTest {
 
     @Test
     @EnabledIfSystemProperty(named = "test.postgis", matches = "true")
-    void testReproject() throws SQLException {
+    void testReproject() throws SQLException, DataException {
         postGIS.execute(" DROP TABLE IF EXISTS orbisgis;" +
                 "CREATE TABLE orbisgis (id int, the_geom geometry(point, 4326));" +
                 "INSERT INTO orbisgis VALUES (1, 'SRID=4326;POINT(10 10)'::GEOMETRY), " +
@@ -162,7 +163,7 @@ public class PostGISSpatialTableTest {
 
     @Test
     @EnabledIfSystemProperty(named = "test.postgis", matches = "true")
-    void testSaveQueryInFile() throws SQLException {
+    void testSaveQueryInFile() throws SQLException, DataException {
         postGIS.execute(" DROP TABLE IF EXISTS orbisgis, query_table;" +
                 "CREATE TABLE orbisgis (id int, the_geom geometry(point, 4326));" +
                 "INSERT INTO orbisgis VALUES (1, 'SRID=4326;POINT(10 10)'::GEOMETRY), " +

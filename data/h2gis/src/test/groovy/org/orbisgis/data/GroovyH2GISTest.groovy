@@ -202,7 +202,7 @@ class GroovyH2GISTest {
                 CREATE TABLE h2gis (id int, the_geom geometry(point));
                 INSERT INTO h2gis VALUES (1, 'POINT(10 10)'::GEOMETRY), (2, 'POINT(1 1)'::GEOMETRY);
         """)
-        h2GIS.save("h2gis", "target/h2gis_imported.shp")
+        h2GIS.save("h2gis", "target/h2gis_imported.shp", true)
         h2GIS.load("target/h2gis_imported.shp", "h2gis_imported", null, false)
         def concat = ""
         h2GIS.getSpatialTable "h2gis_imported" eachRow { row -> concat += "$row.id $row.the_geom $row.geometry\n" }
@@ -217,7 +217,7 @@ class GroovyH2GISTest {
                 CREATE TABLE h2gis (id int, the_geom geometry(point));
                 INSERT INTO h2gis VALUES (1, 'POINT(10 10)'::GEOMETRY), (2, 'POINT(1 1)'::GEOMETRY);
         """)
-        h2GIS.save("h2gis", "target/h2gis_imported.shp")
+        h2GIS.save("h2gis", "target/h2gis_imported.shp", true)
         h2GIS.load("target/h2gis_imported.shp", "h2gis_imported", null, false)
         h2GIS.load("target/h2gis_imported.shp", "h2gis_imported", null, true)
         def concat = ""
@@ -233,8 +233,8 @@ class GroovyH2GISTest {
                 CREATE TABLE h2gis (id int, the_geom geometry(point));
                 INSERT INTO h2gis VALUES (1, 'POINT(10 10)'::GEOMETRY), (2, 'POINT(1 1)'::GEOMETRY);
         """)
-        h2GIS.save("h2gis", "target/h2gis_imported.shp")
-        h2GIS.load("target/h2gis_imported.shp", "h2gis_imported")
+        h2GIS.save("h2gis", "target/h2gis_imported.shp", true)
+        h2GIS.load("target/h2gis_imported.shp", "h2gis_imported", true)
         def concat = ""
         h2GIS.getSpatialTable "h2gis_imported" eachRow { row -> concat += "$row.id $row.the_geom $row.geometry\n" }
         assertEquals("1 POINT (10 10) POINT (10 10)\n2 POINT (1 1) POINT (1 1)\n", concat)
@@ -248,7 +248,7 @@ class GroovyH2GISTest {
                 CREATE TABLE h2gis (id int, the_geom geometry(point));
                 INSERT INTO h2gis VALUES (1, 'POINT(10 10)'::GEOMETRY), (2, 'POINT(1 1)'::GEOMETRY);
         """)
-        h2GIS.save("h2gis", "target/h2gis_imported.shp")
+        h2GIS.save("h2gis", "target/h2gis_imported.shp", true)
         h2GIS.load("target/h2gis_imported.shp")
         def concat = ""
         h2GIS.getSpatialTable "h2gis_imported" eachRow { row -> concat += "$row.id $row.the_geom $row.geometry\n" }
@@ -263,9 +263,9 @@ class GroovyH2GISTest {
                 CREATE TABLE h2gis (id int, the_geom geometry(point));
                 INSERT INTO h2gis VALUES (1, 'POINT(10 10)'::GEOMETRY), (2, 'POINT(1 1)'::GEOMETRY);
         """)
-        h2GIS.save("h2gis", "target/h2gis_imported.geojson")
-        h2GIS.load("target/h2gis_imported.geojson")
-        h2GIS.save("h2gis_imported", "target/h2gis_imported.shp")
+        h2GIS.save("h2gis", "target/h2gis_imported.geojson", true)
+        h2GIS.load("target/h2gis_imported.geojson", true)
+        h2GIS.save("h2gis_imported", "target/h2gis_imported.shp", true)
         h2GIS.load("target/h2gis_imported.shp", true)
         def concat = ""
         h2GIS.getSpatialTable "h2gis_imported" eachRow { row -> concat += "$row.id $row.the_geom $row.geometry\n" }
@@ -280,8 +280,8 @@ class GroovyH2GISTest {
                 CREATE TABLE h2gis (id int, the_geom geometry(point));
                 INSERT INTO h2gis VALUES (1, 'POINT(10 10)'::GEOMETRY), (2, 'POINT(1 1)'::GEOMETRY);
         """)
-        h2GIS.save("h2gis", "target/h2gis_imported.csv")
-        h2GIS.load("target/h2gis_imported.csv")
+        h2GIS.save("h2gis", "target/h2gis_imported.csv", true)
+        h2GIS.load("target/h2gis_imported.csv", true)
         def concat = ""
         h2GIS.getTable "h2gis_imported" eachRow { row ->
             concat += "$row.id $row.the_geom\n"
@@ -340,9 +340,9 @@ class GroovyH2GISTest {
                 INSERT INTO externalTable VALUES (1, 'POINT(10 10)'::GEOMETRY), (2, 'POINT(1 1)'::GEOMETRY);
         """)
         def h2GIS = H2GIS.open([databaseName: './target/loadH2GIS'])
-        assertNull(h2GIS.load(h2External, 'SELECT the_geom from externalTable limit 1', true))
-        assertNull(h2GIS.load(h2External, 'SELECT the_geom from externalTable limit 1'))
-        assertNull( h2GIS.load(h2External, 'SELECT the_geom from externalTable limit 1', "QUERY_TABLE", true))
+        assertThrows(org.orbisgis.data.api.datasource.DataException.class, ()-> h2GIS.load(h2External, 'SELECT the_geom from externalTable limit 1', true))
+        assertThrows(org.orbisgis.data.api.datasource.DataException.class,()-> h2GIS.load(h2External, 'SELECT the_geom from externalTable limit 1'))
+        assertThrows(org.orbisgis.data.api.datasource.DataException.class, ()->  h2GIS.load(h2External, 'SELECT the_geom from externalTable limit 1', "QUERY_TABLE", true))
         h2GIS.load(h2External, '(SELECT the_geom from externalTable limit 1)', "QUERY_TABLE", true)
         assertEquals(1, h2GIS.getSpatialTable("QUERY_TABLE").getRowCount())
         assertEquals(1, h2GIS.getSpatialTable("QUERY_TABLE").getColumnCount())
@@ -357,7 +357,7 @@ class GroovyH2GISTest {
                 CREATE TABLE externalTable (id int, the_geom geometry(point));
                 INSERT INTO externalTable VALUES (1, 'POINT(10 10)'::GEOMETRY), (2, 'POINT(1 1)'::GEOMETRY);
         """)
-        h2GIS.save("externalTable", 'target/externalFile.shp')
+        h2GIS.save("externalTable", 'target/externalFile.shp', true)
         h2GIS.link('target/externalFile.shp', 'externalimported', true)
         assertTrue(h2GIS.tableNames.contains("SECONDH2GIS.PUBLIC.EXTERNALIMPORTED"))
     }
@@ -370,7 +370,7 @@ class GroovyH2GISTest {
                 CREATE TABLE externalTable (id int, the_geom geometry(point));
                 INSERT INTO externalTable VALUES (1, 'POINT(10 10)'::GEOMETRY), (2, 'POINT(1 1)'::GEOMETRY);
         """)
-        h2GIS.save("externalTable", 'target/externalFile.shp')
+        h2GIS.save("externalTable", 'target/externalFile.shp', true)
         def table = h2GIS.getTable(h2GIS.link('target/externalFile.shp', 'super', true))
         assertEquals("PK,THE_GEOM,ID", table.columns.join(","))
     }
@@ -383,7 +383,7 @@ class GroovyH2GISTest {
                 CREATE TABLE externalTable (id int, the_geom geometry(point));
                 INSERT INTO externalTable VALUES (1, 'POINT(10 10)'::GEOMETRY), (2, 'POINT(1 1)'::GEOMETRY);
         """)
-        h2GIS.save("externalTable", 'target/externalFile.shp')
+        h2GIS.save("externalTable", 'target/externalFile.shp', true)
         def table = h2GIS.getTable(h2GIS.link('target/externalFile.shp', 'super', true))
         table.save('target/supersave.shp')
         h2GIS.load('target/supersave.shp', true)

@@ -53,6 +53,7 @@ import org.h2gis.utilities.dbtypes.DBTypes;
 import org.locationtech.jts.geom.*;
 import org.orbisgis.commons.printer.Ascii;
 import org.orbisgis.data.api.dataset.IJdbcTable;
+import org.orbisgis.data.api.datasource.DataException;
 import org.orbisgis.data.api.datasource.IDataSourceLocation;
 import org.orbisgis.data.api.datasource.IJdbcDataSource;
 import org.orbisgis.data.api.dsl.IResultSetBuilder;
@@ -632,12 +633,12 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, IRe
     }
 
     @Override
-    public boolean save(String tableName, String filePath) {
+    public boolean save(String tableName, String filePath) throws DataException{
         return save(tableName, filePath, null);
     }
 
     @Override
-    public boolean save(String tableName, String filePath, boolean delete) {
+    public boolean save(String tableName, String filePath, boolean delete) throws DataException{
         if (getConnection() == null) {
             LOGGER.error("No connection, cannot save.");
             return false;
@@ -649,13 +650,12 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, IRe
             ioMethods.exportToFile(getConnection(), tableName, filePath, null, delete);
             return true;
         } catch (SQLException e) {
-            LOGGER.error("Cannot save the file : " + filePath, e);
+            throw new DataException("Cannot save the file : " + filePath, e);
         }
-        return false;
     }
 
     @Override
-    public boolean save(String tableName, String filePath, String encoding) {
+    public boolean save(String tableName, String filePath, String encoding) throws DataException{
         if (getConnection() == null) {
             LOGGER.error("No connection, cannot save.");
             return false;
@@ -667,43 +667,41 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, IRe
             ioMethods.exportToFile(getConnection(), tableName, filePath, encoding, false);
             return true;
         } catch (SQLException e) {
-            LOGGER.error("Cannot save the file : " + filePath, e);
+            throw new DataException("Cannot save the file : " + filePath + "\n" + e.getLocalizedMessage());
         }
-        return false;
     }
 
     @Override
-    public boolean save(String tableName, URL url) {
+    public boolean save(String tableName, URL url) throws DataException{
         return save(tableName, url, null);
     }
 
     @Override
-    public boolean save(String tableName, URL url, String encoding) {
+    public boolean save(String tableName, URL url, String encoding) throws DataException{
         try {
             return save(tableName, url.toURI(), encoding);
         } catch (URISyntaxException e) {
-            LOGGER.error("Unable to get the file from the URL '" + url + "'\n" + e.getLocalizedMessage());
+            throw new DataException("Unable to get the file from the URL '" + url + "'\n" + e.getLocalizedMessage());
         }
-        return false;
     }
 
     @Override
-    public boolean save(String tableName, URI uri) {
+    public boolean save(String tableName, URI uri) throws DataException{
         return save(tableName, uri, null);
     }
 
     @Override
-    public boolean save(String tableName, URI uri, String encoding) {
+    public boolean save(String tableName, URI uri, String encoding) throws DataException{
         return save(tableName, new File(uri), encoding);
     }
 
     @Override
-    public boolean save(String tableName, File file) {
+    public boolean save(String tableName, File file) throws DataException{
         return save(tableName, file, null);
     }
 
     @Override
-    public boolean save(String tableName, File file, String encoding) {
+    public boolean save(String tableName, File file, String encoding) throws DataException{
         return save(tableName, file.getAbsolutePath(), encoding);
     }
 
@@ -719,121 +717,115 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, IRe
     }
 
     @Override
-    public String link(String filePath, String tableName, boolean delete) {
+    public String link(String filePath, String tableName, boolean delete) throws DataException{
         String formatedTableName = TableLocation.parse(tableName, getDataBaseType()).toString();
         try {
             IOMethods.linkedFile(getConnection(), filePath, tableName, delete);
             return formatedTableName;
         } catch (SQLException e) {
-            LOGGER.error("Cannot link the file : " + filePath);
+            throw new DataException("Cannot link the file : " + filePath);
         }
-        return formatedTableName;
     }
 
     @Override
-    public String link(String filePath, String tableName) {
+    public String link(String filePath, String tableName) throws DataException{
         return link(filePath, tableName, false);
     }
 
     @Override
-    public String link(String filePath, boolean delete) {
+    public String link(String filePath, boolean delete) throws DataException{
         String tableName = getTableNameFromPath(filePath);
         if (Pattern.compile("^[a-zA-Z][a-zA-Z0-9_]*$").matcher(tableName).find()) {
             return link(filePath, tableName, delete);
         } else {
-            LOGGER.error("The file name contains unsupported characters");
+            throw new DataException("The file name contains unsupported characters");
         }
-        return null;
     }
 
     @Override
-    public String link(String filePath) {
+    public String link(String filePath) throws DataException{
         return link(filePath, false);
     }
 
     @Override
-    public String link(URL url, String tableName, boolean delete) {
+    public String link(URL url, String tableName, boolean delete) throws DataException{
         try {
             return link(url.toURI(), tableName, delete);
         } catch (URISyntaxException e) {
-            LOGGER.error("Unable to get the file from the URL '" + url + "'\n" + e.getLocalizedMessage());
+            throw  new DataException("Unable to get the file from the URL '" + url + "'\n" + e.getLocalizedMessage());
         }
-        return null;
     }
 
     @Override
-    public String link(URL url, String tableName) {
+    public String link(URL url, String tableName) throws DataException{
         try {
             return link(url.toURI(), tableName);
         } catch (URISyntaxException e) {
-            LOGGER.error("Unable to get the file from the URL '" + url + "'\n" + e.getLocalizedMessage());
+            throw new DataException("Unable to get the file from the URL '" + url + "'\n" + e.getLocalizedMessage());
         }
-        return null;
     }
 
     @Override
-    public String link(URL url, boolean delete) {
+    public String link(URL url, boolean delete) throws DataException{
         try {
             return link(url.toURI(), delete);
         } catch (URISyntaxException e) {
-            LOGGER.error("Unable to get the file from the URL '" + url + "'\n" + e.getLocalizedMessage());
+            throw new DataException("Unable to get the file from the URL '" + url + "'\n" + e.getLocalizedMessage());
         }
-        return null;
     }
 
     @Override
-    public String link(URL url) {
+    public String link(URL url) throws DataException{
         try {
             return link(url.toURI());
         } catch (URISyntaxException e) {
-            LOGGER.error("Unable to get the file from the URL '" + url + "'\n" + e.getLocalizedMessage());
+            throw new DataException("Unable to get the file from the URL '" + url + "'\n" + e.getLocalizedMessage());
         }
-        return null;
     }
 
     @Override
-    public String link(URI uri, String tableName, boolean delete) {
+    public String link(URI uri, String tableName, boolean delete) throws DataException{
         return link(new File(uri), tableName, delete);
     }
 
     @Override
-    public String link(URI uri, String tableName) {
+    public String link(URI uri, String tableName) throws DataException{
         return link(new File(uri), tableName);
     }
 
     @Override
-    public String link(URI uri, boolean delete) {
+    public String link(URI uri, boolean delete) throws DataException{
         return link(new File(uri), delete);
     }
 
     @Override
-    public String link(URI uri) {
+    public String link(URI uri) throws DataException{
         return link(new File(uri));
     }
 
     @Override
-    public String link(File file, String tableName, boolean delete) {
+    public String link(File file, String tableName, boolean delete) throws DataException{
         return link(file.getAbsolutePath(), tableName, delete);
     }
 
     @Override
-    public String link(File file, String tableName) {
+    public String link(File file, String tableName) throws DataException{
         return link(file.getAbsolutePath(), tableName);
     }
 
     @Override
-    public String link(File file, boolean delete) {
+    public String link(File file, boolean delete) throws DataException{
         return link(file.getAbsolutePath(), delete);
     }
 
     @Override
-    public String link(File file) {
+    public String link(File file) throws DataException{
         return link(file.getAbsolutePath());
     }
 
     @Override
     public String load(String filePath, String tableName, String encoding,
-                       boolean delete) {
+                       boolean delete) throws DataException {
         String formatedTableName = TableLocation.parse(tableName, getDataBaseType()).toString();
         try {
             if (ioMethods == null) {
@@ -842,28 +834,27 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, IRe
             ioMethods.importFile(getConnection(), filePath, tableName, encoding, delete);
             return formatedTableName;
         } catch (SQLException e) {
-            LOGGER.error("Cannot import the file : " + filePath);
+            throw new DataException("Cannot import the file : " + filePath, e);
         }
-        return null;
     }
 
     @Override
-    public String load(String filePath, String tableName) {
+    public String load(String filePath, String tableName) throws DataException  {
         return load(filePath, tableName, null, false);
     }
 
     @Override
-    public String load(String filePath, String tableName, boolean delete) {
+    public String load(String filePath, String tableName, boolean delete) throws DataException {
         return load(filePath, tableName, null, delete);
     }
 
     @Override
-    public String load(String filePath) {
+    public String load(String filePath) throws DataException{
         return load(filePath, false);
     }
 
     @Override
-    public String load(String filePath, boolean delete) {
+    public String load(String filePath, boolean delete) throws DataException{
         String tableName = getTableNameFromPath(filePath).replace(".", "_");
         if (Pattern.compile("^[a-zA-Z][a-zA-Z0-9_]*$").matcher(tableName).find()) {
             return load(filePath, tableName, null, delete);
@@ -874,145 +865,137 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, IRe
     }
 
     @Override
-    public String load(URL url, String tableName) {
+    public String load(URL url, String tableName) throws DataException  {
         try {
             return load(url.toURI(), tableName, null, false);
         } catch (URISyntaxException e) {
-            LOGGER.error("Unable to get the file from the URL '" + url + "'\n" + e.getLocalizedMessage());
+            throw new DataException("Unable to get the file from the URL '" + url + "'\n" + e.getLocalizedMessage());
         }
-        return null;
     }
 
     @Override
-    public String load(URL url, String tableName, boolean delete) {
+    public String load(URL url, String tableName, boolean delete) throws DataException  {
         try {
             return load(url.toURI(), tableName, null, delete);
         } catch (URISyntaxException e) {
-            LOGGER.error("Unable to get the file from the URL '" + url + "'\n" + e.getLocalizedMessage());
+            throw new DataException("Unable to get the file from the URL '" + url + "'\n" + e.getLocalizedMessage());
         }
-        return null;
     }
 
     @Override
-    public String load(URL url) {
+    public String load(URL url) throws DataException  {
         try {
             return load(url.toURI(), false);
         } catch (URISyntaxException e) {
-            LOGGER.error("Unable to get the file from the URL '" + url + "'\n" + e.getLocalizedMessage());
+            throw new DataException("Unable to get the file from the URL '" + url + "'\n" + e.getLocalizedMessage());
         }
-        return null;
     }
 
     @Override
-    public String load(URL url, boolean delete) {
+    public String load(URL url, boolean delete) throws DataException {
         try {
             return load(url.toURI(), delete);
         } catch (URISyntaxException e) {
-            LOGGER.error("Unable to get the file from the URL '" + url + "'\n" + e.getLocalizedMessage());
+            throw new DataException("Unable to get the file from the URL '" + url + "'\n" + e.getLocalizedMessage());
         }
-        return null;
     }
 
     @Override
-    public String load(URL url, String tableName, String encoding, boolean delete) {
+    public String load(URL url, String tableName, String encoding, boolean delete) throws DataException {
         try {
             return load(url.toURI(), tableName, encoding, delete);
         } catch (URISyntaxException e) {
-            LOGGER.error("Unable to get the file from the URL '" + url + "'\n" + e.getLocalizedMessage());
+            throw new DataException("Unable to get the file from the URL '" + url + "'\n" + e.getLocalizedMessage());
         }
-        return null;
     }
 
     @Override
-    public String load(URI uri, String tableName) {
+    public String load(URI uri, String tableName) throws DataException {
         return load(new File(uri), tableName, null, false);
     }
 
     @Override
-    public String load(URI uri, String tableName, boolean delete) {
+    public String load(URI uri, String tableName, boolean delete) throws DataException{
         return load(new File(uri), tableName, null, delete);
     }
 
     @Override
-    public String load(URI uri) {
+    public String load(URI uri) throws DataException{
         return load(new File(uri), false);
     }
 
     @Override
-    public String load(URI uri, boolean delete) {
+    public String load(URI uri, boolean delete) throws DataException{
         return load(new File(uri), delete);
     }
 
     @Override
-    public String load(URI uri, String tableName, String encoding, boolean delete) {
+    public String load(URI uri, String tableName, String encoding, boolean delete) throws DataException{
         return load(new File(uri), tableName, encoding, delete);
     }
 
     @Override
-    public String load(File file, String tableName) {
+    public String load(File file, String tableName) throws DataException{
         return load(file.getAbsolutePath(), tableName, null, false);
     }
 
     @Override
-    public String load(File file, String tableName, boolean delete) {
+    public String load(File file, String tableName, boolean delete) throws DataException{
         return load(file.getAbsolutePath(), tableName, null, delete);
     }
 
     @Override
-    public String load(File file) {
+    public String load(File file) throws DataException{
         return load(file.getAbsolutePath(), false);
     }
 
     @Override
-    public String load(File file, boolean delete) {
+    public String load(File file, boolean delete) throws DataException{
         return load(file.getAbsolutePath(), delete);
     }
 
     @Override
-    public String load(File file, String tableName, String encoding, boolean delete) {
+    public String load(File file, String tableName, String encoding, boolean delete) throws DataException{
         return load(file.getAbsolutePath(), tableName, encoding, delete);
     }
 
     @Override
-    public String load(IJdbcDataSource dataSource, String inputTableName, String outputTableName, boolean deleteIfExists) {
+    public String load(IJdbcDataSource dataSource, String inputTableName, String outputTableName, boolean deleteIfExists) throws DataException{
         return load(dataSource, inputTableName, outputTableName, deleteIfExists, 1000);
     }
 
     @Override
-    public String load(IJdbcDataSource dataSource, String inputTableName, String outputTableName) {
+    public String load(IJdbcDataSource dataSource, String inputTableName, String outputTableName) throws DataException{
         return load(dataSource, inputTableName, outputTableName, false, 1000);
     }
 
     @Override
-    public String load(IJdbcDataSource dataSource, String inputTableName, boolean deleteIfExists) {
+    public String load(IJdbcDataSource dataSource, String inputTableName, boolean deleteIfExists) throws DataException{
         try {
             IOMethods.exportToDataBase(dataSource.getConnection(), inputTableName, getConnection(), inputTableName, deleteIfExists ? -1 : 0, 1000);
             TableLocation targetTableLocation = TableLocation.parse(inputTableName, this.getDataBaseType());
             return targetTableLocation.toString();
         } catch (SQLException e) {
-            LOGGER.error("Unable to load the table " + inputTableName + " from " + dataSource.getLocation().toString());
+            throw new DataException("Unable to load the table " + inputTableName + " from " + dataSource.getLocation().toString());
         }
-        return null;
     }
 
     @Override
-    public String load(IJdbcDataSource dataSource, String inputTableName) {
+    public String load(IJdbcDataSource dataSource, String inputTableName) throws DataException{
         try {
             return IOMethods.exportToDataBase(dataSource.getConnection(), inputTableName, getConnection(), inputTableName, 0, 1000);
         } catch (SQLException e) {
-            LOGGER.error("Unable to load the table " + inputTableName + " from " + dataSource.getLocation().toString());
+            throw new DataException("Unable to load the table " + inputTableName + " from " + dataSource.getLocation().toString());
         }
-        return null;
     }
 
     @Override
-    public String load(IJdbcDataSource dataSource, String inputTableName, String outputTableName, boolean deleteIfExists, int batchSize) {
+    public String load(IJdbcDataSource dataSource, String inputTableName, String outputTableName, boolean deleteIfExists, int batchSize) throws DataException{
         try {
             return IOMethods.exportToDataBase(dataSource.getConnection(), inputTableName, getConnection(), outputTableName, deleteIfExists ? -1 : 0, 1000);
         } catch (SQLException e) {
-            LOGGER.error("Unable to load the table " + inputTableName + " from " + dataSource.getLocation().toString());
+            throw new DataException("Unable to load the table " + inputTableName + " from " + dataSource.getLocation().toString());
         }
-        return null;
     }
 
     @Override

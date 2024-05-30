@@ -45,6 +45,7 @@ import org.orbisgis.data.api.dataset.IJdbcSpatialTable;
 import org.orbisgis.data.api.dataset.IJdbcTable;
 import org.orbisgis.data.api.dataset.ISpatialTable;
 import org.orbisgis.data.api.dataset.ITable;
+import org.orbisgis.data.api.datasource.DataException;
 import org.orbisgis.data.jdbc.JdbcSpatialTable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -116,7 +117,7 @@ public class H2gisSpatialTableTest {
     }
 
     @Test
-    void testReproject() throws SQLException {
+    void testReproject() throws SQLException, DataException {
         new File("target/reprojected_table.shp").delete();
         H2GIS dataSource = H2GIS.open("./target/test");
         dataSource.execute(" DROP TABLE IF EXISTS orbisgis;" +
@@ -150,7 +151,7 @@ public class H2gisSpatialTableTest {
     }
 
     @Test
-    void testSaveQueryInFile() throws SQLException {
+    void testSaveQueryInFile() throws SQLException, DataException {
         new File("target/query_table.shp").delete();
         H2GIS dataSource = H2GIS.open("./target/test");
         dataSource.execute(" DROP TABLE IF EXISTS orbisgis, query_table;" +

@@ -144,7 +144,7 @@ class GroovyPostGISTest {
                 CREATE TABLE testtable (id int, the_geom geometry(point, 0));
                 INSERT INTO testtable VALUES (1, 'POINT(10 10)'::GEOMETRY), (2, 'POINT(1 1)'::GEOMETRY);
         """)
-        postGIS.save("testtable", "target/postgis_imported.shp")
+        postGIS.save("testtable", "target/postgis_imported.shp", true)
         postGIS.load("target/postgis_imported.shp", "postgis_imported", null, false)
         def concat = ""
         postGIS.getSpatialTable "postgis_imported" eachRow { row -> concat += "$row.id $row.the_geom $row.geometry\n" }
@@ -160,7 +160,7 @@ class GroovyPostGISTest {
                 CREATE TABLE testtable (id int, the_geom geometry(point, 0));
                 INSERT INTO testtable VALUES (1, 'POINT(10 10)'::GEOMETRY), (2, 'POINT(1 1)'::GEOMETRY);
         """)
-        postGIS.save("testtable", "target/postgis_imported.shp")
+        postGIS.save("testtable", "target/postgis_imported.shp", true)
         postGIS.load("target/postgis_imported.shp", "postgis_imported", null, false)
         postGIS.load("target/postgis_imported.shp", "postgis_imported", null, true)
         def concat = ""
@@ -177,8 +177,8 @@ class GroovyPostGISTest {
                 CREATE TABLE testtable (id int, the_geom geometry(point, 0));
                 INSERT INTO testtable VALUES (1, 'POINT(10 10)'::GEOMETRY), (2, 'POINT(1 1)'::GEOMETRY);
         """)
-        postGIS.save("testtable", "target/postgis_imported.shp")
-        postGIS.load("target/postgis_imported.shp", "postgis_imported")
+        postGIS.save("testtable", "target/postgis_imported.shp",true)
+        postGIS.load("target/postgis_imported.shp", "postgis_imported",true)
         def concat = ""
         postGIS.getSpatialTable "postgis_imported" eachRow { row -> concat += "$row.id $row.the_geom $row.geometry\n" }
         assertEquals("1 POINT (10 10) POINT (10 10)\n2 POINT (1 1) POINT (1 1)\n", concat)
@@ -193,8 +193,8 @@ class GroovyPostGISTest {
                 CREATE TABLE testtable (id int, the_geom geometry(point, 0));
                 INSERT INTO testtable VALUES (1, 'POINT(10 10)'::GEOMETRY), (2, 'POINT(1 1)'::GEOMETRY);
         """)
-        postGIS.save("testtable", "target/postgis_imported.shp")
-        postGIS.load("target/postgis_imported.shp")
+        postGIS.save("testtable", "target/postgis_imported.shp", true)
+        postGIS.load("target/postgis_imported.shp",true)
         def concat = ""
         postGIS.getSpatialTable "postgis_imported" eachRow { row -> concat += "$row.id $row.the_geom $row.geometry\n" }
         assertEquals("1 POINT (10 10) POINT (10 10)\n2 POINT (1 1) POINT (1 1)\n", concat)
@@ -209,9 +209,9 @@ class GroovyPostGISTest {
                 CREATE TABLE testtable (id int, the_geom geometry(point, 0));
                 INSERT INTO testtable VALUES (1, 'POINT(10 10)'::GEOMETRY), (2, 'POINT(1 1)'::GEOMETRY);
         """)
-        postGIS.save("testtable", "target/postgis_imported.geojson")
-        postGIS.load("target/postgis_imported.geojson")
-        postGIS.save("postgis_imported", "target/postgis_imported.shp")
+        postGIS.save("testtable", "target/postgis_imported.geojson", true)
+        postGIS.load("target/postgis_imported.geojson", true)
+        postGIS.save("postgis_imported", "target/postgis_imported.shp", true)
         postGIS.load("target/postgis_imported.shp", true)
         def concat = ""
         postGIS.getSpatialTable "postgis_imported" eachRow { row -> concat += "$row.id $row.the_geom $row.geometry\n" }
@@ -228,7 +228,7 @@ class GroovyPostGISTest {
                 INSERT INTO testtable VALUES (1, 'POINT(10 10)'::GEOMETRY), (2, 'POINT(1 1)'::GEOMETRY);
         """)
         postGIS.save("testtable", "target/postgis_imported.csv", true)
-        postGIS.load("target/postgis_imported.csv")
+        postGIS.load("target/postgis_imported.csv", true)
         def concat = ""
         postGIS.getTable "postgis_imported" eachRow { row -> concat += "$row.id $row.the_geom\n" }
         assertEquals("1 POINT (10 10)\n2 POINT (1 1)\n", concat)
@@ -256,8 +256,8 @@ class GroovyPostGISTest {
                 CREATE TABLE testtable (id int, the_geom geometry(point, 0));
                 INSERT INTO testtable VALUES (1, 'POINT(10 10)'::GEOMETRY), (2, 'POINT(1 1)'::GEOMETRY);
         """)
-        postGIS.getSpatialTable("testtable").save("target/postgis_saved.geojson")
-        postGIS.load("target/postgis_saved.geojson")
+        postGIS.getSpatialTable("testtable").save("target/postgis_saved.geojson", true)
+        postGIS.load("target/postgis_saved.geojson", true)
         def concat = ""
         postGIS.getSpatialTable "postgis_saved" eachRow { row ->
             concat += "$row.id $row.the_geom $row.geometry\n"

@@ -1106,7 +1106,7 @@ class GroovyH2GISTest {
         h2GIS.execute("""
                 DROP TABLE IF EXISTS $tableName;
                 CREATE TABLE $tableName (id int, the_geom geometry(point), very_long_title_to_test_size_limits varchar);
-                INSERT INTO orbisgis VALUES (1, 'POINT(10 10)'::GEOMETRY, 'just a string a bit too long'), 
+                INSERT INTO $tableName VALUES (1, 'POINT(10 10)'::GEOMETRY, 'just a string a bit too long'), 
                 (2, 'POINT(1 1)'::GEOMETRY, 'another string');
                 DROP TABLE IF EXISTS $tableName;
         """)

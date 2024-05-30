@@ -469,7 +469,7 @@ public interface IJdbcDataSource extends IDataSource<ResultSet>, GroovyObject, D
      * @return The name of the loaded table, formatted according this datasource
      * Null is the table cannot be loaded.
      */
-    String load(String filePath);
+    String load(String filePath) throws DataException;
 
     /**
      * Load a file into the {@link IDataSource}.
@@ -479,7 +479,7 @@ public interface IJdbcDataSource extends IDataSource<ResultSet>, GroovyObject, D
      * @return The name of the loaded table, formatted according this datasource
      * Null is the table cannot be loaded.
      */
-    String load(String filePath, boolean delete);
+    String load(String filePath, boolean delete) throws DataException;
 
     /**
      * Load a file to the {@link IDataSource}.
@@ -489,7 +489,7 @@ public interface IJdbcDataSource extends IDataSource<ResultSet>, GroovyObject, D
      * @return The name of the loaded table, formatted according this datasource
      * Null is the table cannot be loaded.
      */
-    String load(String filePath, String dataSetId);
+    String load(String filePath, String dataSetId) throws DataException;
 
     /**
      * Load a file to the {@link IDataSource}.
@@ -500,7 +500,7 @@ public interface IJdbcDataSource extends IDataSource<ResultSet>, GroovyObject, D
      * @return The name of the loaded table, formatted according this datasource
      * Null is the table cannot be loaded.
      */
-    String load(String filePath, String dataSetId, boolean delete);
+    String load(String filePath, String dataSetId, boolean delete) throws DataException;
 
     /**
      * Load a file to the {@link IDataSource}.
@@ -512,7 +512,7 @@ public interface IJdbcDataSource extends IDataSource<ResultSet>, GroovyObject, D
      * @return The name of the loaded table, formatted according this datasource
      * Null is the table cannot be loaded.
      */
-    String load(String filePath, String dataSetId,String encoding, boolean delete);
+    String load(String filePath, String dataSetId,String encoding, boolean delete) throws DataException;
 
     /**
      * Load a file into the {@link IDataSource}.
@@ -521,7 +521,7 @@ public interface IJdbcDataSource extends IDataSource<ResultSet>, GroovyObject, D
      * @return The name of the loaded table, formatted according this datasource
      * Null is the table cannot be loaded.
      */
-    String load(URL url);
+    String load(URL url) throws DataException;
 
     /**
      * Load a file into the {@link IDataSource}.
@@ -531,7 +531,7 @@ public interface IJdbcDataSource extends IDataSource<ResultSet>, GroovyObject, D
      * @return The name of the loaded table, formatted according this datasource
      * Null is the table cannot be loaded.
      */
-    String load(URL url, boolean delete);
+    String load(URL url, boolean delete) throws DataException;
 
     /**
      * Load a file to the {@link IDataSource}.
@@ -541,7 +541,7 @@ public interface IJdbcDataSource extends IDataSource<ResultSet>, GroovyObject, D
      * @return The name of the loaded table, formatted according this datasource
      * Null is the table cannot be loaded.
      */
-    String load(URL url, String dataSetId);
+    String load(URL url, String dataSetId) throws DataException;
 
     /**
      * Load a file to the {@link IDataSource}.
@@ -552,7 +552,7 @@ public interface IJdbcDataSource extends IDataSource<ResultSet>, GroovyObject, D
      * @return The name of the loaded table, formatted according this datasource
      * Null is the table cannot be loaded.
      */
-    String load(URL url, String dataSetId, boolean delete);
+    String load(URL url, String dataSetId, boolean delete) throws DataException;
 
     /**
      * Load a file to the {@link IDataSource}.
@@ -564,7 +564,7 @@ public interface IJdbcDataSource extends IDataSource<ResultSet>, GroovyObject, D
      * @return The name of the loaded table, formatted according this datasource
      * Null is the table cannot be loaded.
      */
-    String load(URL url, String dataSetId,String encoding, boolean delete);
+    String load(URL url, String dataSetId,String encoding, boolean delete) throws DataException;
 
     /**
      * Load a file into the {@link IDataSource}.
@@ -573,7 +573,7 @@ public interface IJdbcDataSource extends IDataSource<ResultSet>, GroovyObject, D
      * @return The name of the loaded table, formatted according this datasource
      * Null is the table cannot be loaded.
      */
-    String load(URI uri);
+    String load(URI uri) throws DataException;
 
     /**
      * Load a file into the {@link IDataSource}.
@@ -583,7 +583,7 @@ public interface IJdbcDataSource extends IDataSource<ResultSet>, GroovyObject, D
      * @return The name of the loaded table, formatted according this datasource
      * Null is the table cannot be loaded.
      */
-    String load(URI uri, boolean delete);
+    String load(URI uri, boolean delete) throws DataException;
 
     /**
      * Load a file to the {@link IDataSource}.
@@ -593,7 +593,7 @@ public interface IJdbcDataSource extends IDataSource<ResultSet>, GroovyObject, D
      * @return The name of the loaded table, formatted according this datasource
      * Null is the table cannot be loaded.
      */
-    String load(URI uri, String dataSetId);
+    String load(URI uri, String dataSetId) throws DataException;
 
     /**
      * Load a file to the {@link IDataSource}.
@@ -604,7 +604,7 @@ public interface IJdbcDataSource extends IDataSource<ResultSet>, GroovyObject, D
      * @return The name of the loaded table, formatted according this datasource
      * Null is the table cannot be loaded.
      */
-    String load(URI uri, String dataSetId, boolean delete);
+    String load(URI uri, String dataSetId, boolean delete) throws DataException;
 
     /**
      * Load a file to the {@link IDataSource}.
@@ -616,7 +616,7 @@ public interface IJdbcDataSource extends IDataSource<ResultSet>, GroovyObject, D
      * @return The name of the loaded table, formatted according this datasource
      * Null is the table cannot be loaded.
      */
-    String load(URI uri, String dataSetId,String encoding, boolean delete);
+    String load(URI uri, String dataSetId,String encoding, boolean delete) throws DataException;
 
     /**
      * Load a file into the {@link IDataSource}.
@@ -625,7 +625,7 @@ public interface IJdbcDataSource extends IDataSource<ResultSet>, GroovyObject, D
      * @return The name of the loaded table, formatted according this datasource
      * Null is the table cannot be loaded.
      */
-    String load(File file);
+    String load(File file) throws DataException;
 
     /**
      * Load a file into the {@link IDataSource}.
@@ -635,7 +635,7 @@ public interface IJdbcDataSource extends IDataSource<ResultSet>, GroovyObject, D
      * @return The name of the loaded table, formatted according this datasource
      * Null is the table cannot be loaded.
      */
-    String load(File file, boolean delete);
+    String load(File file, boolean delete) throws DataException;
 
     /**
      * Load a file to the {@link IDataSource}.
@@ -645,7 +645,7 @@ public interface IJdbcDataSource extends IDataSource<ResultSet>, GroovyObject, D
      * @return The name of the loaded table, formatted according this datasource
      * Null is the table cannot be loaded.
      */
-    String load(File file, String dataSetId);
+    String load(File file, String dataSetId) throws DataException;
 
     /**
      * Load a file to the {@link IDataSource}.
@@ -656,7 +656,7 @@ public interface IJdbcDataSource extends IDataSource<ResultSet>, GroovyObject, D
      * @return The name of the loaded table, formatted according this datasource
      * Null is the table cannot be loaded.
      */
-    String load(File file, String dataSetId, boolean delete);
+    String load(File file, String dataSetId, boolean delete) throws DataException;
 
     /**
      * Load a file to the {@link IDataSource}.
@@ -668,7 +668,7 @@ public interface IJdbcDataSource extends IDataSource<ResultSet>, GroovyObject, D
      * @return The name of the loaded table, formatted according this datasource
      * Null is the table cannot be loaded.
      */
-    String load(File file, String dataSetId,String encoding, boolean delete);
+    String load(File file, String dataSetId,String encoding, boolean delete) throws DataException;
 
     /**
      * Load a table from another {@link IDataSource}.
@@ -680,7 +680,7 @@ public interface IJdbcDataSource extends IDataSource<ResultSet>, GroovyObject, D
      * Null is the table cannot be loaded.
      */
     String load(IJdbcDataSource dataSource, String inputTableName,
-                boolean deleteIfExists);
+                boolean deleteIfExists) throws DataException;
 
     /**
      * Load a table from another {@link IDataSource}.
@@ -692,7 +692,7 @@ public interface IJdbcDataSource extends IDataSource<ResultSet>, GroovyObject, D
      * Null is the table cannot be loaded.
      */
     String load(IJdbcDataSource dataSource, String inputTableName,
-                String outputTableName);
+                String outputTableName) throws DataException;
 
     /**
      * Load a table from another {@link IDataSource}.
@@ -702,7 +702,7 @@ public interface IJdbcDataSource extends IDataSource<ResultSet>, GroovyObject, D
      * @return The name of the loaded table, formatted according this datasource
      * Null is the table cannot be loaded.
      */
-    String load(IJdbcDataSource dataSource, String inputTableName);
+    String load(IJdbcDataSource dataSource, String inputTableName) throws DataException;
 
     /**
      * Load a table from another {@link IDataSource}.
@@ -715,7 +715,7 @@ public interface IJdbcDataSource extends IDataSource<ResultSet>, GroovyObject, D
      * Null is the table cannot be loaded.
      */
     String load(IJdbcDataSource dataSource, String inputTableName,
-                String outputTableName, boolean deleteIfExists);
+                String outputTableName, boolean deleteIfExists) throws DataException;
 
     /**
      * Load a table from another {@link IDataSource}.
@@ -729,7 +729,7 @@ public interface IJdbcDataSource extends IDataSource<ResultSet>, GroovyObject, D
      * Null is the table cannot be loaded.
      */
     String load(IJdbcDataSource dataSource, String inputTableName,
-                String outputTableName, boolean deleteIfExists, int batchSize);
+                String outputTableName, boolean deleteIfExists, int batchSize) throws DataException;
 
     /* ********************** */
     /*      Save methods      */
@@ -742,7 +742,7 @@ public interface IJdbcDataSource extends IDataSource<ResultSet>, GroovyObject, D
      * @param filePath  Path of the file where the table will be saved.
      * @return True if the file has been successfully saved, false otherwise.
      */
-    boolean save(String dataSetId, String filePath);
+    boolean save(String dataSetId, String filePath) throws DataException;
 
 
     /**
@@ -753,7 +753,7 @@ public interface IJdbcDataSource extends IDataSource<ResultSet>, GroovyObject, D
      * @param delete true to delete the file if exists
      * @return True if the file has been successfully saved, false otherwise.
      */
-    boolean save(String dataSetId, String filePath, boolean delete);
+    boolean save(String dataSetId, String filePath, boolean delete) throws DataException;
 
     /**
      * Save a table into a file.
@@ -763,7 +763,7 @@ public interface IJdbcDataSource extends IDataSource<ResultSet>, GroovyObject, D
      * @param encoding  Encoding of the file.
      * @return True if the file has been successfully saved, false otherwise.
      */
-    boolean save(String dataSetId, String filePath,String encoding);
+    boolean save(String dataSetId, String filePath,String encoding) throws DataException;
 
     /**
      * Save a table into a file.
@@ -772,7 +772,7 @@ public interface IJdbcDataSource extends IDataSource<ResultSet>, GroovyObject, D
      * @param uri       {@link URI} of the file where the table will be saved.
      * @return True if the file has been successfully saved, false otherwise.
      */
-    boolean save(String dataSetId, URI uri);
+    boolean save(String dataSetId, URI uri) throws DataException;
 
     /**
      * Save a table into a file.
@@ -782,7 +782,7 @@ public interface IJdbcDataSource extends IDataSource<ResultSet>, GroovyObject, D
      * @param encoding  Encoding of the file.
      * @return True if the file has been successfully saved, false otherwise.
      */
-    boolean save(String dataSetId, URI uri,String encoding);
+    boolean save(String dataSetId, URI uri,String encoding) throws DataException;
 
     /**
      * Save a table into a file.
@@ -791,7 +791,7 @@ public interface IJdbcDataSource extends IDataSource<ResultSet>, GroovyObject, D
      * @param url       {@link URL} of the file where the table will be saved.
      * @return True if the file has been successfully saved, false otherwise.
      */
-    boolean save(String dataSetId, URL url);
+    boolean save(String dataSetId, URL url) throws DataException;
 
     /**
      * Save a table into a file.
@@ -801,7 +801,7 @@ public interface IJdbcDataSource extends IDataSource<ResultSet>, GroovyObject, D
      * @param encoding  Encoding of the file.
      * @return True if the file has been successfully saved, false otherwise.
      */
-    boolean save(String dataSetId, URL url,String encoding);
+    boolean save(String dataSetId, URL url,String encoding) throws DataException;
 
     /**
      * Save a table into a file.
@@ -810,7 +810,7 @@ public interface IJdbcDataSource extends IDataSource<ResultSet>, GroovyObject, D
      * @param file      {@link File} of the file where the table will be saved.
      * @return True if the file has been successfully saved, false otherwise.
      */
-    boolean save(String dataSetId, File file);
+    boolean save(String dataSetId, File file) throws DataException;
 
     /**
      * Save a table into a file.
@@ -820,7 +820,7 @@ public interface IJdbcDataSource extends IDataSource<ResultSet>, GroovyObject, D
      * @param encoding  Encoding of the file.
      * @return True if the file has been successfully saved, false otherwise.
      */
-    boolean save(String dataSetId, File file,String encoding);
+    boolean save(String dataSetId, File file,String encoding) throws DataException;
 
     /**
      * This method is used to execute a SQL file
@@ -938,7 +938,7 @@ public interface IJdbcDataSource extends IDataSource<ResultSet>, GroovyObject, D
      * @param sourceTableName name of the external table
      * @return The name of the linked table
      */
-    String link(Map dataSourceProperties, String sourceTableName);
+    String link(Map dataSourceProperties, String sourceTableName) throws DataException;
 
 
     /**
@@ -949,7 +949,7 @@ public interface IJdbcDataSource extends IDataSource<ResultSet>, GroovyObject, D
      * @param delete true to delete the target table if exists
      * @return The name of the linked table
      */
-    String link(Map dataSourceProperties, String sourceTableName, boolean delete);
+    String link(Map dataSourceProperties, String sourceTableName, boolean delete) throws DataException;
 
     /**
      * Link a table from an external database.
@@ -960,7 +960,7 @@ public interface IJdbcDataSource extends IDataSource<ResultSet>, GroovyObject, D
      * @param delete true to delete the target table if exists
      * @return The name of the linked table
      */
-    String link(Map dataSourceProperties, String sourceTableName, String targetTableName, boolean delete);
+    String link(Map dataSourceProperties, String sourceTableName, String targetTableName, boolean delete) throws DataException;
 
     /* ********************** */
     /*      Link methods      */
@@ -975,7 +975,7 @@ public interface IJdbcDataSource extends IDataSource<ResultSet>, GroovyObject, D
      * @return The name of the linked table, formatted according this datasource
      * Null is the table cannot be linked.
      */
-    String link(String filePath, String dataSetId, boolean delete);
+    String link(String filePath, String dataSetId, boolean delete) throws DataException;
 
     /**
      * Link a file to the {@link IDataSource}.
@@ -985,7 +985,7 @@ public interface IJdbcDataSource extends IDataSource<ResultSet>, GroovyObject, D
      * @return The name of the linked table, formatted according this datasource
      * Null is the table cannot be linked.
      */
-    String link(String filePath, String dataSetId);
+    String link(String filePath, String dataSetId) throws DataException;
 
     /**
      * Link a file to the {@link IDataSource}.
@@ -995,7 +995,7 @@ public interface IJdbcDataSource extends IDataSource<ResultSet>, GroovyObject, D
      * @return The name of the linked table, formatted according this datasource
      * Null is the table cannot be linked.
      */
-    String link(String filePath, boolean delete);
+    String link(String filePath, boolean delete) throws DataException;
 
     /**
      * Link a file to the {@link IDataSource}.
@@ -1004,7 +1004,7 @@ public interface IJdbcDataSource extends IDataSource<ResultSet>, GroovyObject, D
      * @return The name of the linked table, formatted according this datasource
      * Null is the table cannot be linked.
      */
-    String link(String filePath);
+    String link(String filePath) throws DataException;
 
     /**
      * Link a file to the {@link IDataSource}.
@@ -1015,7 +1015,7 @@ public interface IJdbcDataSource extends IDataSource<ResultSet>, GroovyObject, D
      * @return The name of the linked table, formatted according this datasource
      * Null is the table cannot be linked.
      */
-    String link(URI uri,String dataSetId, boolean delete);
+    String link(URI uri,String dataSetId, boolean delete) throws DataException;
 
     /**
      * Link a file to the {@link IDataSource}.
@@ -1025,7 +1025,7 @@ public interface IJdbcDataSource extends IDataSource<ResultSet>, GroovyObject, D
      * @return The name of the linked table, formatted according this datasource
      * Null is the table cannot be linked.
      */
-    String link(URI uri,String dataSetId);
+    String link(URI uri,String dataSetId) throws DataException;
 
     /**
      * Link a file to the {@link IDataSource}.
@@ -1035,7 +1035,7 @@ public interface IJdbcDataSource extends IDataSource<ResultSet>, GroovyObject, D
      * @return The name of the linked table, formatted according this datasource
      * Null is the table cannot be linked.
      */
-    String link(URI uri, boolean delete);
+    String link(URI uri, boolean delete) throws DataException;
 
     /**
      * Link a file to the {@link IDataSource}.
@@ -1044,7 +1044,7 @@ public interface IJdbcDataSource extends IDataSource<ResultSet>, GroovyObject, D
      * @return The name of the linked table, formatted according this datasource
      * Null is the table cannot be linked.
      */
-    String link(URI uri);
+    String link(URI uri) throws DataException;
 
     /**
      * Link a file to the {@link IDataSource}.
@@ -1055,7 +1055,7 @@ public interface IJdbcDataSource extends IDataSource<ResultSet>, GroovyObject, D
      * @return The name of the linked table, formatted according this datasource
      * Null is the table cannot be linked.
      */
-    String link(URL url,String dataSetId, boolean delete);
+    String link(URL url,String dataSetId, boolean delete) throws DataException;
 
     /**
      * Link a file to the {@link IDataSource}.
@@ -1065,7 +1065,7 @@ public interface IJdbcDataSource extends IDataSource<ResultSet>, GroovyObject, D
      * @return The name of the linked table, formatted according this datasource
      * Null is the table cannot be linked.
      */
-    String link(URL url,String dataSetId);
+    String link(URL url,String dataSetId) throws DataException;
 
     /**
      * Link a file to the {@link IDataSource}.
@@ -1075,7 +1075,7 @@ public interface IJdbcDataSource extends IDataSource<ResultSet>, GroovyObject, D
      * @return The name of the linked table, formatted according this datasource
      * Null is the table cannot be linked.
      */
-    String link(URL url, boolean delete);
+    String link(URL url, boolean delete) throws DataException;
 
     /**
      * Link a file to the {@link IDataSource}.
@@ -1084,7 +1084,7 @@ public interface IJdbcDataSource extends IDataSource<ResultSet>, GroovyObject, D
      * @return The name of the linked table, formatted according this datasource
      * Null is the table cannot be linked.
      */
-    String link(URL url);
+    String link(URL url) throws DataException;
 
     /**
      * Link a file to the {@link IDataSource}.
@@ -1095,7 +1095,7 @@ public interface IJdbcDataSource extends IDataSource<ResultSet>, GroovyObject, D
      * @return The name of the linked table, formatted according this datasource
      * Null is the table cannot be linked.
      */
-    String link(File file, String dataSetId, boolean delete);
+    String link(File file, String dataSetId, boolean delete) throws DataException;
 
     /**
      * Link a file to the {@link IDataSource}.
@@ -1105,7 +1105,7 @@ public interface IJdbcDataSource extends IDataSource<ResultSet>, GroovyObject, D
      * @return The name of the linked table, formatted according this datasource
      * Null is the table cannot be linked.
      */
-    String link(File file, String dataSetId);
+    String link(File file, String dataSetId) throws DataException;
 
     /**
      * Link a file to the {@link IDataSource}.
@@ -1115,7 +1115,7 @@ public interface IJdbcDataSource extends IDataSource<ResultSet>, GroovyObject, D
      * @return The name of the linked table, formatted according this datasource
      * Null is the table cannot be linked.
      */
-    String link(File file, boolean delete);
+    String link(File file, boolean delete) throws DataException;
 
     /**
      * Link a file to the {@link IDataSource}.
@@ -1124,7 +1124,7 @@ public interface IJdbcDataSource extends IDataSource<ResultSet>, GroovyObject, D
      * @return The name of the linked table, formatted according this datasource
      * Null is the table cannot be linked.
      */
-    String link(File file);
+    String link(File file) throws DataException;
 
     /**
      * Return true if the tableName is empty, false otherwise.
@@ -1138,6 +1138,6 @@ public interface IJdbcDataSource extends IDataSource<ResultSet>, GroovyObject, D
      * Print the content of the table
      * @param tableName
      */
-    void print(String tableName);
+    void print(String tableName) throws DataException;
 
 }

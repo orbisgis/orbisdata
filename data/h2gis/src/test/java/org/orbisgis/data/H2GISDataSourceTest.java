@@ -49,6 +49,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledIfSystemProperty;
 import org.orbisgis.data.api.dataset.ISpatialTable;
 import org.orbisgis.data.api.dataset.ITable;
+import org.orbisgis.data.api.datasource.DataException;
 import org.orbisgis.data.api.dsl.IResultSetProperties;
 import org.orbisgis.data.jdbc.JdbcDataSource;
 
@@ -341,7 +342,7 @@ class H2GISDataSourceTest {
      */
     @Test
     @EnabledIfSystemProperty(named = "test.postgis", matches = "true")
-    void testSave() throws SQLException, MalformedURLException {
+    void testSave() throws SQLException, MalformedURLException, DataException {
         h2gis.execute("DROP TABLE IF EXISTS load");
         postgis.execute("DROP TABLE IF EXISTS load");
 
@@ -382,7 +383,7 @@ class H2GISDataSourceTest {
      */
     @Test
     @EnabledIfSystemProperty(named = "test.postgis", matches = "true")
-    void testLink() throws SQLException, URISyntaxException, MalformedURLException {
+    void testLink() throws SQLException, URISyntaxException, MalformedURLException, DataException {
         URL url = this.getClass().getResource("linkTable.dbf");
         URI uri = url.toURI();
         File file = new File(uri);
@@ -503,7 +504,7 @@ class H2GISDataSourceTest {
      */
     @Disabled
     @Test
-    void loadFromDB() throws SQLException {
+    void loadFromDB() throws SQLException, DataException {
         String tableNameDS1 = "test_h2gis";
         String tableNameDS2 = "test_postgis";
 
@@ -547,7 +548,7 @@ class H2GISDataSourceTest {
      */
     @Test
     @EnabledIfSystemProperty(named = "test.postgis", matches = "true")
-    void testLoadPath() throws SQLException, URISyntaxException {
+    void testLoadPath() throws SQLException, URISyntaxException, DataException {
         URL url = this.getClass().getResource("loadTable.dbf");
         URI uri = url.toURI();
         File file = new File(uri);

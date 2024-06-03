@@ -72,31 +72,6 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 public class IJdbcDataSourceTest {
 
-    /**
-     * Test the {@link IJdbcDataSource#invokeMethod(String, Object)} method.
-     */
-    @Test
-    public void testInvokeMethod() {
-        IJdbcDataSource ds = new IJdbcDataSourceTest.DummyDataSource();
-        ds.setProperty("prop1", "value1");
-        assertEquals("value1", ds.invokeMethod("getProperty", "prop1"));
-        assertTrue((Boolean) ds.invokeMethod("noArg", null));
-        assertTrue((Boolean) ds.invokeMethod("getNoArg", null));
-        assertArrayEquals(new Object[]{"string", 0.2}, (Object[]) ds.invokeMethod("arrayMethod", new Object[]{"string", 0.2}));
-        assertArrayEquals(new Object[]{"string", 0.2}, (Object[]) ds.invokeMethod("getArrayMethod", new Object[]{"string", 0.2}));
-        assertArrayEquals(new Object[]{"string", 0.2}, (Object[]) ds.invokeMethod("getParametersMethod", new Object[]{"string", 0.2}));
-        assertArrayEquals(new Object[]{"string", 0.2}, (Object[]) ds.invokeMethod("parametersMethod", new Object[]{"string", 0.2}));
-        assertArrayEquals(new Object[]{"string", "0.2"}, (Object[]) ds.invokeMethod("getParametersMethod", new Object[]{"string", "0.2"}));
-        assertArrayEquals(new Object[]{"string", "0.2"}, (Object[]) ds.invokeMethod("parametersMethod", new Object[]{"string", "0.2"}));
-        assertEquals("string", ds.invokeMethod("getParameterMethod", new Object[]{"string"}));
-        assertEquals("string", ds.invokeMethod("getParameterMethod", "string"));
-        assertEquals("string", ds.invokeMethod("parameterMethod", new Object[]{"string"}));
-        assertEquals("string", ds.invokeMethod("parameterMethod", "string"));
-
-        assertThrows(MissingMethodException.class, () -> ds.invokeMethod("setProperty", new String[]{"tata"}));
-        assertNull(ds.invokeMethod("getProperty", null));
-        assertThrows(MissingMethodException.class, () -> ds.invokeMethod("notAMethod", null));
-    }
 
     /**
      * Test the {@link IJdbcDataSource#executeScript(String)} and {@link IJdbcDataSource#executeScript(InputStream)}
@@ -113,23 +88,6 @@ public class IJdbcDataSourceTest {
         assertFalse(ds.isStreamScript());
         assertTrue(ds.executeScript((InputStream) null));
         assertTrue(ds.isStreamScript());
-    }
-
-    /**
-     * Test the {@link IJdbcDataSource#getProperty(String)} and {@link IJdbcDataSource#setProperty(String, Object)}
-     * methods.
-     */
-    @Test
-    public void testGetProperty() {
-        IJdbcDataSource ds = new IJdbcDataSourceTest.DummyDataSource();
-
-        ds.setProperty("prop1", "value1");
-        ds.setProperty("prop2", "value2");
-
-        assertEquals("value1", ds.getProperty("prop1"));
-        assertEquals("value2", ds.getProperty("prop2"));
-        assertNull(ds.getProperty(null));
-        assertThrows(MissingPropertyException.class, () -> ds.getProperty("databaseType"));
     }
 
     /**

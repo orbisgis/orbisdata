@@ -220,8 +220,8 @@ public class DataFrameTest {
         assertEquals((byte)3, dataFrame.getObject(4, Byte.class));
         assertEquals((short)3, dataFrame.getObject(5, short.class));
         assertEquals((short)3, dataFrame.getObject(5, Short.class));
-        assertEquals(3l, dataFrame.getObject(6, long.class));
-        assertEquals(3l, dataFrame.getObject(6, Long.class));
+        assertEquals(3L, dataFrame.getObject(6, long.class));
+        assertEquals(3L, dataFrame.getObject(6, Long.class));
         assertEquals(3.5f, dataFrame.getObject(7, float.class));
         assertEquals(3.5f, dataFrame.getObject(7, Float.class));
         assertEquals(3d, dataFrame.getObject(8, double.class));
@@ -244,8 +244,8 @@ public class DataFrameTest {
         assertEquals(4, dataFrame.getObject("COL5", Integer.class));
         assertEquals(4, dataFrame.getObject("COL6", int.class));
         assertEquals(4, dataFrame.getObject("COL6", Integer.class));
-        assertEquals(4l, dataFrame.getObject("COL7", long.class));
-        assertEquals(4l, dataFrame.getObject("COL7", Long.class));
+        assertEquals(4L, dataFrame.getObject("COL7", long.class));
+        assertEquals(4L, dataFrame.getObject("COL7", Long.class));
         assertEquals(4.5f, dataFrame.getObject("COL8", float.class));
         assertEquals(4.5f, dataFrame.getObject("COL8", Float.class));
         assertEquals(4d, dataFrame.getObject("COL9", double.class));
@@ -588,7 +588,7 @@ public class DataFrameTest {
         // Dataset used
         BaseVector[] bv = new BaseVector[]{
                 IntVector.of("LCZ", new int[]{105, 107, 106, 105, 105, 106, 107, 106, 106, 107, 107, 107, 107}),
-                StringVector.of("TYPE", new String[]{"grass", "corn", "corn", "grass", "corn", "grass", "forest", "grass", "grass", "corn", "corn", "corn", "corn"}),
+                StringVector.of("TYPE", "grass", "corn", "corn", "grass", "corn", "grass", "forest", "grass", "grass", "corn", "corn", "corn", "corn"),
                 IntVector.of("TEMPERATURE", new int[]{12, 12, 18, 12, 16, 12, 12, 12, 16, 16, 2, 16, 18}),
                 IntVector.of("WIND", new int[]{20, 30, 20, 30, 20, 20, 20, 20, 20, 20, 20, 50, 40}),
         };

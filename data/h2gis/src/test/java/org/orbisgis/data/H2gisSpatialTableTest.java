@@ -108,15 +108,15 @@ public class H2gisSpatialTableTest {
             fail(e);
         }
         ISpatialTable table = h2gis.getSpatialTable("name");
-        assertTrue(table.asType(ISpatialTable.class) instanceof ISpatialTable);
-        assertTrue(table.asType(ITable.class) instanceof ITable);
-        assertTrue(table.asType(H2gisSpatialTable.class) instanceof H2gisSpatialTable);
-        assertTrue(table.asType(H2gisTable.class) instanceof H2gisTable);
+        assertInstanceOf(ISpatialTable.class, table.asType(ISpatialTable.class));
+        assertInstanceOf(ITable.class, table.asType(ITable.class));
+        assertInstanceOf(H2gisSpatialTable.class, table.asType(H2gisSpatialTable.class));
+        assertInstanceOf(H2gisTable.class, table.asType(H2gisTable.class));
         assertNull(table.asType(String.class));
     }
 
     @Test
-    void testReproject() throws SQLException, Exception {
+    void testReproject() throws Exception {
         new File("target/reprojected_table.shp").delete();
         H2GIS dataSource = H2GIS.open("./target/test");
         dataSource.execute(" DROP TABLE IF EXISTS orbisgis;" +
@@ -138,7 +138,7 @@ public class H2gisSpatialTableTest {
         IJdbcTable reprojectedTable = dataSource.getTable(dataSource.load("target/reprojected_table.shp", true));
         assertNotNull(reprojectedTable);
         assertEquals(2, reprojectedTable.getRowCount());
-        assertTrue(reprojectedTable instanceof IJdbcSpatialTable);
+        assertInstanceOf(IJdbcSpatialTable.class, reprojectedTable);
 
         IJdbcSpatialTable spatialReprojectedTable = (IJdbcSpatialTable) reprojectedTable;
         assertEquals(2154, spatialReprojectedTable.getSrid());
@@ -150,7 +150,7 @@ public class H2gisSpatialTableTest {
     }
 
     @Test
-    void testSaveQueryInFile() throws SQLException, Exception {
+    void testSaveQueryInFile() throws Exception {
         new File("target/query_table.shp").delete();
         H2GIS dataSource = H2GIS.open("./target/test");
         dataSource.execute(" DROP TABLE IF EXISTS orbisgis, query_table;" +
@@ -166,7 +166,7 @@ public class H2gisSpatialTableTest {
         IJdbcTable queryTable = dataSource.getTable(dataSource.load("target/query_table.shp"));
         assertNotNull(queryTable);
         assertEquals(2, queryTable.getRowCount());
-        assertTrue(queryTable instanceof IJdbcSpatialTable);
+        assertInstanceOf(IJdbcSpatialTable.class, queryTable);
 
         IJdbcSpatialTable spatialReprojectedTable = (IJdbcSpatialTable) queryTable;
         assertEquals(4326, spatialReprojectedTable.getSrid());
@@ -174,7 +174,7 @@ public class H2gisSpatialTableTest {
         IJdbcSpatialTable spLoaded = dataSource.getSpatialTable("QUERY_TABLE");
         assertEquals(2, spLoaded.getRowCount());
         assertEquals(4326, spLoaded.getSrid());
-        assertTrue(spLoaded.getFirstRow().get(1) instanceof Point);
+        assertInstanceOf(Point.class, spLoaded.getFirstRow().get(1));
      }
     /**
      * Test the {@link JdbcSpatialTable#isSpatial()} method.

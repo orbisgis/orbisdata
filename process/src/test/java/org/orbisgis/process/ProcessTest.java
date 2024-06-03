@@ -391,13 +391,13 @@ public class ProcessTest {
      */
     @Test
     void getPropertyTest() {
-        assertTrue(fullProcess.getProperty("in1") instanceof IInput);
-        assertTrue(fullProcess.getProperty("in2") instanceof IInput);
-        assertTrue(fullProcess.getProperty("in3") instanceof IInput);
-        assertTrue(fullProcess.getProperty("in4") instanceof IInput);
-        assertTrue(fullProcess.getProperty("out1") instanceof IOutput);
-        assertTrue(fullProcess.getProperty("out2") instanceof IOutput);
-        assertTrue(fullProcess.getProperty("out3") instanceof IOutput);
+        assertInstanceOf(IInput.class, fullProcess.getProperty("in1"));
+        assertInstanceOf(IInput.class, fullProcess.getProperty("in2"));
+        assertInstanceOf(IInput.class, fullProcess.getProperty("in3"));
+        assertInstanceOf(IInput.class, fullProcess.getProperty("in4"));
+        assertInstanceOf(IOutput.class, fullProcess.getProperty("out1"));
+        assertInstanceOf(IOutput.class, fullProcess.getProperty("out2"));
+        assertInstanceOf(IOutput.class, fullProcess.getProperty("out3"));
         assertEquals("title", fullProcess.getProperty("title"));
 
         assertNull(fullProcess.getProperty(null));

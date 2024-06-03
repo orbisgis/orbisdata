@@ -488,7 +488,7 @@ public class POSTGIS extends JdbcDataSource {
             return;
         }
         try {
-            StringBuilder sb =  new StringBuilder("ALTER TABLE IF EXISTS " + TableLocation.parse(tableName, DBTypes.POSTGIS).toString());
+            StringBuilder sb =  new StringBuilder("ALTER TABLE IF EXISTS " + TableLocation.parse(tableName, DBTypes.POSTGIS));
             int count = columnName.length;
             for (int i = 0; i < count; i++) {
                 String col = columnName[i];

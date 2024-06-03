@@ -324,7 +324,7 @@ public class H2gisTableTest {
         assertEquals("Simple points", map.get(COL_MEANING));
 
         map = getTempTable().firstRow();
-        assertTrue(!map.isEmpty());
+        assertFalse(map.isEmpty());
 
         map = getEmptyTable().firstRow();
         assertTrue(map.isEmpty());
@@ -335,7 +335,7 @@ public class H2gisTableTest {
      * Test the {@link IJdbcTable#getLocation()} method.
      */
     @Test
-    public void testGetLocation() throws SQLException, Exception {
+    public void testGetLocation() throws Exception {
         assertEquals("catalog.schema.table", new PostgisTable(
                 new TableLocation("catalog", "schema", "table"),
                 "not a request", dataSource.getConnection().createStatement(), null, dataSource).getLocation());
@@ -356,7 +356,7 @@ public class H2gisTableTest {
      * Test the {@link JdbcTable#getMetaData()} constructor.
      */
     @Test
-    void testGetMetadata() throws SQLException, Exception {
+    void testGetMetadata() throws Exception {
         assertNotNull(getTable().getMetaData());
         assertNotNull(getLinkedTable().getMetaData());
         assertNotNull(getTempTable().getMetaData());
@@ -679,7 +679,7 @@ public class H2gisTableTest {
     @Test
     public void testAsType() throws Exception {
         assertNotNull(getTable().asType(ITable.class));
-        assertTrue(getTable().asType(ITable.class) instanceof ITable);
+        assertInstanceOf(ITable.class, getTable().asType(ITable.class));
         assertNotNull(getTable().asType(ISpatialTable.class));
         assertEquals("+--------------------+\n" +
                         "|   ORBISGIS_TABLE   |\n" +

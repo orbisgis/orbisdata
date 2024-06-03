@@ -78,7 +78,7 @@ public class H2GISTests {
     }
 
     @Test
-    public void testColumnsType() throws SQLException, Exception {
+    public void testColumnsType() throws Exception {
         Map<String, String> map = new HashMap<>();
         map.put(H2GISDBFactory.JDBC_DATABASE_NAME, "./target/loadH2GIS");
         H2GIS h2GIS = H2GIS.open(map);
@@ -89,9 +89,9 @@ public class H2GISTests {
 
         Map<String, String> columnTypes = h2GIS.getColumnNamesTypes("types");
         assertTrue(columnTypes.containsKey("COLINT"));
-        assertTrue(columnTypes.get("COLINT")=="INTEGER");
+        assertSame("INTEGER", columnTypes.get("COLINT"));
         assertTrue(columnTypes.containsKey("COLREAL"));
-        assertTrue(columnTypes.get("COLREAL")=="REAL");
+        assertSame("REAL", columnTypes.get("COLREAL"));
     }
 
 
@@ -105,7 +105,7 @@ public class H2GISTests {
 
 
     @Test
-    public void queryH2GIS() throws SQLException, Exception {
+    public void queryH2GIS() throws Exception {
         Map<String, String> map = new HashMap<>();
         map.put(H2GISDBFactory.JDBC_DATABASE_NAME, "./target/loadH2GIS2");
         H2GIS h2GIS = H2GIS.open(map);
@@ -125,7 +125,7 @@ public class H2GISTests {
     }
 
     @Test
-    public void querySpatialTable() throws SQLException, Exception {
+    public void querySpatialTable() throws Exception {
         Map<String, String> map = new HashMap<>();
         map.put(H2GISDBFactory.JDBC_DATABASE_NAME, "./target/loadH2GIS2");
         H2GIS h2GIS = H2GIS.open(map);
@@ -153,7 +153,7 @@ public class H2GISTests {
     }
 
     @Test
-    public void queryTableNames() throws SQLException, Exception {
+    public void queryTableNames() throws Exception {
         Map<String, String> map = new HashMap<>();
         map.put(H2GISDBFactory.JDBC_DATABASE_NAME, "./target/loadH2GIS");
         H2GIS h2GIS = H2GIS.open(map);
@@ -167,7 +167,7 @@ public class H2GISTests {
     }
 
     @Test
-    public void updateSpatialTable() throws SQLException, Exception {
+    public void updateSpatialTable() throws Exception {
         Map<String, String> map = new HashMap<>();
         map.put(H2GISDBFactory.JDBC_DATABASE_NAME, "./target/loadH2GIS");
         H2GIS h2GIS = H2GIS.open(map);
@@ -208,7 +208,7 @@ public class H2GISTests {
     }
 
     @Test
-    public void request() throws SQLException, Exception {
+    public void request() throws Exception {
         Map<String, String> map = new HashMap<>();
         map.put(H2GISDBFactory.JDBC_DATABASE_NAME, "./target/loadH2GIS2");
         H2GIS h2GIS = H2GIS.open(map);
@@ -293,7 +293,7 @@ public class H2GISTests {
     }
 
     @Test
-    public void hasTable() throws SQLException, Exception {
+    public void hasTable() throws Exception {
         Map<String, String> map = new HashMap<>();
         map.put(H2GISDBFactory.JDBC_DATABASE_NAME, "./target/loadH2GIS");
         H2GIS h2GIS = H2GIS.open(map);
@@ -308,7 +308,7 @@ public class H2GISTests {
     }
 
     @Test
-    void testGetTableOnEmptyTable() throws SQLException, Exception {
+    void testGetTableOnEmptyTable() throws Exception {
         Map<String, String> map = new HashMap<>();
         map.put(H2GISDBFactory.JDBC_DATABASE_NAME, "./target/loadH2GIS");
         H2GIS h2GIS = H2GIS.open(map);
@@ -374,7 +374,7 @@ public class H2GISTests {
     }
 
     @Test
-    void testExtent() throws SQLException, Exception {
+    void testExtent() throws Exception {
         H2GIS h2GIS = H2GIS.open("./target/orbisgis");
         h2GIS.execute("DROP TABLE  IF EXISTS forests;\n" +
                 "                CREATE TABLE forests ( fid INTEGER NOT NULL PRIMARY KEY, name CHARACTER VARYING(64),\n" +
@@ -394,7 +394,7 @@ public class H2GISTests {
     }
 
     @Test
-    void testExtentWithFilter() throws SQLException, Exception {
+    void testExtentWithFilter() throws Exception {
         H2GIS h2GIS = H2GIS.open("./target/orbisgis");
         h2GIS.execute("DROP TABLE  IF EXISTS forests;\n" +
                 "                CREATE TABLE forests ( fid INTEGER NOT NULL PRIMARY KEY, name CHARACTER VARYING(64),\n" +
@@ -414,7 +414,7 @@ public class H2GISTests {
     }
 
     @Test
-    public void getTableSelect() throws SQLException, Exception {
+    public void getTableSelect() throws Exception {
         Map<String, String> map = new HashMap<>();
         map.put(H2GISDBFactory.JDBC_DATABASE_NAME, "./target/selectTable");
         H2GIS h2GIS = H2GIS.open(map);

@@ -171,7 +171,7 @@ public class GroovyProcessManagerTest {
     void invokeMethodTest() {
         GroovyProcessManager pm = new DummyGPM();
         assertNotNull(pm.invokeMethod("create", cl));
-        assertTrue(pm.invokeMethod("create", cl) instanceof IProcess);
+        assertInstanceOf(IProcess.class, pm.invokeMethod("create", cl));
         assertNull(pm.invokeMethod("process", "null"));
         assertNotNull(pm.invokeMethod("factory", null));
         assertNull(pm.invokeMethod(null, null));
@@ -227,10 +227,10 @@ public class GroovyProcessManagerTest {
     void propertyTest() {
         GroovyProcessManager pm = new DummyGPM();
         assertNull(pm.getProperty(null));
-        assertTrue(pm.getProperty("pm") instanceof ProcessManager);
+        assertInstanceOf(ProcessManager.class, pm.getProperty("pm"));
 
         pm.registerFactory("toto1", new ProcessFactory());
-        assertTrue(pm.getProperty("toto1") instanceof ProcessFactory);
+        assertInstanceOf(ProcessFactory.class, pm.getProperty("toto1"));
 
         assertThrows(MissingPropertyExceptionNoStack.class, () -> pm.getProperty("not a property"));
     }

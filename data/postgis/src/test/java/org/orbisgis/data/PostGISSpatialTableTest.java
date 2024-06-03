@@ -125,16 +125,16 @@ public class PostGISSpatialTableTest {
             fail(e);
         }
         ISpatialTable table = postGIS.getSpatialTable("name");
-        assertTrue(table.asType(ISpatialTable.class) instanceof ISpatialTable);
-        assertTrue(table.asType(ITable.class) instanceof ITable);
-        assertTrue(table.asType(PostgisSpatialTable.class) instanceof PostgisSpatialTable);
-        assertTrue(table.asType(PostgisTable.class) instanceof PostgisTable);
+        assertInstanceOf(ISpatialTable.class, table.asType(ISpatialTable.class));
+        assertInstanceOf(ITable.class, table.asType(ITable.class));
+        assertInstanceOf(PostgisSpatialTable.class, table.asType(PostgisSpatialTable.class));
+        assertInstanceOf(PostgisTable.class, table.asType(PostgisTable.class));
         assertThrows(Exception.class, ()->table.asType(String.class));
     }
 
     @Test
     @EnabledIfSystemProperty(named = "test.postgis", matches = "true")
-    void testReproject() throws SQLException, Exception {
+    void testReproject() throws Exception {
         postGIS.execute(" DROP TABLE IF EXISTS orbisgis;" +
                 "CREATE TABLE orbisgis (id int, the_geom geometry(point, 4326));" +
                 "INSERT INTO orbisgis VALUES (1, 'SRID=4326;POINT(10 10)'::GEOMETRY), " +
@@ -153,7 +153,7 @@ public class PostGISSpatialTableTest {
         IJdbcTable reprojectedTable = postGIS.getTable(postGIS.load("target/reprojected_table.shp", true));
         assertNotNull(reprojectedTable);
         assertEquals(2, reprojectedTable.getRowCount());
-        assertTrue(reprojectedTable instanceof IJdbcSpatialTable);
+        assertInstanceOf(IJdbcSpatialTable.class, reprojectedTable);
 
         IJdbcSpatialTable spatialReprojectedTable = (IJdbcSpatialTable) reprojectedTable;
         assertEquals(2154, spatialReprojectedTable.getSrid());
@@ -166,7 +166,7 @@ public class PostGISSpatialTableTest {
 
     @Test
     @EnabledIfSystemProperty(named = "test.postgis", matches = "true")
-    void testSaveQueryInFile() throws SQLException, Exception {
+    void testSaveQueryInFile() throws Exception {
         postGIS.execute(" DROP TABLE IF EXISTS orbisgis, query_table;" +
                 "CREATE TABLE orbisgis (id int, the_geom geometry(point, 4326));" +
                 "INSERT INTO orbisgis VALUES (1, 'SRID=4326;POINT(10 10)'::GEOMETRY), " +
@@ -180,7 +180,7 @@ public class PostGISSpatialTableTest {
         IJdbcTable queryTable = postGIS.getTable(postGIS.load("target/query_table.shp"));
         assertNotNull(queryTable);
         assertEquals(2, queryTable.getRowCount());
-        assertTrue(queryTable instanceof IJdbcSpatialTable);
+        assertInstanceOf(IJdbcSpatialTable.class, queryTable);
 
         IJdbcSpatialTable spatialReprojectedTable = (IJdbcSpatialTable) queryTable;
         assertEquals(4326, spatialReprojectedTable.getSrid());
@@ -188,7 +188,7 @@ public class PostGISSpatialTableTest {
         IJdbcSpatialTable spLoaded = postGIS.getSpatialTable("QUERY_TABLE");
         assertEquals(2, spLoaded.getRowCount());
         assertEquals(4326, spLoaded.getSrid());
-        assertTrue(spLoaded.getFirstRow().get(1) instanceof Point);
+        assertInstanceOf(Point.class, spLoaded.getFirstRow().get(1));
      }
     /**
      * Test the {@link JdbcSpatialTable#isSpatial()} method.
@@ -276,7 +276,7 @@ public class PostGISSpatialTableTest {
      */
     @Test
     @EnabledIfSystemProperty(named = "test.postgis", matches = "true")
-    public void testGetEstimatedExtend() throws SQLException, Exception {
+    public void testGetEstimatedExtend() throws Exception {
         postGIS.execute("VACUUM ANALYZE");
         assertEquals(1, postGIS.getSpatialTable(TABLE_NAME).getEstimatedExtent().getLength(), 0.01);
     }

@@ -88,7 +88,7 @@ class H2GISDataSourceTest {
      * @throws SQLException Sql exception.
      */
     @BeforeEach
-    void init() throws SQLException, Exception {
+    void init() throws Exception {
         h2gis = H2GIS.open(DB_NAME);
         h2gis.execute("DROP TABLE IF EXISTS test_h2gis");
         h2gis.execute("CREATE TABLE test_h2gis(id int, the_geom GEOMETRY, text varchar)");
@@ -266,7 +266,7 @@ class H2GISDataSourceTest {
      */
     @Test
     @EnabledIfSystemProperty(named = "test.postgis", matches = "true")
-    void testExecuteMethod1() throws URISyntaxException, SQLException, Exception {
+    void testExecuteMethod1() throws Exception {
         Map<String, String> map = new HashMap<>();
         map.put("intArg", "51");
         URL url = this.getClass().getResource("simpleWithArgs.sql");
@@ -303,7 +303,7 @@ class H2GISDataSourceTest {
      */
     @Test
     @EnabledIfSystemProperty(named = "test.postgis", matches = "true")
-    void testExecuteMethod2() throws SQLException, Exception {
+    void testExecuteMethod2() throws Exception {
         Map<String, String> map = new HashMap<>();
         map.put("intArg", "51");
 
@@ -341,7 +341,7 @@ class H2GISDataSourceTest {
      */
     @Test
     @EnabledIfSystemProperty(named = "test.postgis", matches = "true")
-    void testSave() throws SQLException, MalformedURLException, Exception {
+    void testSave() throws Exception {
         h2gis.execute("DROP TABLE IF EXISTS load");
         postgis.execute("DROP TABLE IF EXISTS load");
 
@@ -382,7 +382,7 @@ class H2GISDataSourceTest {
      */
     @Test
     @EnabledIfSystemProperty(named = "test.postgis", matches = "true")
-    void testLink() throws SQLException, URISyntaxException, MalformedURLException, Exception {
+    void testLink() throws Exception {
         URL url = this.getClass().getResource("linkTable.dbf");
         URI uri = url.toURI();
         File file = new File(uri);
@@ -503,7 +503,7 @@ class H2GISDataSourceTest {
      */
     @Disabled
     @Test
-    void loadFromDB() throws SQLException, Exception {
+    void loadFromDB() throws Exception {
         String tableNameDS1 = "test_h2gis";
         String tableNameDS2 = "test_postgis";
 
@@ -547,7 +547,7 @@ class H2GISDataSourceTest {
      */
     @Test
     @EnabledIfSystemProperty(named = "test.postgis", matches = "true")
-    void testLoadPath() throws SQLException, URISyntaxException, Exception {
+    void testLoadPath() throws Exception {
         URL url = this.getClass().getResource("loadTable.dbf");
         URI uri = url.toURI();
         File file = new File(uri);
@@ -808,12 +808,12 @@ class H2GISDataSourceTest {
     @EnabledIfSystemProperty(named = "test.postgis", matches = "true")
     void testGetDataSet() throws Exception {
         Object dataset = h2gis.getDataSet("TEST_H2GIS");
-        assertTrue(dataset instanceof ISpatialTable);
+        assertInstanceOf(ISpatialTable.class, dataset);
         dataset = h2gis.getDataSet("GEOMETRY_COLUMNS");
         assertNotNull(dataset);
 
         dataset = postgis.getDataSet("test_postgis");
-        assertTrue(dataset instanceof ISpatialTable);
+        assertInstanceOf(ISpatialTable.class, dataset);
         dataset = postgis.getDataSet("geometry_columns");
         assertNotNull(dataset);
     }
@@ -836,7 +836,7 @@ class H2GISDataSourceTest {
                 .maxFieldSize(FIELD_SIZE).getTable("TEST_H2GIS");
         assertNotNull(table);
         assertArrayEquals(new int[]{3, 3}, table.getSize());
-        assertTrue(table instanceof H2gisSpatialTable);
+        assertInstanceOf(H2gisSpatialTable.class, table);
         IResultSetProperties rsp = ((H2gisSpatialTable)table).getResultSetProperties();
         assertEquals(ResultSet.TYPE_FORWARD_ONLY, rsp.getType());
         assertEquals(ResultSet.CONCUR_READ_ONLY, rsp.getConcurrency());
@@ -854,7 +854,7 @@ class H2GISDataSourceTest {
                 .maxFieldSize(FIELD_SIZE).getTable("test_postgis");
         assertNotNull(table);
         assertArrayEquals(new int[]{3, 3}, table.getSize());
-        assertTrue(table instanceof PostgisSpatialTable);
+        assertInstanceOf(PostgisSpatialTable.class, table);
         rsp = ((PostgisSpatialTable)table).getResultSetProperties();
         assertEquals(ResultSet.TYPE_SCROLL_INSENSITIVE, rsp.getType());
         assertEquals(ResultSet.CONCUR_READ_ONLY, rsp.getConcurrency());

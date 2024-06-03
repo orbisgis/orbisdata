@@ -105,7 +105,7 @@ public class IJdbcTableTest {
         /**
          * Fake data location.
          */
-        private String location;
+        private final String location;
 
 
         /**

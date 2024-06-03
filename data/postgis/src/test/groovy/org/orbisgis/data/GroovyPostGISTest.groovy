@@ -507,31 +507,31 @@ class GroovyPostGISTest {
     @EnabledIfSystemProperty(named = "test.postgis", matches = "true")
     void testDataSourceMethods() throws SQLException {
         postGIS.execute("DROP TABLE IF EXISTS geodata; CREATE TABLE  geodata (ID INT,LAND VARCHAR, THE_GEOM GEOMETRY); " +
-                "INSERT INTO geodata VALUES (1,'grass', 'POINT(0 0)'::GEOMETRY);");
-        assertFalse(postGIS.isEmpty("geodata"));
+                "INSERT INTO geodata VALUES (1,'grass', 'POINT(0 0)'::GEOMETRY);")
+        assertFalse(postGIS.isEmpty("geodata"))
         assertEquals(1, postGIS.getRowCount("geodata"))
-        assertTrue(postGIS.createIndex("geodata", "id"));
-        assertTrue(postGIS.isIndexed("geodata", "id"));
-        postGIS.dropIndex("geodata", "id");
-        assertFalse(postGIS.isIndexed("geodata", "id"));
+        assertTrue(postGIS.createIndex("geodata", "id"))
+        assertTrue(postGIS.isIndexed("geodata", "id"))
+        postGIS.dropIndex("geodata", "id")
+        assertFalse(postGIS.isIndexed("geodata", "id"))
 
-        assertTrue(postGIS.createSpatialIndex("geodata", "the_geom"));
-        assertTrue(postGIS.isSpatialIndexed("geodata", "the_geom"));
-        postGIS.dropIndex("geodata", "the_geom");
-        assertFalse(postGIS.isSpatialIndexed("geodata", "the_geom"));
+        assertTrue(postGIS.createSpatialIndex("geodata", "the_geom"))
+        assertTrue(postGIS.isSpatialIndexed("geodata", "the_geom"))
+        postGIS.dropIndex("geodata", "the_geom")
+        assertFalse(postGIS.isSpatialIndexed("geodata", "the_geom"))
 
-        assertTrue(postGIS.createSpatialIndex("geodata"));
-        assertTrue(postGIS.isSpatialIndexed("geodata"));
+        assertTrue(postGIS.createSpatialIndex("geodata"))
+        assertTrue(postGIS.isSpatialIndexed("geodata"))
 
-        assertEquals(postGIS.firstRow("select 'POINT(0 0)'::GEOMETRY AS the_geom").get("THE_GEOM"), postGIS.getExtent("geodata"));
-
-
-        postGIS.dropColumn("geodata", "id", "land", "type");
-        assertEquals(1,postGIS.getColumnNames("geodata").size());
+        assertEquals(postGIS.firstRow("select 'POINT(0 0)'::GEOMETRY AS the_geom").get("THE_GEOM"), postGIS.getExtent("geodata"))
 
 
-        postGIS.dropTable("geodata");
-        assertFalse(postGIS.hasTable("geodata"));
+        postGIS.dropColumn("geodata", "id", "land", "type")
+        assertEquals(1,postGIS.getColumnNames("geodata").size())
+
+
+        postGIS.dropTable("geodata")
+        assertFalse(postGIS.hasTable("geodata"))
 
         postGIS.dropTable("", "")
         postGIS.dropTable([])

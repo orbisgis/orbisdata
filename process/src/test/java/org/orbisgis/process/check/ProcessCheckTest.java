@@ -333,19 +333,19 @@ public class ProcessCheckTest {
         processCheck.setProperty("inOutPuts", null);
         Object obj = processCheck.getProperty("inOutPuts");
         assertFalse(obj instanceof Optional);
-        assertTrue(obj instanceof LinkedList);
+        assertInstanceOf(LinkedList.class, obj);
         assertTrue(((LinkedList<?>) obj).isEmpty());
 
         processCheck.setProperty("inOutPuts", new IInOutPut[]{new Input()});
         obj = processCheck.getProperty("inOutPuts");
         assertFalse(obj instanceof Optional);
-        assertTrue(obj instanceof LinkedList);
+        assertInstanceOf(LinkedList.class, obj);
         assertEquals(1, ((LinkedList<?>)obj).size());
 
         processCheck.setMetaClass(null);
         processCheck.setProperty("inOutPuts", null);
         obj = processCheck.getProperty("inOutPuts");
-        assertTrue(obj instanceof LinkedList);
+        assertInstanceOf(LinkedList.class, obj);
 
         processCheck.setMetaClass(InvokerHelper.getMetaClass(processCheck.getClass()));
         obj = processCheck.getProperty("inOutPuts");

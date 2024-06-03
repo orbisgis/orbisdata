@@ -152,8 +152,8 @@ public class IJdbcDataSourceTest {
      * Simple implementation of the {@link IJdbcDataSource} interface.
      */
     private class DummyDataSource implements IJdbcDataSource {
-        private Object prop1;
-        private Object prop2;
+        private final Object prop1;
+        private final Object prop2;
         private boolean streamScript = false;
         private boolean fileScript = false;
 

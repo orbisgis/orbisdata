@@ -46,6 +46,7 @@ import org.orbisgis.data.jdbc.ResultSetIterator;
 import org.orbisgis.data.jdbc.resultset.ResultSetSpliterator;
 import org.orbisgis.data.jdbc.resultset.StreamResultSet;
 
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
 import java.util.Spliterator;
@@ -75,7 +76,7 @@ public class PostgisTable extends JdbcTable<StreamResultSet> {
     }
 
     @Override
-    public Object asType(Class<?> clazz) {
+    public Object asType(Class<?> clazz) throws Exception {
         if (ISpatialTable.class.isAssignableFrom(clazz)) {
             return new PostgisSpatialTable(getTableLocation(), getBaseQuery(), getStatement(), getParams(),
                     getJdbcDataSource());
@@ -94,7 +95,7 @@ public class PostgisTable extends JdbcTable<StreamResultSet> {
 
 
     @Override
-    public Stream<? extends StreamResultSet> stream() {
+    public Stream<? extends StreamResultSet> stream() throws Exception {
         Spliterator<StreamResultSet> spliterator = new ResultSetSpliterator<>(this.getRowCount(), new StreamResultSet(getResultSet()));
         return StreamSupport.stream(spliterator, true);
     }

@@ -57,7 +57,7 @@ public abstract class DefaultResultSet implements ResultSet {
      *
      * @return The table ResultSet.
      */
-    protected abstract ResultSet getResultSet();
+    protected abstract ResultSet getResultSet() throws SQLException;
 
     @Override
     public boolean next() throws SQLException {

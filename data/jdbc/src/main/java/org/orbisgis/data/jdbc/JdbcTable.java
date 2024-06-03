@@ -39,10 +39,7 @@ package org.orbisgis.data.jdbc;
 import groovy.lang.*;
 import org.codehaus.groovy.runtime.InvokerHelper;
 import org.h2gis.functions.io.utility.IOMethods;
-import org.h2gis.utilities.GeometryMetaData;
-import org.h2gis.utilities.GeometryTableUtilities;
-import org.h2gis.utilities.JDBCUtilities;
-import org.h2gis.utilities.TableLocation;
+import org.h2gis.utilities.*;
 import org.h2gis.utilities.dbtypes.DBTypes;
 import org.orbisgis.commons.printer.Ascii;
 import org.orbisgis.commons.printer.Html;
@@ -126,13 +123,13 @@ public abstract class JdbcTable<T extends ResultSet> extends DefaultResultSet im
      * @param dataBaseType   Type of the DataBase where this table comes from.
      * @param tableLocation  TableLocation that identify the represented table.
      * @param baseQuery      Query for the creation of the ResultSet.
-     * @param statement  PreparedStatement used to request the database.
+     * @param statement      PreparedStatement used to request the database.
      * @param params         Map containing the parameters for the query.
      * @param jdbcDataSource DataSource to use for the creation of the resultSet.
      */
     public JdbcTable(DBTypes dataBaseType, IJdbcDataSource jdbcDataSource,
                      TableLocation tableLocation, Statement statement,
-                     List <Object> params, String baseQuery) {
+                     List<Object> params, String baseQuery) {
         this.metaClass = InvokerHelper.getMetaClass(getClass());
         this.dataBaseType = dataBaseType;
         this.jdbcDataSource = jdbcDataSource;
@@ -153,25 +150,19 @@ public abstract class JdbcTable<T extends ResultSet> extends DefaultResultSet im
     }
 
     @Override
-    public boolean reload(){
+    public boolean reload() throws SQLException {
         resultSet = null;
         return getResultSet() != null;
     }
 
     @Override
-    protected ResultSet getResultSet() {
+    protected ResultSet getResultSet() throws SQLException {
         if (resultSet == null) {
-            try {
-                Statement st = getStatement();
-                if(st instanceof PreparedStatement) {
-                    resultSet = ((PreparedStatement)st).executeQuery();
-                }
-                else {
-                    resultSet = getStatement().executeQuery(getBaseQuery());
-                }
-            } catch (SQLException e) {
-                LOGGER.error("Unable to execute the query '" + getBaseQuery() + "'.\n" + e.getLocalizedMessage());
-                return null;
+            Statement st = getStatement();
+            if (st instanceof PreparedStatement) {
+                resultSet = ((PreparedStatement) st).executeQuery();
+            } else {
+                resultSet = getStatement().executeQuery(getBaseQuery());
             }
         }
         return resultSet;
@@ -183,44 +174,21 @@ public abstract class JdbcTable<T extends ResultSet> extends DefaultResultSet im
      * @param limit Limit of the result set.
      * @return The {@link ResultSet} with a limit.
      */
-    protected ResultSet getResultSetLimit(int limit) {
-        int _limit = limit;
-        if (_limit < 0) {
-            LOGGER.warn("The ResultSet limit should not be under 0. Set it to 0.");
-            _limit = 0;
-        }
+    protected ResultSet getResultSetLimit(int limit) throws SQLException {
         ResultSet resultSet;
-        try {
-            if (getBaseQuery().contains(" LIMIT ")) {
-                resultSet = getResultSet();
-            } else {
-                Connection con = jdbcDataSource.getConnection();
-                if(con == null){
-                    LOGGER.error("Unable to get the connection.");
-                    return null;
-                }
-                resultSet = con.createStatement().executeQuery("SELECT * FROM ("+getBaseQuery() + ") AS FOO LIMIT " + _limit);
-            }
-        } catch (SQLException e) {
-            LOGGER.error("Unable to execute the query '" + getBaseQuery() + "'.\n" + e.getLocalizedMessage());
-            return null;
+        if (getBaseQuery().contains(" LIMIT ")) {
+            resultSet = getResultSet();
+        } else {
+            Connection con = jdbcDataSource.getConnection();
+            resultSet = con.createStatement().executeQuery("SELECT * FROM (" + getBaseQuery() + ") AS FOO LIMIT " + limit);
         }
         return resultSet;
     }
 
     @Override
-    public ResultSetMetaData getMetaData() {
-        try {
-            ResultSet rs = getResultSet();
-            if (rs == null) {
-                LOGGER.error("The ResultSet is null.");
-            } else {
-                return rs.getMetaData();
-            }
-        } catch (SQLException e) {
-            LOGGER.error("Unable to get the metadata.\n" + e.getLocalizedMessage());
-        }
-        return null;
+    public ResultSetMetaData getMetaData() throws SQLException{
+        ResultSet rs = getResultSet();
+       return rs.getMetaData();
     }
 
     /**
@@ -238,7 +206,7 @@ public abstract class JdbcTable<T extends ResultSet> extends DefaultResultSet im
     }
 
     @Override
-    
+
     public DBTypes getDbType() {
         return dataBaseType;
     }
@@ -263,7 +231,7 @@ public abstract class JdbcTable<T extends ResultSet> extends DefaultResultSet im
         if (getTableLocation() != null) {
             try {
                 Connection con = jdbcDataSource.getConnection();
-                if(con == null){
+                if (con == null) {
                     LOGGER.error("Unable to get the connection.");
                     return false;
                 }
@@ -280,7 +248,7 @@ public abstract class JdbcTable<T extends ResultSet> extends DefaultResultSet im
         if (getTableLocation() != null) {
             try {
                 Connection con = jdbcDataSource.getConnection();
-                if(con == null){
+                if (con == null) {
                     LOGGER.error("Unable to get the connection.");
                     return false;
                 }
@@ -293,120 +261,56 @@ public abstract class JdbcTable<T extends ResultSet> extends DefaultResultSet im
     }
 
     @Override
-    public Collection<String> getColumns() {
-        Connection con;
-        try {
-            con = jdbcDataSource.getConnection();
-        } catch (SQLException e) {
-            LOGGER.error("Unable to get the connection.");
-            return null;
-        }
+    public Collection<String> getColumns() throws Exception {
+        Connection con = jdbcDataSource.getConnection();
         if (tableLocation == null) {
             try {
                 ResultSet rs = getResultSetLimit(0);
-                if (rs == null) {
-                    LOGGER.error("Unable to get the ResultSet");
-                    return null;
-                }
                 return JDBCUtilities
                         .getColumnNames(rs.getMetaData())
                         .stream()
                         .map(this::formatColumnName)
                         .collect(Collectors.toCollection(ArrayList::new));
             } catch (SQLException e) {
-                LOGGER.error("Unable to get the collection of columns names");
-                return null;
+                throw new SQLException("Unable to get the collection of columns names", e);
             }
         } else {
             try {
                 return JDBCUtilities.getColumnNames(con, tableLocation);
             } catch (SQLException e) {
-                LOGGER.error("Unable to get the column names of the table " + tableLocation + ".");
-                LOGGER.debug(e.getLocalizedMessage());
-                return null;
+                throw new SQLException("Unable to get the column names of the table " + tableLocation + ".", e);
             }
         }
     }
 
     @Override
-    public Map<String, String> getColumnsTypes() {
+    public Map<String, String> getColumnsTypes() throws Exception {
         Map<String, String> map = new LinkedHashMap<>();
         try {
             ResultSet rs = getResultSetLimit(0);
-            if(rs == null){
-                LOGGER.error("Unable to get the ResultSet.");
-                return null;
-            }
             ResultSetMetaData metaData = rs.getMetaData();
             for (int i = 1; i <= metaData.getColumnCount(); i++) {
-                map.put( metaData.getColumnName(i),  metaData.getColumnTypeName(i));
+                map.put(metaData.getColumnName(i), metaData.getColumnTypeName(i));
             }
         } catch (SQLException e) {
-            LOGGER.error("unable to request the resultset metadata.", e);
-            return null;
+            throw new SQLException("Unable to get the column types", e);
         }
-
         return map;
     }
 
     @Override
-    public boolean hasColumns(Map<String, Class<?>> columnMap) {
-        Map<String, Class> columnsWithClass = new HashMap<String, Class>();
+    public String getColumnType(String columnName) throws SQLException {
         try {
             ResultSet rs = getResultSetLimit(0);
-            if(rs == null){
-                LOGGER.error("Unable to get data from the table.");
-                return false;
-            }
             ResultSetMetaData metaData = rs.getMetaData();
             for (int i = 1; i <= metaData.getColumnCount(); i++) {
-                String columnName = metaData.getColumnName(i);
+                if (columnName.equalsIgnoreCase(metaData.getColumnName(i))) {
                     //Take into account the geometry type
                     String type = metaData.getColumnTypeName(i);
-                    if(type.toLowerCase().startsWith("geometry")){
-                        if (tableLocation != null && !getName().isEmpty()) {
-                            columnsWithClass.put(columnName.toLowerCase(), getJdbcDataSource().typeNameToClass(GeometryTableUtilities.getMetaData(jdbcDataSource.getConnection(),
-                                    tableLocation,
-                                    TableLocation.capsIdentifier(columnName, dataBaseType)
-                            ).getGeometryType()));
-                        }
-                    }else{
-                        columnsWithClass.put(columnName.toLowerCase(),  getJdbcDataSource().typeNameToClass(type));
-                    }
-
-            }
-        } catch (SQLException e) {
-            LOGGER.error("unable to request the metadata of the table.", e);
-            return false;
-        }
-
-        return columnMap.entrySet().stream().allMatch(entry -> {
-            Class class_in = columnsWithClass.get(entry.getKey().toLowerCase());
-            if(class_in==null){
-                return false;
-            }
-            return entry.getValue().isAssignableFrom(class_in);});
-
-    }
-
-    @Override
-    public String getColumnType(String columnName) {
-        try {
-            ResultSet rs = getResultSetLimit(0);
-            if(rs == null){
-                LOGGER.error("Unable to get the ResultSet.");
-                return null;
-            }
-            ResultSetMetaData metaData = rs.getMetaData();
-            for (int i = 1; i <= metaData.getColumnCount(); i++) {
-                if(columnName.equalsIgnoreCase(metaData.getColumnName(i))){
-                    //Take into account the geometry type
-                    String type = metaData.getColumnTypeName(i);
-                    if(type.toLowerCase().startsWith("geometry")){
-                        if(dataBaseType==DBTypes.H2|| dataBaseType==DBTypes.H2GIS){
+                    if (type.toLowerCase().startsWith("geometry")) {
+                        if (dataBaseType == DBTypes.H2 || dataBaseType == DBTypes.H2GIS) {
                             return GeometryMetaData.getMetaDataFromTablePattern(type).getGeometryType();
-                        }
-                        else if (tableLocation != null && !getName().isEmpty()) {
+                        } else if (tableLocation != null && !getName().isEmpty()) {
                             return GeometryTableUtilities.getMetaData(jdbcDataSource.getConnection(),
                                     tableLocation,
                                     TableLocation.capsIdentifier(columnName, dataBaseType)
@@ -417,8 +321,7 @@ public abstract class JdbcTable<T extends ResultSet> extends DefaultResultSet im
                 }
             }
         } catch (SQLException e) {
-            LOGGER.error("unable to request the resultset metadata.", e);
-            return null;
+            throw new SQLException("Cannot get the type of the column.", e);
         }
         return null;
     }
@@ -427,10 +330,6 @@ public abstract class JdbcTable<T extends ResultSet> extends DefaultResultSet im
         if (tableLocation != null && !getName().isEmpty()) {
             try {
                 Connection con = jdbcDataSource.getConnection();
-                if(con == null){
-                    LOGGER.error("Unable to get the connection.");
-                    return null;
-                }
                 return GeometryTableUtilities.getMetaData(con,
                         tableLocation,
                         TableLocation.capsIdentifier(columnName, dataBaseType)
@@ -447,7 +346,7 @@ public abstract class JdbcTable<T extends ResultSet> extends DefaultResultSet im
                     return null;
                 }
                 Map<String, GeometryMetaData> map = GeometryTableUtilities.getMetaData(rs);
-                if(!map.containsKey(columnName)) {
+                if (!map.containsKey(columnName)) {
                     LOGGER.error("Unable to get data from the column '" + columnName + "'.");
                     return null;
                 }
@@ -461,92 +360,42 @@ public abstract class JdbcTable<T extends ResultSet> extends DefaultResultSet im
     }
 
     @Override
-    public boolean hasColumn(String columnName) {
-        ResultSet rs = getResultSetLimit(0);
-        if(rs == null){
-            return false;
-        }
-        try {
-            ResultSetMetaData metaData = rs.getMetaData();
-            for (int i = 1; i <= metaData.getColumnCount(); i++) {
-                if (columnName.equalsIgnoreCase(metaData.getColumnName(i))) {
-                return true;
-                }
-            }
-        } catch (SQLException e) {
-            LOGGER.error("Unable to get the ResultSet Metadata.", e);
-            return false;
-        }
-        return false;
-    }
-
-    @Override
-    public boolean hasColumn(String columnName, Class<?> clazz) {
-        Class<?> class_tmp = getJdbcDataSource().typeNameToClass(getColumnType(columnName));
-        if(class_tmp==null){
-            return false;
-        }
-        return clazz.isAssignableFrom(class_tmp);
-    }
-
-    @Override
-    public int getColumnCount(){
+    public int getColumnCount() throws SQLException {
         ResultSet rs = getResultSet();
-        if(rs == null){
-            return -1;
-        }
-        ResultSetMetaData metaData = null;
-        try {
-            metaData = rs.getMetaData();
-        } catch (SQLException e) {
-            LOGGER.error("Unable to get the ResultSet Metadata.", e);
-            return -1;
-        }
-        try {
-            return metaData.getColumnCount();
-        } catch (SQLException e) {
-            LOGGER.error("Unable to get the ResultSet Metadata column count.", e);
-            return -1;
-        }
+        ResultSetMetaData metaData = rs.getMetaData();
+        return metaData.getColumnCount();
     }
 
     @Override
-    public int getRowCount() {
-        Connection con;
-        try {
-            con = jdbcDataSource.getConnection();
-        } catch (SQLException e) {
-            LOGGER.error("Unable to get the connection.");
-            return -1;
-        }
+    public int getRowCount() throws SQLException {
+        Connection con = jdbcDataSource.getConnection();
         String query = "";
         if (tableLocation == null) {
-            if(getBaseQuery().startsWith("(") && getBaseQuery().endsWith(")")) {
-                query= "SELECT COUNT(*) FROM " +getBaseQuery() + "AS FOO";
-            }else {
+            if (getBaseQuery().startsWith("(") && getBaseQuery().endsWith(")")) {
+                query = "SELECT COUNT(*) FROM " + getBaseQuery() + "AS FOO";
+            } else {
                 query = "SELECT COUNT(*) FROM (" + getBaseQuery() + ") AS FOO";
             }
-        } else  {
-           query =  "SELECT count(*) FROM "+tableLocation.toString(getDbType());
+        } else {
+            query = "SELECT count(*) FROM " + tableLocation.toString(getDbType());
         }
         try {
-            ResultSet rowCountRs = con.createStatement().executeQuery(query );
+            ResultSet rowCountRs = con.createStatement().executeQuery(query);
             rowCountRs.next();
             int c = rowCountRs.getInt(1);
-            if(!con.getAutoCommit()) {
+            if (!con.getAutoCommit()) {
                 con.commit();
             }
             return c;
         } catch (SQLException e) {
-            LOGGER.error("Unable to get the number of rows.");
             try {
-                if(!con.getAutoCommit()) {
+                if (!con.getAutoCommit()) {
                     con.rollback();
                 }
             } catch (SQLException e1) {
                 LOGGER.error("Unable to rollback.", e1);
             }
-            return -1;
+            throw e;
         }
     }
 
@@ -561,12 +410,12 @@ public abstract class JdbcTable<T extends ResultSet> extends DefaultResultSet im
         } else {
             try {
                 Connection con = jdbcDataSource.getConnection();
-                if(con == null){
+                if (con == null) {
                     LOGGER.error("Unable to get the connection.");
                     return null;
                 }
                 TableLocation loc = getTableLocation();
-                if(loc == null){
+                if (loc == null) {
                     return null;
                 }
                 return JDBCUtilities.getUniqueFieldValues(con, loc.toString(getDbType()),
@@ -579,146 +428,109 @@ public abstract class JdbcTable<T extends ResultSet> extends DefaultResultSet im
     }
 
     @Override
-    
-    public Map<String, Object> firstRow() {
+
+    public Map<String, Object> firstRow() throws Exception {
         Map<String, Object> map = new HashMap<>();
-        if(isEmpty()){
+        if (isEmpty()) {
             return map;
         }
         ResultSet rs = getResultSetLimit(1);
         try {
             rs.next();
         } catch (SQLException e) {
-            LOGGER.error("Unable to get first row.", e);
+            throw e;
         }
         Collection<String> columns = getColumns();
-        for(String column : columns){
+        for (String column : columns) {
             try {
                 map.put(column, rs.getObject(column));
             } catch (SQLException e) {
-                LOGGER.error("Unable to get data from first row.", e);
+                throw new SQLException("Unable to get data from first row.", e);
             }
         }
         return map;
     }
 
     @Override
-    public String save(String filePath, boolean deleteFile) {
+    public String save(String filePath, boolean deleteFile) throws Exception {
         String toSave = getTableLocation() == null ? "(" + getBaseQuery() + ")" : getTableLocation().toString(getDbType());
         try {
-            if(ioMethods==null) {
+            if (ioMethods == null) {
                 ioMethods = new IOMethods();
             }
-            ioMethods.exportToFile(getJdbcDataSource().getConnection(), toSave,filePath, null, deleteFile);
+            ioMethods.exportToFile(getJdbcDataSource().getConnection(), toSave, filePath, null, deleteFile);
             return filePath;
         } catch (SQLException e) {
-            LOGGER.error("Cannot save the file : "+ filePath);
-            return null;
+            throw new SQLException("Cannot save the file : " + filePath);
         }
     }
 
     @Override
-    public String save(String filePath, String encoding) {
+    public String save(String filePath, String encoding) throws Exception {
         String toSave = getTableLocation() == null ? "(" + getBaseQuery() + ")" : getTableLocation().toString(getDbType());
         try {
-            if(ioMethods==null) {
+            if (ioMethods == null) {
                 ioMethods = new IOMethods();
             }
-            ioMethods.exportToFile(getJdbcDataSource().getConnection(), toSave,filePath, encoding, false);
+            ioMethods.exportToFile(getJdbcDataSource().getConnection(), toSave, filePath, encoding, false);
             return filePath;
         } catch (SQLException e) {
-            LOGGER.error("Cannot save the file : "+ filePath);
-            return null;
+            throw new SQLException("Cannot save the file : " + filePath, e);
         }
     }
 
     @Override
-    public String save(IJdbcDataSource dataSource, boolean deleteTable) {
-        return save(dataSource,  deleteTable,  1000);
+    public String save(IJdbcDataSource dataSource, boolean deleteTable) throws Exception {
+        return save(dataSource, deleteTable, 1000);
     }
 
     @Override
-    public String save(IJdbcDataSource dataSource, String outputTableName, boolean deleteTable) {
-        return save( dataSource,  outputTableName,  deleteTable, 1000);
+    public String save(IJdbcDataSource dataSource, String outputTableName, boolean deleteTable) throws Exception {
+        return save(dataSource, outputTableName, deleteTable, 1000);
     }
 
     @Override
-    public String save(IJdbcDataSource dataSource, int batchSize) {
-        return save(dataSource,  false,  batchSize);
+    public String save(IJdbcDataSource dataSource, int batchSize) throws Exception {
+        return save(dataSource, false, batchSize);
     }
 
     @Override
-    public String save(IJdbcDataSource dataSource, String outputTableName, boolean deleteTable, int batchSize) {
-        if(dataSource==null){
-            LOGGER.error("The output datasource connexion cannot ne null\n");
-            return null;
+    public String save(IJdbcDataSource dataSource, String outputTableName, boolean deleteTable, int batchSize) throws Exception {
+        if (dataSource == null) {
+            throw new IllegalArgumentException("The output datasource connexion cannot ne null");
         }
-        String inputTableName =  getTableLocation() == null ? "(" + getBaseQuery() + ")" : getTableLocation().toString(getDbType());
+        String inputTableName = getTableLocation() == null ? "(" + getBaseQuery() + ")" : getTableLocation().toString(getDbType());
         try {
-
-            return IOMethods.exportToDataBase(getJdbcDataSource().getConnection(), inputTableName,dataSource.getConnection() , outputTableName, deleteTable?-1:0, batchSize);
+            return IOMethods.exportToDataBase(getJdbcDataSource().getConnection(), inputTableName, dataSource.getConnection(), outputTableName, deleteTable ? -1 : 0, batchSize);
         } catch (SQLException e) {
-            LOGGER.error("Unable to save the table "+inputTableName + " to " + dataSource.getLocation().toString());
+            throw new SQLException("Unable to save the table " + inputTableName + " to " + dataSource.getLocation().toString());
         }
-        return null;
     }
 
     @Override
-    public String save(IJdbcDataSource dataSource, boolean deleteTable, int batchSize) {
-        if(dataSource==null){
-            LOGGER.error("The output datasource connexion cannot be null\n");
-            return null;
+    public String save(IJdbcDataSource dataSource, boolean deleteTable, int batchSize) throws Exception {
+        if (dataSource == null) {
+            throw new IllegalArgumentException("The output datasource connexion cannot be null");
         }
-        String inputTableName =  getTableLocation() == null ? "(" + getBaseQuery() + ")" : getTableLocation().toString(getDbType());
-        try {
-            return IOMethods.exportToDataBase(getJdbcDataSource().getConnection(), inputTableName,  dataSource.getConnection(), inputTableName, deleteTable?-1:0, batchSize);
-        } catch (SQLException e) {
-            LOGGER.error("Unable to save the table "+inputTableName + " to " + dataSource.getLocation().toString());
+        String inputTableName = getTableLocation() == null ? "(" + getBaseQuery() + ")" : getTableLocation().toString(getDbType());
+        return IOMethods.exportToDataBase(getJdbcDataSource().getConnection(), inputTableName, dataSource.getConnection(), inputTableName, deleteTable ? -1 : 0, batchSize);
         }
-        return null;
-    }
 
-    @Override
-    public Object getProperty(String propertyName) {
-        if (propertyName == null) {
-            LOGGER.error("Trying to get null property name.");
-            return null;
-        }
-        //First test the predefined properties
-        if (propertyName.equals(META_PROPERTY)) {
-            return getMetaData();
-        }
-        try {
-            if (!isBeforeFirst() && (this.getRow() != 0 || this.getRowCount() != 0)) {
-                return getObject(propertyName);
-            }
-        } catch (SQLException e) {
-            LOGGER.debug("Unable to find the column '" + propertyName + "'.\n" + e.getLocalizedMessage());
-        }
-        Collection<String> columns = getColumns();
-        if (columns != null &&
-                (columns.contains(propertyName.toLowerCase()) || columns.contains(propertyName.toUpperCase()))
-                || "id".equalsIgnoreCase(propertyName)) {
-            return new JdbcColumn(formatColumnName(propertyName), this.getName(), getJdbcDataSource());
-        }
-        return getMetaClass().getProperty(this, propertyName);
-    }
 
-    
     private String getQuery() {
         return baseQuery.trim();
     }
 
     protected String getQuery(String... columns) {
         TableLocation loc = getTableLocation();
-        if(loc == null){
+        if (loc == null) {
             return null;
         }
         return "SELECT " + String.join(", ", columns) + " FROM " + getTableLocation().getTable().toUpperCase();
     }
 
     @Override
-    
+
     public IBuilderResult filter(String filter) {
         String loc = getTableLocation() != null ? getTableLocation().toString(getDbType()) : getBaseQuery();
         IQueryBuilder builder = new QueryBuilder(getJdbcDataSource(), loc, getResultSetProperties());
@@ -726,7 +538,7 @@ public abstract class JdbcTable<T extends ResultSet> extends DefaultResultSet im
     }
 
     @Override
-    
+
     public IBuilderResult filter(GString filter) {
         String loc = getTableLocation() != null ? getTableLocation().toString(getDbType()) : getBaseQuery();
         IQueryBuilder builder = new QueryBuilder(getJdbcDataSource(), loc, getResultSetProperties());
@@ -734,7 +546,7 @@ public abstract class JdbcTable<T extends ResultSet> extends DefaultResultSet im
     }
 
     @Override
-    
+
     public IBuilderResult filter(String filter, List<Object> params) {
         String loc = getTableLocation() != null ? getTableLocation().toString(getDbType()) : getBaseQuery();
         IQueryBuilder builder = new QueryBuilder(getJdbcDataSource(), loc, getResultSetProperties());
@@ -742,7 +554,7 @@ public abstract class JdbcTable<T extends ResultSet> extends DefaultResultSet im
     }
 
     @Override
-    
+
     public IFilterBuilder columns(String... columns) {
         String loc = getTableLocation() != null ? getTableLocation().toString(getDbType()) : getBaseQuery();
         IQueryBuilder builder = new QueryBuilder(getJdbcDataSource(), loc, getResultSetProperties());
@@ -750,12 +562,12 @@ public abstract class JdbcTable<T extends ResultSet> extends DefaultResultSet im
     }
 
     @Override
-    public IJdbcTable<? extends IStreamResultSet> getTable() {
+    public IJdbcTable<? extends IStreamResultSet> getTable() throws Exception{
         return (IJdbcTable) asType(IJdbcTable.class);
     }
 
     @Override
-    public IJdbcSpatialTable<IStreamSpatialResultSet> getSpatialTable() {
+    public IJdbcSpatialTable<IStreamSpatialResultSet> getSpatialTable() throws Exception{
         if (isSpatial()) {
             return (IJdbcSpatialTable) asType(IJdbcSpatialTable.class);
         } else {
@@ -764,45 +576,30 @@ public abstract class JdbcTable<T extends ResultSet> extends DefaultResultSet im
     }
 
     @Override
-    
-    public List<Object> getFirstRow() {
-        List<Object> list = new ArrayList<>();
+    public List<Object> getFirstRow() throws Exception {
         ResultSet rs = getResultSet();
-        if(rs != null) {
+        if (rs != null) {
             try {
-                if(rs.isBeforeFirst() &&!rs.next()) {
-                    LOGGER.error("Unable go to the first row.");
-                    return list;
+                if (rs.isBeforeFirst() && !rs.next()) {
+                    throw new SQLException("Unable go to the first row.");
                 }
-                if(!rs.isFirst() && !rs.first()){
-                    LOGGER.error("Unable go to the first row.");
-                    return list;
+                if (!rs.isFirst() && !rs.first()) {
+                    throw new SQLException("Unable go to the first row.");
                 }
+                List<Object> list = new ArrayList<>();
                 for (int i = 1; i <= getColumnCount(); i++) {
                     list.add(rs.getObject(i));
                 }
+                return list;
             } catch (SQLException e) {
-                LOGGER.error("Unable to query the first row of the table.\n" + e.getLocalizedMessage());
+                throw new SQLException("Unable to query the first row of the table.", e);
             }
         }
-        return list;
+        throw new SQLException("Unable to query the first row of the table.");
     }
 
-    @Override
-    public Object invokeMethod(String name, Object args) {
-        try {
-            return getMetaClass().invokeMethod(this, name, args);
-        } catch (MissingMethodException e) {
-            LOGGER.debug("Unable to find the '" + name + "' methods, trying with the getter");
-            return getMetaClass()
-                    .invokeMethod(this, "get" + name.substring(0, 1).toUpperCase() + name.substring(1), args);
-        }
-    }
 
-    @Override
-    public void setProperty(String propertyName, Object newValue) {
-        getMetaClass().setProperty(this, propertyName, newValue);
-    }
+
 
     @Override
     public Statement getStatement() {
@@ -810,7 +607,7 @@ public abstract class JdbcTable<T extends ResultSet> extends DefaultResultSet im
     }
 
     @Override
-    public Object asType(Class<?> clazz) {
+    public Object asType(Class<?> clazz) throws Exception {
         if (ICustomPrinter.class.isAssignableFrom(clazz)) {
             StringBuilder builder = new StringBuilder();
             ICustomPrinter printer;
@@ -822,7 +619,7 @@ public abstract class JdbcTable<T extends ResultSet> extends DefaultResultSet im
                 return this;
             }
             Collection<String> columnNames = getColumns();
-            if(columnNames == null){
+            if (columnNames == null) {
                 printer.endTable();
                 return printer;
             }
@@ -835,8 +632,7 @@ public abstract class JdbcTable<T extends ResultSet> extends DefaultResultSet im
             }
             printer.appendTableLineSeparator();
             ResultSet rs = getResultSet();
-            if(rs != null) {
-                try {
+            if (rs != null) {
                     while (rs.next()) {
                         for (String column : columnNames) {
                             Object obj = rs.getObject(column);
@@ -847,13 +643,9 @@ public abstract class JdbcTable<T extends ResultSet> extends DefaultResultSet im
                             }
                         }
                     }
-                } catch (Exception e) {
-                    LOGGER.error("Error while reading the table '" + getName() + "'.\n" + e.getLocalizedMessage());
-                }
             }
             printer.appendTableLineSeparator();
             printer.endTable();
-
             return printer;
         } else if (ITable.class.isAssignableFrom(clazz)) {
             return this;
@@ -872,25 +664,24 @@ public abstract class JdbcTable<T extends ResultSet> extends DefaultResultSet im
     }
 
     @Override
-    
-    public JdbcTableSummary getSummary() {
+
+    public JdbcTableSummary getSummary() throws Exception{
         return new JdbcTableSummary(getTableLocation(), getColumnCount(), getRowCount());
     }
 
-    
     public List<Object> getParams() {
         return params;
     }
 
     @Override
     public void setResultSetProperties(IResultSetProperties properties) {
-        if(properties != null) {
+        if (properties != null) {
             this.rsp = properties.copy();
         }
     }
 
     @Override
-    
+
     public IResultSetProperties getResultSetProperties() {
         return rsp;
     }
@@ -923,39 +714,51 @@ public abstract class JdbcTable<T extends ResultSet> extends DefaultResultSet im
         Objects.requireNonNull(action);
         Iterator<T> var2 = this.iterator();
 
-        while(var2.hasNext()) {
+        while (var2.hasNext()) {
             T t = var2.next();
             action.accept(t);
         }
     }
 
     @Override
-    public boolean isEmpty() {
-        Connection con = null;
-        try {
-            con = jdbcDataSource.getConnection();
-        } catch (SQLException e) {
-            LOGGER.error("Unable to get the connection.");
-        }
+    public boolean isEmpty() throws Exception {
+        Connection con = jdbcDataSource.getConnection();
         String query = "";
         if (tableLocation == null) {
-            query = "SELECT 1 FROM ("+getBaseQuery()+") AS FOO LIMIT 1";
-        } else  {
-            query =  "SELECT 1 FROM "+tableLocation.toString(getDbType())+ " LIMIT 1";
+            query = "SELECT 1 FROM (" + getBaseQuery() + ") AS FOO LIMIT 1";
+        } else {
+            query = "SELECT 1 FROM " + tableLocation.toString(getDbType()) + " LIMIT 1";
         }
         try {
-            ResultSet rowQuery = con.createStatement().executeQuery(query );
+            ResultSet rowQuery = con.createStatement().executeQuery(query);
             return !rowQuery.next();
         } catch (SQLException e) {
-            LOGGER.error("Unable to get the number of rows.");
             try {
-                if(con!=null  && !con.getAutoCommit()) {
+                if (con != null && !con.getAutoCommit()) {
                     con.rollback();
                 }
             } catch (SQLException e1) {
-                LOGGER.error("Unable to rollback.", e1);
+                throw new SQLException("Unable to rollback.", e1);
             }
-            throw new RuntimeException("Unable to read the table.");
+            throw new SQLException("Unable to read the table.", e);
         }
+    }
+
+    @Override
+    public Object get(int column) throws Exception {
+        ResultSet rs = getResultSet();
+        if (rs != null) {
+            return rs.getObject(column);
+        }
+        throw new SQLException("Cannot get the value");
+    }
+
+    @Override
+    public Object get(String column) throws Exception {
+        ResultSet rs = getResultSet();
+        if (rs != null) {
+            return rs.getObject(column);
+        }
+        throw new SQLException("Cannot get the value");
     }
 }

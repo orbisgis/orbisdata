@@ -53,7 +53,7 @@ public class TestUtils {
      *
      * @return {@link H2GIS} wrapping the random named database.
      */
-    public static H2GIS RANDOM_DS() {
+    public static H2GIS RANDOM_DS() throws Exception {
         return open("./target/" + UUID.randomUUID().toString().replaceAll("-", "_"));
     }
 }

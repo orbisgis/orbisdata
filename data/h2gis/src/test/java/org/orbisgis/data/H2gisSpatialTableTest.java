@@ -45,7 +45,6 @@ import org.orbisgis.data.api.dataset.IJdbcSpatialTable;
 import org.orbisgis.data.api.dataset.IJdbcTable;
 import org.orbisgis.data.api.dataset.ISpatialTable;
 import org.orbisgis.data.api.dataset.ITable;
-import org.orbisgis.data.api.datasource.DataException;
 import org.orbisgis.data.jdbc.JdbcSpatialTable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -77,7 +76,7 @@ public class H2gisSpatialTableTest {
     private static H2GIS h2GIS;
 
     @BeforeAll
-    public static void beforeAll() {
+    public static void beforeAll() throws Exception {
        h2GIS=  H2GIS.open(BASE_DATABASE);
     }
 
@@ -101,7 +100,7 @@ public class H2gisSpatialTableTest {
      * Test the {@link H2gisSpatialTable#asType(Class)} method.
      */
     @Test
-    public void testAsType() {
+    public void testAsType() throws Exception {
         H2GIS h2gis = H2GIS.open("./target/test");
         try {
             h2gis.execute("DROP TABLE IF EXISTS NAME; CREATE TABLE name (the_geom GEOMETRY)");
@@ -117,7 +116,7 @@ public class H2gisSpatialTableTest {
     }
 
     @Test
-    void testReproject() throws SQLException, DataException {
+    void testReproject() throws SQLException, Exception {
         new File("target/reprojected_table.shp").delete();
         H2GIS dataSource = H2GIS.open("./target/test");
         dataSource.execute(" DROP TABLE IF EXISTS orbisgis;" +
@@ -151,7 +150,7 @@ public class H2gisSpatialTableTest {
     }
 
     @Test
-    void testSaveQueryInFile() throws SQLException, DataException {
+    void testSaveQueryInFile() throws SQLException, Exception {
         new File("target/query_table.shp").delete();
         H2GIS dataSource = H2GIS.open("./target/test");
         dataSource.execute(" DROP TABLE IF EXISTS orbisgis, query_table;" +
@@ -181,7 +180,7 @@ public class H2gisSpatialTableTest {
      * Test the {@link JdbcSpatialTable#isSpatial()} method.
      */
     @Test
-    public void testIsSpatial() {
+    public void testIsSpatial() throws Exception {
         assertTrue(h2GIS.getSpatialTable(TABLE_NAME).isSpatial());
     }
 
@@ -190,7 +189,7 @@ public class H2gisSpatialTableTest {
      * {@link JdbcSpatialTable#getGeometry(String)} methods.
      */
     @Test
-    public void testGetGeometry() {
+    public void testGetGeometry() throws Exception {
         ISpatialTable table = h2GIS.getSpatialTable(TABLE_NAME);
         assertNull(table.getGeometry());
         assertNull(table.getGeometry(1));
@@ -221,7 +220,7 @@ public class H2gisSpatialTableTest {
      * {@link JdbcSpatialTable#getRaster(String)} methods.
      */
     @Test
-    public void testGetRaster() {
+    public void testGetRaster() throws Exception {
         ISpatialTable table = h2GIS.getSpatialTable(TABLE_NAME);
         assertThrows(UnsupportedOperationException.class, table::getRaster);
         assertThrows(UnsupportedOperationException.class, () -> table.getRaster(0));
@@ -233,7 +232,7 @@ public class H2gisSpatialTableTest {
      * {@link JdbcSpatialTable#getRasterColumns()} and {@link JdbcSpatialTable#getSpatialColumns()} methods.
      */
     @Test
-    public void testGetColumns() {
+    public void testGetColumns() throws Exception {
         assertEquals(2, h2GIS.getSpatialTable(TABLE_NAME).getGeometricColumns().size());
         assertTrue(h2GIS.getSpatialTable(TABLE_NAME).getGeometricColumns().contains(COL_THE_GEOM));
         assertTrue(h2GIS.getSpatialTable(TABLE_NAME).getGeometricColumns().contains(COL_THE_GEOM2));
@@ -249,7 +248,7 @@ public class H2gisSpatialTableTest {
      * Test the {@link JdbcSpatialTable#getExtent()} method.
      */
     @Test
-    public void testGetExtend() {
+    public void testGetExtend() throws Exception {
         assertEquals("Env[0.0 : 0.0, 0.0 : 1.0]", h2GIS.getSpatialTable(TABLE_NAME).getExtent().getEnvelopeInternal().toString());
     }
 
@@ -257,7 +256,7 @@ public class H2gisSpatialTableTest {
      * Test the {@link JdbcSpatialTable#getEstimatedExtent()} method.
      */
     @Test
-    public void testGetEstimatedExtend() {
+    public void testGetEstimatedExtend() throws Exception {
         assertEquals("LINESTRING (0 0, 0 1)", h2GIS.getSpatialTable(TABLE_NAME).getEstimatedExtent().toString());
     }
 
@@ -265,7 +264,7 @@ public class H2gisSpatialTableTest {
      * Test the {@link JdbcSpatialTable#getSrid()}, {@link JdbcSpatialTable#setSrid(int)} methods.
      */
     @Test
-    public void testGetSrid() {
+    public void testGetSrid() throws Exception {
         ISpatialTable table = h2GIS.getSpatialTable(TABLE_NAME);
         //Always 0 for dummy jdbc table
         assertEquals(2020, table.getSrid());

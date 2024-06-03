@@ -103,7 +103,7 @@ public class IJdbcDataSourceTest {
      * methods.
      */
     @Test
-    public void testExecuteScript() {
+    public void testExecuteScript() throws Exception {
         DummyDataSource ds = new IJdbcDataSourceTest.DummyDataSource();
 
         assertFalse(ds.isFileScript());
@@ -650,6 +650,16 @@ public class IJdbcDataSourceTest {
 
         @Override
         public Collection<String> getColumnNames(String location) {
+            return null;
+        }
+
+        @Override
+        public Map<String, Class> getColumnNamesClasses(String location) throws Exception {
+            return Map.of();
+        }
+
+        @Override
+        public Map<String, String> getColumnNamesTypes(String location) throws Exception {
             return null;
         }
 

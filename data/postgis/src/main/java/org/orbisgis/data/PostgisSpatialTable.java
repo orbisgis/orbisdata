@@ -99,7 +99,7 @@ public class PostgisSpatialTable extends JdbcSpatialTable {
     }
 
     @Override
-    public Object asType(Class<?> clazz) {
+    public Object asType(Class<?> clazz) throws Exception{
         if (ISpatialTable.class.isAssignableFrom(clazz)) {
             return new PostgisSpatialTable(getTableLocation(), getBaseQuery(), getStatement(), getParams(),
                     getJdbcDataSource());
@@ -112,47 +112,27 @@ public class PostgisSpatialTable extends JdbcSpatialTable {
     }
 
     @Override
-    public int getSrid() {
+    public int getSrid() throws Exception{
         int srid =-1;
         if (getTableLocation() == null) {
-            try {
             Connection con = getJdbcDataSource().getConnection();
-            if (con == null) {
-                LOGGER.error("Unable to get connection for the table SRID.");
-                return -1;
-            }
             Tuple<String, GeometryMetaData> geomColumn = GeometryTableUtilities.getFirstColumnMetaData(getResultSetLimit(0));
             ResultSet rs = getStatement().executeQuery("select st_srid(" + geomColumn.first() + ") from (" + getBaseQuery() + ") as foo limit 1");
             if(rs.next()){
                 srid = rs.getInt(1);
             }
-            } catch (SQLException e) {
-                LOGGER.error("Unable to get the table SRID.", e);
-            }
         }
         else {
-            try {
                 Connection con = getJdbcDataSource().getConnection();
-                if (con == null) {
-                    LOGGER.error("Unable to get connection for the table SRID.");
-                    return -1;
-                }
                 return GeometryTableUtilities.getSRID(con, getTableLocation());
-            } catch (SQLException e) {
-                LOGGER.error("Unable to get the table SRID.", e);
-            }
         }
         return srid;
     }
 
     @Override
-    public ISpatialTable reproject(int srid) {
+    public ISpatialTable reproject(int srid) throws Exception{
         try {
             ResultSetMetaData meta = getMetaData();
-            if(meta == null){
-                LOGGER.error("Unable to get metadata for reprojection");
-                return null;
-            }
             int columnCount = meta.getColumnCount();
             String[] fieldNames = new String[columnCount];
             for (int i = 1; i <= columnCount; i++) {
@@ -167,8 +147,8 @@ public class PostgisSpatialTable extends JdbcSpatialTable {
                     (getTableLocation() == null ? getBaseQuery() + " as foo" : getTableLocation().toString(getDbType()));
             return new PostgisSpatialTable(null, query,  getStatement(), getParams(), getJdbcDataSource());
         } catch (SQLException e) {
-            LOGGER.error("Cannot reproject the table '" + getLocation() + "' in the SRID '" + srid + "'.\n", e);
-            return null;
+            throw new SQLException("Cannot reproject the table '" + getLocation() + "' in the SRID '" + srid + "'.\n", e);
+
         }
     }
 }

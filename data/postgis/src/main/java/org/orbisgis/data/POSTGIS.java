@@ -74,7 +74,7 @@ public class POSTGIS extends JdbcDataSource {
      *
      * @param connection {@link Connection} to the database.
      */
-    private POSTGIS(Connection connection) {
+    private POSTGIS(Connection connection) throws Exception{
         super(connection, DBTypes.POSTGIS);
     }
 
@@ -83,7 +83,7 @@ public class POSTGIS extends JdbcDataSource {
      *
      * @param dataSource {@link DataSource} to the database.
      */
-    private POSTGIS(DataSource dataSource) {
+    private POSTGIS(DataSource dataSource) throws Exception{
         super(dataSource, DBTypes.POSTGIS);
     }
 
@@ -93,12 +93,8 @@ public class POSTGIS extends JdbcDataSource {
      * @param connection {@link Connection} of the DataBase.
      * @return {@link POSTGIS} object if the DataBase has been successfully open, null otherwise.
      */
-    public static POSTGIS open(Connection connection) {
-        if (connection != null) {
+    public static POSTGIS open(Connection connection) throws Exception{
             return new POSTGIS(connection);
-        } else {
-            return null;
-        }
     }
 
     /**
@@ -107,12 +103,8 @@ public class POSTGIS extends JdbcDataSource {
      * @param dataSource {@link Connection} of the DataBase.
      * @return {@link POSTGIS} object if the DataBase has been successfully open, null otherwise.
      */
-    public static POSTGIS open(DataSource dataSource) {
-        if (dataSource != null) {
-            return new POSTGIS(dataSource);
-        } else {
-            return null;
-        }
+    public static POSTGIS open(DataSource dataSource) throws Exception{
+       return new POSTGIS(dataSource);
     }
 
     /**
@@ -121,7 +113,7 @@ public class POSTGIS extends JdbcDataSource {
      * @param file .properties file containing the information for the DataBase opening.
      * @return {@link POSTGIS} object if the DataBase has been successfully open, null otherwise.
      */
-    public static POSTGIS open(File file) {
+    public static POSTGIS open(File file) throws Exception{
         try {
             if (FileUtilities.isExtensionWellFormated(file, "properties")) {
                 Properties prop = new Properties();
@@ -130,10 +122,9 @@ public class POSTGIS extends JdbcDataSource {
                 return open(prop);
             }
         } catch (IOException e) {
-            LOGGER.error("Unable to read the properties file.\n" + e.getLocalizedMessage());
-            return null;
+            throw new IllegalArgumentException("Unable to read the properties file.",  e);
         }
-        return null;
+       throw new RuntimeException("Cannot connect to the PostGIS database");
     }
 
     /**
@@ -142,14 +133,8 @@ public class POSTGIS extends JdbcDataSource {
      * @param properties Properties for the opening of the DataBase.
      * @return {@link POSTGIS} object if the DataBase has been successfully open, null otherwise.
      */
-    public static POSTGIS open(Properties properties) {
-        Connection connection;
-        try {
-            connection = PostGISDBFactory.createDataSource(properties).getConnection();
-        } catch (SQLException e) {
-            LOGGER.error("Unable to create the DataSource.\n" + e.getLocalizedMessage());
-            return null;
-        }
+    public static POSTGIS open(Properties properties) throws Exception{
+        Connection connection = PostGISDBFactory.createDataSource(properties).getConnection();
         return new POSTGIS(connection);
     }
 
@@ -159,7 +144,7 @@ public class POSTGIS extends JdbcDataSource {
      * @param properties Map of the properties to use for the database opening.
      * @return An instantiated {@link POSTGIS} object wrapping the Sql object connected to the database.
      */
-    public static POSTGIS open(Map<String, String> properties) {
+    public static POSTGIS open(Map<String, String> properties) throws Exception{
         Properties props = new Properties();
         props.putAll(properties);
         return open(props);
@@ -172,7 +157,7 @@ public class POSTGIS extends JdbcDataSource {
      * @param path Path of the database to open.
      * @return An instantiated {@link POSTGIS} object wrapping the Sql object connected to the database.
      */
-    public static POSTGIS open(String path) {
+    public static POSTGIS open(String path) throws Exception{
         Map<String, String> map = new HashMap<>();
         map.put("databaseName", path);
         return open(map);
@@ -186,7 +171,7 @@ public class POSTGIS extends JdbcDataSource {
      * @param password Password for the user.
      * @return An instantiated {@link POSTGIS} object wrapping the Sql object connected to the database.
      */
-    public static POSTGIS open(String path, String user, String password) {
+    public static POSTGIS open(String path, String user, String password) throws Exception{
         Map<String, String> map = new HashMap<>();
         map.put("databaseName", path);
         map.put("user", user);
@@ -195,12 +180,12 @@ public class POSTGIS extends JdbcDataSource {
     }
 
     @Override
-    public IJdbcTable getTable(String nameOrQuery, Statement statement) {
+    public IJdbcTable getTable(String nameOrQuery, Statement statement) throws Exception{
         return getTable(nameOrQuery, null, statement);
     }
 
     @Override
-    public IJdbcTable getTable(GString nameOrQuery, Statement statement) {
+    public IJdbcTable getTable(GString nameOrQuery, Statement statement) throws Exception{
         if(nameOrQuery.getValueCount() == 0 ||
                 !nameOrQuery.toString().startsWith("(") && !nameOrQuery.toString().endsWith("(")) {
             return getTable(nameOrQuery.toString(), statement);
@@ -212,32 +197,12 @@ public class POSTGIS extends JdbcDataSource {
 
     @Override
     public IJdbcTable getTable(String nameOrQuery, List<Object> params,
-                               Statement statement) {
+                               Statement statement) throws Exception{
         Connection connection = getConnection();
         String query;
         TableLocation location;
         if(!nameOrQuery.startsWith("(") && !nameOrQuery.endsWith(")")) {
             org.h2gis.utilities.TableLocation inputLocation = TableLocation.parse(nameOrQuery, DBTypes.POSTGIS);
-            try {
-                boolean table = JDBCUtilities.tableExists(connection, inputLocation);
-                if(!getConnection().getAutoCommit()) {
-                    super.commit();
-                }
-                if (!table) {
-                    LOGGER.error("Unable to find table " + nameOrQuery);
-                    return null;
-                }
-            } catch (SQLException e) {
-                LOGGER.error("Unable to find table.\n" + e.getLocalizedMessage());
-                try {
-                    if(!getConnection().getAutoCommit()) {
-                        super.rollback();
-                    }
-                } catch (SQLException e2) {
-                    LOGGER.error("Unable to rollback", e2);
-                }
-                return null;
-            }
             query = String.format("SELECT * FROM %s", inputLocation);
             location = new TableLocation(inputLocation.getCatalog(), inputLocation.getSchema(), inputLocation.getTable(), DBTypes.POSTGIS);
         }
@@ -283,21 +248,19 @@ public class POSTGIS extends JdbcDataSource {
                 }
             }
         } catch (SQLException e) {
-            LOGGER.error("Unable to check if table '" + location + "' contains geometric fields.\n" +
-                    e.getLocalizedMessage());
             try {
                 if(!getConnection().getAutoCommit()) {
                     super.rollback();
                 }
             } catch (SQLException e2) {
-                LOGGER.error("Unable to rollback", e2);
+                throw new SQLException("Unable to get the table data", e2);
             }
         }
         return null;
     }
 
     @Override
-    public IJdbcTable getTable(String tableName) {
+    public IJdbcTable getTable(String tableName) throws Exception{
         Connection connection = getConnection();
         Statement statement;
         try {
@@ -314,14 +277,13 @@ public class POSTGIS extends JdbcDataSource {
             }
             statement = connection.createStatement(type, concur);
         } catch (SQLException e) {
-            LOGGER.error("Unable to create Statement.\n" + e.getLocalizedMessage());
-            return null;
+            throw new SQLException("Unable to create Statement.\n" + e.getLocalizedMessage());
         }
         return getTable(tableName, statement);
     }
 
     @Override
-    public IJdbcTable getTable(GString nameOrQuery) {
+    public IJdbcTable getTable(GString nameOrQuery) throws Exception{
         if(nameOrQuery.getValueCount() == 0 ||
                 !nameOrQuery.toString().startsWith("(") && !nameOrQuery.toString().endsWith("(")) {
             return getTable(nameOrQuery.toString());
@@ -332,7 +294,7 @@ public class POSTGIS extends JdbcDataSource {
     }
 
     @Override
-    public IJdbcTable getTable(String query, List<Object> params) {
+    public IJdbcTable getTable(String query, List<Object> params) throws Exception{
         if(params == null || params.isEmpty()) {
             return getTable(query);
         }
@@ -353,29 +315,23 @@ public class POSTGIS extends JdbcDataSource {
             prepStatement = connection.prepareStatement(query, type, concur);
             setStatementParameters(prepStatement, params);
         } catch (SQLException e) {
-            LOGGER.error("Unable to create the prepared statement.", e);
-            return null;
+            throw new SQLException("Unable to create the prepared statement.", e);
         }
         return getTable(query, params, prepStatement);
     }
 
     @Override
-    public IJdbcSpatialTable getSpatialTable(String tableName, Statement statement) {
+    public IJdbcSpatialTable getSpatialTable(String tableName, Statement statement) throws Exception{
         IJdbcTable table = getTable(tableName, statement);
         if (table instanceof ISpatialTable) {
             return (JdbcSpatialTable) table;
         } else {
-            String name = "";
-            if(table != null){
-                name = "'" + table.getName() + "' ";
-            }
-            LOGGER.error("The table " + name + "is not a spatial table.");
-            return null;
+            throw new IllegalArgumentException("The table " + tableName + "is not a spatial table.");
         }
     }
 
     @Override
-    public IJdbcSpatialTable getSpatialTable(GString nameOrQuery, Statement statement) {
+    public IJdbcSpatialTable getSpatialTable(GString nameOrQuery, Statement statement) throws Exception{
         if(nameOrQuery.getValueCount() == 0 ||
                 !nameOrQuery.toString().startsWith("(") && !nameOrQuery.toString().endsWith("(")) {
             return getSpatialTable(nameOrQuery.toString(), statement);
@@ -386,52 +342,37 @@ public class POSTGIS extends JdbcDataSource {
     }
 
     @Override
-    public IJdbcSpatialTable getSpatialTable(String nameOrQuery, List<Object> params, Statement statement) {
+    public IJdbcSpatialTable getSpatialTable(String nameOrQuery, List<Object> params, Statement statement) throws Exception{
         IJdbcTable table = getTable(nameOrQuery, params, statement);
         if (table instanceof ISpatialTable) {
             return (JdbcSpatialTable) table;
         } else {
-            String name = "";
-            if(table != null){
-                name = "'" + table.getName() + "' ";
-            }
-            LOGGER.error("The table " + name + "is not a spatial table.");
-            return null;
+           throw new IllegalArgumentException("The table " + nameOrQuery + "is not a spatial table.");
         }
     }
 
     @Override
-    public IJdbcSpatialTable getSpatialTable(String query, List<Object> params) {
+    public IJdbcSpatialTable getSpatialTable(String query, List<Object> params) throws Exception{
         IJdbcTable table = getTable(query, params);
         if (table instanceof ISpatialTable) {
             return (JdbcSpatialTable) table;
         } else {
-            String name = "";
-            if(table != null){
-                name = "'" + table.getName() + "' ";
-            }
-            LOGGER.error("The table " + name + "is not a spatial table.");
-            return null;
+            throw  new IllegalArgumentException("The table " + query + "is not a spatial table.");
         }
     }
 
     @Override
-    public IJdbcSpatialTable getSpatialTable(String tableName) {
+    public IJdbcSpatialTable getSpatialTable(String tableName) throws Exception {
         IJdbcTable table = getTable(tableName);
         if (table instanceof ISpatialTable) {
             return (JdbcSpatialTable) table;
         } else {
-            String name = "";
-            if(table != null){
-                name = "'" + table.getName() + "' ";
-            }
-            LOGGER.error("The table " + name + "is not a spatial table.");
-            return null;
+            throw new IllegalArgumentException("The table " + tableName + "is not a spatial table.");
         }
     }
 
     @Override
-    public IJdbcSpatialTable getSpatialTable(GString nameOrQuery) {
+    public IJdbcSpatialTable getSpatialTable(GString nameOrQuery) throws Exception{
         if(nameOrQuery.getValueCount() == 0 ||
                 !nameOrQuery.toString().startsWith("(") && !nameOrQuery.toString().endsWith("(")) {
             return getSpatialTable(nameOrQuery.toString());

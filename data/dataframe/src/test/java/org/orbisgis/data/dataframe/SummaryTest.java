@@ -61,7 +61,7 @@ public class SummaryTest {
     public static Summary summary;
 
     @BeforeAll
-    public static void beforeAll() throws SQLException {
+    public static void beforeAll() throws Exception {
         H2GIS h2gis = TestUtils.RANDOM_DS();
         h2gis.execute("CREATE TABLE toto(col1 int, col2 varchar, col3 boolean, col4 char, col5 TINYINT, col6 SMALLINT, col7 INT8, col8 REAL, col9 double)");
         h2gis.execute("INSERT INTO toto VALUES (0, 'val0', true , 0, 0, 0, 0, 0.0, 0.0)");

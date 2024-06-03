@@ -57,7 +57,7 @@ public interface IBuilderResult {
      *
      * @param closure {@link Closure} to apply to each row.
      */
-    void eachRow(Closure<Object> closure);
+    void eachRow(Closure<Object> closure) throws Exception;
 
     /**
      * Convert the result of the SQL request into a {@link ITable} or {@link ISpatialTable}.
@@ -65,21 +65,21 @@ public interface IBuilderResult {
      * @param clazz New class of the result.
      * @return The result wrapped into the given class.
      */
-    Object asType(Class<?> clazz);
+    Object asType(Class<?> clazz) throws Exception;
 
     /**
      * Return the {@link ITable} representing the result of the SQL query.
      *
      * @return The {@link ITable} representing the result of the SQL query.
      */
-    ITable<?,?> getTable();
+    ITable<?,?> getTable() throws Exception;
 
     /**
      * Return the {@link ISpatialTable} representing the result of the SQL query.
      *
      * @return The {@link ISpatialTable} representing the result of the SQL query.
      */
-    ISpatialTable<?> getSpatialTable();
+    ISpatialTable<?> getSpatialTable() throws Exception;
 
     @Override
     String toString();

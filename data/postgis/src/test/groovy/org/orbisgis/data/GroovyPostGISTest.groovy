@@ -61,7 +61,10 @@ class GroovyPostGISTest {
 
     @BeforeAll
     static void init() {
-        postGIS = org.orbisgis.data.POSTGIS.open(dbProperties)
+        try {
+            postGIS = org.orbisgis.data.POSTGIS.open(dbProperties)
+        }catch (Exception e){
+        }
         System.setProperty("test.postgis", Boolean.toString(postGIS != null))
     }
 

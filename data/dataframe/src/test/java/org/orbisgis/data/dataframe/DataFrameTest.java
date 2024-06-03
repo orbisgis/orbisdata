@@ -85,7 +85,7 @@ public class DataFrameTest {
     private static H2GIS h2gis;
 
     @BeforeAll
-    public static void beforeAll() {
+    public static void beforeAll() throws Exception {
         h2gis = RANDOM_DS();
     }
 
@@ -119,7 +119,7 @@ public class DataFrameTest {
             assertNotNull(table);
             df = DataFrame.of(table);
             assertNotNull(df);
-        } catch (SQLException e) {
+        } catch (Exception e) {
             fail(e);
         }
 
@@ -318,7 +318,7 @@ public class DataFrameTest {
      * {@link DataFrame#getColumnType(String)}, {@link DataFrame#getColumnCount()}
      */
     @Test
-    void columnsTest(){
+    void columnsTest() throws Exception {
         assertEquals(13, dataFrame.ncols());
         assertEquals(0, dataFrame.columnIndex("COL1"));
         assertEquals(5, dataFrame.column(0).size());
@@ -440,7 +440,7 @@ public class DataFrameTest {
      * {@link DataFrame#of(File)}, {@link DataFrame#of(String)} methods.
      */
     @Test
-    void saveLoadTest() throws IOException {
+    void saveLoadTest() throws Exception {
         String path = "./target/" + UUID.randomUUID().toString().replaceAll("-", "_") + ".csv";
         assertNotNull(dataFrame.save(path, null));
         DataFrame df2 = DataFrame.of(new File(path));
@@ -458,8 +458,8 @@ public class DataFrameTest {
         assertNull(DataFrame.of(notCsv));
 
         //Test save exception
-        assertNull(dataFrame.save("target/\u0000"));
-        assertNull(dataFrame.save("/"));
+        assertThrows(Exception.class, ()->dataFrame.save("target/\u0000"));
+        assertThrows(Exception.class, ()->dataFrame.save("/"));
     }
 
     /**
@@ -468,7 +468,7 @@ public class DataFrameTest {
      * @throws SQLException Exception thrown when a SQL error occurs.
      */
     @Test
-    void testDataFrameFromSpatialTable() throws SQLException {
+    void testDataFrameFromSpatialTable() throws Exception {
         H2GIS h2GIS = RANDOM_DS();
         h2GIS.execute("DROP TABLE IF EXISTS h2gis;" +
                 "CREATE TABLE h2gis (id INT, the_geom1 GEOMETRY(GEOMETRY), the_geom2 GEOMETRY(GEOMETRYCOLLECTION), " +

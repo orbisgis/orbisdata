@@ -53,7 +53,6 @@ import org.h2gis.utilities.dbtypes.DBTypes;
 import org.locationtech.jts.geom.*;
 import org.orbisgis.commons.printer.Ascii;
 import org.orbisgis.data.api.dataset.IJdbcTable;
-import org.orbisgis.data.api.datasource.DataException;
 import org.orbisgis.data.api.datasource.IDataSourceLocation;
 import org.orbisgis.data.api.datasource.IJdbcDataSource;
 import org.orbisgis.data.api.dsl.IResultSetBuilder;
@@ -328,6 +327,7 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, IRe
         return con;
     }
 
+
     @Override
     public DBTypes getDataBaseType() {
         return databaseType;
@@ -566,32 +566,30 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, IRe
     }
 
     @Override
-    public boolean executeScript(String fileName, Map<String, String> bindings) {
-        File file = URIUtilities.fileFromString(fileName);
-        boolean b = false;
+    public boolean executeScript(String fileName, Map<String, String> bindings) throws Exception {
         try {
+            File file = URIUtilities.fileFromString(fileName);
             if (FileUtilities.isExtensionWellFormated(file, "sql")) {
-                b = executeScript(new FileInputStream(file), bindings);
+                boolean b = executeScript(new FileInputStream(file), bindings);
                 if (!getConnection().getAutoCommit()) {
                     super.commit();
                 }
                 return b;
             }
         } catch (IOException | SQLException e) {
-            LOGGER.error("Unable to read the SQL file.", e.getLocalizedMessage());
             try {
                 if (!getConnection().getAutoCommit()) {
                     super.rollback();
                 }
             } catch (SQLException e2) {
-                LOGGER.error("Unable to rollback.", e2.getLocalizedMessage());
+                throw new SQLException("Unable to rollback.", e2);
             }
         }
-        return b;
+        return false;
     }
 
     @Override
-    public boolean executeScript(InputStream stream, Map<String, String> bindings) {
+    public boolean executeScript(InputStream stream, Map<String, String> bindings) throws Exception {
         SimpleTemplateEngine engine = null;
         if (bindings != null && !bindings.isEmpty()) {
             engine = new SimpleTemplateEngine();
@@ -608,23 +606,22 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, IRe
                     try {
                         commandSQL = engine.createTemplate(commandSQL).make(bindings).toString();
                     } catch (ClassNotFoundException | IOException e) {
-                        LOGGER.error("Unable to create the template for the Sql command '" + commandSQL + "'.\n" +
+                        throw new IllegalArgumentException("Unable to create the template for the Sql command '" + commandSQL + "'.\n" +
                                 e.getLocalizedMessage());
-                        return false;
                     }
                 }
                 try {
-                    execute(commandSQL);
+                    boolean b = execute(commandSQL);
                     if (!getConnection().getAutoCommit()) {
                         super.commit();
                     }
+                    return b;
                 } catch (SQLException e) {
-                    LOGGER.error("Unable to execute the Sql command '" + commandSQL + "'.\n" + e.getLocalizedMessage());
-                    return false;
+                    throw new SQLException("Unable to execute the Sql command '" + commandSQL + "'.\n" + e.getLocalizedMessage());
                 }
             }
         }
-        return true;
+        return false;
     }
 
     @Override
@@ -638,75 +635,61 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, IRe
     }
 
     @Override
-    public boolean save(String tableName, String filePath) throws DataException{
+    public boolean save(String tableName, String filePath) throws Exception {
         return save(tableName, filePath, null);
     }
 
     @Override
-    public boolean save(String tableName, String filePath, boolean delete) throws DataException{
+    public boolean save(String tableName, String filePath, boolean delete) throws Exception {
         if (getConnection() == null) {
-            LOGGER.error("No connection, cannot save.");
-            return false;
+            throw new IllegalArgumentException("No connection, cannot save.");
         }
-        try {
             if (ioMethods == null) {
                 ioMethods = new IOMethods();
             }
             ioMethods.exportToFile(getConnection(), tableName, filePath, null, delete);
             return true;
-        } catch (SQLException e) {
-            throw new DataException("Cannot save the file : " + filePath, e);
-        }
     }
 
     @Override
-    public boolean save(String tableName, String filePath, String encoding) throws DataException{
+    public boolean save(String tableName, String filePath, String encoding) throws Exception {
         if (getConnection() == null) {
-            LOGGER.error("No connection, cannot save.");
-            return false;
+            throw new IllegalArgumentException("No connection, cannot save.");
         }
-        try {
-            if (ioMethods == null) {
-                ioMethods = new IOMethods();
-            }
-            ioMethods.exportToFile(getConnection(), tableName, filePath, encoding, false);
-            return true;
-        } catch (SQLException e) {
-            throw new DataException("Cannot save the file : " + filePath + "\n" + e.getLocalizedMessage());
+        if (ioMethods == null) {
+            ioMethods = new IOMethods();
         }
+        ioMethods.exportToFile(getConnection(), tableName, filePath, encoding, false);
+        return true;
     }
 
     @Override
-    public boolean save(String tableName, URL url) throws DataException{
+    public boolean save(String tableName, URL url) throws Exception {
         return save(tableName, url, null);
     }
 
     @Override
-    public boolean save(String tableName, URL url, String encoding) throws DataException{
-        try {
+    public boolean save(String tableName, URL url, String encoding) throws Exception {
             return save(tableName, url.toURI(), encoding);
-        } catch (URISyntaxException e) {
-            throw new DataException("Unable to get the file from the URL '" + url + "'\n" + e.getLocalizedMessage());
-        }
     }
 
     @Override
-    public boolean save(String tableName, URI uri) throws DataException{
+    public boolean save(String tableName, URI uri) throws Exception {
         return save(tableName, uri, null);
     }
 
     @Override
-    public boolean save(String tableName, URI uri, String encoding) throws DataException{
+    public boolean save(String tableName, URI uri, String encoding) throws Exception {
         return save(tableName, new File(uri), encoding);
     }
 
     @Override
-    public boolean save(String tableName, File file) throws DataException{
+    public boolean save(String tableName, File file) throws Exception {
         return save(tableName, file, null);
     }
 
     @Override
-    public boolean save(String tableName, File file, String encoding) throws DataException{
+    public boolean save(String tableName, File file, String encoding) throws Exception {
         return save(tableName, file.getAbsolutePath(), encoding);
     }
 
@@ -722,144 +705,121 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, IRe
     }
 
     @Override
-    public String link(String filePath, String tableName, boolean delete) throws DataException{
+    public String link(String filePath, String tableName, boolean delete) throws Exception {
         String formatedTableName = TableLocation.parse(tableName, getDataBaseType()).toString();
-        try {
             IOMethods.linkedFile(getConnection(), filePath, tableName, delete);
             return formatedTableName;
-        } catch (SQLException e) {
-            throw new DataException("Cannot link the file : " + filePath);
-        }
     }
 
     @Override
-    public String link(String filePath, String tableName) throws DataException{
+    public String link(String filePath, String tableName) throws Exception {
         return link(filePath, tableName, false);
     }
 
     @Override
-    public String link(String filePath, boolean delete) throws DataException{
+    public String link(String filePath, boolean delete) throws Exception {
         String tableName = getTableNameFromPath(filePath);
         if (Pattern.compile("^[a-zA-Z][a-zA-Z0-9_]*$").matcher(tableName).find()) {
             return link(filePath, tableName, delete);
         } else {
-            throw new DataException("The file name contains unsupported characters");
+            throw new IllegalArgumentException("The file name contains unsupported characters");
         }
     }
 
     @Override
-    public String link(String filePath) throws DataException{
+    public String link(String filePath) throws Exception {
         return link(filePath, false);
     }
 
     @Override
-    public String link(URL url, String tableName, boolean delete) throws DataException{
-        try {
+    public String link(URL url, String tableName, boolean delete) throws Exception {
             return link(url.toURI(), tableName, delete);
-        } catch (URISyntaxException e) {
-            throw  new DataException("Unable to get the file from the URL '" + url + "'\n" + e.getLocalizedMessage());
-        }
     }
 
     @Override
-    public String link(URL url, String tableName) throws DataException{
-        try {
+    public String link(URL url, String tableName) throws Exception {
             return link(url.toURI(), tableName);
-        } catch (URISyntaxException e) {
-            throw new DataException("Unable to get the file from the URL '" + url + "'\n" + e.getLocalizedMessage());
-        }
     }
 
     @Override
-    public String link(URL url, boolean delete) throws DataException{
-        try {
+    public String link(URL url, boolean delete) throws Exception {
             return link(url.toURI(), delete);
-        } catch (URISyntaxException e) {
-            throw new DataException("Unable to get the file from the URL '" + url + "'\n" + e.getLocalizedMessage());
-        }
     }
 
     @Override
-    public String link(URL url) throws DataException{
-        try {
+    public String link(URL url) throws Exception {
             return link(url.toURI());
-        } catch (URISyntaxException e) {
-            throw new DataException("Unable to get the file from the URL '" + url + "'\n" + e.getLocalizedMessage());
-        }
     }
 
     @Override
-    public String link(URI uri, String tableName, boolean delete) throws DataException{
+    public String link(URI uri, String tableName, boolean delete) throws Exception {
         return link(new File(uri), tableName, delete);
     }
 
     @Override
-    public String link(URI uri, String tableName) throws DataException{
+    public String link(URI uri, String tableName) throws Exception {
         return link(new File(uri), tableName);
     }
 
     @Override
-    public String link(URI uri, boolean delete) throws DataException{
+    public String link(URI uri, boolean delete) throws Exception {
         return link(new File(uri), delete);
     }
 
     @Override
-    public String link(URI uri) throws DataException{
+    public String link(URI uri) throws Exception {
         return link(new File(uri));
     }
 
     @Override
-    public String link(File file, String tableName, boolean delete) throws DataException{
+    public String link(File file, String tableName, boolean delete) throws Exception {
         return link(file.getAbsolutePath(), tableName, delete);
     }
 
     @Override
-    public String link(File file, String tableName) throws DataException{
+    public String link(File file, String tableName) throws Exception {
         return link(file.getAbsolutePath(), tableName);
     }
 
     @Override
-    public String link(File file, boolean delete) throws DataException{
+    public String link(File file, boolean delete) throws Exception {
         return link(file.getAbsolutePath(), delete);
     }
 
     @Override
-    public String link(File file) throws DataException{
+    public String link(File file) throws Exception {
         return link(file.getAbsolutePath());
     }
 
     @Override
     public String load(String filePath, String tableName, String encoding,
-                       boolean delete) throws DataException {
+                       boolean delete) throws Exception {
         String formatedTableName = TableLocation.parse(tableName, getDataBaseType()).toString();
-        try {
+
             if (ioMethods == null) {
                 ioMethods = new IOMethods();
             }
             ioMethods.importFile(getConnection(), filePath, tableName, encoding, delete);
             return formatedTableName;
-        } catch (SQLException e) {
-            throw new DataException("Cannot import the file : " + filePath, e);
-        }
     }
 
     @Override
-    public String load(String filePath, String tableName) throws DataException  {
+    public String load(String filePath, String tableName) throws Exception {
         return load(filePath, tableName, null, false);
     }
 
     @Override
-    public String load(String filePath, String tableName, boolean delete) throws DataException {
+    public String load(String filePath, String tableName, boolean delete) throws Exception {
         return load(filePath, tableName, null, delete);
     }
 
     @Override
-    public String load(String filePath) throws DataException{
+    public String load(String filePath) throws Exception {
         return load(filePath, false);
     }
 
     @Override
-    public String load(String filePath, boolean delete) throws DataException{
+    public String load(String filePath, boolean delete) throws Exception {
         String tableName = getTableNameFromPath(filePath).replace(".", "_");
         if (Pattern.compile("^[a-zA-Z][a-zA-Z0-9_]*$").matcher(tableName).find()) {
             return load(filePath, tableName, null, delete);
@@ -870,137 +830,110 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, IRe
     }
 
     @Override
-    public String load(URL url, String tableName) throws DataException  {
-        try {
+    public String load(URL url, String tableName) throws Exception {
             return load(url.toURI(), tableName, null, false);
-        } catch (URISyntaxException e) {
-            throw new DataException("Unable to get the file from the URL '" + url + "'\n" + e.getLocalizedMessage());
-        }
     }
 
     @Override
-    public String load(URL url, String tableName, boolean delete) throws DataException  {
-        try {
+    public String load(URL url, String tableName, boolean delete) throws Exception {
             return load(url.toURI(), tableName, null, delete);
-        } catch (URISyntaxException e) {
-            throw new DataException("Unable to get the file from the URL '" + url + "'\n" + e.getLocalizedMessage());
-        }
+
     }
 
     @Override
-    public String load(URL url) throws DataException  {
-        try {
+    public String load(URL url) throws Exception {
             return load(url.toURI(), false);
-        } catch (URISyntaxException e) {
-            throw new DataException("Unable to get the file from the URL '" + url + "'\n" + e.getLocalizedMessage());
-        }
     }
 
     @Override
-    public String load(URL url, boolean delete) throws DataException {
-        try {
+    public String load(URL url, boolean delete) throws Exception {
             return load(url.toURI(), delete);
-        } catch (URISyntaxException e) {
-            throw new DataException("Unable to get the file from the URL '" + url + "'\n" + e.getLocalizedMessage());
-        }
     }
 
     @Override
-    public String load(URL url, String tableName, String encoding, boolean delete) throws DataException {
-        try {
+    public String load(URL url, String tableName, String encoding, boolean delete) throws Exception {
             return load(url.toURI(), tableName, encoding, delete);
-        } catch (URISyntaxException e) {
-            throw new DataException("Unable to get the file from the URL '" + url + "'\n" + e.getLocalizedMessage());
-        }
+
     }
 
     @Override
-    public String load(URI uri, String tableName) throws DataException {
+    public String load(URI uri, String tableName) throws Exception {
         return load(new File(uri), tableName, null, false);
     }
 
     @Override
-    public String load(URI uri, String tableName, boolean delete) throws DataException{
+    public String load(URI uri, String tableName, boolean delete) throws Exception {
         return load(new File(uri), tableName, null, delete);
     }
 
     @Override
-    public String load(URI uri) throws DataException{
+    public String load(URI uri) throws Exception {
         return load(new File(uri), false);
     }
 
     @Override
-    public String load(URI uri, boolean delete) throws DataException{
+    public String load(URI uri, boolean delete) throws Exception {
         return load(new File(uri), delete);
     }
 
     @Override
-    public String load(URI uri, String tableName, String encoding, boolean delete) throws DataException{
+    public String load(URI uri, String tableName, String encoding, boolean delete) throws Exception {
         return load(new File(uri), tableName, encoding, delete);
     }
 
     @Override
-    public String load(File file, String tableName) throws DataException{
+    public String load(File file, String tableName) throws Exception {
         return load(file.getAbsolutePath(), tableName, null, false);
     }
 
     @Override
-    public String load(File file, String tableName, boolean delete) throws DataException{
+    public String load(File file, String tableName, boolean delete) throws Exception {
         return load(file.getAbsolutePath(), tableName, null, delete);
     }
 
     @Override
-    public String load(File file) throws DataException{
+    public String load(File file) throws Exception {
         return load(file.getAbsolutePath(), false);
     }
 
     @Override
-    public String load(File file, boolean delete) throws DataException{
+    public String load(File file, boolean delete) throws Exception {
         return load(file.getAbsolutePath(), delete);
     }
 
     @Override
-    public String load(File file, String tableName, String encoding, boolean delete) throws DataException{
+    public String load(File file, String tableName, String encoding, boolean delete) throws Exception {
         return load(file.getAbsolutePath(), tableName, encoding, delete);
     }
 
     @Override
-    public String load(IJdbcDataSource dataSource, String inputTableName, String outputTableName, boolean deleteIfExists) throws DataException{
+    public String load(IJdbcDataSource dataSource, String inputTableName, String outputTableName, boolean deleteIfExists) throws Exception {
         return load(dataSource, inputTableName, outputTableName, deleteIfExists, 1000);
     }
 
     @Override
-    public String load(IJdbcDataSource dataSource, String inputTableName, String outputTableName) throws DataException{
+    public String load(IJdbcDataSource dataSource, String inputTableName, String outputTableName) throws Exception {
         return load(dataSource, inputTableName, outputTableName, false, 1000);
     }
 
     @Override
-    public String load(IJdbcDataSource dataSource, String inputTableName, boolean deleteIfExists) throws DataException{
-        try {
-            IOMethods.exportToDataBase(dataSource.getConnection(), inputTableName, getConnection(), inputTableName, deleteIfExists ? -1 : 0, 1000);
+    public String load(IJdbcDataSource dataSource, String inputTableName, boolean deleteIfExists) throws Exception {
+             IOMethods.exportToDataBase(dataSource.getConnection(), inputTableName, getConnection(), inputTableName, deleteIfExists ? -1 : 0, 1000);
             TableLocation targetTableLocation = TableLocation.parse(inputTableName, this.getDataBaseType());
             return targetTableLocation.toString();
-        } catch (SQLException e) {
-            throw new DataException("Unable to load the table " + inputTableName + " from " + dataSource.getLocation().toString());
-        }
+
     }
 
     @Override
-    public String load(IJdbcDataSource dataSource, String inputTableName) throws DataException{
-        try {
+    public String load(IJdbcDataSource dataSource, String inputTableName) throws Exception {
+
             return IOMethods.exportToDataBase(dataSource.getConnection(), inputTableName, getConnection(), inputTableName, 0, 1000);
-        } catch (SQLException e) {
-            throw new DataException("Unable to load the table " + inputTableName + " from " + dataSource.getLocation().toString());
-        }
+
     }
 
     @Override
-    public String load(IJdbcDataSource dataSource, String inputTableName, String outputTableName, boolean deleteIfExists, int batchSize) throws DataException{
-        try {
-            return IOMethods.exportToDataBase(dataSource.getConnection(), inputTableName, getConnection(), outputTableName, deleteIfExists ? -1 : 0, 1000);
-        } catch (SQLException e) {
-            throw new DataException("Unable to load the table " + inputTableName + " from " + dataSource.getLocation().toString());
-        }
+    public String load(IJdbcDataSource dataSource, String inputTableName, String outputTableName, boolean deleteIfExists, int batchSize) throws Exception {
+        return IOMethods.exportToDataBase(dataSource.getConnection(), inputTableName, getConnection(), outputTableName, deleteIfExists ? -1 : 0, 1000);
     }
 
     @Override
@@ -1032,52 +965,14 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, IRe
     }
 
     @Override
-    public Collection<String> getTableNames() {
-        try {
-            Connection con = getConnection();
-            if (con == null) {
-                LOGGER.error("Unable to get the connection.");
-                return new ArrayList<>();
-            }
-            return JDBCUtilities.getTableNames(con, null, null, null, null);
-        } catch (SQLException e) {
-            LOGGER.error("Unable to get the database metadata.\n" + e.getLocalizedMessage());
-            return new ArrayList<>();
-        }
+    public Collection<String> getTableNames() throws Exception {
+            return JDBCUtilities.getTableNames(getConnection(), null, null, null, null);
+
     }
 
     @Override
-    public IJdbcTable getDataSet(String dataSetName) {
-        List<String> geomFields;
-        try {
-            Connection con = getConnection();
-            if (con == null) {
-                LOGGER.error("Unable to get the connection.");
-                return getTable(dataSetName);
-            }
-            geomFields = new ArrayList<>(GeometryTableUtilities.getGeometryColumnNames(con, new TableLocation(dataSetName)));
-        } catch (SQLException e) {
-            LOGGER.error("Unable to get the geometric fields.\n" + e.getLocalizedMessage());
-            return getTable(dataSetName);
-        }
-        if (geomFields.size() >= 1) {
-            return getSpatialTable(dataSetName);
-        }
+    public IJdbcTable getDataSet(String dataSetName) throws Exception {
         return getTable(dataSetName);
-    }
-
-    @Override
-    public Object getProperty(String propertyName) {
-        if (propertyName == null) {
-            //LOGGER.error("Trying to get null property name.");
-            return null;
-        }
-        IJdbcTable table = getTable(propertyName);
-        if (table == null) {
-            return getMetaClass().getProperty(this, propertyName);
-        } else {
-            return table;
-        }
     }
 
     @Override
@@ -1216,7 +1111,7 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, IRe
         try {
             TableLocation table = TableLocation.parse(tableName, getDataBaseType());
             String geomColumn = GeometryTableUtilities.getFirstGeometryColumnNameAndIndex(getConnection(), table).first();
-            if(geomColumn==null || geomColumn.isEmpty()){
+            if (geomColumn == null || geomColumn.isEmpty()) {
                 return false;
             }
             return JDBCUtilities.createSpatialIndex(getConnection(), table, geomColumn);
@@ -1314,7 +1209,7 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, IRe
         try {
             TableLocation table = TableLocation.parse(tableName, getDataBaseType());
             String geomColumn = GeometryTableUtilities.getFirstGeometryColumnNameAndIndex(getConnection(), table).first();
-            if(geomColumn==null || geomColumn.isEmpty()){
+            if (geomColumn == null || geomColumn.isEmpty()) {
                 return false;
             }
             return JDBCUtilities.isSpatialIndexed(getConnection(), tableName, geomColumn);
@@ -1348,7 +1243,7 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, IRe
         String query = Stream.of(tableName).filter(s -> s != null && !s.isEmpty())
                 .collect(Collectors.joining(" , "));
         try {
-            if(!query.isEmpty()) {
+            if (!query.isEmpty()) {
                 execute("DROP TABLE IF EXISTS " + query);
             }
         } catch (SQLException e) {
@@ -1358,15 +1253,15 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, IRe
     }
 
     @Override
-    public void dropTable(List<String>  tableNames) {
-        if (tableNames == null ) {
+    public void dropTable(List<String> tableNames) {
+        if (tableNames == null) {
             LOGGER.error("Unable to drop the tables");
             return;
         }
         String query = tableNames.stream().filter(s -> s != null && !s.isEmpty())
                 .collect(Collectors.joining(","));
         try {
-            if(!query.isEmpty()) {
+            if (!query.isEmpty()) {
                 execute("DROP TABLE IF EXISTS " + query);
             }
         } catch (SQLException e) {
@@ -1417,7 +1312,7 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, IRe
     public boolean setSrid(String tableName, int srid) {
         try {
             String geomColumn = GeometryTableUtilities.getFirstGeometryColumnNameAndIndex(getConnection(), TableLocation.parse(tableName, getDataBaseType())).first();
-            if(geomColumn==null || geomColumn.isEmpty()){
+            if (geomColumn == null || geomColumn.isEmpty()) {
                 return false;
             }
             return GeometryTableUtilities.alterSRID(getConnection(), tableName, geomColumn, srid);
@@ -1436,7 +1331,7 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, IRe
         }
         try {
             GroovyRowResult row = firstRow("SELECT * FROM " + tableName + " LIMIT 1 ");
-            if(row==null){
+            if (row == null) {
                 return true;
             }
             return row.isEmpty();
@@ -1452,15 +1347,15 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, IRe
             System.out.println("The table name is null or empty.");
         }
         Connection con = getConnection();
-        if(con==null){
-            System.out.println( "Unable to get the connection to the database");
+        if (con == null) {
+            System.out.println("Unable to get the connection to the database");
         }
         try (Statement statement = con.createStatement()) {
             ResultSet rs = statement.executeQuery("SELECT * FROM " + tableName + " as foo");
             StringBuilder builder = new StringBuilder();
             Ascii printer = new Ascii(builder);
             List<String> columnNames = JDBCUtilities.getColumnNames(rs.getMetaData());
-            if(columnNames == null){
+            if (columnNames == null) {
                 printer.endTable();
                 System.out.print(printer);
                 return;
@@ -1472,15 +1367,15 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, IRe
                 printer.appendTableHeaderValue(column, CENTER);
             }
             printer.appendTableLineSeparator();
-            boolean tooManyRows =false;
-            if(rs != null) {
+            boolean tooManyRows = false;
+            if (rs != null) {
                 try {
                     int limit = 1000;
-                    int count=0;
+                    int count = 0;
 
                     while (rs.next()) {
-                        if(count>limit){
-                            tooManyRows=true;
+                        if (count > limit) {
+                            tooManyRows = true;
                             break;
                         }
                         for (String column : columnNames) {
@@ -1497,9 +1392,9 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, IRe
                     LOGGER.error("Error while reading the table '" + tableName + "'.\n" + e.getLocalizedMessage());
                 }
             }
-            if(tooManyRows){
+            if (tooManyRows) {
                 printer.appendText(".... more than 1000 rows");
-            }else {
+            } else {
                 printer.appendTableLineSeparator();
             }
             printer.endTable();
@@ -1507,5 +1402,61 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, IRe
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @Override
+    public Map<String, String> getColumnNamesTypes(String location) throws Exception {
+        HashMap<String, String> fieldNameList = new HashMap<>();
+        final Statement statement = getConnection().createStatement();
+        try {
+            final ResultSet resultSet = statement.executeQuery(
+                    "SELECT * FROM " + location + " LIMIT 0;");
+            try {
+                ResultSetMetaData metadata = resultSet.getMetaData();
+                int columnCount = metadata.getColumnCount();
+                for (int columnId = 1; columnId <= columnCount; columnId++) {
+                    fieldNameList.put(metadata.getColumnName(columnId), metadata.getColumnTypeName(columnId));
+                }
+            } finally {
+                resultSet.close();
+            }
+        } finally {
+            statement.close();
+        }
+        return fieldNameList;
+    }
+
+    @Override
+    public Map<String, Class> getColumnNamesClasses(String location) throws Exception {
+        HashMap<String, Class> columnsWithClass = new HashMap<>();
+        Connection con = getConnection();
+        final Statement statement = con.createStatement();
+        try {
+            final ResultSet resultSet = statement.executeQuery(
+                    "SELECT * FROM " + location + " LIMIT 0;");
+            try {
+                ResultSetMetaData metaData = resultSet.getMetaData();
+                int columnCount = metaData.getColumnCount();
+                for (int columnId = 1; columnId <= columnCount; columnId++) {
+                    String columnName = metaData.getColumnName(columnId);
+                    //Take into account the geometry type
+                    String type = metaData.getColumnTypeName(columnId);
+                    if(type.toLowerCase().startsWith("geometry")){
+                            columnsWithClass.put(columnName, typeNameToClass(GeometryTableUtilities.getMetaData(con,
+                                    location,
+                                    TableLocation.capsIdentifier(columnName, getDataBaseType())
+                            ).getGeometryType()));
+
+                    }else{
+                        columnsWithClass.put(columnName,  typeNameToClass(type));
+                    }
+                }
+            } finally {
+                resultSet.close();
+            }
+        } finally {
+            statement.close();
+        }
+        return columnsWithClass;
     }
 }

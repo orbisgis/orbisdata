@@ -37,6 +37,8 @@
 package org.orbisgis.data.api.dataset;
 
 
+import java.sql.SQLException;
+
 /**
  * Raw collection of data, no matter its structure.
  *
@@ -67,7 +69,7 @@ public interface IDataSet<T> extends Iterable<T> {
      *
      * @return The metadata object.
      */
-    Object getMetaData();
+    Object getMetaData() throws SQLException;
 
     /**
      * Convert the current object into another with the given class.
@@ -75,28 +77,28 @@ public interface IDataSet<T> extends Iterable<T> {
      * @param clazz New class of the result.
      * @return The current object into an other class.
      */
-    Object asType(Class<?> clazz);
+    Object asType(Class<?> clazz) throws Exception;
 
     /**
      * Return true if the {@link IDataSet} is empty, false otherwise.
      *
      * @return True if the {@link IDataSet} is empty, false otherwise.
      */
-    boolean isEmpty();
+    boolean isEmpty() throws Exception;
 
     /**
      * Return the {@link ISummary} of the {@link IDataSet}.
      *
      * @return The {@link ISummary} of the {@link IDataSet}.
      */
-    ISummary getSummary();
+    ISummary getSummary() throws Exception;
 
     /**
      * Reload the source of the {@link IDataSet}.
      *
      * @return true if the reload has been done successfully, false otherwise.
      */
-    boolean reload();
+    boolean reload() throws Exception;
 
     @Override
     String toString();

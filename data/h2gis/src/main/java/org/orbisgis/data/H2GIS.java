@@ -102,7 +102,7 @@ public class H2GIS extends JdbcDataSource {
      * @param file .properties file containing the information for the DataBase opening.
      * @return {@link H2GIS} object if the DataBase has been successfully open, null otherwise.
      */
-    public static H2GIS open(File file) {
+    public static H2GIS open(File file) throws Exception{
         try {
             if (FileUtilities.isExtensionWellFormated(file, "properties")) {
                 Properties prop = new Properties();
@@ -122,15 +122,8 @@ public class H2GIS extends JdbcDataSource {
      * @param properties Properties for the opening of the DataBase.
      * @return {@link H2GIS} object if the DataBase has been successfully open, null otherwise.
      */
-    public static H2GIS open(Properties properties) {
-        Connection connection;
-        // Init spatial
-        try {
-            connection = JDBCUtilities.wrapSpatialDataSource(H2GISDBFactory.createDataSource(properties)).getConnection();
-        } catch (SQLException e) {
-            LOGGER.error("Unable to create the DataSource.\n" + e.getLocalizedMessage());
-            return null;
-        }
+    public static H2GIS open(Properties properties) throws Exception{
+        Connection connection = JDBCUtilities.wrapSpatialDataSource(H2GISDBFactory.createDataSource(properties)).getConnection();
         check(connection);
         return new H2GIS(connection);
     }
@@ -141,7 +134,7 @@ public class H2GIS extends JdbcDataSource {
      * @param connection {@link Connection} of the DataBase.
      * @return {@link H2GIS} object if the DataBase has been successfully open, null otherwise.
      */
-    public static H2GIS open(Connection connection) {
+    public static H2GIS open(Connection connection) throws Exception{
         if (connection != null) {
             check(connection);
             return new H2GIS(connection);
@@ -156,7 +149,7 @@ public class H2GIS extends JdbcDataSource {
      * @param dataSource {@link DataSource} of the database.
      * @return {@link H2GIS} object if the DataBase has been successfully open, null otherwise.
      */
-    public static H2GIS open(DataSource dataSource) {
+    public static H2GIS open(DataSource dataSource) throws Exception{
         if (dataSource != null) {
             Connection connection;
             try {
@@ -176,27 +169,12 @@ public class H2GIS extends JdbcDataSource {
         }
     }
 
-    private static void check(Connection connection) {
-        boolean isH2;
-        try {
-            isH2 = JDBCUtilities.isH2DataBase(connection);
-        } catch (SQLException e) {
-            LOGGER.error("Unable to get DBTypes metadata.\n" + e.getLocalizedMessage());
-            return;
-        }
-        boolean tableExists;
-        try {
-            tableExists = JDBCUtilities.tableExists(connection, TableLocation.parse("PUBLIC.GEOMETRY_COLUMNS", DBTypes.H2GIS));
-        } catch (SQLException e) {
-            LOGGER.error("Unable to check if table 'PUBLIC.GEOMETRY_COLUMNS' exists.\n" + e.getLocalizedMessage());
-            return;
-        }
+    private static void check(Connection connection) throws Exception {
+        boolean  isH2 = JDBCUtilities.isH2DataBase(connection);
+        boolean tableExists = JDBCUtilities.tableExists(connection, TableLocation.parse("PUBLIC.GEOMETRY_COLUMNS", DBTypes.H2GIS));
         if (isH2 && !tableExists) {
-            try {
                 H2GISFunctions.load(connection);
-            } catch (SQLException e) {
-                LOGGER.error("Unable to initialize H2GIS.\n" + e.getLocalizedMessage());
-            }
+
         }
     }
 
@@ -206,7 +184,7 @@ public class H2GIS extends JdbcDataSource {
      * @param properties Map of the properties to use for the database opening.
      * @return An instantiated {@link H2GIS} object wrapping the Sql object connected to the database.
      */
-    public static H2GIS open(Map<String, String> properties) {
+    public static H2GIS open(Map<String, String> properties) throws Exception{
         Properties props = new Properties();
         props.putAll(properties);
         return open(props);
@@ -218,7 +196,7 @@ public class H2GIS extends JdbcDataSource {
      * @param path Path of the database to open.
      * @return An instantiated {@link H2GIS} object wrapping the Sql object connected to the database.
      */
-    public static H2GIS open(String path) {
+    public static H2GIS open(String path) throws Exception{
         return open(path, "sa", "");
     }
 
@@ -230,7 +208,7 @@ public class H2GIS extends JdbcDataSource {
      * @param password Password for the user.
      * @return An instantiated {@link H2GIS} object wrapping the Sql object connected to the database.
      */
-    public static H2GIS open(String path, String user, String password) {
+    public static H2GIS open(String path, String user, String password) throws Exception{
         Map<String, String> map = new HashMap<>();
         map.put("databaseName", path);
         map.put("user", user);
@@ -239,12 +217,12 @@ public class H2GIS extends JdbcDataSource {
     }
 
     @Override
-    public JdbcTable<? extends IStreamResultSet> getTable(String nameOrQuery, Statement statement) {
+    public JdbcTable<? extends IStreamResultSet> getTable(String nameOrQuery, Statement statement) throws Exception{
         return getTable(nameOrQuery, null, statement);
     }
 
     @Override
-    public JdbcTable<? extends IStreamResultSet> getTable(GString nameOrQuery, Statement statement) {
+    public JdbcTable<? extends IStreamResultSet> getTable(GString nameOrQuery, Statement statement) throws Exception{
         if (nameOrQuery.getValueCount() == 0 ||
                 !nameOrQuery.toString().startsWith("(") && !nameOrQuery.toString().endsWith("(")) {
             return getTable(nameOrQuery.toString(), statement);
@@ -256,7 +234,7 @@ public class H2GIS extends JdbcDataSource {
 
     @Override
     public JdbcTable<? extends IStreamResultSet> getTable(String nameOrQuery, List<Object> params,
-                                                          Statement statement) {
+                                                          Statement statement) throws Exception{
         Connection connection = getConnection();
         String query;
         TableLocation location;
@@ -341,7 +319,7 @@ public class H2GIS extends JdbcDataSource {
     }
 
     @Override
-    public JdbcTable<? extends IStreamResultSet> getTable(String tableName) {
+    public JdbcTable<? extends IStreamResultSet> getTable(String tableName) throws Exception{
         Connection connection = getConnection();
         Statement statement;
         try {
@@ -365,7 +343,7 @@ public class H2GIS extends JdbcDataSource {
     }
 
     @Override
-    public IJdbcTable<? extends IStreamResultSet> getTable(GString nameOrQuery) {
+    public IJdbcTable<? extends IStreamResultSet> getTable(GString nameOrQuery) throws Exception{
         if (nameOrQuery.getValueCount() == 0 ||
                 !nameOrQuery.toString().startsWith("(") && !nameOrQuery.toString().endsWith("(")) {
             return getTable(nameOrQuery.toString());
@@ -376,7 +354,7 @@ public class H2GIS extends JdbcDataSource {
     }
 
     @Override
-    public IJdbcTable<? extends IStreamResultSet> getTable(String query, List<Object> params) {
+    public IJdbcTable<? extends IStreamResultSet> getTable(String query, List<Object> params) throws Exception{
         if (params == null || params.isEmpty()) {
             return getTable(query);
         }
@@ -404,22 +382,17 @@ public class H2GIS extends JdbcDataSource {
     }
 
     @Override
-    public IJdbcSpatialTable<StreamSpatialResultSet> getSpatialTable(String tableName, Statement statement) {
+    public IJdbcSpatialTable<StreamSpatialResultSet> getSpatialTable(String tableName, Statement statement) throws Exception {
         IJdbcTable<? extends ResultSet> table = getTable(tableName, statement);
         if (table instanceof ISpatialTable) {
             return (JdbcSpatialTable) table;
         } else {
-            String name = "";
-            if (table != null) {
-                name = "'" + table.getName() + "' ";
-            }
-            LOGGER.error("The table " + name + "is not a spatial table.");
-            return null;
+            throw new IllegalArgumentException("The table " + tableName + "is not a spatial table.");
         }
     }
 
     @Override
-    public IJdbcSpatialTable<StreamSpatialResultSet> getSpatialTable(GString nameOrQuery, Statement statement) {
+    public IJdbcSpatialTable<StreamSpatialResultSet> getSpatialTable(GString nameOrQuery, Statement statement) throws Exception{
         if (nameOrQuery.getValueCount() == 0 ||
                 !nameOrQuery.toString().startsWith("(") && !nameOrQuery.toString().endsWith("(")) {
             return getSpatialTable(nameOrQuery.toString(), statement);
@@ -430,52 +403,37 @@ public class H2GIS extends JdbcDataSource {
     }
 
     @Override
-    public IJdbcSpatialTable<StreamSpatialResultSet> getSpatialTable(String nameOrQuery, List<Object> params, Statement statement) {
+    public IJdbcSpatialTable<StreamSpatialResultSet> getSpatialTable(String nameOrQuery, List<Object> params, Statement statement) throws Exception{
         IJdbcTable<? extends ResultSet> table = getTable(nameOrQuery, params, statement);
         if (table instanceof ISpatialTable) {
             return (JdbcSpatialTable) table;
         } else {
-            String name = "";
-            if (table != null) {
-                name = "'" + table.getName() + "' ";
-            }
-            LOGGER.error("The table " + name + "is not a spatial table.");
-            return null;
+            throw new Exception("The table " + nameOrQuery + "is not a spatial table.");
         }
     }
 
     @Override
-    public IJdbcSpatialTable<StreamSpatialResultSet> getSpatialTable(String query, List<Object> params) {
+    public IJdbcSpatialTable<StreamSpatialResultSet> getSpatialTable(String query, List<Object> params) throws Exception{
         IJdbcTable<? extends ResultSet> table = getTable(query, params);
         if (table instanceof ISpatialTable) {
             return (JdbcSpatialTable) table;
         } else {
-            String name = "";
-            if (table != null) {
-                name = "'" + table.getName() + "' ";
-            }
-            LOGGER.error("The table " + name + "is not a spatial table.");
-            return null;
+            throw new IllegalArgumentException("The table " + query + "is not a spatial table.");
         }
     }
 
     @Override
-    public IJdbcSpatialTable<StreamSpatialResultSet> getSpatialTable(String tableName) {
+    public IJdbcSpatialTable<StreamSpatialResultSet> getSpatialTable(String tableName) throws Exception{
         IJdbcTable<? extends ResultSet> table = getTable(tableName);
         if (table instanceof ISpatialTable) {
             return (JdbcSpatialTable) table;
         } else {
-            String name = "";
-            if (table != null) {
-                name = "'" + table.getName() + "' ";
-            }
-            LOGGER.error("The table " + name + "is not a spatial table.");
-            return null;
+            throw new IllegalArgumentException("The table " + tableName + " is not a spatial table.");
         }
     }
 
     @Override
-    public IJdbcSpatialTable<StreamSpatialResultSet> getSpatialTable(GString nameOrQuery) {
+    public IJdbcSpatialTable<StreamSpatialResultSet> getSpatialTable(GString nameOrQuery) throws Exception{
         if (nameOrQuery.getValueCount() == 0 ||
                 !nameOrQuery.toString().startsWith("(") && !nameOrQuery.toString().endsWith("(")) {
             return getSpatialTable(nameOrQuery.toString());
@@ -486,7 +444,7 @@ public class H2GIS extends JdbcDataSource {
     }
 
     @Override
-    public boolean hasTable(String tableName) {
+    public boolean hasTable(String tableName){
         Connection connection = getConnection();
         try {
             return JDBCUtilities.tableExists(connection, TableLocation.parse(tableName, DBTypes.H2GIS));
@@ -498,25 +456,9 @@ public class H2GIS extends JdbcDataSource {
     }
 
     @Override
-    public Collection<String> getColumnNames(String location) {
-        try {
-            Collection<String> cols = JDBCUtilities.getColumnNames(getConnection(), TableLocation.parse(location, DBTypes.H2GIS).toString());
-            if (!getConnection().getAutoCommit()) {
-                getConnection().commit();
-            }
-            return cols;
-        } catch (SQLException e) {
-            LOGGER.error("Unable to get the column names of the table " + location + ".", e);
-            try {
-                if (!getConnection().getAutoCommit()) {
-                    getConnection().rollback();
-                }
-            } catch (SQLException e2) {
-                LOGGER.error("Unable to rollback.", e2);
-            }
-            return null;
-        }
-    }
+    public Collection<String> getColumnNames(String location) throws Exception{
+        return JDBCUtilities.getColumnNames(getConnection(), TableLocation.parse(location, DBTypes.H2GIS).toString());
+   }
 
     @Override
     public void dropColumn(String tableName, List<String> columnNames) {

@@ -369,18 +369,9 @@ public abstract class JdbcSpatialTable extends JdbcTable<StreamSpatialResultSet>
     }
 
     @Override
-    public SpatialResultSetMetaData getMetaData() {
-        try {
+    public SpatialResultSetMetaData getMetaData() throws SQLException{
             ResultSet rs = getResultSet();
-            if(rs == null){
-                LOGGER.error("Unable to get the ResultSet.");
-                return null;
-            }
             return rs.getMetaData().unwrap(SpatialResultSetMetaData.class);
-        } catch (SQLException e) {
-            LOGGER.error("Unable to get the metadata.", e);
-            return null;
-        }
     }
 
     @Override
@@ -389,7 +380,7 @@ public abstract class JdbcSpatialTable extends JdbcTable<StreamSpatialResultSet>
     }
 
     @Override
-    public Stream<StreamSpatialResultSet> stream() {
+    public Stream<StreamSpatialResultSet> stream() throws Exception{
         Spliterator<StreamSpatialResultSet> spliterator = new ResultSetSpliterator<>(this.getRowCount(), new StreamSpatialResultSet((SpatialResultSet)getResultSet()));
         return StreamSupport.stream(spliterator, true);
     }

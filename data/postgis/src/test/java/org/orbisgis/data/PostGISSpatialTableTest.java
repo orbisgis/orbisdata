@@ -129,7 +129,7 @@ public class PostGISSpatialTableTest {
         assertInstanceOf(ITable.class, table.asType(ITable.class));
         assertInstanceOf(PostgisSpatialTable.class, table.asType(PostgisSpatialTable.class));
         assertInstanceOf(PostgisTable.class, table.asType(PostgisTable.class));
-        assertThrows(Exception.class, ()->table.asType(String.class));
+        assertNull( table.asType(String.class));
     }
 
     @Test

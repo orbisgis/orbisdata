@@ -126,14 +126,14 @@ class GroovyPostGISTest {
         """)
 
         def concat = ""
-        postGIS.getSpatialTable("testtable").meta.each { row ->
-            concat += "$row.columnLabel $row.columnType\n"
+        postGIS.getSpatialTable("testtable").getMetaData().each { row ->
+            concat += "${row.getColumnLabel()} ${row.getColumnType()}\n"
         }
         assertEquals("id 4\nthe_geom 1111\n", concat)
 
         concat = ""
-        postGIS.getSpatialTable("testtable").meta.each { row ->
-            concat += "$row.columnLabel $row.columnType\n"
+        postGIS.getSpatialTable("testtable").getMetaData().each { row ->
+            concat += "${row.getColumnLabel()} ${row.getColumnType()}\n"
         }
         assertEquals("id 4\nthe_geom 1111\n", concat)
     }
@@ -454,13 +454,13 @@ class GroovyPostGISTest {
                 CREATE TABLE orbisgis (id int, the_geom geometry(point, 4326));
                 INSERT INTO orbisgis VALUES (1, 'SRID=4326;POINT(10 10)'::GEOMETRY), (2, 'SRID=4326;POINT(1 1)'::GEOMETRY);
         """)
-        postGIS.getSpatialTable("orbisgis").the_geom.createSpatialIndex()
-        assertTrue(postGIS.getSpatialTable("orbisgis").the_geom.isIndexed())
-        assertFalse(postGIS.getSpatialTable("orbisgis").id.isIndexed())
-        postGIS.getSpatialTable("orbisgis").id.createIndex()
-        assertTrue(postGIS.getSpatialTable("orbisgis").id.isIndexed())
-        postGIS.getSpatialTable("orbisgis").the_geom.dropIndex()
-        assertFalse(postGIS.getSpatialTable("orbisgis").the_geom.isIndexed())
+        postGIS.createSpatialIndex("orbisgis", "the_geom")
+        assertTrue(postGIS.isSpatialIndexed("orbisgis"))
+        assertFalse(postGIS.isIndexed("orbisgis","id"))
+        postGIS.createIndex("orbisgis","id")
+        assertTrue(postGIS.isIndexed("orbisgis","id"))
+        postGIS.dropIndex("orbisgis","the_geom")
+        assertFalse(postGIS.isSpatialIndexed("orbisgis","the_geom"))
     }
 
     @Test

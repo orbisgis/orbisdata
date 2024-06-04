@@ -207,27 +207,31 @@ public class PostGISSpatialTableTest {
     @EnabledIfSystemProperty(named = "test.postgis", matches = "true")
     public void testGetGeometry() throws Exception {
         ISpatialTable table = postGIS.getSpatialTable(TABLE_NAME);
-        assertNull(table.getGeometry());
-        assertNull(table.getGeometry(1));
-        assertNull(table.getGeometry(2));
-        assertNull(table.getGeometry(COL_THE_GEOM));
-        assertNull(table.getGeometry(COL_THE_GEOM2));
+        assertThrows(Exception.class, ()->table.getGeometry());
+        assertThrows(Exception.class, ()->table.getGeometry(1));
+        assertThrows(Exception.class, ()->table.getGeometry(2));
+        assertThrows(Exception.class, ()->table.getGeometry(COL_THE_GEOM));
+        assertThrows(Exception.class, ()->table.getGeometry(COL_THE_GEOM2));
 
         final String[] str = {"", "", "", "", ""};
         table.forEach(o -> {
+            try {
             str[0] += ((PostgisSpatialTable) o).getGeometry();
             str[1] += ((PostgisSpatialTable) o).getGeometry(1);
             str[2] += ((PostgisSpatialTable) o).getGeometry(2);
             str[3] += ((PostgisSpatialTable) o).getGeometry(COL_THE_GEOM);
             str[4] += ((PostgisSpatialTable) o).getGeometry(COL_THE_GEOM2);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
         });
         assertEquals("POINT (0 0)POINT (0 1)", str[0]);
         assertEquals("POINT (0 0)POINT (0 1)", str[1]);
         assertEquals("POINT (1 1)POINT (10 11)", str[2]);
         assertEquals("POINT (0 0)POINT (0 1)", str[3]);
         assertEquals("POINT (1 1)POINT (10 11)", str[4]);
-        assertNull(table.getGeometry(4));
-        assertNull(table.getGeometry(COL_ID));
+        assertThrows(Exception.class, ()->table.getGeometry(4));
+        assertThrows(Exception.class, ()->table.getGeometry(COL_ID));
     }
 
 

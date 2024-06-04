@@ -321,7 +321,7 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, IRe
             try {
                 con = getDataSource().getConnection();
             } catch (SQLException e) {
-                LOGGER.error("Unable to get the connection from the DataSource.\n" + e.getLocalizedMessage());
+                throw new RuntimeException("Unable to get the connection from the DataSource.\n" + e.getLocalizedMessage());
             }
         }
         return con;
@@ -504,7 +504,6 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, IRe
             }
             return rows;
         } catch (SQLException e) {
-            LOGGER.debug("Unable to execute the request as a GString.\n" + e.getLocalizedMessage());
             try {
                 if (!getConnection().getAutoCommit()) {
                     super.rollback();

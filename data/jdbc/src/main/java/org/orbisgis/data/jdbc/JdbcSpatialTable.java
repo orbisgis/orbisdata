@@ -77,7 +77,7 @@ public abstract class JdbcSpatialTable extends JdbcTable<StreamSpatialResultSet>
      */
     public JdbcSpatialTable(DBTypes dataBaseType, IJdbcDataSource jdbcDataSource,
                             TableLocation tableLocation, Statement statement,
-                            String baseQuery, List <Object> params) {
+                            String baseQuery, List<Object> params) {
         super(dataBaseType, jdbcDataSource, tableLocation, statement, params, baseQuery);
     }
 
@@ -87,291 +87,225 @@ public abstract class JdbcSpatialTable extends JdbcTable<StreamSpatialResultSet>
     }
 
     @Override
-    public Geometry getGeometry(int columnIndex) {
-        try {
-            SpatialResultSet rs = (SpatialResultSet)getResultSet();
-            if(rs != null) {
-                return rs.getGeometry(columnIndex);
-            }
-        } catch (SQLException e) {
-            LOGGER.error("Unable to get the geometry at '" + columnIndex + "'.", e);
+    public Geometry getGeometry(int columnIndex) throws Exception {
+        SpatialResultSet rs = (SpatialResultSet) getResultSet();
+        if (rs != null) {
+            return rs.getGeometry(columnIndex);
         }
-        return null;
+        throw new SQLException("Cannot find any geometry on column index " + columnIndex);
     }
 
     @Override
-    public Geometry getGeometry(String columnLabel) {
-        try {
-            SpatialResultSet rs = (SpatialResultSet)getResultSet();
-            if(rs != null) {
-                return rs.getGeometry(columnLabel);
-            }
-        } catch (SQLException e) {
-            LOGGER.error("Unable to get the geometry of '" + columnLabel + "'.", e);
+    public Geometry getGeometry(String columnLabel) throws Exception {
+        SpatialResultSet rs = (SpatialResultSet) getResultSet();
+        if (rs != null) {
+            return rs.getGeometry(columnLabel);
         }
-        return null;
+        throw new SQLException("Cannot find any geometry on column name " + columnLabel);
     }
 
     @Override
-    public Geometry getGeometry() {
-        try {
-            SpatialResultSet rs = (SpatialResultSet)getResultSet();
-            if(rs != null) {
-                return rs.getGeometry();
-            }
-        } catch (SQLException e) {
-            LOGGER.error("Unable to get the geometry.", e);
+    public Geometry getGeometry() throws Exception {
+        SpatialResultSet rs = (SpatialResultSet) getResultSet();
+        if (rs != null) {
+            return rs.getGeometry();
         }
-        return null;
+        throw new SQLException("Cannot read the data");
     }
 
     @Override
-    public IRaster getRaster(int columnIndex) {
+    public IRaster getRaster(int columnIndex) throws Exception {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public IRaster getRaster(String columnLabel) {
+    public IRaster getRaster(String columnLabel) throws Exception {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public IRaster getRaster() {
+    public IRaster getRaster() throws Exception {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public List<String> getSpatialColumns() {
+    public List<String> getSpatialColumns() throws Exception {
         List<String> list = new ArrayList<>(getRasterColumns());
         List<String> geometric = getGeometricColumns();
-        if(geometric != null) {
+        if (geometric != null) {
             list.addAll(geometric);
         }
         return list;
     }
 
     @Override
-    public List<String> getRasterColumns() {
+    public List<String> getRasterColumns() throws Exception {
         return new ArrayList<>();
     }
 
     @Override
-    public List<String> getGeometricColumns() {
+    public List<String> getGeometricColumns() throws Exception {
         if (getTableLocation() == null) {
             try {
                 ResultSet rs = getResultSet();
-                if(rs != null) {
-                    return new ArrayList<>(GeometryTableUtilities.getGeometryColumnNames(rs.getMetaData()));
+                if (rs != null) {
+                    return GeometryTableUtilities.getGeometryColumnNames(rs.getMetaData());
                 }
             } catch (SQLException e) {
                 LOGGER.error("Unable to get the geometric columns on ResultSet.", e);
-            }
-        } else {
-            try {
-                Connection con = getJdbcDataSource().getConnection();
-                if(con == null){
-                    LOGGER.error("Unable to get connection for the geometric columns.");
-                    return null;
-                }
-                return new ArrayList<>(GeometryTableUtilities.getGeometryColumnNames(con, getTableLocation()));
-            } catch (SQLException e) {
-                LOGGER.error("Unable to get the geometric columns.", e);
-            }
-        }
-        return null;
-    }
-
-    @Override
-    public Geometry getExtent(String[] geometryColumns, String filter) {
-        if (getTableLocation() == null) {
-            try {
-                Connection con = getJdbcDataSource().getConnection();
-                if(con == null){
-                    LOGGER.error("Unable to get connection for the geometric field.");
-                    return null;
-                }
-                return GeometryTableUtilities.getEnvelope(con, getBaseQuery(), geometryColumns, filter);
-            } catch (SQLException e) {
-                LOGGER.error("Unable to get the table estimated extend.", e);
-            }
-        }
-        else{
-            try {
-                Connection con = getJdbcDataSource().getConnection();
-                if(con == null){
-                    LOGGER.error("Unable to get connection for the geometric field.");
-                    return null;
-                }
-                return GeometryTableUtilities.getEnvelope(con, getTableLocation(), geometryColumns, filter);
-            } catch (SQLException e) {
-                LOGGER.error("Unable to get the table estimated extend.", e);
-            }
-        }
-        return null;
-    }
-
-    @Override
-    public Geometry getExtent(String... geometryColumns) {
-        if (getTableLocation() == null) {
-            try {
-                Connection con = getJdbcDataSource().getConnection();
-                if(con == null){
-                    LOGGER.error("Unable to get connection for the geometric field.");
-                    return null;
-                }
-                return GeometryTableUtilities.getEnvelope(con, getBaseQuery(), geometryColumns);
-            } catch (SQLException e) {
-                LOGGER.error("Unable to get the table estimated extend.", e);
-            }
-        }
-        else{
-            try {
-                Connection con = getJdbcDataSource().getConnection();
-                if(con == null){
-                    LOGGER.error("Unable to get connection for the geometric field.");
-                    return null;
-                }
-                return GeometryTableUtilities.getEnvelope(con, getTableLocation(), geometryColumns);
-            } catch (SQLException e) {
-                LOGGER.error("Unable to get the table estimated extend.", e);
-            }
-        }
-        return null;
-    }
-
-    @Override
-    public Geometry getExtent() {
-        if (getTableLocation() == null) {
-            try {
-                Connection con = getJdbcDataSource().getConnection();
-                if(con == null){
-                    LOGGER.error("Unable to get connection for the geometric field.");
-                    return null;
-                }
-                ResultSet rs0 = getResultSet();
-                if(rs0 == null) {
-                    LOGGER.error("Unable to get the ResultSet.");
-                    return null;
-                }
-                Tuple<String, Integer> geomMeta=null;
-                try {
-                    TableLocation tableLocation = getTableLocation();
-                    if (tableLocation == null) {
-                        geomMeta = GeometryTableUtilities.getFirstGeometryColumnNameAndIndex(rs0.getMetaData());
-                    }else {
-                        geomMeta = GeometryTableUtilities.getFirstGeometryColumnNameAndIndex(con, tableLocation);
-                    }
-                } catch (SQLException e) {
-                    LOGGER.error("There is no geometric field.", e);
-                }
-                return GeometryTableUtilities.getEnvelope(rs0, geomMeta.first());
-
-            } catch (SQLException e) {
-                LOGGER.error("Unable to get the table estimated extend on ResultSet.", e);
-            }
-        } else {
-            try {
-                Connection con = getJdbcDataSource().getConnection();
-                if(con == null){
-                    LOGGER.error("Unable to get connection for the geometric field.");
-                    return null;
-                }
-                Tuple<String, Integer> geomMeta = null;
-                try {
-                    geomMeta = GeometryTableUtilities.getFirstGeometryColumnNameAndIndex(con, getTableLocation());
-                } catch (SQLException e) {
-                    LOGGER.error("There is no geometric field.", e);
-                }
-                return GeometryTableUtilities.getEnvelope(con, getTableLocation(), geomMeta.first());
-            } catch (SQLException e) {
-                LOGGER.error("Unable to get the table estimated extend.", e);
-            }
-        }
-        return null;
-    }
-
-    @Override
-    public Geometry getEstimatedExtent() {
-        if (getTableLocation() == null) {
-            throw new UnsupportedOperationException();
-        }
-        try {
-            Connection con = getJdbcDataSource().getConnection();
-            if(con == null){
-                LOGGER.error("Unable to get connection for the geometric field.");
                 return null;
             }
-            Tuple<String, Integer> geomMeta=null;
+        } else {
+                Connection con = getJdbcDataSource().getConnection();
+                if (con == null) {
+                    throw new SQLException("Cannot get the connection to the database");
+                }
             try {
-                geomMeta = GeometryTableUtilities.getFirstGeometryColumnNameAndIndex(con, getTableLocation());
+                return GeometryTableUtilities.getGeometryColumnNames(con, getTableLocation());
             } catch (SQLException e) {
-                LOGGER.error("There is no geometric field.");
+                return null;
             }
-            return GeometryTableUtilities.getEstimatedExtent(con, getTableLocation(), geomMeta.first());
-        } catch (SQLException e) {
-            LOGGER.error("Unable to get the table estimated extend.", e);
         }
         return null;
     }
 
-
     @Override
-    public void setSrid(int srid) {
-        List<String> geomColumns = getGeometricColumns();
-        if (getTableLocation() == null || geomColumns.isEmpty()) {
-            throw new UnsupportedOperationException();
-        }
-        try {
+    public Geometry getExtent(String[] geometryColumns, String filter) throws Exception {
+        if (getTableLocation() == null) {
             Connection con = getJdbcDataSource().getConnection();
-            if(con == null){
-                LOGGER.error("Unable to set connection for the table SRID.");
+            if (con == null) {
+                throw new SQLException("Cannot get the connection to the database");
             }
-            String geomColumn = getGeometricColumns().get(0);
-            String type = getColumnType(geomColumn);
-            con.createStatement().execute(
-                    "ALTER TABLE "+getLocation()+" ALTER COLUMN "+geomColumn+" TYPE geometry("+type+", "+srid+") USING ST_SetSRID("+geomColumn+","+srid+");");
-        } catch (SQLException e) {
-            LOGGER.error("Unable to set the table SRID.", e);
+            return GeometryTableUtilities.getEnvelope(con, getBaseQuery(), geometryColumns, filter);
+
+        } else {
+            Connection con = getJdbcDataSource().getConnection();
+            if (con == null) {
+                throw new SQLException("Cannot get the connection to the database");
+            }
+            return GeometryTableUtilities.getEnvelope(con, getTableLocation(), geometryColumns, filter);
         }
     }
 
     @Override
-    public Map<String, String> getGeometryTypes() {
+    public Geometry getExtent(String... geometryColumns) throws Exception {
         if (getTableLocation() == null) {
+            Connection con = getJdbcDataSource().getConnection();
+            if (con == null) {
+                throw new SQLException("Cannot get the connection to the database");
+            }
             try {
-                Map<String, String> map = new HashMap<>();
-                ResultSet rs = getResultSet();
-                if(rs == null){
-                    LOGGER.error("Unable to get the ResultSet.");
-                    return null;
-                }
+                return GeometryTableUtilities.getEnvelope(con, getBaseQuery(), geometryColumns);
+            } catch (SQLException e) {
+                return null;
+            }
+        } else {
+            Connection con = getJdbcDataSource().getConnection();
+            if (con == null) {
+                throw new SQLException("Cannot get the connection to the database");
+            }
+            return GeometryTableUtilities.getEnvelope(con, getTableLocation(), geometryColumns);
+        }
+    }
+
+    @Override
+    public Geometry getExtent() throws Exception {
+        if (getTableLocation() == null) {
+            Connection con = getJdbcDataSource().getConnection();
+            if (con == null) {
+                throw new SQLException("Cannot get the connection to the database");
+            }
+            ResultSet rs0 = getResultSet();
+            if (rs0 == null) {
+                throw new SQLException("Cannot read the data");
+            }
+            Tuple<String, Integer> geomMeta = null;
+            TableLocation tableLocation = getTableLocation();
+            if (tableLocation == null) {
+                geomMeta = GeometryTableUtilities.getFirstGeometryColumnNameAndIndex(rs0.getMetaData());
+            } else {
+                geomMeta = GeometryTableUtilities.getFirstGeometryColumnNameAndIndex(con, tableLocation);
+            }
+            if(geomMeta==null){
+                return null;
+            }
+            return GeometryTableUtilities.getEnvelope(rs0, geomMeta.first());
+        } else {
+            Connection con = getJdbcDataSource().getConnection();
+            if (con == null) {
+                throw new SQLException("Cannot get the connection to the database");
+            }
+            Tuple<String, Integer> geomMeta = GeometryTableUtilities.getFirstGeometryColumnNameAndIndex(con, getTableLocation());
+            return GeometryTableUtilities.getEnvelope(con, getTableLocation(), geomMeta.first());
+        }
+    }
+
+    @Override
+    public Geometry getEstimatedExtent() throws Exception {
+        if (getTableLocation() == null) {
+            throw new UnsupportedOperationException();
+        }
+        Connection con = getJdbcDataSource().getConnection();
+        if (con == null) {
+            throw new SQLException("Cannot get the connection to the database");
+        }
+        Tuple<String, Integer> geomMeta = GeometryTableUtilities.getFirstGeometryColumnNameAndIndex(con, getTableLocation());
+        return GeometryTableUtilities.getEstimatedExtent(con, getTableLocation(), geomMeta.first());
+    }
+
+
+    @Override
+    public void setSrid(int srid) throws Exception {
+        List<String> geomColumns = getGeometricColumns();
+        if (getTableLocation() == null || geomColumns.isEmpty()) {
+            throw new IllegalArgumentException("Invalid table");
+        }
+        Connection con = getJdbcDataSource().getConnection();
+        if (con == null) {
+            throw new SQLException("Cannot get the connection to the database");
+        }
+        String geomColumn = getGeometricColumns().get(0);
+        String type = getColumnType(geomColumn);
+        con.createStatement().execute(
+                "ALTER TABLE " + getLocation() + " ALTER COLUMN " + geomColumn + " TYPE geometry(" + type + ", " + srid + ") USING ST_SetSRID(" + geomColumn + "," + srid + ");");
+
+    }
+
+    @Override
+    public Map<String, String> getGeometryTypes() throws Exception {
+        if (getTableLocation() == null) {
+            Map<String, String> map = new HashMap<>();
+            ResultSet rs = getResultSet();
+            if (rs == null) {
+                throw new SQLException("Cannot read the data");
+            }
+            try {
                 GeometryTableUtilities.getMetaData(getResultSet())
                         .forEach((key, value) -> map.put(key, value.getGeometryType()));
                 return map;
-            } catch (SQLException e) {
-                LOGGER.error("Unable to get the metadata of the query.", e);
-            }
-        }
-        try {
-            Map<String, String> map = new HashMap<>();
-            Connection con = getJdbcDataSource().getConnection();
-            if(con == null){
-                LOGGER.error("Unable to get connection for the geometry types.");
+            }catch (SQLException e){
                 return null;
             }
-            GeometryTableUtilities.getMetaData(con, getTableLocation())
-                    .forEach((s, meta) -> map.put(s, meta.getGeometryType()));
-            return map;
-        } catch (SQLException e) {
-            LOGGER.error("Unable to get the geometry types.", e);
-            return null;
+        } else {
+            Map<String, String> map = new HashMap<>();
+            Connection con = getJdbcDataSource().getConnection();
+            if (con == null) {
+                throw new SQLException("Cannot get the connection to the database");
+            }
+            try {
+                GeometryTableUtilities.getMetaData(con, getTableLocation())
+                        .forEach((s, meta) -> map.put(s, meta.getGeometryType()));
+                return map;
+            }catch (SQLException e){
+                return null;
+            }
         }
     }
 
     @Override
-    public SpatialResultSetMetaData getMetaData() throws SQLException{
-            ResultSet rs = getResultSet();
-            return rs.getMetaData().unwrap(SpatialResultSetMetaData.class);
+    public SpatialResultSetMetaData getMetaData() throws SQLException {
+        ResultSet rs = getResultSet();
+        return rs.getMetaData().unwrap(SpatialResultSetMetaData.class);
     }
 
     @Override
@@ -380,8 +314,8 @@ public abstract class JdbcSpatialTable extends JdbcTable<StreamSpatialResultSet>
     }
 
     @Override
-    public Stream<StreamSpatialResultSet> stream() throws Exception{
-        Spliterator<StreamSpatialResultSet> spliterator = new ResultSetSpliterator<>(this.getRowCount(), new StreamSpatialResultSet((SpatialResultSet)getResultSet()));
+    public Stream<StreamSpatialResultSet> stream() throws Exception {
+        Spliterator<StreamSpatialResultSet> spliterator = new ResultSetSpliterator<>(this.getRowCount(), new StreamSpatialResultSet((SpatialResultSet) getResultSet()));
         return StreamSupport.stream(spliterator, true);
     }
 }

@@ -83,10 +83,9 @@ public class PostgisSpatialTable extends JdbcSpatialTable {
         if (resultSet == null) {
             try {
                 Statement st = getStatement();
-                if(st instanceof PreparedStatement) {
-                    resultSet = ((PreparedStatement)st).executeQuery();
-                }
-                else {
+                if (st instanceof PreparedStatement) {
+                    resultSet = ((PreparedStatement) st).executeQuery();
+                } else {
                     resultSet = getStatement().executeQuery(getBaseQuery());
                 }
                 resultSet = new SpatialResultSetWrapper(resultSet, new StatementWrapper(new ConnectionWrapper(getJdbcDataSource().getConnection()), getStatement()));
@@ -99,7 +98,7 @@ public class PostgisSpatialTable extends JdbcSpatialTable {
     }
 
     @Override
-    public Object asType(Class<?> clazz) throws Exception{
+    public Object asType(Class<?> clazz) throws Exception {
         if (ISpatialTable.class.isAssignableFrom(clazz)) {
             return new PostgisSpatialTable(getTableLocation(), getBaseQuery(), getStatement(), getParams(),
                     getJdbcDataSource());
@@ -112,25 +111,24 @@ public class PostgisSpatialTable extends JdbcSpatialTable {
     }
 
     @Override
-    public int getSrid() throws Exception{
-        int srid =-1;
+    public int getSrid() throws Exception {
+        int srid = -1;
         if (getTableLocation() == null) {
             Connection con = getJdbcDataSource().getConnection();
             Tuple<String, GeometryMetaData> geomColumn = GeometryTableUtilities.getFirstColumnMetaData(getResultSetLimit(0));
             ResultSet rs = getStatement().executeQuery("select st_srid(" + geomColumn.first() + ") from (" + getBaseQuery() + ") as foo limit 1");
-            if(rs.next()){
+            if (rs.next()) {
                 srid = rs.getInt(1);
             }
-        }
-        else {
-                Connection con = getJdbcDataSource().getConnection();
-                return GeometryTableUtilities.getSRID(con, getTableLocation());
+        } else {
+            Connection con = getJdbcDataSource().getConnection();
+            return GeometryTableUtilities.getSRID(con, getTableLocation());
         }
         return srid;
     }
 
     @Override
-    public ISpatialTable reproject(int srid) throws Exception{
+    public ISpatialTable reproject(int srid) throws Exception {
         try {
             ResultSetMetaData meta = getMetaData();
             int columnCount = meta.getColumnCount();
@@ -145,10 +143,9 @@ public class PostgisSpatialTable extends JdbcSpatialTable {
             }
             String query = "SELECT " + String.join(",", fieldNames) + " FROM " +
                     (getTableLocation() == null ? getBaseQuery() + " as foo" : getTableLocation().toString(getDbType()));
-            return new PostgisSpatialTable(null, query,  getStatement(), getParams(), getJdbcDataSource());
+            return new PostgisSpatialTable(null, query, getStatement(), getParams(), getJdbcDataSource());
         } catch (SQLException e) {
             throw new SQLException("Cannot reproject the table '" + getLocation() + "' in the SRID '" + srid + "'.\n", e);
-
         }
     }
 }

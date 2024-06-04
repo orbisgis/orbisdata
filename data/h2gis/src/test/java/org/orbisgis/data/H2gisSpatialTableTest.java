@@ -77,7 +77,7 @@ public class H2gisSpatialTableTest {
 
     @BeforeAll
     public static void beforeAll() throws Exception {
-       h2GIS=  H2GIS.open(BASE_DATABASE);
+        h2GIS = H2GIS.open(BASE_DATABASE);
     }
 
     /**
@@ -131,7 +131,7 @@ public class H2gisSpatialTableTest {
 
         ISpatialTable spr = sp.reproject(2154);
         assertNotNull(spr);
-        assertThrows(UnsupportedOperationException.class, spr::getSrid);
+        assertThrows(IllegalArgumentException.class, spr::getSrid);
         assertEquals(2, spr.getRowCount());
         assertEquals("target/reprojected_table.shp", spr.save("target/reprojected_table.shp", true));
 
@@ -175,7 +175,8 @@ public class H2gisSpatialTableTest {
         assertEquals(2, spLoaded.getRowCount());
         assertEquals(4326, spLoaded.getSrid());
         assertInstanceOf(Point.class, spLoaded.getFirstRow().get(1));
-     }
+    }
+
     /**
      * Test the {@link JdbcSpatialTable#isSpatial()} method.
      */
@@ -191,27 +192,31 @@ public class H2gisSpatialTableTest {
     @Test
     public void testGetGeometry() throws Exception {
         ISpatialTable table = h2GIS.getSpatialTable(TABLE_NAME);
-        assertNull(table.getGeometry());
-        assertNull(table.getGeometry(1));
-        assertNull(table.getGeometry(2));
-        assertNull(table.getGeometry(COL_THE_GEOM));
-        assertNull(table.getGeometry(COL_THE_GEOM2));
+        assertThrows(Exception.class, () -> table.getGeometry());
+        assertThrows(Exception.class, () -> table.getGeometry(1));
+        assertThrows(Exception.class, () -> table.getGeometry(2));
+        assertThrows(Exception.class, () -> table.getGeometry(COL_THE_GEOM));
+        assertThrows(Exception.class, () -> table.getGeometry(COL_THE_GEOM2));
 
         final String[] str = {"", "", "", "", ""};
         table.forEach(o -> {
-            str[0] += ((H2gisSpatialTable) o).getGeometry();
-            str[1] += ((H2gisSpatialTable) o).getGeometry(1);
-            str[2] += ((H2gisSpatialTable) o).getGeometry(2);
-            str[3] += ((H2gisSpatialTable) o).getGeometry(COL_THE_GEOM);
-            str[4] += ((H2gisSpatialTable) o).getGeometry(COL_THE_GEOM2);
+            try {
+                str[0] += ((H2gisSpatialTable) o).getGeometry();
+                str[1] += ((H2gisSpatialTable) o).getGeometry(1);
+                str[2] += ((H2gisSpatialTable) o).getGeometry(2);
+                str[3] += ((H2gisSpatialTable) o).getGeometry(COL_THE_GEOM);
+                str[4] += ((H2gisSpatialTable) o).getGeometry(COL_THE_GEOM2);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
         });
         assertEquals("POINT (0 0)POINT (0 1)", str[0]);
         assertEquals("POINT (0 0)POINT (0 1)", str[1]);
         assertEquals("POINT (1 1)POINT (10 11)", str[2]);
         assertEquals("POINT (0 0)POINT (0 1)", str[3]);
         assertEquals("POINT (1 1)POINT (10 11)", str[4]);
-        assertNull(table.getGeometry(4));
-        assertNull(table.getGeometry(COL_ID));
+        assertThrows(Exception.class, ()->table.getGeometry(4));
+        assertThrows(Exception.class, ()->table.getGeometry(COL_ID));
     }
 
 

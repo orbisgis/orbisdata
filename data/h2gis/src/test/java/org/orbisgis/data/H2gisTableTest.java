@@ -505,7 +505,7 @@ public class H2gisTableTest {
      * Test the {@link JdbcTable#getUniqueValues(String)} method.
      */
     @Test
-    void testGetUniqueValues() {
+    void testGetUniqueValues() throws Exception {
         assertEquals(2, getTable().getUniqueValues(COL_MEANING).size());
         assertTrue(getTable().getUniqueValues(COL_MEANING).contains("Simple points"));
         assertTrue(getTable().getUniqueValues(COL_MEANING).contains("3D point"));

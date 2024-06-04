@@ -65,7 +65,7 @@ public class H2GISTests {
     public void openH2GIS() throws Exception {
         assertNotNull(H2GIS.open("./target/openH2GIS1"));
         assertNotNull(H2GIS.open("./target/openH2GIS2", "sa", "sa"));
-        assertNull(H2GIS.open(new File("file")));
+        assertThrows(Exception.class, ()->H2GIS.open(new File("file")));
 
         BasicDataSource ds = new BasicDataSource();
         ds.setDriverClassName("org.h2.Driver");

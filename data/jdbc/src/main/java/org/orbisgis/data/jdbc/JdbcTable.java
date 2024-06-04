@@ -400,23 +400,21 @@ public abstract class JdbcTable<T extends ResultSet> extends DefaultResultSet im
     }
 
     @Override
-    public Collection<String> getUniqueValues(String column) {
+    public Collection<String> getUniqueValues(String column) throws Exception{
         if (tableLocation == null) {
-            throw new UnsupportedOperationException();
+            throw new IllegalArgumentException("Cannot get data on null or empty table");
         }
         if (tableLocation.getTable().isEmpty()) {
-            LOGGER.error("Unable to request unique values fo the column '" + column + "'.\n");
-            throw new UnsupportedOperationException();
+            throw new IllegalArgumentException("Cannot get data on null or empty table");
         } else {
             try {
                 Connection con = jdbcDataSource.getConnection();
                 if (con == null) {
-                    LOGGER.error("Unable to get the connection.");
-                    return null;
+                    throw new SQLException("Cannot get the connection to the database");
                 }
                 TableLocation loc = getTableLocation();
                 if (loc == null) {
-                    return null;
+                    throw new IllegalArgumentException("Cannot get data on null or empty table");
                 }
                 return JDBCUtilities.getUniqueFieldValues(con, loc.toString(getDbType()),
                         column);
@@ -497,7 +495,7 @@ public abstract class JdbcTable<T extends ResultSet> extends DefaultResultSet im
     @Override
     public String save(IJdbcDataSource dataSource, String outputTableName, boolean deleteTable, int batchSize) throws Exception {
         if (dataSource == null) {
-            throw new IllegalArgumentException("The output datasource connexion cannot ne null");
+            throw new SQLException("Cannot get the connection to the database");
         }
         String inputTableName = getTableLocation() == null ? "(" + getBaseQuery() + ")" : getTableLocation().toString(getDbType());
         try {
@@ -510,7 +508,7 @@ public abstract class JdbcTable<T extends ResultSet> extends DefaultResultSet im
     @Override
     public String save(IJdbcDataSource dataSource, boolean deleteTable, int batchSize) throws Exception {
         if (dataSource == null) {
-            throw new IllegalArgumentException("The output datasource connexion cannot be null");
+            throw new SQLException("Cannot get the connection to the database");
         }
         String inputTableName = getTableLocation() == null ? "(" + getBaseQuery() + ")" : getTableLocation().toString(getDbType());
         return IOMethods.exportToDataBase(getJdbcDataSource().getConnection(), inputTableName, dataSource.getConnection(), inputTableName, deleteTable ? -1 : 0, batchSize);

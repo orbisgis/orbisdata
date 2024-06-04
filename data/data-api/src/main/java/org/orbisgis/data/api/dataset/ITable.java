@@ -165,7 +165,7 @@ public interface ITable<T, U> extends IMatrix<T>, IQueryBuilder {
      * @param column Name of the column to request.
      * @return A {@link Collection} of all the unique values of the {@link ITable}.
      */
-    Collection<String> getUniqueValues(String column);
+    Collection<String> getUniqueValues(String column) throws Exception;
 
     /**
      * Save the {@link ITable} into a file.

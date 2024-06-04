@@ -175,7 +175,7 @@ public class H2GISColumnTest {
     /**
      * Test that there is no spatial index
      */
-    private void testNoSpatialIndexes() {
+    private void testNoSpatialIndexes() throws Exception {
         //Test no spatial index
         assertFalse(getColumn(COL_THE_GEOM).isSpatialIndexed());
         assertFalse(getColumn(COL_THE_GEOM2).isSpatialIndexed());
@@ -203,7 +203,7 @@ public class H2GISColumnTest {
     /**
      * Drop indexes on all columns
      */
-    private void dropIndexes() {
+    private void dropIndexes() throws Exception {
         //Test drop index
         getColumn(COL_THE_GEOM).dropIndex();
         getColumn(COL_THE_GEOM2).dropIndex();
@@ -220,7 +220,7 @@ public class H2GISColumnTest {
      * methods.
      */
     @Test
-    public void testIndexes() {
+    public void testIndexes() throws Exception {
         dropIndexes();
         testNoSpatialIndexes();
         testNoIndexes();
@@ -288,7 +288,7 @@ public class H2GISColumnTest {
      * Test the {@link JdbcColumn#getSrid()}, {@link JdbcColumn#setSrid(int)} methods.
      */
     @Test
-    public void testGetSrid() {
+    public void testGetSrid() throws Exception {
         JdbcColumn column = getColumn(COL_THE_GEOM);
         assertEquals(0, column.getSrid());
         column.setSrid(2121);

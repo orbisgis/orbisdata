@@ -1140,7 +1140,7 @@ public interface IJdbcDataSource extends IDataSource<ResultSet>, GroovyObject, D
      *
      * @return True if the tableName is empty, false otherwise.
      */
-    boolean isEmpty(String tableName);
+    boolean isEmpty(String tableName) throws Exception;
 
 
     /**

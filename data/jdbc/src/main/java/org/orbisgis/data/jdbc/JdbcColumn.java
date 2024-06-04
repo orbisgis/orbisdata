@@ -190,7 +190,7 @@ public class JdbcColumn implements IJdbcColumn, GroovyObject {
     }
 
     @Override
-    public boolean isSpatialIndexed() {
+    public boolean isSpatialIndexed() throws Exception {
         if(dataSource == null){
             LOGGER.error("Unable to find a spatial index");
         }
@@ -214,7 +214,7 @@ public class JdbcColumn implements IJdbcColumn, GroovyObject {
     }
 
     @Override
-    public void dropIndex() {
+    public void dropIndex() throws Exception {
         if( name == null || tableName == null){
             LOGGER.error("Unable to drop index");
         }
@@ -240,7 +240,7 @@ public class JdbcColumn implements IJdbcColumn, GroovyObject {
     }
 
     @Override
-    public boolean setSrid(int srid) {
+    public boolean setSrid(int srid) throws Exception {
         if( name == null || tableName == null){
             LOGGER.error("Unable to set the srid");
         }

@@ -1193,141 +1193,90 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, IRe
     }
 
     @Override
-    public boolean isSpatialIndexed(String tableName, String columnName) {
-        try {
-            return JDBCUtilities.isSpatialIndexed(getConnection(), TableLocation.parse(tableName, getDataBaseType()), columnName);
-        } catch (SQLException e) {
-            LOGGER.error("Unable to check if the column '" + columnName + "' from the table '" + tableName + "' is indexed.\n" +
-                    e.getLocalizedMessage());
-        }
-        return false;
+    public boolean isSpatialIndexed(String tableName, String columnName) throws Exception{
+        return JDBCUtilities.isSpatialIndexed(getConnection(), TableLocation.parse(tableName, getDataBaseType()), columnName);
     }
 
     @Override
-    public boolean isSpatialIndexed(String tableName) {
-        try {
+    public boolean isSpatialIndexed(String tableName) throws Exception{
             TableLocation table = TableLocation.parse(tableName, getDataBaseType());
             String geomColumn = GeometryTableUtilities.getFirstGeometryColumnNameAndIndex(getConnection(), table).first();
             if (geomColumn == null || geomColumn.isEmpty()) {
                 return false;
             }
             return JDBCUtilities.isSpatialIndexed(getConnection(), tableName, geomColumn);
-        } catch (SQLException e) {
-            LOGGER.error("Unable to check if  the table '" + tableName + "' has a spatial index.\n" +
-                    e.getLocalizedMessage());
-        }
-        return false;
     }
 
     @Override
-    public void dropIndex(String tableName, String columnName) {
-        if (columnName == null || tableName == null) {
-            LOGGER.error("Unable to drop index");
-            return;
-        }
-        try {
+    public void dropIndex(String tableName, String columnName) throws Exception{
+        if (columnName != null || tableName != null) {
             JDBCUtilities.dropIndex(getConnection(), TableLocation.parse(tableName, getDataBaseType()), columnName);
-        } catch (SQLException e) {
-            LOGGER.error("Unable to drop the indexes of the column '" + columnName + "' in the table '" + tableName + "'.\n" +
-                    e.getLocalizedMessage());
         }
     }
 
     @Override
-    public void dropTable(String... tableName) {
-        if (tableName == null) {
-            LOGGER.error("Unable to drop the tables");
-            return;
-        }
-        String query = Stream.of(tableName).filter(s -> s != null && !s.isEmpty())
-                .collect(Collectors.joining(" , "));
-        try {
-            if (!query.isEmpty()) {
-                execute("DROP TABLE IF EXISTS " + query);
+    public void dropTable(String... tableName) throws Exception{
+        if (tableName != null) {
+            String query = Stream.of(tableName).filter(s -> s != null && !s.isEmpty())
+                    .collect(Collectors.joining(" , "));
+            try {
+                if (!query.isEmpty()) {
+                    execute("DROP TABLE IF EXISTS " + query);
+                }
+            } catch (SQLException e) {
+                throw new SQLException("Unable to drop the tables '" + query + "'." , e);
             }
-        } catch (SQLException e) {
-            LOGGER.error("Unable to drop the tables '" + query + "'.\n" +
-                    e.getLocalizedMessage());
         }
     }
 
     @Override
-    public void dropTable(List<String> tableNames) {
-        if (tableNames == null) {
-            LOGGER.error("Unable to drop the tables");
-            return;
-        }
-        String query = tableNames.stream().filter(s -> s != null && !s.isEmpty())
-                .collect(Collectors.joining(","));
-        try {
-            if (!query.isEmpty()) {
-                execute("DROP TABLE IF EXISTS " + query);
+    public void dropTable(List<String> tableNames) throws Exception{
+        if (tableNames != null) {
+            String query = tableNames.stream().filter(s -> s != null && !s.isEmpty())
+                    .collect(Collectors.joining(","));
+            try {
+                if (!query.isEmpty()) {
+                    execute("DROP TABLE IF EXISTS " + query);
+                }
+            } catch (SQLException e) {
+                throw new SQLException("Unable to drop the tables '" + query + "'." ,
+                        e);
             }
-        } catch (SQLException e) {
-            LOGGER.error("Unable to drop the tables '" + query + "'.\n" +
-                    e.getLocalizedMessage());
         }
     }
+    @Override
+    public boolean setSrid(String tableName, String columnName, int srid) throws Exception{
+       return GeometryTableUtilities.alterSRID(getConnection(), TableLocation.parse(tableName, getDataBaseType()), columnName, srid);
+   }
 
     @Override
-    public boolean setSrid(String tableName, String columnName, int srid) {
-        try {
-            return GeometryTableUtilities.alterSRID(getConnection(), TableLocation.parse(tableName, getDataBaseType()), columnName, srid);
-        } catch (SQLException e) {
-            LOGGER.error("Unable to set the table SRID.", e);
-        }
-        return false;
-    }
-
-    @Override
-    public int getSrid(String tableName) {
+    public int getSrid(String tableName) throws Exception{
         if (tableName == null) {
-            LOGGER.error("Unable to get the srid");
-            return -1;
+            throw new IllegalArgumentException("Unable to get the srid");
         }
-        try {
-            return GeometryTableUtilities.getSRID(getConnection(), TableLocation.parse(tableName, getDataBaseType()));
-        } catch (SQLException e) {
-            LOGGER.error("Unable to get the table SRID.", e);
-        }
-        return -1;
+        return GeometryTableUtilities.getSRID(getConnection(), TableLocation.parse(tableName, getDataBaseType()));
     }
 
     @Override
-    public int getSrid(String tableName, String columnName) {
+    public int getSrid(String tableName, String columnName) throws Exception{
         if (tableName == null) {
-            LOGGER.error("Unable to get the srid");
-            return -1;
+            throw new IllegalArgumentException("Unable to get the srid");
         }
-        try {
-            return GeometryTableUtilities.getSRID(getConnection(), TableLocation.parse(tableName, getDataBaseType()), columnName);
-        } catch (SQLException e) {
-            LOGGER.error("Unable to get the table SRID.", e);
-        }
-        return -1;
+        return GeometryTableUtilities.getSRID(getConnection(), TableLocation.parse(tableName, getDataBaseType()), columnName);
     }
 
     @Override
-    public boolean setSrid(String tableName, int srid) {
-        try {
+    public boolean setSrid(String tableName, int srid) throws Exception{
             String geomColumn = GeometryTableUtilities.getFirstGeometryColumnNameAndIndex(getConnection(), TableLocation.parse(tableName, getDataBaseType())).first();
             if (geomColumn == null || geomColumn.isEmpty()) {
-                return false;
+                throw new IllegalArgumentException("Unable to get the srid");
             }
             return GeometryTableUtilities.alterSRID(getConnection(), tableName, geomColumn, srid);
-        } catch (SQLException e) {
-            LOGGER.error("Unable to set the table SRID.", e);
-        }
-        return false;
     }
 
 
     @Override
-    public boolean isEmpty(String tableName) {
-        if (tableName == null) {
-            LOGGER.error("Unable to drop the tables");
-            return false;
-        }
+    public boolean isEmpty(String tableName) throws Exception{
         try {
             GroovyRowResult row = firstRow("SELECT * FROM " + tableName + " LIMIT 1 ");
             if (row == null) {
@@ -1335,13 +1284,12 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, IRe
             }
             return row.isEmpty();
         } catch (SQLException e) {
-            LOGGER.error("Unable to check if the table is empty.", e);
+            throw new SQLException("Unable to check if the table is empty.", e);
         }
-        return false;
     }
 
     @Override
-    public void print(String tableName) {
+    public void print(String tableName) throws Exception{
         if (tableName == null || tableName.isEmpty()) {
             System.out.println("The table name is null or empty.");
         }
@@ -1388,7 +1336,7 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, IRe
                         count++;
                     }
                 } catch (Exception e) {
-                    LOGGER.error("Error while reading the table '" + tableName + "'.\n" + e.getLocalizedMessage());
+                    throw new SQLException("Error while reading the table '" + tableName + "'.\n" + e.getLocalizedMessage());
                 }
             }
             if (tooManyRows) {

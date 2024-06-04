@@ -63,7 +63,7 @@ public interface IJdbcColumn extends IColumn {
      *
      * @return True if the column has a spatial index, false otherwise.
      */
-    boolean isSpatialIndexed();
+    boolean isSpatialIndexed() throws Exception;
 
     /**
      * Create an index of the column. If the column already has an index, no new index is created.
@@ -83,7 +83,7 @@ public interface IJdbcColumn extends IColumn {
     /**
      * Drop the index of the column if exists.
      */
-    void dropIndex();
+    void dropIndex() throws Exception;
 
     /**
      * Return the SRID code of the column if it is a spatial one, -1 otherwise.
@@ -99,5 +99,5 @@ public interface IJdbcColumn extends IColumn {
      *
      * @return TRUE is the SRID is updated
      */
-    boolean setSrid(int srid);
+    boolean setSrid(int srid) throws Exception;
 }

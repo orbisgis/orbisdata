@@ -566,10 +566,11 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, IRe
 
     @Override
     public boolean executeScript(String fileName, Map<String, String> bindings) throws Exception {
+        boolean b = false;
         try {
             File file = URIUtilities.fileFromString(fileName);
             if (FileUtilities.isExtensionWellFormated(file, "sql")) {
-                boolean b = executeScript(new FileInputStream(file), bindings);
+                b = executeScript(new FileInputStream(file), bindings);
                 if (!getConnection().getAutoCommit()) {
                     super.commit();
                 }
@@ -583,8 +584,9 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, IRe
             } catch (SQLException e2) {
                 throw new SQLException("Unable to rollback.", e2);
             }
+            throw e;
         }
-        return false;
+        return b;
     }
 
     @Override
@@ -610,17 +612,16 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, IRe
                     }
                 }
                 try {
-                    boolean b = execute(commandSQL);
+                    execute(commandSQL);
                     if (!getConnection().getAutoCommit()) {
                         super.commit();
                     }
-                    return b;
                 } catch (SQLException e) {
                     throw new SQLException("Unable to execute the Sql command '" + commandSQL + "'.\n" + e.getLocalizedMessage());
                 }
             }
         }
-        return false;
+        return true;
     }
 
     @Override

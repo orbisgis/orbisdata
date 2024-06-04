@@ -405,7 +405,7 @@ class GroovyH2GISTest {
         file << 'CREATE TABLE super as SELECT * FROM $BINIOU;\n --COMMENTS HERE \nSELECT * FROM super;'
         h2GIS.executeScript("target/myscript.sql", [BINIOU: 'h2gis'])
         def concat = ""
-        h2GIS.spatialTable "super" eachRow { row -> concat += "$row.id $row.the_geom $row.geometry\n" }
+        h2GIS.getSpatialTable( "super") eachRow { row -> concat += "$row.id $row.the_geom $row.geometry\n" }
         assertEquals("1 POINT (10 10) POINT (10 10)\n2 POINT (1 1) POINT (1 1)\n", concat)
     }
 
@@ -419,10 +419,10 @@ class GroovyH2GISTest {
         """)
         def file = new File('target/myscript.sql')
         file.delete()
-        file << 'CREATE TABLE super as SELECT * FROM h2gis;\n --COMMENTS HERE \nSELECT * FROM super;'
+        file << 'CREATE TABLE super as SELECT * FROM h2gis;\n --COMMENTS HERE \nALTER TABLE super RENAME  to super_rename;'
         h2GIS.executeScript("target/myscript.sql")
         def concat = ""
-        h2GIS.getSpatialTable "super" eachRow { row -> concat += "$row.id $row.the_geom $row.geometry\n" }
+        h2GIS.getSpatialTable "super_rename" eachRow { row -> concat += "$row.id $row.the_geom $row.geometry\n" }
         assertEquals("1 POINT (10 10) POINT (10 10)\n2 POINT (1 1) POINT (1 1)\n", concat)
     }
 

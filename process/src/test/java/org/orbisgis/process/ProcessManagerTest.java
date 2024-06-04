@@ -185,7 +185,7 @@ public class ProcessManagerTest {
     void invokeMethodTest() {
         ProcessManager pm = ProcessManager.getProcessManager();
         assertNotNull(pm.invokeMethod("create", cl));
-        assertTrue(pm.invokeMethod("create", cl) instanceof IProcess);
+        assertInstanceOf(IProcess.class, pm.invokeMethod("create", cl));
         assertNull(pm.invokeMethod("process", "null"));
         assertNotNull(pm.invokeMethod("factory", null));
         assertNull(pm.invokeMethod(null, null));

@@ -64,7 +64,7 @@ public interface ITable<T, U> extends IMatrix<T>, IQueryBuilder {
      *
      * @param closure {@link Closure} to apply to each row.
      */
-    default void eachRow(Closure<Object> closure) {
+    default void eachRow(Closure<Object> closure) throws Exception{
         this.forEach(closure::call);
     }
 
@@ -74,14 +74,14 @@ public interface ITable<T, U> extends IMatrix<T>, IQueryBuilder {
      *
      * @return A {@link Collection} containing the name of the column.
      */
-    Collection<String> getColumns();
+    Collection<String> getColumns() throws Exception;
 
     /**
      * Get all column information from the underlying table.
      *
      * @return A {@link Map} containing the information of the column.
      */
-    Map<String, String> getColumnsTypes();
+    Map<String, String> getColumnsTypes() throws Exception;
 
     /**
      * Get the type of the column from the underlying table.
@@ -89,54 +89,15 @@ public interface ITable<T, U> extends IMatrix<T>, IQueryBuilder {
      * @param columnName set the name of the column
      * @return The type of the column.
      */
-    String getColumnType(String columnName);
+    String getColumnType(String columnName) throws Exception;
 
-    /**
-     * Return true if the {@link ITable} contains a column with the given name with the given type (case sensible).
-     *
-     * @param columnName Name of the column to check.
-     * @param clazz      Class of the column to check.
-     * @return True if the column is found, false otherwise.
-     */
-    boolean hasColumn(String columnName, Class<?> clazz);
-
-    /**
-     * Return true if the {@link ITable} contains a column with the given name (case sensible).
-     *
-     * @param columnName Name of the column to check.
-     * @return True if the column is found, false otherwise.
-     */
-    default boolean hasColumn(String columnName) {
-        return getColumns().contains(columnName);
-    }
-
-    /**
-     * Return true if the {@link ITable} contains all the column describes in the given {@link Map} (case sensible).
-     *
-     * @param columnMap {@link Map} containing the columns with the column name as key and the column type as value.
-     * @return True if the columns are found, false otherwise.
-     */
-    //TODO : do not iterate resulset set each time
-    default boolean hasColumns(Map<String, Class<?>> columnMap) {
-        return columnMap.entrySet().stream().allMatch(entry -> hasColumn(entry.getKey(), entry.getValue()));
-    }
-
-    /**
-     * Return true if the {@link ITable} contains all the column describes in the given {@link List} (case sensible).
-     *
-     * @param columnList {@link List} containing the columns with the column name as key and the column type as value.
-     * @return True if the columns are found, false otherwise.
-     */
-    default boolean hasColumns(List<String> columnList) {
-        return columnList.stream().allMatch(this::hasColumn);
-    }
 
     /**
      * Return the count of columns.
      *
      * @return The count of columns.
      */
-    default int getColumnCount() {
+    default int getColumnCount() throws Exception{
         return getColumns().size();
     }
 
@@ -145,7 +106,7 @@ public interface ITable<T, U> extends IMatrix<T>, IQueryBuilder {
      *
      * @return The count of lines or -1 if not able to find the {@link ITable}.
      */
-    int getRowCount();
+    int getRowCount() throws Exception;
 
     /**
      * Return the current row index.
@@ -199,12 +160,12 @@ public interface ITable<T, U> extends IMatrix<T>, IQueryBuilder {
 
     /**
      * Return a {@link Collection} of all the unique values of the {@link ITable}. This method can take a lot of time and
-     * resources according the the table size. If no values are found, return an empty collection.
+     * resources according the table size. If no values are found, return an empty collection.
      *
      * @param column Name of the column to request.
      * @return A {@link Collection} of all the unique values of the {@link ITable}.
      */
-    Collection<String> getUniqueValues(String column);
+    Collection<String> getUniqueValues(String column) throws Exception;
 
     /**
      * Save the {@link ITable} into a file.
@@ -213,7 +174,7 @@ public interface ITable<T, U> extends IMatrix<T>, IQueryBuilder {
      * @return the full path of the saved file.
      * If the file cannot be saved return null.
      */
-    default String save(String filePath) {
+    default String save(String filePath) throws Exception {
         return save(filePath, null);
     }
 
@@ -225,7 +186,7 @@ public interface ITable<T, U> extends IMatrix<T>, IQueryBuilder {
      * @return the full path of the saved file.
      * If the file cannot be saved return null.
      */
-    String save(String filePath,  boolean delete);
+    String save(String filePath,  boolean delete) throws Exception;
 
     /**
      * Save the {@link ITable} into a file.
@@ -235,7 +196,7 @@ public interface ITable<T, U> extends IMatrix<T>, IQueryBuilder {
      * @return the full path of the saved file.
      * If the file cannot be saved return null.
      */
-    String save(String filePath,String encoding);
+    String save(String filePath,String encoding) throws Exception;
 
 
     /**
@@ -245,7 +206,7 @@ public interface ITable<T, U> extends IMatrix<T>, IQueryBuilder {
      * @return The name of the saved table, formatted according the output datasource
      * Null is the table cannot be saved.
      */
-    default String save(IJdbcDataSource dataSource) {
+    default String save(IJdbcDataSource dataSource) throws Exception{
         return save(dataSource, false);
     }
 
@@ -257,7 +218,7 @@ public interface ITable<T, U> extends IMatrix<T>, IQueryBuilder {
      * @return The name of the saved table, formatted according the output datasource
      * Null is the table cannot be saved.
      */
-    String save(IJdbcDataSource dataSource, int batchSize);
+    String save(IJdbcDataSource dataSource, int batchSize) throws Exception;
 
     /**
      * Save the {@link ITable} into another database.
@@ -267,7 +228,7 @@ public interface ITable<T, U> extends IMatrix<T>, IQueryBuilder {
      * @return The name of the saved table, formatted according the output datasource
      * Null is the table cannot be saved.
      */
-    String save(IJdbcDataSource dataSource, boolean deleteTable);
+    String save(IJdbcDataSource dataSource, boolean deleteTable) throws Exception;
 
     /**
      * Save the {@link ITable} into another database.
@@ -278,7 +239,7 @@ public interface ITable<T, U> extends IMatrix<T>, IQueryBuilder {
      * @return The name of the saved table, formatted according the output datasource.
      * Null is the table cannot be saved.
      */
-    String save(IJdbcDataSource dataSource, boolean deleteTable, int batchSize);
+    String save(IJdbcDataSource dataSource, boolean deleteTable, int batchSize) throws Exception;
 
     /**
      * Save the {@link ITable} into another database.
@@ -289,7 +250,7 @@ public interface ITable<T, U> extends IMatrix<T>, IQueryBuilder {
      * @return The name of the saved table, formatted according the output datasource
      * Null is the table cannot be saved.
      */
-    String save(IJdbcDataSource dataSource, String outputTableName, boolean deleteTable);
+    String save(IJdbcDataSource dataSource, String outputTableName, boolean deleteTable) throws Exception;
 
     /**
      * Save the {@link ITable} into another database.
@@ -301,30 +262,30 @@ public interface ITable<T, U> extends IMatrix<T>, IQueryBuilder {
      * @return The name of the saved table, formatted according the output datasource
      * Null is the table cannot be saved.
      */
-    String save(IJdbcDataSource dataSource, String outputTableName, boolean deleteTable, int batchSize);
+    String save(IJdbcDataSource dataSource, String outputTableName, boolean deleteTable, int batchSize) throws Exception;
 
     /**
      * Return the values of the first row in a {@link List}. If there is no row, return an empty list.
      *
      * @return The values of the first row in a {@link List}.
      */
-    List<Object> getFirstRow();
+    List<Object> getFirstRow() throws Exception;
 
     /**
      * Return true if the {@link ITable} is spatial.
      *
      * @return True if the {@link ITable} is spatial.
      */
-    boolean isSpatial();
+    boolean isSpatial() throws Exception;
 
     @Override
-    default int getNDim() {
+    default int getNDim() throws Exception{
         return 2;
     }
 
 
     @Override
-    default int[] getSize() {
+    default int[] getSize() throws Exception{
         return new int[]{getColumnCount(), getRowCount()};
     }
 
@@ -575,7 +536,23 @@ public interface ITable<T, U> extends IMatrix<T>, IQueryBuilder {
      *
      * @return A {@link Stream} of {@link T} objects.
      */
-    Stream<? extends U> stream();
+    Stream<? extends U> stream() throws Exception;
 
-    Map<String, Object> firstRow();
+    Map<String, Object> firstRow() throws Exception;
+
+    /**
+     * Return the {@link Object} in the current row on the given column.
+     *
+     * @param column Name of the column.
+     * @return The {@link Object} in the current row on the given column.
+     */
+    Object get(String column) throws Exception;
+
+    /**
+     * Return the {@link Object} in the current row on the given column.
+     *
+     * @param column Index of the column.
+     * @return The {@link Object} in the current row on the given column.
+     */
+    Object get(int column) throws Exception;
 }

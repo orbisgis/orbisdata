@@ -71,7 +71,7 @@ public class IJdbcTableTest {
      * Test the {@link IJdbcTable#getLocation()} method.
      */
     @Test
-    public void testGetLocation() {
+    public void testGetLocation() throws Exception {
         assertEquals("catalog.schema.\"table\"",
                 new DummyJdbcTable(DBTypes.POSTGIS, LOCATION, true).getLocation());
         assertEquals("catalog.schema.\"table\"".toUpperCase(),
@@ -86,7 +86,7 @@ public class IJdbcTableTest {
      * Test the {@link IJdbcTable#getName()} method.
      */
     @Test
-    public void testGetName() {
+    public void testGetName() throws Exception {
         assertEquals(LOCATION.toLowerCase().substring(LOCATION.lastIndexOf(".") + 1),
                 new DummyJdbcTable(DBTypes.POSTGIS, LOCATION, true).getName());
         assertEquals(LOCATION.toUpperCase().substring(LOCATION.lastIndexOf(".") + 1),
@@ -105,7 +105,7 @@ public class IJdbcTableTest {
         /**
          * Fake data location.
          */
-        private String location;
+        private final String location;
 
 
         /**
@@ -283,6 +283,16 @@ public class IJdbcTableTest {
         
         @Override
         public Map<String, Object> firstRow() {
+            return null;
+        }
+
+        @Override
+        public Object get(String column) throws Exception {
+            return null;
+        }
+
+        @Override
+        public Object get(int column) throws Exception {
             return null;
         }
 
@@ -1086,11 +1096,6 @@ public class IJdbcTableTest {
         @Override
         public String getColumnType(String columnName) {
             return null;
-        }
-
-        @Override
-        public boolean hasColumn(String columnName, Class clazz) {
-            return false;
         }
 
         @Override

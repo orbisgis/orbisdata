@@ -46,7 +46,6 @@ import org.orbisgis.data.api.dataset.IJdbcSpatialTable;
 import org.orbisgis.data.api.dataset.IJdbcTable;
 import org.orbisgis.data.api.dataset.ISpatialTable;
 import org.orbisgis.data.api.dataset.ITable;
-import org.orbisgis.data.api.datasource.DataException;
 import org.orbisgis.data.jdbc.JdbcSpatialTable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -82,13 +81,17 @@ public class PostGISSpatialTableTest {
 
 
     @BeforeAll
-    static void init() {
+    static void init() throws Exception {
         Properties dbProperties = new Properties();
         dbProperties.put("databaseName", "orbisgis_db");
         dbProperties.put("user", "orbisgis");
         dbProperties.put("password", "orbisgis");
         dbProperties.put("url", "jdbc:postgresql://localhost:5432/");
-        postGIS = org.orbisgis.data.POSTGIS.open(dbProperties);
+        try {
+            postGIS = org.orbisgis.data.POSTGIS.open(dbProperties);
+        }catch (Exception e){
+
+        }
         System.setProperty("test.postgis", Boolean.toString(postGIS != null));
     }
 
@@ -115,23 +118,23 @@ public class PostGISSpatialTableTest {
      */
     @Test
     @EnabledIfSystemProperty(named = "test.postgis", matches = "true")
-    public void testAsType() {
+    public void testAsType() throws Exception {
         try {
             postGIS.execute("DROP TABLE IF EXISTS NAME; CREATE TABLE name (the_geom GEOMETRY)");
         } catch (SQLException e) {
             fail(e);
         }
         ISpatialTable table = postGIS.getSpatialTable("name");
-        assertTrue(table.asType(ISpatialTable.class) instanceof ISpatialTable);
-        assertTrue(table.asType(ITable.class) instanceof ITable);
-        assertTrue(table.asType(PostgisSpatialTable.class) instanceof PostgisSpatialTable);
-        assertTrue(table.asType(PostgisTable.class) instanceof PostgisTable);
-        assertNull(table.asType(String.class));
+        assertInstanceOf(ISpatialTable.class, table.asType(ISpatialTable.class));
+        assertInstanceOf(ITable.class, table.asType(ITable.class));
+        assertInstanceOf(PostgisSpatialTable.class, table.asType(PostgisSpatialTable.class));
+        assertInstanceOf(PostgisTable.class, table.asType(PostgisTable.class));
+        assertNull( table.asType(String.class));
     }
 
     @Test
     @EnabledIfSystemProperty(named = "test.postgis", matches = "true")
-    void testReproject() throws SQLException, DataException {
+    void testReproject() throws Exception {
         postGIS.execute(" DROP TABLE IF EXISTS orbisgis;" +
                 "CREATE TABLE orbisgis (id int, the_geom geometry(point, 4326));" +
                 "INSERT INTO orbisgis VALUES (1, 'SRID=4326;POINT(10 10)'::GEOMETRY), " +
@@ -150,7 +153,7 @@ public class PostGISSpatialTableTest {
         IJdbcTable reprojectedTable = postGIS.getTable(postGIS.load("target/reprojected_table.shp", true));
         assertNotNull(reprojectedTable);
         assertEquals(2, reprojectedTable.getRowCount());
-        assertTrue(reprojectedTable instanceof IJdbcSpatialTable);
+        assertInstanceOf(IJdbcSpatialTable.class, reprojectedTable);
 
         IJdbcSpatialTable spatialReprojectedTable = (IJdbcSpatialTable) reprojectedTable;
         assertEquals(2154, spatialReprojectedTable.getSrid());
@@ -163,7 +166,7 @@ public class PostGISSpatialTableTest {
 
     @Test
     @EnabledIfSystemProperty(named = "test.postgis", matches = "true")
-    void testSaveQueryInFile() throws SQLException, DataException {
+    void testSaveQueryInFile() throws Exception {
         postGIS.execute(" DROP TABLE IF EXISTS orbisgis, query_table;" +
                 "CREATE TABLE orbisgis (id int, the_geom geometry(point, 4326));" +
                 "INSERT INTO orbisgis VALUES (1, 'SRID=4326;POINT(10 10)'::GEOMETRY), " +
@@ -177,7 +180,7 @@ public class PostGISSpatialTableTest {
         IJdbcTable queryTable = postGIS.getTable(postGIS.load("target/query_table.shp"));
         assertNotNull(queryTable);
         assertEquals(2, queryTable.getRowCount());
-        assertTrue(queryTable instanceof IJdbcSpatialTable);
+        assertInstanceOf(IJdbcSpatialTable.class, queryTable);
 
         IJdbcSpatialTable spatialReprojectedTable = (IJdbcSpatialTable) queryTable;
         assertEquals(4326, spatialReprojectedTable.getSrid());
@@ -185,14 +188,14 @@ public class PostGISSpatialTableTest {
         IJdbcSpatialTable spLoaded = postGIS.getSpatialTable("QUERY_TABLE");
         assertEquals(2, spLoaded.getRowCount());
         assertEquals(4326, spLoaded.getSrid());
-        assertTrue(spLoaded.getFirstRow().get(1) instanceof Point);
+        assertInstanceOf(Point.class, spLoaded.getFirstRow().get(1));
      }
     /**
      * Test the {@link JdbcSpatialTable#isSpatial()} method.
      */
     @Test
     @EnabledIfSystemProperty(named = "test.postgis", matches = "true")
-    public void testIsSpatial() {
+    public void testIsSpatial() throws Exception {
         assertTrue(postGIS.getSpatialTable(TABLE_NAME).isSpatial());
     }
 
@@ -202,29 +205,33 @@ public class PostGISSpatialTableTest {
      */
     @Test
     @EnabledIfSystemProperty(named = "test.postgis", matches = "true")
-    public void testGetGeometry() {
+    public void testGetGeometry() throws Exception {
         ISpatialTable table = postGIS.getSpatialTable(TABLE_NAME);
-        assertNull(table.getGeometry());
-        assertNull(table.getGeometry(1));
-        assertNull(table.getGeometry(2));
-        assertNull(table.getGeometry(COL_THE_GEOM));
-        assertNull(table.getGeometry(COL_THE_GEOM2));
+        assertThrows(Exception.class, ()->table.getGeometry());
+        assertThrows(Exception.class, ()->table.getGeometry(1));
+        assertThrows(Exception.class, ()->table.getGeometry(2));
+        assertThrows(Exception.class, ()->table.getGeometry(COL_THE_GEOM));
+        assertThrows(Exception.class, ()->table.getGeometry(COL_THE_GEOM2));
 
         final String[] str = {"", "", "", "", ""};
         table.forEach(o -> {
+            try {
             str[0] += ((PostgisSpatialTable) o).getGeometry();
             str[1] += ((PostgisSpatialTable) o).getGeometry(1);
             str[2] += ((PostgisSpatialTable) o).getGeometry(2);
             str[3] += ((PostgisSpatialTable) o).getGeometry(COL_THE_GEOM);
             str[4] += ((PostgisSpatialTable) o).getGeometry(COL_THE_GEOM2);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
         });
         assertEquals("POINT (0 0)POINT (0 1)", str[0]);
         assertEquals("POINT (0 0)POINT (0 1)", str[1]);
         assertEquals("POINT (1 1)POINT (10 11)", str[2]);
         assertEquals("POINT (0 0)POINT (0 1)", str[3]);
         assertEquals("POINT (1 1)POINT (10 11)", str[4]);
-        assertNull(table.getGeometry(4));
-        assertNull(table.getGeometry(COL_ID));
+        assertThrows(Exception.class, ()->table.getGeometry(4));
+        assertThrows(Exception.class, ()->table.getGeometry(COL_ID));
     }
 
 
@@ -234,7 +241,7 @@ public class PostGISSpatialTableTest {
      */
     @Test
     @EnabledIfSystemProperty(named = "test.postgis", matches = "true")
-    public void testGetRaster() {
+    public void testGetRaster() throws Exception {
         ISpatialTable table = postGIS.getSpatialTable(TABLE_NAME);
         assertThrows(UnsupportedOperationException.class, table::getRaster);
         assertThrows(UnsupportedOperationException.class, () -> table.getRaster(0));
@@ -247,7 +254,7 @@ public class PostGISSpatialTableTest {
      */
     @Test
     @EnabledIfSystemProperty(named = "test.postgis", matches = "true")
-    public void testGetColumns() {
+    public void testGetColumns() throws Exception {
         assertEquals(2, postGIS.getSpatialTable(TABLE_NAME).getGeometricColumns().size());
         assertTrue(postGIS.getSpatialTable(TABLE_NAME).getGeometricColumns().contains(COL_THE_GEOM));
         assertTrue(postGIS.getSpatialTable(TABLE_NAME).getGeometricColumns().contains(COL_THE_GEOM2));
@@ -264,7 +271,7 @@ public class PostGISSpatialTableTest {
      */
     @Test
     @EnabledIfSystemProperty(named = "test.postgis", matches = "true")
-    public void testGetExtend() {
+    public void testGetExtend() throws Exception {
         assertEquals("Env[0.0 : 0.0, 0.0 : 1.0]", postGIS.getSpatialTable(TABLE_NAME).getExtent().getEnvelopeInternal().toString());
     }
 
@@ -273,7 +280,7 @@ public class PostGISSpatialTableTest {
      */
     @Test
     @EnabledIfSystemProperty(named = "test.postgis", matches = "true")
-    public void testGetEstimatedExtend() throws SQLException {
+    public void testGetEstimatedExtend() throws Exception {
         postGIS.execute("VACUUM ANALYZE");
         assertEquals(1, postGIS.getSpatialTable(TABLE_NAME).getEstimatedExtent().getLength(), 0.01);
     }
@@ -283,7 +290,7 @@ public class PostGISSpatialTableTest {
      */
     @Test
     @EnabledIfSystemProperty(named = "test.postgis", matches = "true")
-    public void testGetSrid() {
+    public void testGetSrid() throws Exception {
         ISpatialTable table = postGIS.getSpatialTable(TABLE_NAME);
         //Always 0 for dummy jdbc table
         assertEquals(2020, table.getSrid());

@@ -81,10 +81,9 @@ public class H2gisSpatialTable extends JdbcSpatialTable {
         if (resultSet == null) {
             try {
                 Statement st = getStatement();
-                if(st instanceof PreparedStatement) {
-                    resultSet = ((PreparedStatement)st).executeQuery();
-                }
-                else {
+                if (st instanceof PreparedStatement) {
+                    resultSet = ((PreparedStatement) st).executeQuery();
+                } else {
                     resultSet = getStatement().executeQuery(getBaseQuery());
                 }
                 resultSet = new SpatialResultSetImpl(resultSet, new StatementWrapper(getStatement(), new ConnectionWrapper(getJdbcDataSource().getConnection())));
@@ -98,7 +97,7 @@ public class H2gisSpatialTable extends JdbcSpatialTable {
 
 
     @Override
-    public Object asType(Class<?> clazz) {
+    public Object asType(Class<?> clazz) throws Exception {
         if (ISpatialTable.class.isAssignableFrom(clazz)) {
             return new H2gisSpatialTable(getTableLocation(), getBaseQuery(), getStatement(), getParams(),
                     getJdbcDataSource());
@@ -111,28 +110,22 @@ public class H2gisSpatialTable extends JdbcSpatialTable {
     }
 
     @Override
-    public int getSrid() {
+    public int getSrid() throws Exception {
         if (getTableLocation() == null) {
-            throw new UnsupportedOperationException();
+            throw new IllegalArgumentException("Invalid table identifier");
         }
-        try {
-            Connection con = getJdbcDataSource().getConnection();
-            if(con == null){
-                LOGGER.error("Unable to get connection for the table SRID.");
-                return -1;
-            }
-            return GeometryTableUtilities.getSRID(con, getTableLocation());
-        } catch (SQLException e) {
-            LOGGER.error("Unable to get the table SRID.", e);
+        Connection con = getJdbcDataSource().getConnection();
+        if (con == null) {
+            throw new SQLException("Cannot get the connection to the database");
         }
-        return -1;
+        return GeometryTableUtilities.getSRID(con, getTableLocation());
     }
 
     @Override
-    public ISpatialTable reproject(int srid) {
+    public ISpatialTable reproject(int srid) throws Exception {
         try {
             ResultSetMetaData meta = getMetaData();
-            if(meta == null){
+            if (meta == null) {
                 return null;
             }
             int columnCount = meta.getColumnCount();
@@ -149,8 +142,7 @@ public class H2gisSpatialTable extends JdbcSpatialTable {
                     (getTableLocation() == null ? getBaseQuery() + " as foo " : getTableLocation().toString(getDbType()));
             return new H2gisSpatialTable(null, query, getStatement(), getParams(), getJdbcDataSource());
         } catch (SQLException e) {
-            LOGGER.error("Cannot reproject the table '" + getLocation() + "' in the SRID '" + srid + "'.\n", e);
-            return null;
+            throw new SQLException("Cannot reproject the table '" + getLocation() + "' in the SRID '" + srid + "'.\n", e);
         }
     }
 }

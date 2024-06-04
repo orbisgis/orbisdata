@@ -49,7 +49,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledIfSystemProperty;
 import org.orbisgis.data.api.dataset.ISpatialTable;
 import org.orbisgis.data.api.dataset.ITable;
-import org.orbisgis.data.api.datasource.DataException;
 import org.orbisgis.data.api.dsl.IResultSetProperties;
 import org.orbisgis.data.jdbc.JdbcDataSource;
 
@@ -89,7 +88,7 @@ class H2GISDataSourceTest {
      * @throws SQLException Sql exception.
      */
     @BeforeEach
-    void init() throws SQLException {
+    void init() throws Exception {
         h2gis = H2GIS.open(DB_NAME);
         h2gis.execute("DROP TABLE IF EXISTS test_h2gis");
         h2gis.execute("CREATE TABLE test_h2gis(id int, the_geom GEOMETRY, text varchar)");
@@ -267,7 +266,7 @@ class H2GISDataSourceTest {
      */
     @Test
     @EnabledIfSystemProperty(named = "test.postgis", matches = "true")
-    void testExecuteMethod1() throws URISyntaxException, SQLException {
+    void testExecuteMethod1() throws Exception {
         Map<String, String> map = new HashMap<>();
         map.put("intArg", "51");
         URL url = this.getClass().getResource("simpleWithArgs.sql");
@@ -295,8 +294,8 @@ class H2GISDataSourceTest {
         str = postgis.rows("SELECT * FROM script").stream().map(Objects::toString).collect(Collectors.joining("\n"));
         assertEquals("{id=1}\n{id=11}\n{id=51}", str);
 
-        assertFalse(h2gis.executeScript("notAFile.sql"));
-        assertFalse(postgis.executeScript("notAFile.sql"));
+        assertThrows(Exception.class, ()->h2gis.executeScript("notAFile.sql"));
+        assertThrows(Exception.class, ()->postgis.executeScript("notAFile.sql"));
     }
 
     /**
@@ -304,20 +303,20 @@ class H2GISDataSourceTest {
      */
     @Test
     @EnabledIfSystemProperty(named = "test.postgis", matches = "true")
-    void testExecuteMethod2() throws SQLException {
+    void testExecuteMethod2() throws Exception {
         Map<String, String> map = new HashMap<>();
         map.put("intArg", "51");
 
-        assertTrue(h2gis.executeScript(this.getClass().getResourceAsStream("simpleWithArgs.sql"), map));
+        assertDoesNotThrow(()->h2gis.executeScript(this.getClass().getResourceAsStream("simpleWithArgs.sql"), map));
         String str = h2gis.rows("SELECT * FROM script").stream().map(Objects::toString).collect(Collectors.joining("\n"));
         assertEquals("{ID=1}\n{ID=11}\n{ID=51}", str);
 
-        assertTrue(postgis.executeScript(this.getClass().getResourceAsStream("simpleWithArgs.sql"), map));
+        assertDoesNotThrow(()->postgis.executeScript(this.getClass().getResourceAsStream("simpleWithArgs.sql"), map));
         str = postgis.rows("SELECT * FROM script").stream().map(Objects::toString).collect(Collectors.joining("\n"));
         assertEquals("{id=1}\n{id=11}\n{id=51}", str);
 
-        assertFalse(h2gis.executeScript(this.getClass().getResourceAsStream("badSql.sql"), map));
-        assertFalse(postgis.executeScript(this.getClass().getResourceAsStream("badSql.sql"), map));
+        assertThrows(Exception.class, ()->h2gis.executeScript(this.getClass().getResourceAsStream("badSql.sql"), map));
+        assertThrows(Exception.class, ()->postgis.executeScript(this.getClass().getResourceAsStream("badSql.sql"), map));
 
         h2gis.execute("DROP TABLE IF EXISTS script");
     }
@@ -342,7 +341,7 @@ class H2GISDataSourceTest {
      */
     @Test
     @EnabledIfSystemProperty(named = "test.postgis", matches = "true")
-    void testSave() throws SQLException, MalformedURLException, DataException {
+    void testSave() throws Exception {
         h2gis.execute("DROP TABLE IF EXISTS load");
         postgis.execute("DROP TABLE IF EXISTS load");
 
@@ -383,7 +382,7 @@ class H2GISDataSourceTest {
      */
     @Test
     @EnabledIfSystemProperty(named = "test.postgis", matches = "true")
-    void testLink() throws SQLException, URISyntaxException, MalformedURLException, DataException {
+    void testLink() throws Exception {
         URL url = this.getClass().getResource("linkTable.dbf");
         URI uri = url.toURI();
         File file = new File(uri);
@@ -504,7 +503,7 @@ class H2GISDataSourceTest {
      */
     @Disabled
     @Test
-    void loadFromDB() throws SQLException, DataException {
+    void loadFromDB() throws Exception {
         String tableNameDS1 = "test_h2gis";
         String tableNameDS2 = "test_postgis";
 
@@ -548,7 +547,7 @@ class H2GISDataSourceTest {
      */
     @Test
     @EnabledIfSystemProperty(named = "test.postgis", matches = "true")
-    void testLoadPath() throws SQLException, URISyntaxException, DataException {
+    void testLoadPath() throws Exception {
         URL url = this.getClass().getResource("loadTable.dbf");
         URI uri = url.toURI();
         File file = new File(uri);
@@ -734,7 +733,7 @@ class H2GISDataSourceTest {
      */
     @Test
     @EnabledIfSystemProperty(named = "test.postgis", matches = "true")
-    void testGetTableNames() {
+    void testGetTableNames() throws Exception {
         Collection<String> names = h2gis.getTableNames();
         assertNotNull(names);
         assertTrue(names.size()>0);
@@ -754,7 +753,7 @@ class H2GISDataSourceTest {
      */
     @Test
     @EnabledIfSystemProperty(named = "test.postgis", matches = "true")
-    void testGetColumnNames() {
+    void testGetColumnNames() throws Exception {
         Collection<String> names = h2gis.getColumnNames("H2GISDATASOURCETEST.PUBLIC.TEST_H2GIS");
         assertNotNull(names);
         assertEquals(3, names.size());
@@ -793,7 +792,7 @@ class H2GISDataSourceTest {
      */
     @Test
     @EnabledIfSystemProperty(named = "test.postgis", matches = "true")
-    void testHasTable() {
+    void testHasTable() throws Exception {
         Collection<String> names = h2gis.getTableNames();
         assertNotNull(names);
         assertTrue(names.size()>0);
@@ -807,14 +806,14 @@ class H2GISDataSourceTest {
      */
     @Test
     @EnabledIfSystemProperty(named = "test.postgis", matches = "true")
-    void testGetDataSet() {
+    void testGetDataSet() throws Exception {
         Object dataset = h2gis.getDataSet("TEST_H2GIS");
-        assertTrue(dataset instanceof ISpatialTable);
+        assertInstanceOf(ISpatialTable.class, dataset);
         dataset = h2gis.getDataSet("GEOMETRY_COLUMNS");
         assertNotNull(dataset);
 
         dataset = postgis.getDataSet("test_postgis");
-        assertTrue(dataset instanceof ISpatialTable);
+        assertInstanceOf(ISpatialTable.class, dataset);
         dataset = postgis.getDataSet("geometry_columns");
         assertNotNull(dataset);
     }
@@ -831,13 +830,13 @@ class H2GISDataSourceTest {
      */
     @Test
     @EnabledIfSystemProperty(named = "test.postgis", matches = "true")
-    void testResultSetBuilder() {
+    void testResultSetBuilder() throws Exception {
         ITable<?,?> table = h2gis.forwardOnly().readOnly().holdCursorOverCommit().fetchForward()
                 .fetchSize(SIZE).timeout(TIMEOUT).maxRow(MAX_ROW).cursorName("name").poolable()
                 .maxFieldSize(FIELD_SIZE).getTable("TEST_H2GIS");
         assertNotNull(table);
         assertArrayEquals(new int[]{3, 3}, table.getSize());
-        assertTrue(table instanceof H2gisSpatialTable);
+        assertInstanceOf(H2gisSpatialTable.class, table);
         IResultSetProperties rsp = ((H2gisSpatialTable)table).getResultSetProperties();
         assertEquals(ResultSet.TYPE_FORWARD_ONLY, rsp.getType());
         assertEquals(ResultSet.CONCUR_READ_ONLY, rsp.getConcurrency());
@@ -855,7 +854,7 @@ class H2GISDataSourceTest {
                 .maxFieldSize(FIELD_SIZE).getTable("test_postgis");
         assertNotNull(table);
         assertArrayEquals(new int[]{3, 3}, table.getSize());
-        assertTrue(table instanceof PostgisSpatialTable);
+        assertInstanceOf(PostgisSpatialTable.class, table);
         rsp = ((PostgisSpatialTable)table).getResultSetProperties();
         assertEquals(ResultSet.TYPE_SCROLL_INSENSITIVE, rsp.getType());
         assertEquals(ResultSet.CONCUR_READ_ONLY, rsp.getConcurrency());
@@ -870,7 +869,7 @@ class H2GISDataSourceTest {
     }
     @Test
     @EnabledIfSystemProperty(named = "test.postgis", matches = "true")
-    public void testDataSourceMethods() throws SQLException {
+    public void testDataSourceMethods() throws Exception {
         h2gis.execute("DROP TABLE IF EXISTS geodata; CREATE TABLE  geodata (ID INT, LAND VARCHAR, THE_GEOM GEOMETRY); " +
                 "INSERT INTO geodata VALUES (1, 'grass', 'POINT(0 0)'::GEOMETRY);");
 

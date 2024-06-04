@@ -343,7 +343,7 @@ public class ResultSetBuilder implements IResultSetBuilder {
     }
 
     @Override
-    public IJdbcTable<?> getTable(String nameOrQuery) {
+    public IJdbcTable<?> getTable(String nameOrQuery) throws Exception {
         try {
             IJdbcTable<?> table = dataSource.getTable(nameOrQuery, getStatement());
             table.setResultSetProperties(rsp);
@@ -355,7 +355,7 @@ public class ResultSetBuilder implements IResultSetBuilder {
     }
 
     @Override
-    public IJdbcSpatialTable<?> getSpatialTable(String nameOrQuery) {
+    public IJdbcSpatialTable<?> getSpatialTable(String nameOrQuery) throws Exception{
         try {
             IJdbcSpatialTable<?> table = dataSource.getSpatialTable(nameOrQuery, getStatement());
             table.setResultSetProperties(rsp);
@@ -367,7 +367,7 @@ public class ResultSetBuilder implements IResultSetBuilder {
     }
 
     @Override
-    public ITable<?,?> getTable(GString nameOrQuery) {
+    public ITable<?,?> getTable(GString nameOrQuery) throws Exception{
         if(nameOrQuery.getValueCount() == 0) {
             return getTable(nameOrQuery.toString());
         }
@@ -379,7 +379,7 @@ public class ResultSetBuilder implements IResultSetBuilder {
     }
 
     @Override
-    public ISpatialTable<?> getSpatialTable(GString nameOrQuery) {
+    public ISpatialTable<?> getSpatialTable(GString nameOrQuery) throws Exception{
         if(nameOrQuery.getValueCount() == 0) {
             return getSpatialTable(nameOrQuery.toString());
         }
@@ -391,7 +391,7 @@ public class ResultSetBuilder implements IResultSetBuilder {
     }
 
     @Override
-    public ITable<?,?> getTable(String query, List<Object> params) {
+    public ITable<?,?> getTable(String query, List<Object> params) throws Exception{
         try {
             IJdbcTable<?> table = dataSource.getTable(query, params, getStatement(query, params));
             table.setResultSetProperties(rsp);
@@ -403,7 +403,7 @@ public class ResultSetBuilder implements IResultSetBuilder {
     }
 
     @Override
-    public ISpatialTable<?> getSpatialTable(String query, List<Object> params) {
+    public ISpatialTable<?> getSpatialTable(String query, List<Object> params) throws Exception{
         try {
             IJdbcSpatialTable<?> table = dataSource.getSpatialTable(query, params, getStatement(query, params));
             table.setResultSetProperties(rsp);

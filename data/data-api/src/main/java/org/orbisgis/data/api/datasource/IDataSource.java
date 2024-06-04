@@ -52,7 +52,7 @@ public interface IDataSource<T> {
      * @param name Name of the {@link IDataSet}.
      * @return The implementation of {@link IDataSet} corresponding to the given name or null.
      */
-    IDataSet<T> getDataSet(String name);
+    IDataSet<T> getDataSet(String name) throws Exception;
 
     /**
      * Return the location of the {@link IDataSourceLocation}

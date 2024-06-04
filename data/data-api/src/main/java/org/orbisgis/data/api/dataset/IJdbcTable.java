@@ -43,6 +43,7 @@ import org.orbisgis.data.api.dsl.IResultSetProperties;
 
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
 import java.util.List;
 
 /**
@@ -79,24 +80,24 @@ public interface IJdbcTable<T> extends ITable<T, T>, ResultSet {
     DBTypes getDbType();
 
     @Override
-    ResultSetMetaData getMetaData();
+    ResultSetMetaData getMetaData() throws SQLException;
 
     /**
      * Return true if the {@link ITable} is a linked one.
      *
      * @return True if the {@link ITable} is a linked one.
      */
-    boolean isLinked();
+    boolean isLinked() throws Exception;
 
     /**
      * Return true if the {@link ITable} is a temporary one.
      *
      * @return True if the {@link ITable} is a temporary one.
      */
-    boolean isTemporary();
+    boolean isTemporary() throws Exception;
 
     @Override
-    default String getLocation() {
+    default String getLocation(){
         TableLocation location = getTableLocation();
         if (location == null || location.getTable().isEmpty()) {
             return QUERY_LOCATION;
@@ -106,7 +107,7 @@ public interface IJdbcTable<T> extends ITable<T, T>, ResultSet {
     }
 
     @Override
-    default String getName() {
+    default String getName(){
         TableLocation location = getTableLocation();
         if (location == null || location.getTable().isEmpty()) {
             return QUERY_LOCATION;
@@ -116,12 +117,12 @@ public interface IJdbcTable<T> extends ITable<T, T>, ResultSet {
     }
 
     @Override
-    default void eachRow(Closure<Object> closure) {
+    default void eachRow(Closure<Object> closure) throws Exception{
         this.forEach(closure::call);
     }
 
     @Override
-    IJdbcTableSummary getSummary();
+    IJdbcTableSummary getSummary() throws Exception;
 
     /**
      * Returns the parameters of the parametrized query.

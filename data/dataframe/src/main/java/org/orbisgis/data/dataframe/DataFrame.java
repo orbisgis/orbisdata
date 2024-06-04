@@ -119,10 +119,9 @@ public class DataFrame implements smile.data.DataFrame, ITable<BaseVector, Tuple
      * @param formula {@link Formula} to apply.
      */
     public DataFrame apply(Formula formula) {
-        if(formula != null) {
+        if (formula != null) {
             return DataFrame.of(formula.frame(getInternalDataFrame()));
-        }
-        else {
+        } else {
             return this;
         }
     }
@@ -321,7 +320,7 @@ public class DataFrame implements smile.data.DataFrame, ITable<BaseVector, Tuple
     @Override
     public Date getDate(int column) {
         LocalDate date = getInternalDataFrame().getDate(getRow(), column);
-        if(date == null){
+        if (date == null) {
             return null;
         }
         return Date.valueOf(date);
@@ -330,7 +329,7 @@ public class DataFrame implements smile.data.DataFrame, ITable<BaseVector, Tuple
     @Override
     public Time getTime(int column) {
         LocalTime time = getInternalDataFrame().getTime(getRow(), column);
-        if(time == null){
+        if (time == null) {
             return null;
         }
         return Time.valueOf(time);
@@ -339,8 +338,8 @@ public class DataFrame implements smile.data.DataFrame, ITable<BaseVector, Tuple
     @Override
     public Timestamp getTimestamp(int column) {
         Object obj = getObject(column);
-        if(obj instanceof LocalDateTime) {
-            return Timestamp.valueOf((LocalDateTime)obj);
+        if (obj instanceof LocalDateTime) {
+            return Timestamp.valueOf((LocalDateTime) obj);
         }
         return null;
     }
@@ -404,7 +403,7 @@ public class DataFrame implements smile.data.DataFrame, ITable<BaseVector, Tuple
     @Override
     public Date getDate(String column) {
         LocalDate date = getInternalDataFrame().getDate(getRow(), column);
-        if(date == null){
+        if (date == null) {
             return null;
         }
         return Date.valueOf(date);
@@ -413,7 +412,7 @@ public class DataFrame implements smile.data.DataFrame, ITable<BaseVector, Tuple
     @Override
     public Time getTime(String column) {
         LocalTime time = getInternalDataFrame().getTime(getRow(), column);
-        if(time == null){
+        if (time == null) {
             return null;
         }
         return Time.valueOf(time);
@@ -422,8 +421,8 @@ public class DataFrame implements smile.data.DataFrame, ITable<BaseVector, Tuple
     @Override
     public Timestamp getTimestamp(String column) {
         Object obj = getObject(column);
-        if(obj instanceof LocalDateTime) {
-            return Timestamp.valueOf((LocalDateTime)obj);
+        if (obj instanceof LocalDateTime) {
+            return Timestamp.valueOf((LocalDateTime) obj);
         }
         return null;
     }
@@ -439,12 +438,12 @@ public class DataFrame implements smile.data.DataFrame, ITable<BaseVector, Tuple
     }
 
     @Override
-    public Object getObject(int column, Class clazz){
+    public Object getObject(int column, Class clazz) {
         if (clazz == BigDecimal.class) {
             return this.getBigDecimal(column);
         } else if (clazz == BigInteger.class) {
             BigDecimal bd = this.getBigDecimal(column);
-            if(bd != null) {
+            if (bd != null) {
                 return bd.toBigInteger();
             }
             return null;
@@ -481,12 +480,12 @@ public class DataFrame implements smile.data.DataFrame, ITable<BaseVector, Tuple
     }
 
     @Override
-    public Object getObject(String column, Class clazz){
+    public Object getObject(String column, Class clazz) {
         if (clazz == BigDecimal.class) {
             return this.getBigDecimal(column);
         } else if (clazz == BigInteger.class) {
             BigDecimal bd = this.getBigDecimal(column);
-            if(bd != null) {
+            if (bd != null) {
                 return bd.toBigInteger();
             }
             return null;
@@ -533,7 +532,7 @@ public class DataFrame implements smile.data.DataFrame, ITable<BaseVector, Tuple
     }
 
     @Override
-    public Map<String, String> getColumnsTypes() {
+    public Map<String, String> getColumnsTypes() throws Exception {
         DataType[] dataTypes = types();
         String[] names = names();
         Map<String, String> map = new HashMap<>();
@@ -544,7 +543,7 @@ public class DataFrame implements smile.data.DataFrame, ITable<BaseVector, Tuple
     }
 
     @Override
-    public String getColumnType(String columnName) {
+    public String getColumnType(String columnName) throws Exception {
         String[] names = names();
         for (int i = 0; i < names.length; i++) {
             String name = names[i];
@@ -560,13 +559,12 @@ public class DataFrame implements smile.data.DataFrame, ITable<BaseVector, Tuple
         return ncols();
     }
 
-    @Override
     public boolean hasColumn(String columnName, Class<?> clazz) {
         String[] names = names();
         DataType[] dataTypes = types();
         for (int i = 0; i < names.length; i++) {
             String name = names[i];
-            if (name.equalsIgnoreCase(columnName) ) {
+            if (name.equalsIgnoreCase(columnName)) {
                 return dataTypes[i].unboxed().name().equalsIgnoreCase(clazz.getCanonicalName());
             }
         }
@@ -584,8 +582,8 @@ public class DataFrame implements smile.data.DataFrame, ITable<BaseVector, Tuple
     }
 
     @Override
-    public boolean next(){
-        if(row < this.getRowCount() - 1){
+    public boolean next() {
+        if (row < this.getRowCount() - 1) {
             row++;
             return true;
         }
@@ -594,7 +592,7 @@ public class DataFrame implements smile.data.DataFrame, ITable<BaseVector, Tuple
 
     @Override
     public boolean previous() {
-        if(row > 0){
+        if (row > 0) {
             row--;
             return true;
         }
@@ -609,7 +607,7 @@ public class DataFrame implements smile.data.DataFrame, ITable<BaseVector, Tuple
 
     @Override
     public boolean last() {
-        row = getRowCount()-1;
+        row = getRowCount() - 1;
         return true;
     }
 
@@ -620,7 +618,7 @@ public class DataFrame implements smile.data.DataFrame, ITable<BaseVector, Tuple
 
     @Override
     public boolean isLast() {
-        return row == getRowCount()-1;
+        return row == getRowCount() - 1;
     }
 
     @Override
@@ -635,128 +633,81 @@ public class DataFrame implements smile.data.DataFrame, ITable<BaseVector, Tuple
     }
 
     @Override
-    public String save(String filePath, boolean delete) {
+    public String save(String filePath, boolean delete) throws Exception {
         File f = new File(filePath);
-        if(delete){
-            try {
-                Files.deleteIfExists(f.toPath());
-            } catch (IOException e) {
-                LOGGER.error("Unable to delete the file '" + f.getAbsolutePath() + "'.", e);
-            }
+        if (delete) {
+            Files.deleteIfExists(f.toPath());
 
         } else if (f.exists()) {
-            LOGGER.error("The file already exist.");
+            throw new IllegalArgumentException("The file already exist.");
         }
-        try {
-            if (!f.createNewFile()) {
-                LOGGER.error("Unable to create the file '" + f.getAbsolutePath() + "'.");
-                return null;
-            }
-        } catch (IOException e) {
-            LOGGER.error("Unable to create the file '" + f.getAbsolutePath() + "'.", e);
-            return null;
+        if (!f.createNewFile()) {
+            throw new IllegalArgumentException("Unable to create the file '" + f.getAbsolutePath() + "'.");
         }
-
-        BufferedWriter writer;
-        try {
-            writer = new BufferedWriter(new FileWriter(f));
-        } catch (IOException e) {
-            LOGGER.error("Unable to create the FileWriter.", e);
-            return null;
-        }
-        try {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(f))) {
             writer.write(String.join(",", names()) + "\n");
             writer.flush();
-        } catch (IOException e) {
-            LOGGER.error("Unable to write in the FileWriter.", e);
-            return null;
-        }
-        for (int i = 0; i < nrows(); i++) {
-            List<String> row = new ArrayList<>();
-            for (int j = 0; j < ncols(); j++) {
-                Object obj = get(i, j);
-                row.add(obj == null ? "null" : obj.toString());
-            }
-            try {
+            for (int i = 0; i < nrows(); i++) {
+                List<String> row = new ArrayList<>();
+                for (int j = 0; j < ncols(); j++) {
+                    Object obj = get(i, j);
+                    row.add(obj == null ? "null" : obj.toString());
+                }
                 writer.write(String.join(",", row) + "\n");
                 writer.flush();
-            } catch (IOException e) {
-                LOGGER.error("Unable to write in the FileWriter.", e);
-                return null;
             }
+            return filePath;
         }
-        return filePath;
     }
 
     @Override
-    public String save(String filePath, String encoding) {
+    public String save(String filePath, String encoding) throws Exception {
         File f = new File(filePath);
-        if(f.exists()){
-            LOGGER.error("The file "+filePath+ " already exist.");
-            return null;
+        if (f.exists()) {
+            throw new IllegalArgumentException("The file " + filePath + " already exist.");
         }
-        try {
-            if (!f.createNewFile()) {
-                LOGGER.error("Unable to create the file '" + f.getAbsolutePath() + "'.");
-                return null;
-            }
-        } catch (IOException e) {
-            LOGGER.error("Unable to create the file '" + f.getAbsolutePath() + "'.", e);
-            return null;
+        if (!f.createNewFile()) {
+            throw new IllegalArgumentException("Unable to create the file '" + f.getAbsolutePath() + "'.");
         }
-        BufferedWriter writer;
-        try {
-            writer = new BufferedWriter(new FileWriter(f));
-        } catch (IOException e) {
-            LOGGER.error("Unable to create the FileWriter.", e);
-            return null;
-        }
-        try {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(f))) {
             writer.write(String.join(",", names()) + "\n");
             writer.flush();
-        } catch (IOException e) {
-            LOGGER.error("Unable to write in the FileWriter.", e);
-            return null;
-        }
-        for (int i = 0; i < nrows(); i++) {
-            List<String> row = new ArrayList<>();
-            for (int j = 0; j < ncols(); j++) {
-                Object obj = get(i, j);
-                row.add(obj == null ? "null" : obj.toString());
-            }
-            try {
+            for (int i = 0; i < nrows(); i++) {
+                List<String> row = new ArrayList<>();
+                for (int j = 0; j < ncols(); j++) {
+                    Object obj = get(i, j);
+                    row.add(obj == null ? "null" : obj.toString());
+                }
                 writer.write(String.join(",", row) + "\n");
                 writer.flush();
-            } catch (IOException e) {
-                LOGGER.error("Unable to write in the FileWriter.", e);
-                return null;
+
             }
+            return filePath;
         }
-        return filePath;
     }
 
     @Override
-    public String save(IJdbcDataSource dataSource, int batchSize) {
-        throw new UnsupportedOperationException();
+    public String save(IJdbcDataSource dataSource, int batchSize) throws Exception {
+        throw new UnsupportedOperationException("Unsupported operation");
     }
 
     @Override
-    public String save(IJdbcDataSource dataSource, boolean deleteTable) {
-        throw new UnsupportedOperationException();
+    public String save(IJdbcDataSource dataSource, boolean deleteTable) throws Exception {
+        throw new UnsupportedOperationException("Unsupported operation");
     }
 
     @Override
-    public String save(IJdbcDataSource dataSource, boolean deleteTable, int batchSize) {
-        throw new UnsupportedOperationException();
+    public String save(IJdbcDataSource dataSource, boolean deleteTable, int batchSize) throws Exception {
+        throw new UnsupportedOperationException("Unsupported operation");
     }
 
     @Override
-    public String save(IJdbcDataSource dataSource, String outputTableName, boolean deleteTable) {
-        return  save(dataSource,  outputTableName,  deleteTable, 1000);
+    public String save(IJdbcDataSource dataSource, String outputTableName, boolean deleteTable) throws Exception {
+        return save(dataSource, outputTableName, deleteTable, 1000);
     }
 
     @Override
-    public String save( IJdbcDataSource dataSource,  String outputTableName, boolean deleteTable, int batchSize) {
+    public String save(IJdbcDataSource dataSource, String outputTableName, boolean deleteTable, int batchSize) throws Exception {
         if (isEmpty()) {
             return null;
         }
@@ -796,7 +747,7 @@ public class DataFrame implements smile.data.DataFrame, ITable<BaseVector, Tuple
                 //Check the first row in order to limit the batch size if the query doesn't work
                 this.next();
                 for (int i = 0; i < getColumnCount(); i++) {
-                    preparedStatement.setObject(i +1,getObject(i) );
+                    preparedStatement.setObject(i + 1, getObject(i));
                 }
                 preparedStatement.execute();
                 outputconnection.commit();
@@ -819,8 +770,7 @@ public class DataFrame implements smile.data.DataFrame, ITable<BaseVector, Tuple
                     outputconnection.commit();
                 }
             } catch (SQLException e) {
-                LOGGER.error("Cannot save the dataframe.\n", e);
-                return null;
+                throw new SQLException("Cannot save the dataframe.\n", e);
             } finally {
                 outputconnection.setAutoCommit(true);
                 if (preparedStatement != null) {
@@ -828,8 +778,7 @@ public class DataFrame implements smile.data.DataFrame, ITable<BaseVector, Tuple
                 }
             }
         } catch (SQLException e) {
-            LOGGER.error("Cannot save the dataframe.\n", e);
-            return null;
+            throw new SQLException("Cannot save the dataframe.\n", e);
         }
         return tableName;
     }
@@ -868,15 +817,19 @@ public class DataFrame implements smile.data.DataFrame, ITable<BaseVector, Tuple
     @Override
     public Map<String, Object> firstRow() {
         Map<String, Object> map = new HashMap<>();
-        if(first()){
-            for(String column : getColumns()){
+        if (first()) {
+            for (String column : getColumns()) {
                 map.put(column, getObject(column));
             }
-        }
-        else{
+        } else {
             LOGGER.error("Unable to go to the first row.");
         }
         return map;
+    }
+
+    @Override
+    public Object get(String column) throws Exception {
+        return getInternalDataFrame().get(getRow(), column);
     }
 
     @Override
@@ -940,7 +893,7 @@ public class DataFrame implements smile.data.DataFrame, ITable<BaseVector, Tuple
     }
 
     @Override
-    public ITable<?,?> getTable() {
+    public ITable<?, ?> getTable() {
         return this;
     }
 
@@ -972,7 +925,7 @@ public class DataFrame implements smile.data.DataFrame, ITable<BaseVector, Tuple
         if (rs instanceof IJdbcTable) {
             IJdbcTable jdbcTable = (IJdbcTable) rs;
             StructType schema = getStructure(jdbcTable);
-            if(schema==null){
+            if (schema == null) {
                 return null;
             }
             ArrayList<Tuple> rows = new ArrayList<>();
@@ -985,7 +938,7 @@ public class DataFrame implements smile.data.DataFrame, ITable<BaseVector, Tuple
         }
     }
 
-    private static StructType getStructure(IJdbcTable<?> table) {
+    private static StructType getStructure(IJdbcTable<?> table) throws SQLException {
         ResultSetMetaData metadata = table.getMetaData();
         try {
             int columnCount = metadata.getColumnCount();
@@ -995,19 +948,15 @@ public class DataFrame implements smile.data.DataFrame, ITable<BaseVector, Tuple
                 if (type.toLowerCase().startsWith("geometry") ||
                         type.equalsIgnoreCase("CHARACTER") ||
                         type.equalsIgnoreCase("CHARACTER VARYING")) {
-                    type="VARCHAR";
-                }
-                else if (type.equalsIgnoreCase("DOUBLE PRECISION")) {
-                    type="DOUBLE";
-                }
-                else if (type.equalsIgnoreCase("DECFLOAT")) {
-                    type="FLOAT";
-                }
-                else if(type.equalsIgnoreCase("TINYINT")){
-                    type="INTEGER";
-                }
-                else if(type.equalsIgnoreCase("SMALLINT")){
-                    type="INTEGER";
+                    type = "VARCHAR";
+                } else if (type.equalsIgnoreCase("DOUBLE PRECISION")) {
+                    type = "DOUBLE";
+                } else if (type.equalsIgnoreCase("DECFLOAT")) {
+                    type = "FLOAT";
+                } else if (type.equalsIgnoreCase("TINYINT")) {
+                    type = "INTEGER";
+                } else if (type.equalsIgnoreCase("SMALLINT")) {
+                    type = "INTEGER";
                 }
 
                 DataType dataType = DataType.of(JDBCType.valueOf(type), metadata.isNullable(i) != 0, (table).getDbType().toString());
@@ -1085,7 +1034,7 @@ public class DataFrame implements smile.data.DataFrame, ITable<BaseVector, Tuple
                 row[i] = ((Timestamp) value).toLocalDateTime();
             } else if (value instanceof Geometry) {
                 row[i] = value.toString();
-            }else{
+            } else {
                 row[i] = value;
             }
         }
@@ -1164,10 +1113,10 @@ public class DataFrame implements smile.data.DataFrame, ITable<BaseVector, Tuple
     }
 
     public static DataFrame of(ArrayList data, String... columnNames) {
-        if (columnNames==null) {
+        if (columnNames == null) {
             throw new IllegalArgumentException("Null collection of columns");
         }
-        if (data==null && data.isEmpty()) {
+        if (data == null && data.isEmpty()) {
             throw new IllegalArgumentException("Empty collection of data");
         }
         //Build the StructType from the first row
@@ -1175,9 +1124,9 @@ public class DataFrame implements smile.data.DataFrame, ITable<BaseVector, Tuple
         StructType schema = null;
         ArrayList<Tuple> rows = new ArrayList<>();
         Object firstRow = data.get(0);
-        if(firstRow instanceof  ArrayList){
-           ArrayList rowValues = ((ArrayList) firstRow);
-            if(rowValues.size()!=columnNames.length){
+        if (firstRow instanceof ArrayList) {
+            ArrayList rowValues = ((ArrayList) firstRow);
+            if (rowValues.size() != columnNames.length) {
                 throw new IllegalArgumentException("row array must have same length of column names");
             }
             for (int k = 0; k < rowValues.size(); ++k) {
@@ -1185,19 +1134,18 @@ public class DataFrame implements smile.data.DataFrame, ITable<BaseVector, Tuple
                 DataType rowValueDataType = DataTypes.object(rowValue.getClass());
                 fields[k] = new StructField(columnNames[k], rowValueDataType);
             }
-            schema =  new StructType(fields);
-        }
-        else{
+            schema = new StructType(fields);
+        } else {
             throw new IllegalArgumentException("Malformed data error. The first row must be an array");
         }
 
         //Populate the tuples
         for (int i = 0; i < data.size(); ++i) {
             Object values = data.get(i);
-            if(values instanceof  ArrayList){
+            if (values instanceof ArrayList) {
                 Object[] row = new Object[columnNames.length];
                 ArrayList rowValues = ((ArrayList) values);
-                if(rowValues.size()!=columnNames.length){
+                if (rowValues.size() != columnNames.length) {
                     throw new IllegalArgumentException("arrays must all be same length");
                 }
                 for (int k = 0; k < rowValues.size(); ++k) {
@@ -1205,15 +1153,14 @@ public class DataFrame implements smile.data.DataFrame, ITable<BaseVector, Tuple
                     DataType rowValueDataType = DataTypes.object(rowValue.getClass());
                     StructField currentField = fields[k];
                     DataType fieldType = currentField.type;
-                    if(!fieldType.equals(rowValueDataType)){
-                        fields[k]= new StructField(currentField.name, DataTypes.ObjectType);
+                    if (!fieldType.equals(rowValueDataType)) {
+                        fields[k] = new StructField(currentField.name, DataTypes.ObjectType);
                     }
-                    row[k]=rowValue;
+                    row[k] = rowValue;
 
                 }
                 rows.add(Tuple.of(row, schema));
-            }
-            else{
+            } else {
                 throw new IllegalArgumentException("Malformed data error. Please use this declaration : [[100, 5, 20],[50, 2.5, 10],[110, 6, 22]]");
             }
         }
@@ -1234,6 +1181,7 @@ public class DataFrame implements smile.data.DataFrame, ITable<BaseVector, Tuple
 
     /**
      * Returns the SQL type.
+     *
      * @param dataType from the dataframe
      */
     public String getSQLType(DataType dataType) {

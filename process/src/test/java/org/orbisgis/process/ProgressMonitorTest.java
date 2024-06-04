@@ -106,7 +106,7 @@ class ProgressMonitorTest {
 
             pm.incrementStep();
             p++;
-            assertEquals(round(100.0 / 7.0 * 1.0), round(pm.getProgress()));
+            assertEquals(round(100.0 / 7.0), round(pm.getProgress()));
 
             IProgressMonitor subPm1 = pm.getSubProgress("sub1", 4, false);
             assertNotNull(subPm1);

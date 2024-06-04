@@ -80,7 +80,7 @@ public class H2GISColumnTest {
     private static final String COL_NO_TAB = "COL_NO_TAB";
 
     @BeforeAll
-    public static void beforeAll(){
+    public static void beforeAll() throws Exception {
         dataSource = H2GIS.open(BASE_DATABASE);
     }
 

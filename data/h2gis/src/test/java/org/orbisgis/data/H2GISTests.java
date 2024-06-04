@@ -42,7 +42,6 @@ import org.h2gis.functions.factory.H2GISDBFactory;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jts.geom.Point;
 import org.orbisgis.data.api.dataset.IJdbcTable;
 import org.orbisgis.data.api.dataset.ISpatialTable;
 import org.orbisgis.data.api.dataset.ITable;
@@ -50,7 +49,6 @@ import org.orbisgis.data.api.dataset.ITable;
 import java.io.File;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Time;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -64,10 +62,10 @@ import static org.junit.jupiter.api.Assertions.*;
 public class H2GISTests {
 
     @Test
-    public void openH2GIS() {
+    public void openH2GIS() throws Exception {
         assertNotNull(H2GIS.open("./target/openH2GIS1"));
         assertNotNull(H2GIS.open("./target/openH2GIS2", "sa", "sa"));
-        assertNull(H2GIS.open(new File("file")));
+        assertThrows(Exception.class, ()->H2GIS.open(new File("file")));
 
         BasicDataSource ds = new BasicDataSource();
         ds.setDriverClassName("org.h2.Driver");
@@ -80,7 +78,7 @@ public class H2GISTests {
     }
 
     @Test
-    public void testColumnsType() throws SQLException {
+    public void testColumnsType() throws Exception {
         Map<String, String> map = new HashMap<>();
         map.put(H2GISDBFactory.JDBC_DATABASE_NAME, "./target/loadH2GIS");
         H2GIS h2GIS = H2GIS.open(map);
@@ -88,24 +86,17 @@ public class H2GISTests {
         h2GIS.execute("DROP TABLE IF EXISTS TYPES");
         h2GIS.execute("CREATE TABLE TYPES (colint INT, colreal REAL, colint2 MEDIUMINT, coltime TIME, " +
                 "colvarchar VARCHAR2, colbool boolean, coltiny tinyint, colpoint GEOMETRY(POINT), colgeom GEOMETRY)");
-        Assertions.assertTrue(h2GIS.getTable("TYPES").hasColumn("colint", Integer.class));
-        Assertions.assertFalse(h2GIS.getTable("TYPES").hasColumn("colint", Short.class));
-        Map<String, Class<?>> columns = new HashMap<>();
-        columns.put("colint", Integer.class);
-        columns.put("colreal", Float.class);
-        columns.put("colint2", Integer.class);
-        columns.put("coltime", Time.class);
-        columns.put("colvarchar", String.class);
-        columns.put("colbool", Boolean.class);
-        columns.put("coltiny", Byte.class);
-        columns.put("colpoint", Point.class);
-        columns.put("colgeom", Geometry.class);
-        Assertions.assertTrue(h2GIS.getTable("TYPES").hasColumns(columns));
+
+        Map<String, String> columnTypes = h2GIS.getColumnNamesTypes("types");
+        assertTrue(columnTypes.containsKey("COLINT"));
+        assertSame("INTEGER", columnTypes.get("COLINT"));
+        assertTrue(columnTypes.containsKey("COLREAL"));
+        assertSame("REAL", columnTypes.get("COLREAL"));
     }
 
 
     @Test
-    public void loadH2GIS() {
+    public void loadH2GIS() throws Exception {
         Map<String, String> map = new HashMap<>();
         map.put(H2GISDBFactory.JDBC_DATABASE_NAME, "./target/loadH2GIS");
         H2GIS h2GIS = H2GIS.open(map);
@@ -114,7 +105,7 @@ public class H2GISTests {
 
 
     @Test
-    public void queryH2GIS() throws SQLException {
+    public void queryH2GIS() throws Exception {
         Map<String, String> map = new HashMap<>();
         map.put(H2GISDBFactory.JDBC_DATABASE_NAME, "./target/loadH2GIS2");
         H2GIS h2GIS = H2GIS.open(map);
@@ -134,7 +125,7 @@ public class H2GISTests {
     }
 
     @Test
-    public void querySpatialTable() throws SQLException {
+    public void querySpatialTable() throws Exception {
         Map<String, String> map = new HashMap<>();
         map.put(H2GISDBFactory.JDBC_DATABASE_NAME, "./target/loadH2GIS2");
         H2GIS h2GIS = H2GIS.open(map);
@@ -146,7 +137,11 @@ public class H2GISTests {
         h2GIS.getSpatialTable("h2gis").eachRow(new Closure(null) {
             @Override
             public Object call(Object argument) {
-                values.add(((ISpatialTable) argument).getGeometry().toString());
+                try {
+                    values.add(((ISpatialTable) argument).getGeometry().toString());
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
                 return argument;
             }
         });
@@ -154,11 +149,11 @@ public class H2GISTests {
         assertEquals("POINT (10 10)", values.get(0));
         assertEquals("POINT (1 1)", values.get(1));
 
-        assertNull(h2GIS.getSpatialTable("noGeom"));
+        assertThrows(Exception.class, ()->h2GIS.getSpatialTable("noGeom"));
     }
 
     @Test
-    public void queryTableNames() throws SQLException {
+    public void queryTableNames() throws Exception {
         Map<String, String> map = new HashMap<>();
         map.put(H2GISDBFactory.JDBC_DATABASE_NAME, "./target/loadH2GIS");
         H2GIS h2GIS = H2GIS.open(map);
@@ -172,7 +167,7 @@ public class H2GISTests {
     }
 
     @Test
-    public void updateSpatialTable() throws SQLException {
+    public void updateSpatialTable() throws Exception {
         Map<String, String> map = new HashMap<>();
         map.put(H2GISDBFactory.JDBC_DATABASE_NAME, "./target/loadH2GIS");
         H2GIS h2GIS = H2GIS.open(map);
@@ -213,7 +208,7 @@ public class H2GISTests {
     }
 
     @Test
-    public void request() throws SQLException {
+    public void request() throws Exception {
         Map<String, String> map = new HashMap<>();
         map.put(H2GISDBFactory.JDBC_DATABASE_NAME, "./target/loadH2GIS2");
         H2GIS h2GIS = H2GIS.open(map);
@@ -298,7 +293,7 @@ public class H2GISTests {
     }
 
     @Test
-    public void hasTable() throws SQLException {
+    public void hasTable() throws Exception {
         Map<String, String> map = new HashMap<>();
         map.put(H2GISDBFactory.JDBC_DATABASE_NAME, "./target/loadH2GIS");
         H2GIS h2GIS = H2GIS.open(map);
@@ -313,7 +308,7 @@ public class H2GISTests {
     }
 
     @Test
-    void testGetTableOnEmptyTable() throws SQLException {
+    void testGetTableOnEmptyTable() throws Exception {
         Map<String, String> map = new HashMap<>();
         map.put(H2GISDBFactory.JDBC_DATABASE_NAME, "./target/loadH2GIS");
         H2GIS h2GIS = H2GIS.open(map);
@@ -326,7 +321,7 @@ public class H2GISTests {
     }
 
     @Test
-    void addNetworkFunctionsTest() {
+    void addNetworkFunctionsTest() throws Exception {
         String[] fcts = new String[]{ "ST_ACCESSIBILITY", "ST_CONNECTEDCOMPONENTS", "ST_GRAPHANALYSIS",
                 "ST_SHORTESTPATHLENGTH", "ST_SHORTESTPATHTREE", "ST_SHORTESTPATH"};
         Map<String, String> map = new HashMap<>();
@@ -379,7 +374,7 @@ public class H2GISTests {
     }
 
     @Test
-    void testExtent() throws SQLException{
+    void testExtent() throws Exception {
         H2GIS h2GIS = H2GIS.open("./target/orbisgis");
         h2GIS.execute("DROP TABLE  IF EXISTS forests;\n" +
                 "                CREATE TABLE forests ( fid INTEGER NOT NULL PRIMARY KEY, name CHARACTER VARYING(64),\n" +
@@ -399,7 +394,7 @@ public class H2GISTests {
     }
 
     @Test
-    void testExtentWithFilter() throws SQLException{
+    void testExtentWithFilter() throws Exception {
         H2GIS h2GIS = H2GIS.open("./target/orbisgis");
         h2GIS.execute("DROP TABLE  IF EXISTS forests;\n" +
                 "                CREATE TABLE forests ( fid INTEGER NOT NULL PRIMARY KEY, name CHARACTER VARYING(64),\n" +
@@ -419,15 +414,14 @@ public class H2GISTests {
     }
 
     @Test
-    public void getTableSelect() throws SQLException {
+    public void getTableSelect() throws Exception {
         Map<String, String> map = new HashMap<>();
         map.put(H2GISDBFactory.JDBC_DATABASE_NAME, "./target/selectTable");
         H2GIS h2GIS = H2GIS.open(map);
         h2GIS.execute("DROP TABLE IF EXISTS h2gis; CREATE TABLE h2gis (id int, the_geom geometry(point));" +
                 "insert into h2gis values (1, 'POINT(10 10)'::GEOMETRY), (2, 'POINT(1 1)'::GEOMETRY);" );
-        ISpatialTable sp = h2GIS.getSpatialTable("SELECT * FROM h2gis");
-        assertNull(sp);
-        sp = h2GIS.getSpatialTable("(SELECT * FROM h2gis)");
+        assertThrows(Exception.class, ()->h2GIS.getSpatialTable("SELECT * FROM h2gis"));
+        ISpatialTable sp = h2GIS.getSpatialTable("(SELECT * FROM h2gis)");
         assertNotNull(sp);
         assertEquals(2, sp.getRowCount());
         sp = h2GIS.getSpatialTable("(SELECT ST_BUFFER(ST_PointOnSurface('SRID=4326;POINT(0 0)'::GEOMETRY), 10) as the_geom)");

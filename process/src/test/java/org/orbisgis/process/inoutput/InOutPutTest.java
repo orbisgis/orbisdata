@@ -59,7 +59,7 @@ public class InOutPutTest {
     void nameTest() {
         DummyInOutPut dummyInOutPut = new DummyInOutPut();
         assertFalse(dummyInOutPut.getName().isPresent());
-        assertTrue(dummyInOutPut.name("name") instanceof InOutPut);
+        assertInstanceOf(InOutPut.class, dummyInOutPut.name("name"));
         assertTrue(dummyInOutPut.getName().isPresent());
         assertEquals("name", dummyInOutPut.getName().get());
         dummyInOutPut.setName(null);
@@ -74,7 +74,7 @@ public class InOutPutTest {
         IProcess process = ProcessManager.createFactory().create().getProcess();
         DummyInOutPut dummyInOutPut = new DummyInOutPut();
         assertFalse(dummyInOutPut.getProcess().isPresent());
-        assertTrue(dummyInOutPut.process(process) instanceof InOutPut);
+        assertInstanceOf(InOutPut.class, dummyInOutPut.process(process));
         assertTrue(dummyInOutPut.getProcess().isPresent());
         assertEquals(process, dummyInOutPut.getProcess().get());
         dummyInOutPut.setProcess(null);
@@ -88,7 +88,7 @@ public class InOutPutTest {
     void titleTest() {
         DummyInOutPut dummyInOutPut = new DummyInOutPut();
         assertFalse(dummyInOutPut.getTitle().isPresent());
-        assertTrue(dummyInOutPut.title("title") instanceof InOutPut);
+        assertInstanceOf(InOutPut.class, dummyInOutPut.title("title"));
         assertTrue(dummyInOutPut.getTitle().isPresent());
         assertEquals("title", dummyInOutPut.getTitle().get());
         dummyInOutPut.setTitle(null);
@@ -102,7 +102,7 @@ public class InOutPutTest {
     void descriptionTest() {
         DummyInOutPut dummyInOutPut = new DummyInOutPut();
         assertFalse(dummyInOutPut.getDescription().isPresent());
-        assertTrue(dummyInOutPut.description("descr") instanceof InOutPut);
+        assertInstanceOf(InOutPut.class, dummyInOutPut.description("descr"));
         assertTrue(dummyInOutPut.getDescription().isPresent());
         assertEquals("descr", dummyInOutPut.getDescription().get());
         dummyInOutPut.setDescription(null);
@@ -116,7 +116,7 @@ public class InOutPutTest {
     void keywordsTest() {
         DummyInOutPut dummyInOutPut = new DummyInOutPut();
         assertFalse(dummyInOutPut.getKeywords().isPresent());
-        assertTrue(dummyInOutPut.keywords(new String[]{"key1", "key2"}) instanceof InOutPut);
+        assertInstanceOf(InOutPut.class, dummyInOutPut.keywords(new String[]{"key1", "key2"}));
         assertTrue(dummyInOutPut.getKeywords().isPresent());
         assertArrayEquals(new String[]{"key1", "key2"}, dummyInOutPut.getKeywords().get());
         dummyInOutPut.setKeywords(null);
@@ -130,7 +130,7 @@ public class InOutPutTest {
     void typeTest() {
         DummyInOutPut dummyInOutPut = new DummyInOutPut();
         assertFalse(dummyInOutPut.getType().isPresent());
-        assertTrue(dummyInOutPut.type(Integer.class) instanceof InOutPut);
+        assertInstanceOf(InOutPut.class, dummyInOutPut.type(Integer.class));
         assertTrue(dummyInOutPut.getType().isPresent());
         assertEquals(Integer.class, dummyInOutPut.getType().get());
         dummyInOutPut.setType(null);

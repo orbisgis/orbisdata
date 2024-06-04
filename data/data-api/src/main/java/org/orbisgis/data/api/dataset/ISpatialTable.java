@@ -57,7 +57,7 @@ public interface ISpatialTable<T> extends ITable<T, T> {
      * @param columnIndex Index of the geometric column.
      * @return The {@link Geometry} value of the given column at the current row.
      */
-    Geometry getGeometry(int columnIndex);
+    Geometry getGeometry(int columnIndex) throws Exception;
 
     /**
      * Returns the {@link Geometry} value of the given column at the current row.
@@ -65,14 +65,14 @@ public interface ISpatialTable<T> extends ITable<T, T> {
      * @param columnLabel Label of the geometric column.
      * @return The {@link Geometry} value of the given column at the current row.
      */
-    Geometry getGeometry(String columnLabel);
+    Geometry getGeometry(String columnLabel) throws Exception;
 
     /**
      * Returns the {@link Geometry} value of the first geometric column at the current row.
      *
      * @return The {@link Geometry} value of the first geometric column at the current row.
      */
-    Geometry getGeometry();
+    Geometry getGeometry() throws Exception;
 
     /**
      * Returns the {@link IRaster} value of the given column at the current row.
@@ -80,7 +80,7 @@ public interface ISpatialTable<T> extends ITable<T, T> {
      * @param columnIndex Index of the raster column.
      * @return The {@link IRaster} value of the given column at the current row.
      */
-    IRaster getRaster(int columnIndex);
+    IRaster getRaster(int columnIndex) throws Exception;
 
     /**
      * Returns the {@link IRaster} value of the given column at the current row.
@@ -88,35 +88,35 @@ public interface ISpatialTable<T> extends ITable<T, T> {
      * @param columnLabel Label of the raster column.
      * @return The {@link IRaster} value of the given column at the current row.
      */
-    IRaster getRaster(String columnLabel);
+    IRaster getRaster(String columnLabel) throws Exception;
 
     /**
      * Returns the {@link IRaster} value of the first raster column at the current row.
      *
      * @return The {@link IRaster} value of the first raster column at the current row.
      */
-    IRaster getRaster();
+    IRaster getRaster() throws Exception;
 
     /**
      * Return the list of the table spatial columns.
      *
      * @return The list of the table spatial columns.
      */
-    List<String> getSpatialColumns();
+    List<String> getSpatialColumns() throws Exception;
 
     /**
      * Return the list of the table raster columns.
      *
      * @return The list of the table raster columns.
      */
-    List<String> getRasterColumns();
+    List<String> getRasterColumns() throws Exception;
 
     /**
      * Return the list of the table geometric columns.
      *
      * @return The list of the table geometric columns.
      */
-    List<String> getGeometricColumns();
+    List<String> getGeometricColumns() throws Exception;
 
     /**
      * Return the full extent {@link Geometry} of a list of geometry columns.
@@ -126,7 +126,7 @@ public interface ISpatialTable<T> extends ITable<T, T> {
      *
      * @return The full extent {@link Geometry}.
      */
-    Geometry getExtent(String... geometryColumns);
+    Geometry getExtent(String... geometryColumns) throws Exception;
 
     /**
      * Return the full extent {@link Geometry} of a list of geometry columns
@@ -141,42 +141,42 @@ public interface ISpatialTable<T> extends ITable<T, T> {
      *
      * @return The full extent {@link Geometry}.
      */
-    Geometry getExtent(String[] geometryColumns, String filter);
+    Geometry getExtent(String[] geometryColumns, String filter) throws Exception;
 
     /**
      * Return the full extent {@link Geometry} of the first geometry column of the table.
      *
      * @return The full extent {@link Geometry} of the first geometry column of the table.
      */
-    Geometry getExtent();
+    Geometry getExtent() throws Exception;
 
     /**
      * Return the estimated extent {@link Geometry} of the first geometry column of the table.
      *
      * @return The estimated extent {@link Geometry} of the first geometry column of the table.
      */
-    Geometry getEstimatedExtent();
+    Geometry getEstimatedExtent() throws Exception;
 
     /**
      * Return the SRID code of the first geometry column of the {@link ISpatialTable}.
      *
      * @return The SRID code of the first geometry column of the {@link ISpatialTable}.
      */
-    int getSrid();
+    int getSrid() throws Exception;
 
     /**
      * Sets the SRID code of the first geometric column of the {@link ISpatialTable}.
      *
      * @param srid The SRID code of the first geometric column of the {@link ISpatialTable}.
      */
-    void setSrid(int srid);
+    void setSrid(int srid) throws Exception;
 
     /**
      * Returns a {@link Map} containing the field names as key and the SFS geometry type (well known name) as value.
      *
      * @return The field names as key and geometry types as value.
      */
-    Map<String, String> getGeometryTypes();
+    Map<String, String> getGeometryTypes() throws Exception;
 
     /**
      * Reproject the current {@link ISpatialTable} to another referenced coordinate system .The reprojection is
@@ -185,5 +185,5 @@ public interface ISpatialTable<T> extends ITable<T, T> {
      * @param srid EPSG code as specified by the EPSG spatial reference system database.
      * @return A reproject {@link ISpatialTable}.
      */
-    ISpatialTable<T> reproject(int srid);
+    ISpatialTable<T> reproject(int srid) throws Exception;
 }

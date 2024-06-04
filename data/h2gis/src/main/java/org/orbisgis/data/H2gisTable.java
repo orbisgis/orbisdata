@@ -74,7 +74,7 @@ public class H2gisTable extends JdbcTable<StreamResultSet> {
     }
 
     @Override
-    public Object asType(Class<?> clazz) {
+    public Object asType(Class<?> clazz) throws Exception {
         if (ISpatialTable.class.isAssignableFrom(clazz)) {
             return new H2gisSpatialTable(getTableLocation(), getBaseQuery(), getStatement(), getParams(),
                     getJdbcDataSource());
@@ -87,7 +87,7 @@ public class H2gisTable extends JdbcTable<StreamResultSet> {
     }
 
     @Override
-    public Stream<StreamResultSet> stream() {
+    public Stream<StreamResultSet> stream() throws Exception{
         Spliterator<StreamResultSet> spliterator = new ResultSetSpliterator<StreamResultSet>(this.getRowCount(), new StreamResultSet(getResultSet()));
         return StreamSupport.stream(spliterator, true);
     }

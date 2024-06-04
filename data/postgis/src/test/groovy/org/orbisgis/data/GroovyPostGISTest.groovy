@@ -61,7 +61,10 @@ class GroovyPostGISTest {
 
     @BeforeAll
     static void init() {
-        postGIS = org.orbisgis.data.POSTGIS.open(dbProperties)
+        try {
+            postGIS = org.orbisgis.data.POSTGIS.open(dbProperties)
+        }catch (Exception e){
+        }
         System.setProperty("test.postgis", Boolean.toString(postGIS != null))
     }
 
@@ -123,14 +126,14 @@ class GroovyPostGISTest {
         """)
 
         def concat = ""
-        postGIS.getSpatialTable("testtable").meta.each { row ->
-            concat += "$row.columnLabel $row.columnType\n"
+        postGIS.getSpatialTable("testtable").getMetaData().each { row ->
+            concat += "${row.getColumnLabel()} ${row.getColumnType()}\n"
         }
         assertEquals("id 4\nthe_geom 1111\n", concat)
 
         concat = ""
-        postGIS.getSpatialTable("testtable").meta.each { row ->
-            concat += "$row.columnLabel $row.columnType\n"
+        postGIS.getSpatialTable("testtable").getMetaData().each { row ->
+            concat += "${row.getColumnLabel()} ${row.getColumnType()}\n"
         }
         assertEquals("id 4\nthe_geom 1111\n", concat)
     }
@@ -451,13 +454,13 @@ class GroovyPostGISTest {
                 CREATE TABLE orbisgis (id int, the_geom geometry(point, 4326));
                 INSERT INTO orbisgis VALUES (1, 'SRID=4326;POINT(10 10)'::GEOMETRY), (2, 'SRID=4326;POINT(1 1)'::GEOMETRY);
         """)
-        postGIS.getSpatialTable("orbisgis").the_geom.createSpatialIndex()
-        assertTrue(postGIS.getSpatialTable("orbisgis").the_geom.isIndexed())
-        assertFalse(postGIS.getSpatialTable("orbisgis").id.isIndexed())
-        postGIS.getSpatialTable("orbisgis").id.createIndex()
-        assertTrue(postGIS.getSpatialTable("orbisgis").id.isIndexed())
-        postGIS.getSpatialTable("orbisgis").the_geom.dropIndex()
-        assertFalse(postGIS.getSpatialTable("orbisgis").the_geom.isIndexed())
+        postGIS.createSpatialIndex("orbisgis", "the_geom")
+        assertTrue(postGIS.isSpatialIndexed("orbisgis"))
+        assertFalse(postGIS.isIndexed("orbisgis","id"))
+        postGIS.createIndex("orbisgis","id")
+        assertTrue(postGIS.isIndexed("orbisgis","id"))
+        postGIS.dropIndex("orbisgis","the_geom")
+        assertFalse(postGIS.isSpatialIndexed("orbisgis","the_geom"))
     }
 
     @Test
@@ -504,31 +507,31 @@ class GroovyPostGISTest {
     @EnabledIfSystemProperty(named = "test.postgis", matches = "true")
     void testDataSourceMethods() throws SQLException {
         postGIS.execute("DROP TABLE IF EXISTS geodata; CREATE TABLE  geodata (ID INT,LAND VARCHAR, THE_GEOM GEOMETRY); " +
-                "INSERT INTO geodata VALUES (1,'grass', 'POINT(0 0)'::GEOMETRY);");
-        assertFalse(postGIS.isEmpty("geodata"));
+                "INSERT INTO geodata VALUES (1,'grass', 'POINT(0 0)'::GEOMETRY);")
+        assertFalse(postGIS.isEmpty("geodata"))
         assertEquals(1, postGIS.getRowCount("geodata"))
-        assertTrue(postGIS.createIndex("geodata", "id"));
-        assertTrue(postGIS.isIndexed("geodata", "id"));
-        postGIS.dropIndex("geodata", "id");
-        assertFalse(postGIS.isIndexed("geodata", "id"));
+        assertTrue(postGIS.createIndex("geodata", "id"))
+        assertTrue(postGIS.isIndexed("geodata", "id"))
+        postGIS.dropIndex("geodata", "id")
+        assertFalse(postGIS.isIndexed("geodata", "id"))
 
-        assertTrue(postGIS.createSpatialIndex("geodata", "the_geom"));
-        assertTrue(postGIS.isSpatialIndexed("geodata", "the_geom"));
-        postGIS.dropIndex("geodata", "the_geom");
-        assertFalse(postGIS.isSpatialIndexed("geodata", "the_geom"));
+        assertTrue(postGIS.createSpatialIndex("geodata", "the_geom"))
+        assertTrue(postGIS.isSpatialIndexed("geodata", "the_geom"))
+        postGIS.dropIndex("geodata", "the_geom")
+        assertFalse(postGIS.isSpatialIndexed("geodata", "the_geom"))
 
-        assertTrue(postGIS.createSpatialIndex("geodata"));
-        assertTrue(postGIS.isSpatialIndexed("geodata"));
+        assertTrue(postGIS.createSpatialIndex("geodata"))
+        assertTrue(postGIS.isSpatialIndexed("geodata"))
 
-        assertEquals(postGIS.firstRow("select 'POINT(0 0)'::GEOMETRY AS the_geom").get("THE_GEOM"), postGIS.getExtent("geodata"));
-
-
-        postGIS.dropColumn("geodata", "id", "land", "type");
-        assertEquals(1,postGIS.getColumnNames("geodata").size());
+        assertEquals(postGIS.firstRow("select 'POINT(0 0)'::GEOMETRY AS the_geom").get("THE_GEOM"), postGIS.getExtent("geodata"))
 
 
-        postGIS.dropTable("geodata");
-        assertFalse(postGIS.hasTable("geodata"));
+        postGIS.dropColumn("geodata", "id", "land", "type")
+        assertEquals(1,postGIS.getColumnNames("geodata").size())
+
+
+        postGIS.dropTable("geodata")
+        assertFalse(postGIS.hasTable("geodata"))
 
         postGIS.dropTable("", "")
         postGIS.dropTable([])

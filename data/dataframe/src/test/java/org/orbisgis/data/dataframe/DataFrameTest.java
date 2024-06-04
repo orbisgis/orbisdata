@@ -85,7 +85,7 @@ public class DataFrameTest {
     private static H2GIS h2gis;
 
     @BeforeAll
-    public static void beforeAll() {
+    public static void beforeAll() throws Exception {
         h2gis = RANDOM_DS();
     }
 
@@ -119,7 +119,7 @@ public class DataFrameTest {
             assertNotNull(table);
             df = DataFrame.of(table);
             assertNotNull(df);
-        } catch (SQLException e) {
+        } catch (Exception e) {
             fail(e);
         }
 
@@ -220,8 +220,8 @@ public class DataFrameTest {
         assertEquals((byte)3, dataFrame.getObject(4, Byte.class));
         assertEquals((short)3, dataFrame.getObject(5, short.class));
         assertEquals((short)3, dataFrame.getObject(5, Short.class));
-        assertEquals(3l, dataFrame.getObject(6, long.class));
-        assertEquals(3l, dataFrame.getObject(6, Long.class));
+        assertEquals(3L, dataFrame.getObject(6, long.class));
+        assertEquals(3L, dataFrame.getObject(6, Long.class));
         assertEquals(3.5f, dataFrame.getObject(7, float.class));
         assertEquals(3.5f, dataFrame.getObject(7, Float.class));
         assertEquals(3d, dataFrame.getObject(8, double.class));
@@ -244,8 +244,8 @@ public class DataFrameTest {
         assertEquals(4, dataFrame.getObject("COL5", Integer.class));
         assertEquals(4, dataFrame.getObject("COL6", int.class));
         assertEquals(4, dataFrame.getObject("COL6", Integer.class));
-        assertEquals(4l, dataFrame.getObject("COL7", long.class));
-        assertEquals(4l, dataFrame.getObject("COL7", Long.class));
+        assertEquals(4L, dataFrame.getObject("COL7", long.class));
+        assertEquals(4L, dataFrame.getObject("COL7", Long.class));
         assertEquals(4.5f, dataFrame.getObject("COL8", float.class));
         assertEquals(4.5f, dataFrame.getObject("COL8", Float.class));
         assertEquals(4d, dataFrame.getObject("COL9", double.class));
@@ -318,7 +318,7 @@ public class DataFrameTest {
      * {@link DataFrame#getColumnType(String)}, {@link DataFrame#getColumnCount()}
      */
     @Test
-    void columnsTest(){
+    void columnsTest() throws Exception {
         assertEquals(13, dataFrame.ncols());
         assertEquals(0, dataFrame.columnIndex("COL1"));
         assertEquals(5, dataFrame.column(0).size());
@@ -440,7 +440,7 @@ public class DataFrameTest {
      * {@link DataFrame#of(File)}, {@link DataFrame#of(String)} methods.
      */
     @Test
-    void saveLoadTest() throws IOException {
+    void saveLoadTest() throws Exception {
         String path = "./target/" + UUID.randomUUID().toString().replaceAll("-", "_") + ".csv";
         assertNotNull(dataFrame.save(path, null));
         DataFrame df2 = DataFrame.of(new File(path));
@@ -458,8 +458,8 @@ public class DataFrameTest {
         assertNull(DataFrame.of(notCsv));
 
         //Test save exception
-        assertNull(dataFrame.save("target/\u0000"));
-        assertNull(dataFrame.save("/"));
+        assertThrows(Exception.class, ()->dataFrame.save("target/\u0000"));
+        assertThrows(Exception.class, ()->dataFrame.save("/"));
     }
 
     /**
@@ -468,7 +468,7 @@ public class DataFrameTest {
      * @throws SQLException Exception thrown when a SQL error occurs.
      */
     @Test
-    void testDataFrameFromSpatialTable() throws SQLException {
+    void testDataFrameFromSpatialTable() throws Exception {
         H2GIS h2GIS = RANDOM_DS();
         h2GIS.execute("DROP TABLE IF EXISTS h2gis;" +
                 "CREATE TABLE h2gis (id INT, the_geom1 GEOMETRY(GEOMETRY), the_geom2 GEOMETRY(GEOMETRYCOLLECTION), " +
@@ -588,7 +588,7 @@ public class DataFrameTest {
         // Dataset used
         BaseVector[] bv = new BaseVector[]{
                 IntVector.of("LCZ", new int[]{105, 107, 106, 105, 105, 106, 107, 106, 106, 107, 107, 107, 107}),
-                StringVector.of("TYPE", new String[]{"grass", "corn", "corn", "grass", "corn", "grass", "forest", "grass", "grass", "corn", "corn", "corn", "corn"}),
+                StringVector.of("TYPE", "grass", "corn", "corn", "grass", "corn", "grass", "forest", "grass", "grass", "corn", "corn", "corn", "corn"),
                 IntVector.of("TEMPERATURE", new int[]{12, 12, 18, 12, 16, 12, 12, 12, 16, 16, 2, 16, 18}),
                 IntVector.of("WIND", new int[]{20, 30, 20, 30, 20, 20, 20, 20, 20, 20, 20, 50, 40}),
         };

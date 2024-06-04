@@ -98,135 +98,10 @@ public class ITableTest {
     }
 
     /**
-     * Test the {@link ITable#hasColumn(String)} method.
-     */
-    @Test
-    public void testHasColumn() {
-        assertTrue(table.hasColumn(COL1_NAME));
-        assertTrue(table.hasColumn(COL2_NAME));
-        assertTrue(table.hasColumn(COL3_NAME));
-        assertTrue(table.hasColumn(COL4_NAME));
-        assertTrue(table.hasColumn(COL5_NAME));
-
-        assertFalse(table.hasColumn("buildings"));
-        assertFalse(table.hasColumn("names"));
-        assertFalse(table.hasColumn("Datas"));
-        assertFalse(table.hasColumn("null"));
-        assertFalse(table.hasColumn("Number"));
-    }
-
-    /**
-     * Test the {@link ITable#hasColumns(List)} method.
-     */
-    @Test
-    public void testHasColumns() {
-        List<String> list = new ArrayList<>();
-        list.add(COL1_NAME);
-        list.add(COL2_NAME);
-        list.add(COL3_NAME);
-        list.add(COL4_NAME);
-        list.add(COL5_NAME);
-
-        assertTrue(table.hasColumns(list));
-
-        list = new ArrayList<>();
-        list.add("buildings");
-        assertFalse(table.hasColumns(list));
-        list = new ArrayList<>();
-        list.add("names");
-        assertFalse(table.hasColumns(list));
-        list = new ArrayList<>();
-        list.add("Datas");
-        assertFalse(table.hasColumns(list));
-        list = new ArrayList<>();
-        list.add("null");
-        assertFalse(table.hasColumns(list));
-        list = new ArrayList<>();
-        list.add("Number");
-        assertFalse(table.hasColumns(list));
-    }
-
-    /**
-     * Test the {@link ITable#hasColumn(String, Class)} method.
-     */
-    @Test
-    public void testHasColumnWithClass() {
-        assertTrue(table.hasColumn(COL1_NAME, String.class));
-        assertFalse(table.hasColumn(COL1_NAME, Object.class));
-        assertFalse(table.hasColumn(COL1_NAME, Integer.class));
-
-        assertTrue(table.hasColumn(COL2_NAME, String.class));
-        assertFalse(table.hasColumn(COL2_NAME, Object.class));
-        assertFalse(table.hasColumn(COL2_NAME, Integer.class));
-
-        assertFalse(table.hasColumn(COL3_NAME, String.class));
-        assertFalse(table.hasColumn(COL3_NAME, Object.class));
-        assertFalse(table.hasColumn(COL3_NAME, Integer.class));
-
-        assertFalse(table.hasColumn(COL4_NAME, String.class));
-        assertFalse(table.hasColumn(COL4_NAME, Object.class));
-        assertFalse(table.hasColumn(COL4_NAME, Integer.class));
-
-        assertFalse(table.hasColumn(COL5_NAME, String.class));
-        assertFalse(table.hasColumn(COL5_NAME, Object.class));
-        assertTrue(table.hasColumn(COL5_NAME, Integer.class));
-    }
-
-    /**
-     * Test the {@link ITable#hasColumns(Map)} method.
-     */
-    @Test
-    public void testHasColumnsWithClass() {
-        Map<String, Class> map = new HashMap<>();
-
-        map.put(COL1_NAME, String.class);
-        map.put(COL2_NAME, String.class);
-        map.put(COL5_NAME, Integer.class);
-        assertTrue(table.hasColumns(map));
-
-        map = new HashMap<>();
-        map.put(COL3_NAME, String.class);
-        assertFalse(table.hasColumns(map));
-        map = new HashMap<>();
-        map.put(COL4_NAME, String.class);
-        assertFalse(table.hasColumns(map));
-        map = new HashMap<>();
-        map.put(COL5_NAME, String.class);
-        assertFalse(table.hasColumns(map));
-        map = new HashMap<>();
-        map.put(COL1_NAME, Object.class);
-        assertFalse(table.hasColumns(map));
-        map = new HashMap<>();
-        map.put(COL2_NAME, Object.class);
-        assertFalse(table.hasColumns(map));
-        map = new HashMap<>();
-        map.put(COL3_NAME, Object.class);
-        assertFalse(table.hasColumns(map));
-        map = new HashMap<>();
-        map.put(COL4_NAME, Object.class);
-        assertFalse(table.hasColumns(map));
-        map = new HashMap<>();
-        map.put(COL5_NAME, Object.class);
-        assertFalse(table.hasColumns(map));
-        map = new HashMap<>();
-        map.put(COL1_NAME, Integer.class);
-        assertFalse(table.hasColumns(map));
-        map = new HashMap<>();
-        map.put(COL2_NAME, Integer.class);
-        assertFalse(table.hasColumns(map));
-        map = new HashMap<>();
-        map.put(COL3_NAME, Integer.class);
-        assertFalse(table.hasColumns(map));
-        map = new HashMap<>();
-        map.put(COL4_NAME, Integer.class);
-        assertFalse(table.hasColumns(map));
-    }
-
-    /**
      * Test the {@link ITable#getColumnCount()} method.
      */
     @Test
-    public void testGetColumnCount() {
+    public void testGetColumnCount() throws Exception {
         assertEquals(COLUMN_COUNT, table.getColumnCount());
         assertEquals(0, new DummyTable().getColumnCount());
     }
@@ -235,7 +110,7 @@ public class ITableTest {
      * Test the {@link ITable#isEmpty()} method.
      */
     @Test
-    public void testIsEmpty() {
+    public void testIsEmpty() throws Exception {
         assertFalse(table.isEmpty());
         assertTrue(new DummyTable().isEmpty());
     }
@@ -244,7 +119,7 @@ public class ITableTest {
      * Test the {@link ITable#save(String)} ()} method.
      */
     @Test
-    public void testSave() {
+    public void testSave() throws Exception {
         assertNull(table.save("path"));
     }
 
@@ -252,7 +127,7 @@ public class ITableTest {
      * Test the {@link ITable#getNDim()} method.
      */
     @Test
-    public void testNDim() {
+    public void testNDim() throws Exception {
         assertEquals(2, table.getNDim());
     }
 
@@ -260,7 +135,7 @@ public class ITableTest {
      * Test the {@link ITable#getSize()} method.
      */
     @Test
-    public void testGetShape() {
+    public void testGetShape() throws Exception {
         int[] shape = table.getSize();
         assertEquals(2, shape.length);
         assertEquals(5, shape[0]);
@@ -271,7 +146,7 @@ public class ITableTest {
      * Test the {@link ITable#eachRow(Closure)} method.
      */
     @Test
-    public void testEachRow() {
+    public void testEachRow() throws Exception {
         final String[] result = {""};
         Closure cl = new Closure(this) {
             @Override
@@ -325,15 +200,6 @@ public class ITableTest {
             return columns.stream().map(column -> column.get(0).toString()).collect(Collectors.toList());
         }
 
-        @Override
-        public boolean hasColumn(String columnName, Class clazz) {
-            return columns
-                    .stream()
-                    .filter(column -> column.size() >= 2 &&
-                            column.get(0).equals(columnName) &&
-                            column.get(1) != null && column.get(1).getClass().equals(clazz))
-                    .count() == 1;
-        }
 
         @Override
         public int getRowCount() {
@@ -587,6 +453,16 @@ public class ITableTest {
 
         @Override
         public Map<String, Object> firstRow() {
+            return null;
+        }
+
+        @Override
+        public Object get(String column) throws Exception {
+            return null;
+        }
+
+        @Override
+        public Object get(int column) throws Exception {
             return null;
         }
 

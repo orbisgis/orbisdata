@@ -70,7 +70,7 @@ public abstract class BuilderResult implements IBuilderResult {
     protected abstract String getQuery();
 
     @Override
-    public void eachRow(Closure<Object> closure) {
+    public void eachRow(Closure<Object> closure) throws Exception{
         ISpatialTable table = ((ISpatialTable) asType(ISpatialTable.class));
         if(table != null) {
             table.eachRow(closure);
@@ -78,7 +78,7 @@ public abstract class BuilderResult implements IBuilderResult {
     }
 
     @Override
-    public Object asType(Class<?> clazz) {
+    public Object asType(Class<?> clazz) throws Exception{
         if (ICustomPrinter.class.isAssignableFrom(clazz)) {
             ITable table = this.getTable();
             if(table != null) {
@@ -99,12 +99,12 @@ public abstract class BuilderResult implements IBuilderResult {
     }
 
     @Override
-    public ITable getTable() {
+    public ITable getTable() throws Exception{
         return getDataSource().getTable(toString(), getParams());
     }
 
     @Override
-    public ISpatialTable getSpatialTable() {
+    public ISpatialTable getSpatialTable() throws Exception {
         return getDataSource().getSpatialTable(toString(), getParams());
     }
 }

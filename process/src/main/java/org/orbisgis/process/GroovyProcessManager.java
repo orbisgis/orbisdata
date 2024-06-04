@@ -58,7 +58,7 @@ public abstract class GroovyProcessManager extends Script implements IProcessMan
     /**
      * Internal ProcessManager.
      */
-    private IProcessManager pm = new ProcessManager();
+    private final IProcessManager pm = new ProcessManager();
     /**
      * MetaClass use for groovy methods/properties binding
      */

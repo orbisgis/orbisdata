@@ -196,7 +196,7 @@ public class ITableTest {
 
 
         @Override
-        public Collection<String> getColumns() {
+        public Collection<String> getColumnNames() {
             return columns.stream().map(column -> column.get(0).toString()).collect(Collectors.toList());
         }
 
@@ -506,7 +506,7 @@ public class ITableTest {
 
 
         @Override
-        public Map<String, String> getColumnsTypes() {
+        public Map<String, String> getColumnNamesTypes() {
             return null;
         }
 

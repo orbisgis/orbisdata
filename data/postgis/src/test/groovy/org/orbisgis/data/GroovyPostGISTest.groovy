@@ -245,9 +245,9 @@ class GroovyPostGISTest {
                 CREATE TABLE testtable (id int, the_geom geometry(point, 0));
                 INSERT INTO testtable VALUES (1, 'POINT(10 10)'::GEOMETRY), (2, 'POINT(1 1)'::GEOMETRY);
         """)
-        assertEquals("id,the_geom", postGIS.getSpatialTable("testtable").columns.join(","))
+        assertEquals("id,the_geom", postGIS.getSpatialTable("testtable").columnNames.join(","))
         postGIS.execute "alter table testtable add column  columns integer"
-        assertEquals("id,the_geom,columns", postGIS.getSpatialTable("testtable").getColumns().join(","))
+        assertEquals("id,the_geom,columns", postGIS.getSpatialTable("testtable").getColumnNames().join(","))
     }
 
     @Disabled

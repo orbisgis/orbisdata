@@ -472,7 +472,7 @@ public class H2gisTableTest {
     }
 
     /**
-     * Test the {@link JdbcTable#getColumns()} method.
+     * Test the {@link JdbcTable#getColumnNames()} method.
      */
     @Test
     void testGetColumnNames() throws Exception {
@@ -482,11 +482,11 @@ public class H2gisTableTest {
         colList.add(TableLocation.capsIdentifier(COL_ID, DBTypes.H2));
         colList.add(TableLocation.capsIdentifier(COL_VALUE, DBTypes.H2));
         colList.add(TableLocation.capsIdentifier(COL_MEANING, DBTypes.H2));
-        assertEquals(colList, getTable().getColumns());
-        assertEquals(colList, getLinkedTable().getColumns());
-        assertEquals(colList, getTempTable().getColumns());
-        assertEquals(colList, getEmptyTable().getColumns());
-        assertEquals(colList, getBuiltTable().getColumns());
+        assertEquals(colList, getTable().getColumnNames());
+        assertEquals(colList, getLinkedTable().getColumnNames());
+        assertEquals(colList, getTempTable().getColumnNames());
+        assertEquals(colList, getEmptyTable().getColumnNames());
+        assertEquals(colList, getBuiltTable().getColumnNames());
     }
 
     /**
@@ -582,7 +582,7 @@ public class H2gisTableTest {
     }
 
     /**
-     * Test the {@link JdbcTable#getColumnsTypes()} method.
+     * Test the {@link JdbcTable#getColumnNamesTypes()} method.
      */
     @Test
     void testGetColumns() throws Exception {
@@ -590,7 +590,7 @@ public class H2gisTableTest {
         tables.forEach(table -> {
             Map<String, String> map = null;
             try {
-                map = table.getColumnsTypes();
+                map = table.getColumnNamesTypes();
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
@@ -607,7 +607,7 @@ public class H2gisTableTest {
         });
 
         JdbcTable table = getBuiltTable();
-        Map<String, String> map = table.getColumnsTypes();
+        Map<String, String> map = table.getColumnNamesTypes();
         String[] keys = {COL_THE_GEOM, COL_THE_GEOM2.toUpperCase(), COL_ID, COL_VALUE, COL_MEANING};
         String[] values =  {"GEOMETRY", "GEOMETRY(POINT Z)", "INTEGER", "DOUBLE PRECISION", "CHARACTER VARYING"};
         Arrays.sort(keys);
@@ -620,7 +620,7 @@ public class H2gisTableTest {
         assertArrayEquals(values, actualValues);
 
         table = getLinkedTable();
-        map = table.getColumnsTypes();
+        map = table.getColumnNamesTypes();
         keys = new String[]{COL_THE_GEOM, COL_THE_GEOM2.toUpperCase(), COL_ID, COL_VALUE, COL_MEANING};
         values = new String[] {"GEOMETRY", "GEOMETRY(POINT Z)", "INTEGER", "DOUBLE PRECISION", "CHARACTER VARYING"};
         Arrays.sort(keys);

@@ -74,14 +74,14 @@ public interface ITable<T, U> extends IMatrix<T>, IQueryBuilder {
      *
      * @return A {@link Collection} containing the name of the column.
      */
-    Collection<String> getColumns() throws Exception;
+    Collection<String> getColumnNames() throws Exception;
 
     /**
-     * Get all column information from the underlying table.
+     * Get all column name and types from the underlying table.
      *
      * @return A {@link Map} containing the information of the column.
      */
-    Map<String, String> getColumnsTypes() throws Exception;
+    Map<String, String> getColumnNamesTypes() throws Exception;
 
     /**
      * Get the type of the column from the underlying table.
@@ -98,7 +98,7 @@ public interface ITable<T, U> extends IMatrix<T>, IQueryBuilder {
      * @return The count of columns.
      */
     default int getColumnCount() throws Exception{
-        return getColumns().size();
+        return getColumnNames().size();
     }
 
     /**

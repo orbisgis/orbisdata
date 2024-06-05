@@ -351,7 +351,7 @@ public class DataFrame implements smile.data.DataFrame, ITable<BaseVector, Tuple
 
     @Override
     public BigDecimal getBigDecimal(int column) {
-        return getInternalDataFrame().getDecimal(getRow(), getColumns().get(column));
+        return getInternalDataFrame().getDecimal(getRow(), getColumnNames().get(column));
     }
 
     @Override
@@ -527,12 +527,12 @@ public class DataFrame implements smile.data.DataFrame, ITable<BaseVector, Tuple
     }
 
     @Override
-    public List<String> getColumns() {
+    public List<String> getColumnNames() {
         return Arrays.asList(names());
     }
 
     @Override
-    public Map<String, String> getColumnsTypes() throws Exception {
+    public Map<String, String> getColumnNamesTypes() throws Exception {
         DataType[] dataTypes = types();
         String[] names = names();
         Map<String, String> map = new HashMap<>();
@@ -794,7 +794,7 @@ public class DataFrame implements smile.data.DataFrame, ITable<BaseVector, Tuple
 
     @Override
     public DataFrame columns(String... columns) {
-        List<String> col = new ArrayList<>(getColumns());
+        List<String> col = new ArrayList<>(getColumnNames());
         col.removeAll(Arrays.asList(columns));
         return of(drop(col.toArray(new String[0])));
     }
@@ -818,7 +818,7 @@ public class DataFrame implements smile.data.DataFrame, ITable<BaseVector, Tuple
     public Map<String, Object> firstRow() {
         Map<String, Object> map = new HashMap<>();
         if (first()) {
-            for (String column : getColumns()) {
+            for (String column : getColumnNames()) {
                 map.put(column, getObject(column));
             }
         } else {

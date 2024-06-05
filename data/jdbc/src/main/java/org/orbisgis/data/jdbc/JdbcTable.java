@@ -261,7 +261,7 @@ public abstract class JdbcTable<T extends ResultSet> extends DefaultResultSet im
     }
 
     @Override
-    public Collection<String> getColumns() throws Exception {
+    public Collection<String> getColumnNames() throws Exception {
         Connection con = jdbcDataSource.getConnection();
         if (tableLocation == null) {
             try {
@@ -284,7 +284,7 @@ public abstract class JdbcTable<T extends ResultSet> extends DefaultResultSet im
     }
 
     @Override
-    public Map<String, String> getColumnsTypes() throws Exception {
+    public Map<String, String> getColumnNamesTypes() throws Exception {
         Map<String, String> map = new LinkedHashMap<>();
         try {
             ResultSet rs = getResultSetLimit(0);
@@ -438,7 +438,7 @@ public abstract class JdbcTable<T extends ResultSet> extends DefaultResultSet im
         } catch (SQLException e) {
             throw e;
         }
-        Collection<String> columns = getColumns();
+        Collection<String> columns = getColumnNames();
         for (String column : columns) {
             try {
                 map.put(column, rs.getObject(column));
@@ -616,7 +616,7 @@ public abstract class JdbcTable<T extends ResultSet> extends DefaultResultSet im
             } else {
                 return this;
             }
-            Collection<String> columnNames = getColumns();
+            Collection<String> columnNames = getColumnNames();
             if (columnNames == null) {
                 printer.endTable();
                 return printer;

@@ -57,7 +57,6 @@ import smile.math.matrix.Matrix;
 import smile.validation.Validation;
 
 import java.io.File;
-import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.sql.Date;
@@ -314,7 +313,7 @@ public class DataFrameTest {
     }
 
     /**
-     * Tests the {@link DataFrame#getColumns()}, {@link DataFrame#getColumnsTypes()},
+     * Tests the {@link DataFrame#getColumnNames()}, {@link DataFrame#getColumnNamesTypes()},
      * {@link DataFrame#getColumnType(String)}, {@link DataFrame#getColumnCount()}
      */
     @Test
@@ -327,22 +326,22 @@ public class DataFrameTest {
 
         assertNull(dataFrame.getColumnType("COL"));
 
-        assertEquals(13, dataFrame.getColumns().size());
-        assertTrue(dataFrame.getColumns().contains("COL1"));
-        assertTrue(dataFrame.getColumns().contains("COL2"));
-        assertTrue(dataFrame.getColumns().contains("COL3"));
-        assertTrue(dataFrame.getColumns().contains("COL4"));
-        assertTrue(dataFrame.getColumns().contains("COL5"));
-        assertTrue(dataFrame.getColumns().contains("COL6"));
-        assertTrue(dataFrame.getColumns().contains("COL7"));
-        assertTrue(dataFrame.getColumns().contains("COL8"));
-        assertTrue(dataFrame.getColumns().contains("COL9"));
-        assertTrue(dataFrame.getColumns().contains("COL10"));
-        assertTrue(dataFrame.getColumns().contains("COL11"));
-        assertTrue(dataFrame.getColumns().contains("COL12"));
-        assertTrue(dataFrame.getColumns().contains("COL13"));
+        assertEquals(13, dataFrame.getColumnNames().size());
+        assertTrue(dataFrame.getColumnNames().contains("COL1"));
+        assertTrue(dataFrame.getColumnNames().contains("COL2"));
+        assertTrue(dataFrame.getColumnNames().contains("COL3"));
+        assertTrue(dataFrame.getColumnNames().contains("COL4"));
+        assertTrue(dataFrame.getColumnNames().contains("COL5"));
+        assertTrue(dataFrame.getColumnNames().contains("COL6"));
+        assertTrue(dataFrame.getColumnNames().contains("COL7"));
+        assertTrue(dataFrame.getColumnNames().contains("COL8"));
+        assertTrue(dataFrame.getColumnNames().contains("COL9"));
+        assertTrue(dataFrame.getColumnNames().contains("COL10"));
+        assertTrue(dataFrame.getColumnNames().contains("COL11"));
+        assertTrue(dataFrame.getColumnNames().contains("COL12"));
+        assertTrue(dataFrame.getColumnNames().contains("COL13"));
 
-        assertEquals(13, dataFrame.getColumnsTypes().size());
+        assertEquals(13, dataFrame.getColumnNamesTypes().size());
         assertEquals("int", dataFrame.getColumnType("COL1"));
         assertEquals("String", dataFrame.getColumnType("COL2"));
         assertEquals("boolean", dataFrame.getColumnType("COL3"));

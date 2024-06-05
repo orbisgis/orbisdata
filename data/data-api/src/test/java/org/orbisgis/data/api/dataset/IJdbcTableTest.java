@@ -1083,13 +1083,13 @@ public class IJdbcTableTest {
 
         
         @Override
-        public Collection<String> getColumns() {
+        public Collection<String> getColumnNames() {
             return null;
         }
 
         
         @Override
-        public Map<String, String> getColumnsTypes() {
+        public Map<String, String> getColumnNamesTypes() {
             return null;
         }
 

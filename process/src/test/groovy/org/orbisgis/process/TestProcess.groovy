@@ -157,7 +157,7 @@ class TestProcess {
             title "With database"
             inputs inputA: ITable
             outputs outputA: String
-            run { inputA -> [outputA: inputA.columns] }
+            run { inputA -> [outputA: inputA.getColumnNames] }
         })
 
 

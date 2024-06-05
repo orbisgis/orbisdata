@@ -315,8 +315,8 @@ class GroovyH2GISTest {
                 CREATE TABLE h2gis (id int, the_geom geometry(point));
                 INSERT INTO h2gis VALUES (1, 'POINT(10 10)'::GEOMETRY), (2, 'POINT(1 1)'::GEOMETRY);
         """)
-        assertEquals("ID,THE_GEOM", h2GIS.getSpatialTable("h2gis").columns.join(","))
-        assertTrue(h2GIS.getSpatialTable("h2gis").columns.indexOf("THE_GEOM") != -1)
+        assertEquals("ID,THE_GEOM", h2GIS.getSpatialTable("h2gis").columnNames.join(","))
+        assertTrue(h2GIS.getSpatialTable("h2gis").columnNames.indexOf("THE_GEOM") != -1)
     }
 
     @Test
@@ -347,7 +347,7 @@ class GroovyH2GISTest {
         h2GIS.load(h2External, '(SELECT the_geom from externalTable limit 1)', "QUERY_TABLE", true)
         assertEquals(1, h2GIS.getSpatialTable("QUERY_TABLE").getRowCount())
         assertEquals(1, h2GIS.getSpatialTable("QUERY_TABLE").getColumnCount())
-        assertEquals("THE_GEOM", h2GIS.getSpatialTable("QUERY_TABLE").getColumns().first())
+        assertEquals("THE_GEOM", h2GIS.getSpatialTable("QUERY_TABLE").getColumnNames().first())
     }
 
     @Test
@@ -373,7 +373,7 @@ class GroovyH2GISTest {
         """)
         h2GIS.save("externalTable", 'target/externalFile.shp', true)
         def table = h2GIS.getTable(h2GIS.link('target/externalFile.shp', 'super', true))
-        assertEquals("PK,THE_GEOM,ID", table.columns.join(","))
+        assertEquals("PK,THE_GEOM,ID", table.columnNames.join(","))
     }
 
     @Test
@@ -389,7 +389,7 @@ class GroovyH2GISTest {
         table.save('target/supersave.shp', true)
         h2GIS.load('target/supersave.shp', true)
         assertTrue(h2GIS.tableNames.contains("SECONDH2GIS.PUBLIC.SUPERSAVE"))
-        assertEquals("PK,THE_GEOM,ID", table.columns.join(","))
+        assertEquals("PK,THE_GEOM,ID", table.columnNames.join(","))
     }
 
     @Test
@@ -502,7 +502,7 @@ class GroovyH2GISTest {
                 insert into h2gis values (4,22, 'POINT(10 10)'::GEOMETRY);
                 insert into h2gis values (5,22, 'POINT(20 10)'::GEOMETRY);"""
 
-        def table = h2GIS.spatialTable "h2gis" columns "COUNT(id)", "code", "the_geom" filter "where code=22" filter "and id<5" filter "group By code" spatialTable
+        def table = h2GIS.getSpatialTable("h2gis").columns("COUNT(id)", "code", "the_geom").filter("where code=22 and id<5 group By code").getSpatialTable()
 
         def values = new ArrayList<>()
         table.eachRow { row ->
@@ -515,7 +515,7 @@ class GroovyH2GISTest {
 
         values = new ArrayList<>()
 
-        h2GIS.table "h2gis" filter "where code=22" filter "or code=56" filter "order By id DESC" eachRow { row ->
+        h2GIS.getTable("h2gis").filter( "where code=22 or code=56 order By id DESC").eachRow { row ->
             values.add row.getInt(1)
         }
         assertEquals(5, values.size())

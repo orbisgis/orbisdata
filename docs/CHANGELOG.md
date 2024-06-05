@@ -2,3 +2,4 @@
 
 - Refactoring to manage data exceptions
 - Fix exception on script template
+- Standardizing method names

@@ -3,3 +3,4 @@
 - Refactoring to manage data exceptions
 - Fix exception on script template
 - Standardizing method names
+- Update to H2GIS 2.2.2-SNAPSHOT

@@ -4,3 +4,4 @@
 - Fix exception on script template
 - Standardizing method names
 - Update to H2GIS 2.2.2-SNAPSHOT
+- Use new sonatype auth

@@ -152,7 +152,6 @@ class GroovyPostGISTest {
         def concat = ""
         postGIS.getSpatialTable "postgis_imported" eachRow { row -> concat += "$row.id $row.the_geom $row.geometry\n" }
         assertEquals("1 POINT (10 10) POINT (10 10)\n2 POINT (1 1) POINT (1 1)\n", concat)
-        println(concat)
     }
 
     @Test
@@ -169,7 +168,6 @@ class GroovyPostGISTest {
         def concat = ""
         postGIS.getSpatialTable "postgis_imported" eachRow { row -> concat += "$row.id $row.the_geom $row.geometry\n" }
         assertEquals("1 POINT (10 10) POINT (10 10)\n2 POINT (1 1) POINT (1 1)\n", concat)
-        println(concat)
     }
 
     @Test
@@ -185,7 +183,6 @@ class GroovyPostGISTest {
         def concat = ""
         postGIS.getSpatialTable "postgis_imported" eachRow { row -> concat += "$row.id $row.the_geom $row.geometry\n" }
         assertEquals("1 POINT (10 10) POINT (10 10)\n2 POINT (1 1) POINT (1 1)\n", concat)
-        println(concat)
     }
 
     @Test
@@ -201,7 +198,6 @@ class GroovyPostGISTest {
         def concat = ""
         postGIS.getSpatialTable "postgis_imported" eachRow { row -> concat += "$row.id $row.the_geom $row.geometry\n" }
         assertEquals("1 POINT (10 10) POINT (10 10)\n2 POINT (1 1) POINT (1 1)\n", concat)
-        println(concat)
     }
 
     @Test
@@ -219,7 +215,6 @@ class GroovyPostGISTest {
         def concat = ""
         postGIS.getSpatialTable "postgis_imported" eachRow { row -> concat += "$row.id $row.the_geom $row.geometry\n" }
         assertEquals("1 POINT (10 10) POINT (10 10)\n2 POINT (1 1) POINT (1 1)\n", concat)
-        println(concat)
     }
 
     @Test

@@ -1145,8 +1145,16 @@ public interface IJdbcDataSource extends IDataSource<ResultSet>, GroovyObject, D
 
     /**
      * Print the content of the table
-     * @param tableName
+     * @param tableName name of table
      */
     void print(String tableName) throws Exception;
+
+
+    /**
+     * Print the content of the table
+     * @param tableName name of the table
+     * @param numberOfRows number of rows to print
+     */
+    void print(String tableName, int numberOfRows) throws Exception;
 
 }

@@ -1291,6 +1291,11 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, IRe
 
     @Override
     public void print(String tableName) throws Exception{
+        print(tableName, 1000);
+    }
+
+    @Override
+    public void print(String tableName, int numberOfRows) throws Exception{
         if (tableName == null || tableName.isEmpty()) {
             System.out.println("The table name is null or empty.");
         }
@@ -1318,11 +1323,9 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, IRe
             boolean tooManyRows = false;
             if (rs != null) {
                 try {
-                    int limit = 1000;
                     int count = 0;
-
                     while (rs.next()) {
-                        if (count > limit) {
+                        if (count > numberOfRows) {
                             tooManyRows = true;
                             break;
                         }
@@ -1340,8 +1343,8 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, IRe
                     throw new SQLException("Error while reading the table '" + tableName + "'.\n" + e.getLocalizedMessage());
                 }
             }
-            if (tooManyRows) {
-                printer.appendText(".... more than 1000 rows");
+            if (tooManyRows && numberOfRows>1) {
+                printer.appendText("Note that the table contains more than " + numberOfRows + " rows");
             } else {
                 printer.appendTableLineSeparator();
             }

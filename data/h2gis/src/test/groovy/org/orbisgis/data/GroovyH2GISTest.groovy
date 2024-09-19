@@ -1105,8 +1105,9 @@ class GroovyH2GISTest {
                 INSERT INTO orbisgis VALUES (1, 'POINT(10 10)'::GEOMETRY, 'just a string a bit too long'), 
                 (2, 'POINT(1 1)'::GEOMETRY, 'another string');
         """)
+        h2GIS.print("orbisgis", -1)
         h2GIS.print("orbisgis")
-        h2GIS.print("(SELECT * FROM generate_series(0, 10000) where x > 1000 limit 10)")
+        h2GIS.print("(SELECT * FROM generate_series(0, 10000))", 10)
         h2GIS.print("(SELECT * FROM generate_series(0, 10000))")
     }
 

@@ -7,3 +7,4 @@
 - Use new sonatype auth
 - Upgrade many deps : H2, Groovy, Apache Common, JTS
 - Clean data API
+- Fix GitHub actions

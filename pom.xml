@@ -610,7 +610,7 @@
         <connection>scm:git:https://github.com/orbisgis/orbisdata.git</connection>
         <developerConnection>scm:git:https://github.com/orbisgis/orbisdata.git</developerConnection>
         <url>git@github.com:orbisgis/orbisdata.git</url>
-      <tag>HEAD</tag>
+        <tag>HEAD</tag>
   </scm>
 
     <repositories>

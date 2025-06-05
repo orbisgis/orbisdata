@@ -499,7 +499,6 @@ public class H2GIS extends JdbcDataSource {
 
     /**
      * Delete the H2GIS database file
-     * @return
      */
     public void deleteClose() throws Exception {
         try {

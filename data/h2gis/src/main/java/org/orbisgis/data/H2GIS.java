@@ -37,6 +37,7 @@
 package org.orbisgis.data;
 
 import groovy.lang.GString;
+import org.h2.tools.DeleteDbFiles;
 import org.h2gis.functions.factory.H2GISDBFactory;
 import org.h2gis.functions.factory.H2GISFunctions;
 import org.h2gis.functions.io.utility.IOMethods;
@@ -61,11 +62,9 @@ import org.slf4j.LoggerFactory;
 import javax.sql.DataSource;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.IOException;
 import java.sql.*;
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * Implementation of the {@link JdbcDataSource} interface dedicated to the usage of an H2/H2GIS database.
@@ -497,4 +496,18 @@ public class H2GIS extends JdbcDataSource {
     public Object asType(Class<?> clazz) {
         return null;
     }
+
+    /**
+     * Delete the H2GIS database file
+     * @return
+     */
+    void delete() throws Exception {
+        try {
+            execute("drop all objects delete files");
+            close();
+        }catch (SQLException ex){
+            throw new Exception("Cannot delete the database files");
+        }
+    }
+
 }

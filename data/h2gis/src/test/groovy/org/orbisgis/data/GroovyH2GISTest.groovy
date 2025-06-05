@@ -1131,7 +1131,7 @@ class GroovyH2GISTest {
         new File(tmpdir).delete()
         def h2GIS = H2GIS.open(tmpdir)
         assertTrue(new File(tmpdir+".mv.db").exists())
-        h2GIS.delete()
+        h2GIS.deleteClose()
         assertFalse(new File(tmpdir+".mv.db").exists())
     }
 }

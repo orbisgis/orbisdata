@@ -45,6 +45,7 @@ import org.orbisgis.commons.printer.Ascii
 import org.orbisgis.commons.printer.Html
 import org.orbisgis.data.api.dataset.ISpatialTable
 
+import java.nio.file.Files
 import java.sql.SQLException
 import java.sql.Time
 import java.util.stream.Collectors
@@ -1122,5 +1123,15 @@ class GroovyH2GISTest {
                 (2, 'POINT(1 1)'::GEOMETRY, 'another string');
                 DROP TABLE IF EXISTS $tableName;
         """)
+    }
+
+    @Test
+    void testDeleteDatabase() throws SQLException {
+        String tmpdir = Files.createTempFile("db", "").toFile().getAbsolutePath()
+        new File(tmpdir).delete()
+        def h2GIS = H2GIS.open(tmpdir)
+        assertTrue(new File(tmpdir+".mv.db").exists())
+        h2GIS.deleteClose()
+        assertFalse(new File(tmpdir+".mv.db").exists())
     }
 }

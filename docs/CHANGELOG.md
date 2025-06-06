@@ -4,3 +4,4 @@
 - Update H2GIS to 2.2.4-SNAPSHOT
 - Fix maven version
 - H2GIS method to delete database files
+- Change to central portal

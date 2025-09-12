@@ -5,3 +5,4 @@
 - Fix maven version
 - H2GIS method to delete database files
 - Change to central portal
+- Update to JTS 1.20.1-SNAPSHOT

@@ -5,7 +5,7 @@
 
 OrbisData is a library that offers a unique access point to query, manage and retrieve data.
 
-It is based on Groovy specific syntax and aims to provide an simple and fluent framework to work with geospatial data.
+It is based on Groovy specific syntax and aims to provide a simple and fluent framework to work with geospatial data.
 
 ## Getting Started
 

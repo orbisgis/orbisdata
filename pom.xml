@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.orbisgis</groupId>
     <artifactId>orbisdata</artifactId>
@@ -28,11 +29,11 @@
         <jts-version>1.20.0</jts-version>
         <groovy-version>4.0.22</groovy-version>
         <picocli-version>4.7.6</picocli-version>
-        <h2-version>2.3.232</h2-version>
-        <cts-version>1.7.2-SNAPSHOT</cts-version>
-        <commons-io-version>2.16.1</commons-io-version>
-        <commons-compress-version>1.27.1</commons-compress-version>
-        <slf4j-version>2.0.16</slf4j-version>
+        <h2-version>2.4.240</h2-version>
+        <cts-version>1.7.2</cts-version>
+        <commons-io-version>2.21.0</commons-io-version>
+        <commons-compress-version>1.28.0</commons-compress-version>
+        <slf4j-version>2.0.17</slf4j-version>
         <smile-version>2.5.3</smile-version>
         <xstream-version>1.4.18</xstream-version>
 
@@ -506,6 +507,15 @@
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
             </plugin>
+            <plugin>
+                <groupId>org.sonatype.central</groupId>
+                <artifactId>central-publishing-maven-plugin</artifactId>
+                <version>0.8.0</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <publishingServerId>central</publishingServerId>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 
@@ -611,9 +621,14 @@
         <developerConnection>scm:git:https://github.com/orbisgis/orbisdata.git</developerConnection>
         <url>git@github.com:orbisgis/orbisdata.git</url>
         <tag>HEAD</tag>
-  </scm>
+    </scm>
 
     <repositories>
+        <repository>
+            <id>repo1.maven.org</id>
+            <name>Maven2 repository 1</name>
+            <url>https://repo1.maven.org/maven2</url>
+        </repository>
         <repository>
             <name>Central Portal Snapshots</name>
             <id>central-portal-snapshots</id>
@@ -625,27 +640,16 @@
                 <enabled>true</enabled>
             </snapshots>
         </repository>
-        <repository>
-            <name>JTS Repository - Snapshots</name>
-            <id>repo.eclipse.org</id>
-            <url>https://repo.eclipse.org/content/repositories/jts-snapshots/</url>
-            <releases>
-                <enabled>false</enabled>
-            </releases>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-        </repository>
     </repositories>
 
-    <distributionManagement>
-        <snapshotRepository>
+    <pluginRepositories>
+        <pluginRepository>
             <id>central</id>
-            <url>https://central.sonatype.com/repository/maven-snapshots/</url>
-        </snapshotRepository>
-        <repository>
-            <id>central</id>
-            <url>https://ossrh-staging-api.central.sonatype.com/service/local/staging/deploy/maven2/</url>
-        </repository>
-    </distributionManagement>
+            <url>https://repo1.maven.org/maven2</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+        </pluginRepository>
+    </pluginRepositories>
+
 </project>

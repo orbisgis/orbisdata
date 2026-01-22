@@ -6,11 +6,11 @@
     <parent>
         <groupId>org.orbisgis</groupId>
         <artifactId>data</artifactId>
-        <version>2.1.2-SNAPSHOT</version>
+        <version>2.1.2</version>
     </parent>
     <groupId>org.orbisgis.data</groupId>
     <artifactId>dataframe</artifactId>
-    <version>2.1.2-SNAPSHOT</version>
+    <version>2.1.2</version>
     <packaging>bundle</packaging>
 
     <!-- Project Information -->

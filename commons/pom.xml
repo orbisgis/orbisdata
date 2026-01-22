@@ -11,6 +11,10 @@
     <version>2.1.2-SNAPSHOT</version>
     <packaging>bundle</packaging>
 
+    <!-- Project Information -->
+    <name>commons</name>
+    <description>Library to manage OrbisData utilities</description>
+
     <!-- Properties -->
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

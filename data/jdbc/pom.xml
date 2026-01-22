@@ -13,6 +13,10 @@
     <version>2.1.2-SNAPSHOT</version>
     <packaging>bundle</packaging>
 
+    <!-- Project Information -->
+    <name>jdbc</name>
+    <description>Library to manage jdbc connection</description>
+
     <!-- Properties -->
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -116,13 +120,15 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
             </plugin>
+            <plugin>
+                <groupId>org.sonatype.central</groupId>
+                <artifactId>central-publishing-maven-plugin</artifactId>
+                <version>0.8.0</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <publishingServerId>central</publishingServerId>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
-    <distributionManagement>
-        <site>
-            <id>orbisgis-devs-website</id>
-            <name>Devs Website</name>
-            <url>file:/var/www/html/${project.parent.artifactId}/${project.artifactId}</url>
-        </site>
-    </distributionManagement>
 </project>

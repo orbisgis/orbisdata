@@ -37,7 +37,6 @@
 package org.orbisgis.data;
 
 import groovy.lang.GString;
-import org.h2.tools.DeleteDbFiles;
 import org.h2gis.functions.factory.H2GISDBFactory;
 import org.h2gis.functions.factory.H2GISFunctions;
 import org.h2gis.functions.io.utility.IOMethods;
@@ -152,6 +151,43 @@ public class H2GIS extends JdbcDataSource {
             }
         }
         throw new IllegalArgumentException("Invalid datasource");
+    }
+
+    /**
+     * Create in memory instance of {@link H2GIS}
+     * @return {@link H2GIS} object if the DataBase has been created open, null otherwise.
+     */
+    public static H2GIS mem() throws Exception {
+        return mem(System.currentTimeMillis()+"_h2gis_db");
+    }
+
+    /**
+     * Create in memory instance of {@link H2GIS}
+     * @param dbName name of the database
+     * @return {@link H2GIS} object if the DataBase has been created open, null otherwise.
+     */
+    public static H2GIS mem(String dbName) throws Exception {
+        Properties properties = new Properties();
+        properties.put(H2GISDBFactory.JDBC_NETWORK_PROTOCOL, "mem");
+        properties.put("databaseName",dbName);
+        DataSource ds = H2GISDBFactory.createDataSource(properties, true);
+        return open(ds);
+    }
+
+    /**
+     * Create a database instance of {@link H2GIS} in the OSM temporary directory
+     * @return {@link H2GIS} object if the DataBase has been created open, null otherwise.
+     */
+    public static H2GIS tmpdir() throws Exception {
+        return tmpdir(System.currentTimeMillis()+"_h2gis_db");
+    }
+    /**
+     * Create a database instance of {@link H2GIS} in the OSM temporary directory
+     * @param dbName name of the database
+     * @return {@link H2GIS} object if the DataBase has been created open, null otherwise.
+     */
+    public static H2GIS tmpdir(String dbName) throws Exception {
+        return H2GIS.open(System.getProperty("java.io.tmpdir") + File.separator + dbName);
     }
 
     private static void check(Connection connection) throws Exception {

@@ -8,7 +8,7 @@
     <modules>
         <module>commons</module>
         <module>data</module>
-        <module>process</module>
+        <!--<module>process</module>-->
     </modules>
 
     <!-- Properties -->
@@ -130,12 +130,12 @@
                 <version>${project.version}</version>
                 <scope>compile</scope>
             </dependency>
-            <dependency>
+            <!--<dependency>
                 <groupId>org.orbisgis.process</groupId>
                 <artifactId>process</artifactId>
                 <version>${project.version}</version>
                 <scope>compile</scope>
-            </dependency>
+            </dependency>-->
             <dependency>
                 <groupId>org.orbisgis.data</groupId>
                 <artifactId>h2gis</artifactId>
@@ -650,5 +650,4 @@
             </releases>
         </pluginRepository>
     </pluginRepositories>
-
 </project>

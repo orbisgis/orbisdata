@@ -45,6 +45,9 @@ import org.locationtech.jts.geom.MultiPolygon
 import org.locationtech.jts.geom.Polygon
 import org.locationtech.jts.io.WKTReader
 
+import java.sql.Connection
+import java.sql.DatabaseMetaData
+import java.sql.ResultSet
 import java.sql.SQLException
 
 import static org.junit.jupiter.api.Assertions.*
@@ -62,7 +65,8 @@ class GroovyPostGISTest {
     @BeforeAll
     static void init() {
         try {
-            postGIS = org.orbisgis.data.POSTGIS.open(dbProperties)
+            postGIS = POSTGIS.open(dbProperties)
+            println(postGIS)
         }catch (Exception e){
         }
         System.setProperty("test.postgis", Boolean.toString(postGIS != null))
@@ -453,6 +457,15 @@ class GroovyPostGISTest {
         assertTrue(postGIS.isSpatialIndexed("orbisgis"))
         assertFalse(postGIS.isIndexed("orbisgis","id"))
         postGIS.createIndex("orbisgis","id")
+
+        Connection connection = postGIS.getConnection()
+        DatabaseMetaData md = connection.getMetaData();
+        ResultSet indexInfo = md.getIndexInfo(connection.getCatalog(), "", "orbisgis", false, true);
+        while (indexInfo.next()) {
+            println(indexInfo.getString("COLUMN_NAME"))
+
+        }
+
         assertTrue(postGIS.isIndexed("orbisgis","id"))
         postGIS.dropIndex("orbisgis","the_geom")
         assertFalse(postGIS.isSpatialIndexed("orbisgis","the_geom"))

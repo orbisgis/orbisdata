@@ -52,7 +52,7 @@ import java.util.stream.Collectors
 
 import static org.junit.jupiter.api.Assertions.*
 
-class GroovyH2GISTest {
+class GroovyH2GISTest  {
 
     @Test
     void openH2GIS() {
@@ -414,7 +414,7 @@ class GroovyH2GISTest {
     void executeQueryNoBindings() {
         def h2GIS = H2GIS.open([databaseName: './target/loadH2GIS'])
         h2GIS.execute("""
-                DROP TABLE IF EXISTS h2gis, super;
+                DROP TABLE IF EXISTS h2gis, super, super_rename;
                 CREATE TABLE h2gis (id int, the_geom geometry(point));
                 INSERT INTO h2gis VALUES (1, 'POINT(10 10)'::GEOMETRY), (2, 'POINT(1 1)'::GEOMETRY);
         """)
@@ -1133,5 +1133,55 @@ class GroovyH2GISTest {
         assertTrue(new File(tmpdir+".mv.db").exists())
         h2GIS.deleteClose()
         assertFalse(new File(tmpdir+".mv.db").exists())
+    }
+
+    @Test
+    void testMemoryDatabase() {
+        H2GIS h2GIS = H2GIS.mem()
+        h2GIS.execute("""
+                DROP TABLE IF EXISTS h2gis;
+                CREATE TABLE h2gis (id int, the_geom GEOMETRY(POINT,4326));
+                INSERT INTO h2gis VALUES (1, 'SRID=4326;POINT(0 0)'::GEOMETRY), (2,'SRID=4326;POINT(10 10)'::GEOMETRY);
+        """)
+        assertEquals(2, h2GIS.getRowCount("h2gis"))
+        assertEquals("POINT (0 0)", h2GIS.firstRow("select ST_ASTEXT(the_geom) AS THE_GEOM from h2gis where id=1").the_geom)
+    }
+
+    @Test
+    void testMemoryDatabaseWithName() {
+        H2GIS h2GIS = H2GIS.mem("mydb")
+        h2GIS.execute("""
+                DROP TABLE IF EXISTS h2gis;
+                CREATE TABLE h2gis (id int, the_geom GEOMETRY(POINT,4326));
+                INSERT INTO h2gis VALUES (1, 'SRID=4326;POINT(0 0)'::GEOMETRY), (2,'SRID=4326;POINT(10 10)'::GEOMETRY);
+        """)
+        assertEquals(2, h2GIS.getRowCount("h2gis"))
+        assertEquals("POINT (0 0)", h2GIS.firstRow("select ST_ASTEXT(the_geom) AS THE_GEOM from h2gis where id=1").the_geom)
+    }
+
+    @Test
+    void testTmpDirDatabase() {
+        H2GIS h2GIS = H2GIS.tmpdir()
+        h2GIS.execute("""
+                DROP TABLE IF EXISTS h2gis;
+                CREATE TABLE h2gis (id int, the_geom GEOMETRY(POINT,4326));
+                INSERT INTO h2gis VALUES (1, 'SRID=4326;POINT(0 0)'::GEOMETRY), (2,'SRID=4326;POINT(10 10)'::GEOMETRY);
+        """)
+        assertEquals(2, h2GIS.getRowCount("h2gis"))
+        assertEquals("POINT (0 0)", h2GIS.firstRow("select ST_ASTEXT(the_geom) AS THE_GEOM from h2gis where id=1").the_geom)
+        h2GIS.deleteClose()
+    }
+
+    @Test
+    void testTmpDirDatabaseWithName() {
+        H2GIS h2GIS = H2GIS.tmpdir("mydb")
+        h2GIS.execute("""
+                DROP TABLE IF EXISTS h2gis;
+                CREATE TABLE h2gis (id int, the_geom GEOMETRY(POINT,4326));
+                INSERT INTO h2gis VALUES (1, 'SRID=4326;POINT(0 0)'::GEOMETRY), (2,'SRID=4326;POINT(10 10)'::GEOMETRY);
+        """)
+        assertEquals(2, h2GIS.getRowCount("h2gis"))
+        assertEquals("POINT (0 0)", h2GIS.firstRow("select ST_ASTEXT(the_geom) AS THE_GEOM from h2gis where id=1").the_geom)
+        h2GIS.deleteClose()
     }
 }

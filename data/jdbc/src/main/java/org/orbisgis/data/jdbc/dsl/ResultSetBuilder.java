@@ -373,7 +373,7 @@ public class ResultSetBuilder implements IResultSetBuilder {
         }
         else{
             List<Object> params = dataSource.getParameters(nameOrQuery);
-            String sql = dataSource.asSql(nameOrQuery, params);
+            String sql = dataSource.toSql(nameOrQuery, params);
             return getTable(sql, params);
         }
     }
@@ -385,7 +385,7 @@ public class ResultSetBuilder implements IResultSetBuilder {
         }
         else{
             List<Object> params = dataSource.getParameters(nameOrQuery);
-            String sql = dataSource.asSql(nameOrQuery, params);
+            String sql = dataSource.toSql(nameOrQuery, params);
             return getSpatialTable(sql, params);
         }
     }

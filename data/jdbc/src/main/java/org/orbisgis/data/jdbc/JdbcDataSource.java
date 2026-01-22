@@ -986,7 +986,7 @@ public abstract class JdbcDataSource extends Sql implements IJdbcDataSource, IRe
     }
 
     @Override
-    public String asSql(GString gString, List<Object> params) {
+    public String toSql(GString gString, List<Object> params) {
         return super.asSql(gString, params);
     }
 

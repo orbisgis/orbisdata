@@ -27,8 +27,8 @@
         <junit-version>5.9.2</junit-version>
         <h2gis-version>2.2.4-SNAPSHOT</h2gis-version>
         <jts-version>1.20.0</jts-version>
-        <groovy-version>4.0.22</groovy-version>
-        <picocli-version>4.7.6</picocli-version>
+        <groovy-version>4.0.29</groovy-version>
+        <picocli-version>4.7.7</picocli-version>
         <h2-version>2.4.240</h2-version>
         <cts-version>1.7.2</cts-version>
         <commons-io-version>2.21.0</commons-io-version>

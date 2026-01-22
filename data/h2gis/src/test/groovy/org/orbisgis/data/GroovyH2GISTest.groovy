@@ -52,7 +52,7 @@ import java.util.stream.Collectors
 
 import static org.junit.jupiter.api.Assertions.*
 
-class GroovyH2GISTest {
+class GroovyH2GISTest  {
 
     @Test
     void openH2GIS() {

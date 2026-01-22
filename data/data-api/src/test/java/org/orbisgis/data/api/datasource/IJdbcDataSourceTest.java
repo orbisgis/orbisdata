@@ -579,7 +579,7 @@ public class IJdbcDataSourceTest {
         }
 
         @Override
-        public String asSql(GString gString, List<Object> params) {
+        public String toSql(GString gString, List<Object> params) {
             return null;
         }
 

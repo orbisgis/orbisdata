@@ -91,7 +91,7 @@ public class FilterBuilder extends BuilderResult implements IFilterBuilder {
     @Override
     public IBuilderResult filter(GString filter) {
         params.addAll(dataSource.getParameters(filter));
-        query.append(" ").append(dataSource.asSql(filter, params));
+        query.append(" ").append(dataSource.toSql(filter, params));
         return this;
     }
 

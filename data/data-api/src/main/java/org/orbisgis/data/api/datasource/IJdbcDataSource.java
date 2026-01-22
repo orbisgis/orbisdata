@@ -923,7 +923,7 @@ public interface IJdbcDataSource extends IDataSource<ResultSet>, GroovyObject, D
      * @param params  List of the parameters of the query.
      * @return String SQL query.
      */
-    String asSql(GString gString, List<Object> params);
+    String toSql(GString gString, List<Object> params);
 
 
     /**

@@ -9,3 +9,4 @@
 - Update to H2GIS 2.2.4
 - Add new signatures to create in memory database or database in the OS tmpdir
 - Fix poms add project names
+- Update to H2GIS 2.2.5

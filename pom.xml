@@ -11,6 +11,9 @@
         <!--<module>process</module>-->
     </modules>
 
+    <name>orbisdata</name>
+    <description>Generate a jar file containing the whole H2GIS project.</description>
+
     <!-- Properties -->
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

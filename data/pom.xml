@@ -10,6 +10,11 @@
     <artifactId>data</artifactId>
     <version>2.1.2</version>
     <packaging>pom</packaging>
+
+    <!-- Project Information -->
+    <name>data</name>
+    <description>OrbisData is a library that offers a unique access point to query, manage and retrieve data.
+    </description>
     <modules>
         <module>data-api</module>
         <module>jdbc</module>

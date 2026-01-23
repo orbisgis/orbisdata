@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.orbisgis</groupId>
     <artifactId>orbisdata</artifactId>
-    <version>2.1.2-SNAPSHOT</version>
+    <version>2.1.2</version>
     <packaging>pom</packaging>
     <modules>
         <module>commons</module>
@@ -619,7 +619,7 @@
         <connection>scm:git:https://github.com/orbisgis/orbisdata.git</connection>
         <developerConnection>scm:git:https://github.com/orbisgis/orbisdata.git</developerConnection>
         <url>git@github.com:orbisgis/orbisdata.git</url>
-        <tag>HEAD</tag>
+        <tag>v2.1.2</tag>
     </scm>
 
     <repositories>

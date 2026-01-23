@@ -9,7 +9,6 @@
         <version>2.1.2-SNAPSHOT</version>
     </parent>
     <artifactId>process</artifactId>
-    <version>2.1.2-SNAPSHOT</version>
     <packaging>bundle</packaging>
 
     <!-- Properties -->

@@ -348,17 +348,7 @@
                             </goals>
                         </execution>
                     </executions>
-                </plugin>
-                <!-- Javadoc generation -->
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-javadoc-plugin</artifactId>
-                    <version>${maven-javadoc-version}</version>
-                    <configuration>
-                        <doclint>all,-missing</doclint>
-                        <quiet>true</quiet>
-                    </configuration>
-                </plugin>
+                </plugin>               
                 <!-- Execution -->
                 <plugin>
                     <groupId>org.codehaus.mojo</groupId>

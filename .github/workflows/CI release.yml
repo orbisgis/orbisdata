@@ -11,6 +11,17 @@ jobs:
   build:
     name: Release and next iteration
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgis/postgis:16-3.4
+        env:
+          POSTGRES_USER: orbisgis
+          POSTGRES_PASSWORD: orbisgis
+          POSTGRES_DB: orbisgis_db
+        ports:
+          - 5432:5432
+        # needed because the postgres container does not provide a healthcheck
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
     steps:
       # Checkout the source code of the project
       - name: Checkout
@@ -36,16 +47,6 @@ jobs:
           server-password: MAVEN_PASSWORD
           gpg-private-key: ${{ secrets.GPG_SECRET_KEY }}
           gpg-passphrase: MAVEN_GPG_PASSPHRASE
-
-      # Setup postgis test DB
-      - uses: SPalominos/PostGIS-Installer-Action@v1.0.1
-        with:
-          psql_version: '9.6'
-          pgis_version: '2.5'
-          docker_image: 'postgis/postgis'
-          db_password: 'orbisgis'
-          db_user: 'orbisgis'
-          db_name: 'orbisgis_db'
 
       # Configure git user in order to sign release with OrbisGIS user.
       - name: Configure Git User
@@ -99,7 +100,6 @@ jobs:
           echo "## Changelog for v$( mvn help:evaluate -Dexpression=project.version  | sed -n -e '/^\[.*\]/ !{ /^[0-9]/ { p; q } }' | cut -d- -f1)" > docs/CHANGELOG.md
           git commit -a -m "Empty changelog."
           git push origin master
-
 
       # If the version change is a major or minor, create a branch from the previous tag for future revisions.
       - name: Branch fork
